@@ -10,6 +10,7 @@ import { activeCostPerMinute } from '@stack-and-survive/simulation/economy';
 import { ResultPanel } from './ResultPanel';
 import { ComparisonPanel } from './ComparisonPanel';
 import { browserSaveRepository } from './persistence';
+import { glossary, pressureHint } from './help';
 
 function World({ controller, generation }: { controller: Controller; generation: number }) {
   const host = useRef<HTMLDivElement>(null);
@@ -49,14 +50,16 @@ function App() {
   const wafReason = controller.actionReason({ type: 'EMERGENCY_WAF' });
   const confirmScale = scaleConfirmation?.generation === view.rendererGeneration && scaleConfirmation.epoch === view.confirmationEpoch;
   return <main>
-    <header><div><p className="eyebrow">STACK &amp; SURVIVE / FIRST PLAYABLE SLICE</p><h1>Your architecture<br />is your defense.</h1></div><div className="scenario"><span>BLACK FRIDAY</span><strong data-testid="status">{view.error ? 'STOPPED · ERROR' : inspecting && running ? 'MANUAL INSPECTION' : view.state.runtime.status}</strong><span><b data-testid="elapsed">{view.state.runtime.time}</b> / 180 seconds</span></div></header>
-    <section className="controls" aria-label="Scenario controls">
+    <a href="#scenario-controls" className="skip-link">Skip to scenario controls</a>
+    <header><div><p className="eyebrow">STACK &amp; SURVIVE / HACKATHON MVP</p><h1>Your architecture<br />is your defense.</h1></div><div className="scenario"><span>BLACK FRIDAY</span><strong data-testid="status">{view.error ? 'STOPPED · ERROR' : inspecting && running ? 'MANUAL INSPECTION' : view.state.runtime.status}</strong><span><b data-testid="elapsed">{view.state.runtime.time}</b> / 180 seconds</span></div></header>
+    <section id="scenario-controls" tabIndex={-1} className="controls" aria-label="Scenario controls">
       <label>Initial App instances <select aria-label="Initial App instances" value={instances} disabled={!preparing} onChange={e => { controller.reset(Number(e.target.value)); setInspecting(false); }}><option>1</option><option>2</option><option>4</option></select></label>
       <button type="button" disabled={!preparing || !!view.error || readyErrors.length > 0} onClick={() => controller.start()}>Start traffic</button>
       <button type="button" disabled={paused || !!view.error} onClick={() => { controller.reset(instances); setInspecting(false); }}>Reset baseline</button>
       <button type="button" disabled={(!running && !paused) || !!view.error} onClick={() => { if (paused) controller.resume(); else controller.pause(); setInspecting(false); }}>{paused ? 'Resume traffic' : 'Pause traffic'}</button>
       <p>Real simulation · 1 tick / second · Representative traffic, not one sprite per request</p>
     </section>
+    <details className="help"><summary>How to play &amp; glossary</summary><p>Your application is online. Black Friday traffic is approaching. Keep the service available while protecting business value.</p><ol><li>Select a resource to inspect its role and cost.</li><li>Place and connect resources before starting; wait for required provisioning.</li><li>Start traffic, observe pressure, and use live actions deliberately.</li><li>Review the result, redesign, and retry the same workload.</li></ol><p>Click or tap controls; the resource list below also supports keyboard selection. Drag buildings to move, drag empty ground to pan, and scroll to zoom. Pause is for inspection, not free recovery. No sound is required.</p><dl>{glossary.map(([term, definition]) => <div key={term}><dt>{term}</dt><dd>{definition}</dd></div>)}</dl></details>
     <section aria-label="Local architecture save" className="save-controls"><button type="button" onClick={() => controller.saveArchitecture()}>Save architecture</button><button type="button" disabled={!preparing} onClick={() => controller.clearLocalState()}>Clear local state</button><p role="status" data-testid="save-status">{view.saveMessage}</p></section>
     {preparing && <section aria-label="Black Friday briefing" className="briefing"><h2>Black Friday is approaching</h2><p>Read-heavy business traffic will increase. Unusual automated traffic may consume capacity. Keep customers served without overspending.</p><p>Availability target: 99% · Latency target: 300 ms · Budget: 140 game credits · Duration: 180 seconds</p><p>Preparation is free. Your connections determine request paths; physical distance does not change performance.</p></section>}
     {paused && <p role="status">Paused — inspect the architecture and metrics. Time, costs, provisioning and failure counters are frozen; editing is disabled.</p>}
@@ -78,6 +81,7 @@ function App() {
       <p>Click to select · Drag a building to move · Drag empty ground to pan · Scroll to zoom</p>
     </section>
     {view.building && <p role="status">Placing {definitions[view.building].name}: {placementError ?? 'click a free footprint on the board.'}</p>}
+    <nav aria-label="Inspect resources" className="resource-list">{architecture.resources.map(resource => <button type="button" key={resource.id} aria-pressed={view.selected === resource.id} onClick={() => controller.select(resource.id)}>Inspect {definitions[resource.kind].name}</button>)}</nav>
     {view.notice && <p role="alert">{view.notice}</p>}
     {view.connecting && <section className="connection-panel" aria-label="Connection selection"><p>{view.connectionSource ? `Source: ${view.connectionSource}. Select a highlighted valid target.` : 'Select a source on the board or below.'}</p>
       {architecture.resources.map(resource => <button type="button" key={resource.id} disabled={view.connectionSource !== null && !validTargets(architecture, view.connectionSource).includes(resource.id)} onClick={() => controller.connectNode(resource.id)}>{definitions[resource.kind].name}</button>)}
@@ -99,7 +103,7 @@ function App() {
       <dl><dt>Bots reaching App/s</dt><dd data-testid="bots-at-app">{r ? r.rateLimit.passed.bot.toFixed(1) : '—'}</dd><dt>WAF-filtered bots/s</dt><dd data-testid="filtered-bots">{r ? r.edge.filtered.bot.toFixed(1) : '—'}</dd>
         <dt>Cache hit ratio</dt><dd data-testid="cache-hit">{r?.cache.hitRatio == null ? 'N/A' : `${(r.cache.hitRatio * 100).toFixed(1)}%`}</dd><dt>SQL reads avoided/s</dt><dd>{r?.cache.hits.toFixed(1) ?? '—'}</dd>
         <dt>Running cost/min</dt><dd>{activeCostPerMinute(architecture)} credits</dd></dl>
-      <p className="hint">Adding App instances changes compute capacity, not SQL capacity. Try a different initial configuration after resetting.</p>
+      <p className="hint" data-testid="pressure-hint">{view.result ? view.result.insight : pressureHint(r ?? null)}</p>
       {selected && <section aria-label="Selected resource" className="resource-details">
         <h2>{definitions[selected.kind].name}</h2>
         <p data-testid="resource-status">{selected.remaining > 0 ? `Provisioning: ${selected.remaining}s` : 'Active'}</p>
@@ -134,7 +138,7 @@ function App() {
     {view.result && <ResultPanel result={view.result} onRedesign={() => { controller.redesign(); setInspecting(false); setScaleConfirmation(null); }} />}
     {view.result && view.previousResult && <ComparisonPanel previous={view.previousResult} current={view.result} />}
     <details><summary>Developer inspector (not a player speed control)</summary><button type="button" disabled={!running || !!view.error} onClick={() => { setInspecting(true); controller.inspectNextTick(); }}>Step one tick</button><p>{inspecting ? 'Manual stepping: automatic clock stopped. Reset to return to 1×.' : 'Stepping stops automatic time; each click advances exactly one real simulation tick.'}</p><pre data-testid="diagnostics">{JSON.stringify({ time: view.state.runtime.time, status: view.state.runtime.status, snapshot: view.snapshot, architecture, selected: view.selected, camera: view.camera }, null, 2)}</pre></details>
-    <footer>BUILD THE CLOUD. SURVIVE THE TRAFFIC.<span>Baseline only · Editing and live actions arrive in subsequent issues.</span></footer>
+    <footer>BUILD THE CLOUD. SURVIVE THE TRAFFIC.<span>Simplified game values, not Azure performance or pricing. Human playtesting and hosted deployment are still pending.</span></footer>
   </main>;
 }
 createRoot(document.getElementById('root')!).render(<App />);
