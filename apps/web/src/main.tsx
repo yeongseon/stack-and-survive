@@ -7,6 +7,7 @@ import { definitions, validateStart } from '@stack-and-survive/cloud-domain';
 import type { Kind } from '@stack-and-survive/schema';
 import { positionError, snap, validTargets } from './editor';
 import { activeCostPerMinute } from '@stack-and-survive/simulation/economy';
+import { ResultPanel } from './ResultPanel';
 
 function World({ controller, generation }: { controller: Controller; generation: number }) {
   const host = useRef<HTMLDivElement>(null);
@@ -126,7 +127,7 @@ function App() {
       </div>
     </section>
     {view.queuedActions.length > 0 && <p role="status">Queued for the next simulation tick: {view.queuedActions.map(a => a.type).join(', ')}. {paused ? 'Preserved while paused; executes after resume.' : 'No capacity or charge applied until the tick accepts the action.'}</p>}
-    {view.result && <section className="outcome" role="status"><p className="eyebrow">SCENARIO OUTCOME</p><h2>{view.result.primary}</h2><p>{view.result.insight}</p></section>}
+    {view.result && <ResultPanel result={view.result} onRedesign={() => { controller.redesign(); setInspecting(false); setScaleConfirmation(null); }} />}
     <details><summary>Developer inspector (not a player speed control)</summary><button type="button" disabled={!running || !!view.error} onClick={() => { setInspecting(true); controller.inspectNextTick(); }}>Step one tick</button><p>{inspecting ? 'Manual stepping: automatic clock stopped. Reset to return to 1×.' : 'Stepping stops automatic time; each click advances exactly one real simulation tick.'}</p><pre data-testid="diagnostics">{JSON.stringify({ time: view.state.runtime.time, status: view.state.runtime.status, snapshot: view.snapshot, architecture, selected: view.selected, camera: view.camera }, null, 2)}</pre></details>
     <footer>BUILD THE CLOUD. SURVIVE THE TRAFFIC.<span>Baseline only · Editing and live actions arrive in subsequent issues.</span></footer>
   </main>;

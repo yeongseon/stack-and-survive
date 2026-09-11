@@ -109,6 +109,13 @@ export function createController(timer: Clock = clock) {
       if (!Number.isInteger(instances) || instances < 1 || instances > 4) throw new Error('Invalid instance configuration');
       stop(); publish({ ...initial(instances), rendererGeneration: view.rendererGeneration + 1 });
     },
+    redesign() {
+      if (destroyed || !view.result) return;
+      stop();
+      publish({ ...view, state: createSimulation(view.state.runtime.architecture, blackFriday), snapshot: null, result: null,
+        queuedActions: [], notice: '', building: null, preview: null, connecting: false, connectionSource: null,
+        rendererGeneration: view.rendererGeneration + 1, confirmationEpoch: view.confirmationEpoch + 1 });
+    },
     pause() {
       if (destroyed || view.error || view.state.runtime.status !== 'RUNNING') return;
       stop(); publish({ ...view, confirmationEpoch: view.confirmationEpoch + 1, state: { ...view.state, runtime: pauseRuntime(view.state.runtime) } });
