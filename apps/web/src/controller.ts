@@ -3,7 +3,7 @@ import { blackFriday } from '@stack-and-survive/scenarios';
 import { advanceSimulation, createSimulation, simulationResult } from '@stack-and-survive/simulation/results';
 import { advancePreparation, requestPreparationScale, startRuntime } from '@stack-and-survive/simulation/runtime';
 import type { Architecture, Kind } from '@stack-and-survive/schema';
-import { moveResource, placeResource, removeResource, type Camera, type Point } from './editor';
+import { connectResources, disconnectResources, moveResource, placeResource, removeResource, type Camera, type Point } from './editor';
 
 export type View = Readonly<{
   state: ReturnType<typeof createSimulation>;
@@ -15,6 +15,8 @@ export type View = Readonly<{
   preview: Point | null;
   camera: Camera;
   notice: string;
+  connecting: boolean;
+  connectionSource: string | null;
 }>;
 export interface Clock {
   start(callback: () => void): () => void;
@@ -28,7 +30,7 @@ export function createController(timer: Clock = clock) {
     const architecture = baseline(instances);
     architecture.resources.forEach((r, i) => { r.x = (i - 1) * 260; r.y = (i - 1) * 100; });
     return { state: createSimulation(architecture, blackFriday), snapshot: null, result: null, error: null,
-      selected: null, building: null, preview: null, camera: { x: 0, y: 0, zoom: 1 }, notice: '' };
+      selected: null, building: null, preview: null, camera: { x: 0, y: 0, zoom: 1 }, notice: '', connecting: false, connectionSource: null };
   };
   let view: View = initial();
   let cancel: (() => void) | undefined;
@@ -60,13 +62,14 @@ export function createController(timer: Clock = clock) {
     publish({ ...view, state: { ...view.state, runtime } });
     if (!runtime.architecture.resources.some(r => r.remaining > 0) && runtime.preparationScaleDue === null) stop();
   };
-  const edit = (operation: (a: Architecture) => Architecture) => {
-    if (destroyed || view.state.runtime.status !== 'PREPARATION') return;
+  const edit = (operation: (a: Architecture) => Architecture): boolean => {
+    if (destroyed || view.state.runtime.status !== 'PREPARATION') return false;
     try {
       const architecture = operation(view.state.runtime.architecture);
       publish({ ...view, state: { ...view.state, runtime: { ...view.state.runtime, architecture } }, notice: '' });
       if (architecture.resources.some(r => r.remaining > 0) && !cancel) schedule(prepare);
-    } catch (error) { publish({ ...view, notice: error instanceof Error ? error.message : 'Invalid edit' }); }
+      return true;
+    } catch (error) { publish({ ...view, notice: error instanceof Error ? error.message : 'Invalid edit' }); return false; }
   };
   return {
     getSnapshot: () => view,
@@ -76,7 +79,7 @@ export function createController(timer: Clock = clock) {
       const errors = validateStart(view.state.runtime.architecture);
       if (view.state.runtime.preparationScaleDue !== null) errors.push('Scale-out is provisioning');
       if (errors.length) { publish({ ...view, notice: errors.join('; ') }); return; }
-      stop(); publish({ ...view, building: null, preview: null, state: { ...view.state, runtime: startRuntime(view.state.runtime) } });
+      stop(); publish({ ...view, notice: '', building: null, preview: null, connecting: false, connectionSource: null, state: { ...view.state, runtime: startRuntime(view.state.runtime) } });
       schedule(advance);
     },
     reset(instances = 1) {
@@ -85,21 +88,35 @@ export function createController(timer: Clock = clock) {
       stop(); publish(initial(instances));
     },
     select(id: string | null) { if (!destroyed) publish({ ...view, selected: id }); },
-    build(kind: Kind | null) { if (!destroyed && view.state.runtime.status === 'PREPARATION') publish({ ...view, building: kind, preview: null, notice: '' }); },
+    build(kind: Kind | null) { if (!destroyed && view.state.runtime.status === 'PREPARATION') publish({ ...view, building: kind, preview: null, notice: '', connecting: false, connectionSource: null }); },
+    connectMode(enabled: boolean) {
+      if (!destroyed && view.state.runtime.status === 'PREPARATION') publish({ ...view, connecting: enabled, connectionSource: null, building: null, preview: null, notice: '' });
+    },
+    connectNode(id: string) {
+      if (destroyed || !view.connecting || view.state.runtime.status !== 'PREPARATION') return;
+      if (!view.state.runtime.architecture.resources.some(r => r.id === id)) return;
+      if (view.connectionSource === null) { publish({ ...view, connectionSource: id, selected: id, notice: '' }); return; }
+      const from = view.connectionSource;
+      if (edit(a => connectResources(a, from, id))) publish({ ...view, connectionSource: null, notice: `Connected ${from} → ${id}.` });
+    },
+    disconnect(from: string, to: string) {
+      if (destroyed || view.state.runtime.status !== 'PREPARATION') return;
+      edit(a => disconnectResources(a, from, to));
+      publish({ ...view, connectionSource: null });
+    },
     preview(point: Point | null) { if (!destroyed && view.building) publish({ ...view, preview: point }); },
     place(point: Point) {
       if (!view.building) return;
-      const kind = view.building; edit(a => placeResource(a, kind, point));
-      if (!view.notice) publish({ ...view, building: null, preview: null, selected: kind });
+      const kind = view.building;
+      if (edit(a => placeResource(a, kind, point))) publish({ ...view, building: null, preview: null, selected: kind });
     },
     move(id: string, point: Point) { edit(a => moveResource(a, id, point)); },
     remove(id: string) {
       if (view.state.runtime.status !== 'PREPARATION') return;
-      edit(a => removeResource(a, id));
-      if (!view.notice) {
+      if (edit(a => removeResource(a, id))) {
         const runtime = { ...view.state.runtime };
         if (!runtime.architecture.resources.some(r => r.kind === 'compute')) runtime.preparationScaleDue = null;
-        publish({ ...view, selected: null, state: { ...view.state, runtime } });
+        publish({ ...view, selected: null, connectionSource: null, state: { ...view.state, runtime } });
       }
     },
     scalePreparation() {

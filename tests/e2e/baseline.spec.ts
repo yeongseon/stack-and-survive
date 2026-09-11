@@ -16,7 +16,7 @@ test('real baseline reaches compute pressure and fails at the verified tick', as
   await expect(page.getByTestId('elapsed')).toHaveText('1', { timeout: 5000 });
   await expect(surface).toHaveAttribute('data-tick', '1');
   await expect.poll(async () => Number(await surface.getAttribute('data-packets'))).toBeGreaterThan(0);
-  await page.locator('summary').click();
+  await page.locator('summary').filter({ hasText: 'Developer inspector' }).click();
   await stepUntil(page, 31);
   await expect(page.getByTestId('app-pressure')).toContainText('OVERLOADED');
   await expect(surface).toHaveAttribute('data-app-state', '! OVERLOADED');
@@ -39,7 +39,7 @@ test('more compute leaves SQL capacity unchanged and exposes read bottleneck', a
   await page.goto('/'); await expect(page.locator('[data-renderer="ready"]')).toHaveCount(1);
   await page.getByLabel('Initial App instances').selectOption('4');
   await page.getByRole('button', { name: 'Start traffic' }).click();
-  await page.locator('summary').click();
+  await page.locator('summary').filter({ hasText: 'Developer inspector' }).click();
   await stepUntil(page, 76);
   await expect(page.getByTestId('sql-pressure')).toContainText('OVERLOADED');
   await expect(page.getByTestId('app-pressure')).toContainText('HEALTHY');

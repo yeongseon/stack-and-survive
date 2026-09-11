@@ -1,5 +1,5 @@
 import type { Architecture, Kind } from '@stack-and-survive/schema';
-import { definitions, parseArchitecture } from '@stack-and-survive/cloud-domain';
+import { allowsConnection, definitions, parseArchitecture } from '@stack-and-survive/cloud-domain';
 
 export type Point = { x: number; y: number };
 export type Camera = Point & { zoom: number };
@@ -29,6 +29,24 @@ export function removeResource(architecture: Architecture, id: string): Architec
   a.resources = a.resources.filter(n => n.id !== id);
   a.connections = a.connections.filter(c => c.from !== id && c.to !== id);
   return a;
+}
+export function connectResources(architecture: Architecture, from: string, to: string): Architecture {
+  if (architecture.connections.some(c => c.from === from && c.to === to)) throw new Error('This connection already exists.');
+  const next = parseArchitecture(architecture);
+  next.connections.push({ from, to });
+  return parseArchitecture(next);
+}
+export function disconnectResources(architecture: Architecture, from: string, to: string): Architecture {
+  const next = parseArchitecture(architecture);
+  if (!next.connections.some(c => c.from === from && c.to === to)) throw new Error('Connection not found.');
+  next.connections = next.connections.filter(c => c.from !== from || c.to !== to);
+  return next;
+}
+export function validTargets(architecture: Architecture, from: string): string[] {
+  const source = architecture.resources.find(r => r.id === from);
+  if (!source) return [];
+  return architecture.resources.filter(resource => allowsConnection(source.kind, resource.kind)
+    && !architecture.connections.some(c => c.from === from && c.to === resource.id)).map(r => r.id);
 }
 export function project(point: Point, camera: Camera, width: number, height: number): Point {
   return { x: width / 2 + (point.x + camera.x) * camera.zoom, y: height / 2 + (point.y + camera.y) * camera.zoom };
