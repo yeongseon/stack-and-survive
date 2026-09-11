@@ -9,6 +9,7 @@ import { positionError, snap, validTargets } from './editor';
 import { activeCostPerMinute } from '@stack-and-survive/simulation/economy';
 import { ResultPanel } from './ResultPanel';
 import { ComparisonPanel } from './ComparisonPanel';
+import { browserSaveRepository } from './persistence';
 
 function World({ controller, generation }: { controller: Controller; generation: number }) {
   const host = useRef<HTMLDivElement>(null);
@@ -23,7 +24,7 @@ function World({ controller, generation }: { controller: Controller; generation:
   return <div className="world" ref={host} data-testid="world" aria-label="Internet to App Service to Azure SQL architecture" />;
 }
 function App() {
-  const [controller] = useState(() => createController());
+  const [controller] = useState(() => createController(undefined, browserSaveRepository(() => window.localStorage)));
   const view = useSyncExternalStore(controller.subscribe, controller.getSnapshot);
   const [inspecting, setInspecting] = useState(false);
   const [scaleConfirmation, setScaleConfirmation] = useState<{ generation: number; epoch: number } | null>(null);
@@ -56,6 +57,7 @@ function App() {
       <button type="button" disabled={(!running && !paused) || !!view.error} onClick={() => { if (paused) controller.resume(); else controller.pause(); setInspecting(false); }}>{paused ? 'Resume traffic' : 'Pause traffic'}</button>
       <p>Real simulation · 1 tick / second · Representative traffic, not one sprite per request</p>
     </section>
+    <section aria-label="Local architecture save" className="save-controls"><button type="button" onClick={() => controller.saveArchitecture()}>Save architecture</button><button type="button" disabled={!preparing} onClick={() => controller.clearLocalState()}>Clear local state</button><p role="status" data-testid="save-status">{view.saveMessage}</p></section>
     {preparing && <section aria-label="Black Friday briefing" className="briefing"><h2>Black Friday is approaching</h2><p>Read-heavy business traffic will increase. Unusual automated traffic may consume capacity. Keep customers served without overspending.</p><p>Availability target: 99% · Latency target: 300 ms · Budget: 140 game credits · Duration: 180 seconds</p><p>Preparation is free. Your connections determine request paths; physical distance does not change performance.</p></section>}
     {paused && <p role="status">Paused — inspect the architecture and metrics. Time, costs, provisioning and failure counters are frozen; editing is disabled.</p>}
     {preparing && view.previousResult && <section className="briefing" aria-label="Previous attempt context"><h2>Previous issue: {view.previousResult.primary}</h2><p>{view.previousResult.insight}</p><p>Previous attempt: {view.previousResult.status} at {view.previousResult.elapsedTime}s. Edit your existing architecture, then retry the same workload.</p></section>}

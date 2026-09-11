@@ -5,7 +5,7 @@ test('repairs missing write path with accessible connection controls', async ({ 
   await page.locator('summary').filter({ hasText: 'Architecture connections' }).click();
   await page.getByRole('button', { name: 'Remove connection compute to database', exact: true }).click();
   await expect(page.getByRole('button', { name: 'Start traffic', exact: true })).toBeDisabled();
-  await expect(page.getByRole('status')).toContainText('write connection');
+  await expect(page.getByRole('status').filter({ hasText: 'Cannot start:' })).toContainText('write connection');
   await page.getByRole('button', { name: 'Connect resources', exact: true }).click();
   const panel = page.getByRole('region', { name: 'Connection selection' });
   await panel.getByRole('button', { name: 'Azure App Service', exact: true }).click();

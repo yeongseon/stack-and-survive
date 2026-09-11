@@ -4,6 +4,7 @@ import { baseline } from '@stack-and-survive/cloud-domain';
 import { blackFriday } from '@stack-and-survive/scenarios';
 import { simulateScenario } from '@stack-and-survive/simulation/results';
 import { pauseRuntime } from '@stack-and-survive/simulation/runtime';
+import { browserSaveRepository, SAVE_KEY } from './persistence';
 
 function fixture() {
   let callback = () => {}; let active = 0;
@@ -181,4 +182,29 @@ it('redesign preserves layout and completed capacity, resets runtime and retains
   f.controller.move('compute', { x: 80, y: 0 });
   expect(f.controller.getSnapshot().previousResult).toEqual(finished.result);
   f.controller.destroy();
+});
+it('restores completed architecture but never pending runtime scale or scenario progress', () => {
+  const values = new Map<string, string>();
+  const repository = browserSaveRepository(() => ({ getItem: key => values.get(key) ?? null, setItem: (key, value) => { values.set(key, value); }, removeItem: key => { values.delete(key); } }));
+  let callback = () => {};
+  const timer: Clock = { start(fn) { callback = fn; return () => {}; } };
+  const first = createController(timer, repository);
+  first.move('compute', { x: 40, y: 0 }); first.start(); first.queueAction({ type: 'SCALE_OUT' }); callback();
+  first.saveArchitecture(); first.destroy();
+  const loaded = createController(timer, repository);
+  expect(loaded.getSnapshot().state.runtime.status).toBe('PREPARATION');
+  expect(loaded.getSnapshot().state.runtime.time).toBe(0);
+  expect(loaded.getSnapshot().state.runtime.scaleDue).toBeNull();
+  expect(loaded.getSnapshot().state.runtime.architecture.resources.find(r => r.kind === 'compute')).toMatchObject({ x: 40, instances: 1 });
+  expect(loaded.getSnapshot().state.economy.remainingBudget).toBe(140);
+  loaded.clearLocalState(); expect(values.has(SAVE_KEY)).toBe(false); loaded.destroy();
+});
+it('does not silently overwrite corrupt saves and permits explicit recovery', () => {
+  let saved: string | null = '{bad';
+  const repository = browserSaveRepository(() => ({ getItem: () => saved, setItem: (_key, value) => { saved = value; }, removeItem: () => { saved = null; } }));
+  const controller = createController({ start: () => () => {} }, repository);
+  expect(controller.getSnapshot().saveMessage).toContain('Load failed');
+  controller.move('compute', { x: 40, y: 0 }); expect(saved).toBe('{bad');
+  controller.saveArchitecture(); expect(controller.getSnapshot().saveMessage).toContain('saved locally');
+  expect(repository.load()!.resources.find(r => r.kind === 'compute')!.x).toBe(40); controller.destroy();
 });

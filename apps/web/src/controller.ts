@@ -4,6 +4,7 @@ import { advanceSimulation, createSimulation, simulationResult } from '@stack-an
 import { advancePreparation, pauseRuntime, requestPreparationScale, resumeRuntime, startRuntime, type Action } from '@stack-and-survive/simulation/runtime';
 import type { Architecture, Kind } from '@stack-and-survive/schema';
 import { connectResources, disconnectResources, moveResource, placeResource, removeResource, type Camera, type Point } from './editor';
+import type { SaveRepository } from './persistence';
 
 export type View = Readonly<{
   state: ReturnType<typeof createSimulation>;
@@ -22,6 +23,7 @@ export type View = Readonly<{
   recoveringRenderer: boolean;
   queuedActions: Action[];
   confirmationEpoch: number;
+  saveMessage: string;
 }>;
 export interface Clock {
   start(callback: () => void): () => void;
@@ -31,19 +33,29 @@ const clock: Clock = {
   start(callback) { const id = globalThis.setInterval(callback, 1000); return () => globalThis.clearInterval(id); },
 };
 
-export function createController(timer: Clock = clock) {
+export function createController(timer: Clock = clock, repository?: SaveRepository) {
   const initial = (instances = 1): View => {
     const architecture = baseline(instances);
     architecture.resources.forEach((r, i) => { r.x = (i - 1) * 260; r.y = (i - 1) * 100; });
     return { state: createSimulation(architecture, blackFriday), snapshot: null, result: null, previousResult: null, error: null,
-      selected: null, building: null, preview: null, camera: { x: 0, y: 0, zoom: 1 }, notice: '', connecting: false, connectionSource: null, rendererGeneration: 0, recoveringRenderer: false, queuedActions: [], confirmationEpoch: 0 };
+      selected: null, building: null, preview: null, camera: { x: 0, y: 0, zoom: 1 }, notice: '', connecting: false, connectionSource: null, rendererGeneration: 0, recoveringRenderer: false, queuedActions: [], confirmationEpoch: 0, saveMessage: repository ? 'No local save yet.' : 'Local persistence is not attached.' };
   };
   let view: View = initial();
   let cancel: (() => void) | undefined;
   let destroyed = false;
   let timerGeneration = 0;
   const listeners = new Set<() => void>();
-  const publish = (next: View) => { view = next; listeners.forEach(listener => listener()); };
+  let savingBlocked = false;
+  let savedSignature = JSON.stringify(view.state.runtime.architecture);
+  const publish = (next: View) => {
+    view = next;
+    const signature = JSON.stringify(view.state.runtime.architecture);
+    if (repository && !savingBlocked && signature !== savedSignature) {
+      try { repository.save(view.state.runtime.architecture); savedSignature = signature; view = { ...view, saveMessage: 'Architecture saved locally.' }; }
+      catch (error) { savingBlocked = true; view = { ...view, saveMessage: `Save failed: ${error instanceof Error ? error.message : 'Storage unavailable'}. Gameplay remains available; retry Save architecture.` }; }
+    }
+    listeners.forEach(listener => listener());
+  };
   const stop = () => { timerGeneration++; cancel?.(); cancel = undefined; };
   const schedule = (callback: () => void) => {
     stop();
@@ -88,9 +100,36 @@ export function createController(timer: Clock = clock) {
       return preview.outcomes.find(o => o.action.sequence === next.sequence)?.reason ?? null;
     } catch (error) { return error instanceof Error ? error.message : 'Action is unavailable.'; }
   };
+  if (repository) {
+    try {
+      const architecture = repository.load();
+      if (architecture) {
+        view = { ...view, state: createSimulation(architecture, blackFriday), saveMessage: 'Loaded local architecture. Runtime starts fresh.' };
+        savedSignature = JSON.stringify(architecture);
+        if (architecture.resources.some(r => r.remaining > 0)) schedule(prepare);
+      }
+    } catch (error) {
+      savingBlocked = true;
+      view = { ...view, saveMessage: `Load failed: ${error instanceof Error ? error.message : 'Invalid save'}. Existing save preserved; clear local state or explicitly save to replace it.` };
+    }
+  }
   return {
     getSnapshot: () => view,
     subscribe(listener: () => void) { listeners.add(listener); return () => { listeners.delete(listener); }; },
+    saveArchitecture() {
+      if (destroyed || !repository) return;
+      try {
+        repository.save(view.state.runtime.architecture); savedSignature = JSON.stringify(view.state.runtime.architecture); savingBlocked = false;
+        publish({ ...view, saveMessage: 'Architecture saved locally.' });
+      } catch (error) { savingBlocked = true; publish({ ...view, saveMessage: `Save failed: ${error instanceof Error ? error.message : 'Storage unavailable'}. Gameplay remains available.` }); }
+    },
+    clearLocalState() {
+      if (destroyed || !repository || view.state.runtime.status !== 'PREPARATION') return;
+      try {
+        repository.clear(); savingBlocked = false; savedSignature = JSON.stringify(view.state.runtime.architecture);
+        publish({ ...view, saveMessage: 'Local save cleared. Current design stays in memory until edited or explicitly saved.' });
+      } catch (error) { publish({ ...view, saveMessage: `Clear failed: ${error instanceof Error ? error.message : 'Storage unavailable'}` }); }
+    },
     actionReason,
     queueAction(request: ActionRequest) {
       const reason = actionReason(request);
