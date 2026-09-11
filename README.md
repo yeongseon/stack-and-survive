@@ -10,7 +10,7 @@ Stack & Survive is a cloud architecture strategy game where players build and gr
 
 **Hackathon MVP — Scope Locked · PRD v0.5**
 
-This repository contains planning documents, production directory placeholders, and an isolated Phaser/PlayCanvas comparison in `apps/engine-spike/`. The spike has local build and test tooling, but the production game, simulation engine, production CI, and Azure deployment have not been implemented. The owner has accepted Phaser 3.90.0 for production development.
+This repository contains planning documents, a minimal production workspace in `apps/web/`, and an isolated Phaser/PlayCanvas comparison in `apps/engine-spike/`. Root commands run production lint, types, tests and build; GitHub Actions runs the same quality checks. The game, simulation engine and Azure deployment remain in progress/not implemented. The owner has accepted Phaser 3.90.0 for production development.
 
 ## MVP
 
@@ -50,7 +50,7 @@ docs/
     ADR-002-GAME-ENGINE.md Engine experiment evidence (Accepted: Phaser 3.90.0)
 apps/
   engine-spike/          Disposable two-engine experiment and tests
-  game/                  Future browser game and renderer
+  web/                   Production React shell; Phaser selected
 packages/
   schema/                Future shared schemas and validation
   cloud-domain/          Future provider-neutral architecture model
@@ -58,7 +58,7 @@ packages/
   scenarios/             Future data-driven scenario definitions
 ```
 
-Only `apps/engine-spike/` is runnable. The production application/package directories remain placeholders, not configured workspaces. [Technical Design](docs/TECHNICAL_DESIGN.md) proposes `apps/web/`; the spike does not choose or scaffold the production monorepo.
+From the repository root with Node 22.22.0 and pnpm 10.32.1: `pnpm install --frozen-lockfile`, then `pnpm dev`. Verification: `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build`. The initial web shell is not the playable game. Packages are added only when their implementation issue starts. The engine spike is excluded from the production workspace; run its commands from its own directory.
 
 ## Run the engine experiment
 

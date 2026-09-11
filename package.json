@@ -1,0 +1,21 @@
+{
+  "name": "stack-and-survive",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.32.1",
+  "engines": { "node": ">=22.12.0 <23" },
+  "scripts": {
+    "dev": "pnpm --filter @stack-and-survive/web dev",
+    "lint": "eslint \"apps/web/src/**/*.{ts,tsx}\" \"packages/*/src/**/*.{ts,tsx}\" --no-error-on-unmatched-pattern",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "build": "pnpm --filter @stack-and-survive/web build"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.0",
+    "eslint": "^9.39.0",
+    "typescript-eslint": "^8.50.0",
+    "typescript": "5.9.3",
+    "vitest": "4.1.11"
+  }
+}
