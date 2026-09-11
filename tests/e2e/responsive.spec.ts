@@ -1,11 +1,24 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
+
+async function waitForRenderer(page: Page) {
+  await page.waitForFunction(() => {
+    const surface = document.querySelector('[data-renderer]');
+    if (surface?.getAttribute('data-renderer') === 'error'
+      || document.querySelector('[data-testid="status"]')?.textContent?.includes('ERROR')) {
+      throw new Error('Renderer failed during initialization');
+    }
+    return surface?.getAttribute('data-renderer') === 'ready';
+  }, undefined, { timeout: 20000 });
+  const surface = page.locator('[data-renderer="ready"]');
+  await expect(surface).toHaveAttribute('data-nodes', /compute/);
+  return surface;
+}
 
 for (const size of [{ width: 1440, height: 900 }, { width: 1024, height: 768 }, { width: 390, height: 844 }, { width: 320, height: 568 }]) {
   test(`board and controls fit ${size.width}x${size.height}`, async ({ page }, info) => {
     const errors: string[] = []; page.on('pageerror', error => errors.push(error.message));
     await page.setViewportSize(size); await page.goto('/');
-    const surface = page.locator('[data-renderer="ready"]');
-    await expect(surface).toHaveAttribute('data-nodes', /compute/);
+    const surface = await waitForRenderer(page);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     const world = page.getByTestId('world'); const initialBox = (await world.boundingBox())!;
     expect(initialBox.y).toBeLessThan(size.height - 100);
@@ -31,8 +44,7 @@ for (const size of [{ width: 1440, height: 900 }, { width: 1024, height: 768 }, 
 
 test('narrow viewport placement and resize preserve architecture and input alignment', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 }); await page.goto('/');
-  const surface = page.locator('[data-renderer="ready"]');
-  await expect(surface).toHaveAttribute('data-nodes', /compute/);
+  const surface = await waitForRenderer(page);
   await expect(page.getByRole('button', { name: 'Place Azure Managed Redis', exact: true })).not.toBeVisible();
   await page.locator('summary').filter({ hasText: 'Build & connections' }).click();
   await page.getByRole('button', { name: 'Place Azure Managed Redis', exact: true }).click();
