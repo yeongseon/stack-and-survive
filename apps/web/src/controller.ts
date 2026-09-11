@@ -1,7 +1,7 @@
 import { baseline, validateStart } from '@stack-and-survive/cloud-domain';
 import { blackFriday } from '@stack-and-survive/scenarios';
 import { advanceSimulation, createSimulation, simulationResult } from '@stack-and-survive/simulation/results';
-import { advancePreparation, pauseRuntime, requestPreparationScale, resumeRuntime, startRuntime } from '@stack-and-survive/simulation/runtime';
+import { advancePreparation, pauseRuntime, requestPreparationScale, resumeRuntime, startRuntime, type Action } from '@stack-and-survive/simulation/runtime';
 import type { Architecture, Kind } from '@stack-and-survive/schema';
 import { connectResources, disconnectResources, moveResource, placeResource, removeResource, type Camera, type Point } from './editor';
 
@@ -19,10 +19,13 @@ export type View = Readonly<{
   connectionSource: string | null;
   rendererGeneration: number;
   recoveringRenderer: boolean;
+  queuedActions: Action[];
+  confirmationEpoch: number;
 }>;
 export interface Clock {
   start(callback: () => void): () => void;
 }
+export type ActionRequest = { type: 'SCALE_OUT' } | { type: 'RATE_LIMIT'; enabled: boolean } | { type: 'EMERGENCY_WAF' };
 const clock: Clock = {
   start(callback) { const id = globalThis.setInterval(callback, 1000); return () => globalThis.clearInterval(id); },
 };
@@ -32,7 +35,7 @@ export function createController(timer: Clock = clock) {
     const architecture = baseline(instances);
     architecture.resources.forEach((r, i) => { r.x = (i - 1) * 260; r.y = (i - 1) * 100; });
     return { state: createSimulation(architecture, blackFriday), snapshot: null, result: null, error: null,
-      selected: null, building: null, preview: null, camera: { x: 0, y: 0, zoom: 1 }, notice: '', connecting: false, connectionSource: null, rendererGeneration: 0, recoveringRenderer: false };
+      selected: null, building: null, preview: null, camera: { x: 0, y: 0, zoom: 1 }, notice: '', connecting: false, connectionSource: null, rendererGeneration: 0, recoveringRenderer: false, queuedActions: [], confirmationEpoch: 0 };
   };
   let view: View = initial();
   let cancel: (() => void) | undefined;
@@ -49,10 +52,10 @@ export function createController(timer: Clock = clock) {
   const advance = () => {
     if (destroyed || view.error || view.state.runtime.status !== 'RUNNING') return;
     try {
-      const transition = advanceSimulation(view.state, blackFriday);
+      const transition = advanceSimulation(view.state, blackFriday, view.queuedActions);
       const terminal = transition.nextState.runtime.status !== 'RUNNING';
       if (terminal) stop();
-      publish({ ...view, state: transition.nextState, snapshot: transition.snapshot,
+      publish({ ...view, queuedActions: [], notice: transition.outcomes.length ? transition.outcomes.map(o => o.accepted ? `${o.action.type} accepted at ${o.action.time}s.` : o.reason).join(' ') : view.notice, state: transition.nextState, snapshot: transition.snapshot,
         result: terminal ? simulationResult(transition.nextState, blackFriday) : null, error: null });
     } catch (error) {
       stop(); publish({ ...view, error: error instanceof Error ? error.message : 'Simulation could not advance' });
@@ -73,9 +76,26 @@ export function createController(timer: Clock = clock) {
       return true;
     } catch (error) { publish({ ...view, notice: error instanceof Error ? error.message : 'Invalid edit' }); return false; }
   };
+  const candidate = (request: ActionRequest): Action => ({ ...request, time: view.state.runtime.time,
+    sequence: Math.max(view.state.runtime.lastSequence, ...view.queuedActions.map(a => a.sequence)) + 1 });
+  const actionReason = (request: ActionRequest): string | null => {
+    if (destroyed || view.error) return 'Simulation is unavailable.';
+    if (view.state.runtime.status !== 'RUNNING') return 'Live actions require running traffic; resume first if paused.';
+    try {
+      const next = candidate(request);
+      const preview = advanceSimulation(view.state, blackFriday, [...view.queuedActions, next]);
+      return preview.outcomes.find(o => o.action.sequence === next.sequence)?.reason ?? null;
+    } catch (error) { return error instanceof Error ? error.message : 'Action is unavailable.'; }
+  };
   return {
     getSnapshot: () => view,
     subscribe(listener: () => void) { listeners.add(listener); return () => { listeners.delete(listener); }; },
+    actionReason,
+    queueAction(request: ActionRequest) {
+      const reason = actionReason(request);
+      if (reason) { if (!destroyed) publish({ ...view, notice: reason }); return; }
+      publish({ ...view, queuedActions: [...view.queuedActions, candidate(request)], notice: `${request.type} queued for tick ${view.state.runtime.time}.` });
+    },
     start() {
       if (destroyed || view.state.runtime.status !== 'PREPARATION' || view.error) return;
       const errors = validateStart(view.state.runtime.architecture);
@@ -91,7 +111,7 @@ export function createController(timer: Clock = clock) {
     },
     pause() {
       if (destroyed || view.error || view.state.runtime.status !== 'RUNNING') return;
-      stop(); publish({ ...view, state: { ...view.state, runtime: pauseRuntime(view.state.runtime) } });
+      stop(); publish({ ...view, confirmationEpoch: view.confirmationEpoch + 1, state: { ...view.state, runtime: pauseRuntime(view.state.runtime) } });
     },
     resume() {
       if (destroyed || view.error || view.state.runtime.status !== 'PAUSED') return;
@@ -156,7 +176,7 @@ export function createController(timer: Clock = clock) {
       if (destroyed) return;
       stop();
       const runtime = view.state.runtime.status === 'RUNNING' ? pauseRuntime(view.state.runtime) : view.state.runtime;
-      publish({ ...view, state: { ...view.state, runtime }, error: message, recoveringRenderer: false });
+      publish({ ...view, confirmationEpoch: view.confirmationEpoch + 1, state: { ...view.state, runtime }, error: message, recoveringRenderer: false });
     },
     destroy() { stop(); destroyed = true; listeners.clear(); },
   };
