@@ -2,7 +2,7 @@
 
 ## Technical Design
 
-**Version:** 0.2  
+**Version:** 0.3  
 **Status:** Hackathon Technical Architecture  
 **Related Documents:** `PRD.md`, `GAMEPLAY_SPEC.md`, `SIMULATION_SPEC.md`  
 **Primary Language:** TypeScript  
@@ -162,35 +162,41 @@ It does not determine simulation state.
 
 # 6. Core Packages
 
-Recommended repository structure:
+Implemented MVP structure:
 
 ```text
 stack-and-survive/
 
 apps/
   web/
+    src/
+      controller.ts
+      editor.ts
+      world.ts
+      traffic.ts
+      main.tsx
+      ResultPanel.tsx
+      ComparisonPanel.tsx
+      persistence.ts
+  engine-spike/  # isolated experiment, not a production dependency
 
 packages/
   schema/
   cloud-domain/
   simulation/
   scenarios/
-  game-core/
-  game-renderer/
-  ui/
-
-infra/
-
 docs/
 
 tests/
 ```
 
+The four shared packages are implemented. Orchestration, rendering and React UI stay as separate modules inside `apps/web/src`; they are not separate workspace packages. Splitting them into packages is deferred until reuse or maintenance needs justify it. Infrastructure files and Azure hosting remain pending, not part of the current deployed system.
+
 ---
 
 # 7. `packages/schema`
 
-Contains shared TypeScript schemas.
+Contains shared architecture/scenario types and validation primitives. Runtime, action, snapshot and result types currently live beside their implementation in `packages/simulation/src`; they are not all centralized here.
 
 Examples:
 
@@ -429,9 +435,9 @@ YAML support is not required.
 
 ---
 
-# 15. `packages/game-core`
+# 15. Game Orchestration (`apps/web/src/controller.ts`)
 
-Contains player-facing game orchestration that is not renderer-specific.
+The custom controller contains player-facing orchestration independently from Phaser rendering. It owns subscriptions, preparation/runtime scheduling, user-action queues, reset/retry, and local-save coordination. `editor.ts` handles editor transformations; authoritative gameplay transitions stay in `packages/simulation`. There is no `packages/game-core` package in the current MVP.
 
 Examples:
 
@@ -614,7 +620,7 @@ interface GameRenderer {
 }
 ```
 
-The production Phaser adapter implements this interface. PlayCanvas remains isolated to the comparison experiment.
+The interface above describes the conceptual responsibilities, not a literal implemented TypeScript interface. The current `world.ts` exports `mountWorld(host, controller, generation)`, subscribes to read-only controller views, renders them, forwards input to controller commands, and returns a cleanup function. `traffic.ts` projects snapshots into representative visual flows. PlayCanvas remains isolated to the comparison experiment; there is no production `game-renderer` package.
 
 ---
 
@@ -658,7 +664,7 @@ React Application
 
 The renderer owns the game world.
 
-Here "owns" means the visual representation only. Game-core owns phase/action orchestration, cloud-domain owns graph validation, and simulation owns runtime truth. Zustand stores/provides these states to consumers; it must not become a second independent source of simulation calculations.
+Here "owns" means the visual representation only. `apps/web/src/controller.ts` owns phase/action orchestration, cloud-domain owns graph validation, and simulation owns runtime truth. React observes the controller through `useSyncExternalStore`; it does not recalculate simulation results.
 
 React owns surrounding interface elements.
 
@@ -666,9 +672,11 @@ React owns surrounding interface elements.
 
 # 24. State Management
 
-Recommended application state management:
+Implemented application state management:
 
-> **Zustand**
+> **Custom controller + React `useSyncExternalStore`**
+
+`createController()` exposes `subscribe`, `getSnapshot` and commands. React-local UI state uses hooks; the controller holds authoritative client state and publishes new views. Zustand was an initial recommendation but is not used and has been removed from dependencies. Do not add another state store or reorganize workspace packages merely to match the original proposal.
 
 State categories should remain separated.
 
@@ -696,7 +704,7 @@ Instance configuration
 
 This state survives scenario replay.
 
-Save completed instance counts, not requested-but-unfinished capacity. Runtime scale-out completion is explicitly committed to the architecture configuration by game-core. Keep the original initial architecture and versioned action log separately for diagnostic replay; never replay old actions against an already scaled final architecture.
+Save completed instance counts, not requested-but-unfinished capacity. Simulation transitions update the runtime architecture on scale-out completion; the controller publishes and saves that completed configuration. Keep the original initial architecture and versioned action log separately for diagnostic replay; never replay old actions against an already scaled final architecture.
 
 ---
 
@@ -719,7 +727,7 @@ Provisioning
 
 This state resets on replay.
 
-On Redesign & Retry, cancel unfinished runtime scale-outs while retaining completed instances. Game-core maintains preparation deployment timers on a separate stepped preparation clock, with no scenario time or costs. New-resource pending status can be saved, but reload restarts its full preparation delay. The local save does not resume runtime timers or scenarios. This follows Simulation Specification section 8.
+On Redesign & Retry, cancel unfinished runtime scale-outs while retaining completed instances. The controller drives the simulation's separate preparation clock, with no scenario time or costs. New-resource pending status can be saved, but reload restarts its full preparation delay. The local save does not resume runtime timers or scenarios. This follows Simulation Specification section 8.
 
 ---
 
@@ -1082,10 +1090,10 @@ MVP architecture state is saved locally.
 Storage abstraction:
 
 ```ts
-interface GameSaveRepository {
-  saveArchitecture(model): Promise<void>;
-  loadArchitecture(): Promise<Architecture | null>;
-  clear(): Promise<void>;
+interface SaveRepository {
+  save(architecture: Architecture): void;
+  load(): Architecture | null;
+  clear(): void;
 }
 ```
 
@@ -1098,6 +1106,8 @@ Browser Local Storage
 The game must not allow application logic to depend directly on `localStorage`.
 
 This makes cloud persistence replaceable later.
+
+The implemented adapter is synchronous because browser local storage is synchronous. It lives in `apps/web/src/persistence.ts`, accepts an injected storage accessor, validates the save, and surfaces storage errors. A future remote adapter would require an intentional asynchronous contract change rather than pretending the current interface already supports remote persistence.
 
 ---
 
@@ -1681,7 +1691,7 @@ TypeScript
 pnpm
 Vite
 React
-Zustand
+Custom controller + useSyncExternalStore
 Vitest
 ```
 
@@ -1693,32 +1703,27 @@ Phaser 3.90.0 (accepted in ADR-002)
 
 ---
 
-# 73. Suggested Monorepo
+# 73. Current Monorepo and Deferred Extraction
 
-Recommended:
+Current structure (unit tests live beside their source):
 
 ```text
 stack-and-survive/
 │
 ├── apps/
-│   └── web/
+│   ├── web/
+│   │   └── src/  # controller, editor, Phaser world, React UI, persistence
+│   └── engine-spike/  # standalone experiment
 │
 ├── packages/
 │   ├── schema/
 │   ├── cloud-domain/
 │   ├── simulation/
-│   ├── scenarios/
-│   ├── game-core/
-│   ├── game-renderer/
-│   └── ui/
+│   └── scenarios/
 │
 ├── tests/
-│   ├── simulation/
-│   ├── scenarios/
-│   └── e2e/
-│
-├── infra/
-│   └── bicep/
+│   ├── e2e/
+│   └── performance/
 │
 ├── docs/
 │   ├── PRD.md
@@ -1729,6 +1734,8 @@ stack-and-survive/
 │
 └── README.md
 ```
+
+`game-core`, `game-renderer`, and `ui` were proposed extraction boundaries, not delivered packages or mandatory refactors. Keep the current module separation for the MVP. `infra/bicep` remains future work under the deployment preparation issue; no hosted environment is implied.
 
 ---
 
@@ -1778,7 +1785,7 @@ Simulation
 Pure TypeScript
 
 State
-Zustand
+Custom controller + useSyncExternalStore
 
 Scenario
 JSON
@@ -1787,7 +1794,7 @@ Backend
 None
 
 Hosting
-Azure Static Web Apps
+Azure Static Web Apps (planned; not deployed)
 
 Persistence
 Local-first
