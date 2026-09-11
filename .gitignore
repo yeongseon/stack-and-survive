@@ -12,3 +12,9 @@ Thumbs.db
 
 # Local logs
 *.log
+
+# Local dependency, build, and browser-check artifacts
+node_modules/
+dist/
+test-results/
+playwright-report/

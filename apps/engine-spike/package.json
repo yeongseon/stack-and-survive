@@ -1,0 +1,29 @@
+{
+  "name": "@stack-and-survive/engine-spike",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "packageManager": "pnpm@10.32.1",
+  "engines": { "node": ">=22.12.0 <23" },
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run src",
+    "build": "tsc --noEmit && vite build",
+    "test:browser": "playwright test"
+  },
+  "dependencies": {
+    "phaser": "^3.90.0",
+    "playcanvas": "^2.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.58.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "typescript": "^5.9.0",
+    "vite": "^6.4.0",
+    "vitest": "^4.1.11"
+  }
+}
