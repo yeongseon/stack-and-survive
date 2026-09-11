@@ -10,7 +10,7 @@ Stack & Survive is a cloud architecture strategy game where players build and gr
 
 **Hackathon MVP — Scope Locked · PRD v0.5**
 
-This repository contains a verified headless simulation and the first real-snapshot Phaser scene in `apps/web/`, plus an isolated engine comparison in `apps/engine-spike/`. The baseline scene starts traffic, shows independent App/SQL pressure, and stops at the simulated outcome. Editing, full gameplay controls, result comparison and persistence remain future issues. There is no Azure deployment or backend.
+The browser MVP in `apps/web/` now includes a verified headless simulation, resource placement/connections/provisioning, live interventions, pause/recovery, classified traffic, result analysis, redesign/comparison, local architecture saves and contextual help. Automated integrated QA is in progress; real first-time-player learning validation remains pending. There is no Azure deployment, backend or outbound product telemetry. The old engine comparison remains isolated in `apps/engine-spike/`.
 
 ## MVP
 
@@ -50,7 +50,7 @@ docs/
     ADR-002-GAME-ENGINE.md Engine experiment evidence (Accepted: Phaser 3.90.0)
 apps/
   engine-spike/          Disposable two-engine experiment and tests
-  web/                   React UI and real-snapshot Phaser baseline scene
+  web/                   React/Phaser editor, gameplay, results and local saves
 packages/
   schema/                Shared schemas and validation primitives
   cloud-domain/          Azure resource roles and architecture validation
@@ -58,9 +58,11 @@ packages/
   scenarios/             Versioned Black Friday content
 ```
 
-From the repository root with Node 22.22.0 and pnpm 10.32.1: `pnpm install --frozen-lockfile`, then `pnpm dev`. Open the local URL printed by Vite and press Start traffic. Reset to compare initial App instance counts; the developer inspector steps real ticks and stops automatic time. This is a baseline slice, not the complete MVP.
+From the repository root with Node 22.22.0 and pnpm 10.32.1: `pnpm install --frozen-lockfile`, then `pnpm dev`. Open the local URL printed by Vite. Inspect or edit your architecture, wait for required provisioning, then Start traffic. Use Redesign & Retry after the result to compare attempts. Reset baseline restores the predefined one-instance design; Clear local state removes the saved architecture. Saves never resume a running scenario. The developer inspector steps real ticks and stops automatic time; normal play is 1×.
 
 Verification: `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build`. For browser checks, install Chromium with `pnpm exec playwright install chromium`, build first, then run `pnpm test:browser`. Tests start/stop a production preview on port 43872; screenshots are generated under ignored `test-results/`. CI runs these same checks. Software-WebGL browser tests verify behavior, not hardware FPS. The engine spike stays outside the production workspace.
+
+For a separate local GPU measurement on macOS, run `pnpm test:performance` after building. It uses full Chromium with ANGLE Metal on port 43873, prints the actual WebGL renderer, and samples 20 seconds of peak traffic; inspect that renderer before claiming hardware acceleration. The configuration is not a portable CI FPS gate. Two measured runs on an M1 Pro MacBook Pro with 32 GB RAM, Chromium 153.0.8010.12, 1440×900 at DPR 1 used `ANGLE Metal Renderer: Apple M1 Pro`: 59.77 and 60.03 FPS, p95 frame interval 16.7 ms, at most 62 representative markers, and 20 simulation ticks per sample. The second sample used the final integrated-QA build (1,201 frames over 20.008 seconds). These are single-machine measurements, not guarantees for other hardware or mobile devices.
 
 ## Run the engine experiment
 
@@ -79,9 +81,9 @@ Use Node 22.22.0 and pnpm 10.32.1. Verification commands and limits are document
 The [ordered MVP backlog (#7)](https://github.com/yeongseon/stack-and-survive/issues/7) links all currently planned work. Prepare the backlog first, then execute one issue at a time in dependency order; individual issues are the source of status and completion evidence.
 - [ADR-002: Game Engine Selection](docs/adr/ADR-002-GAME-ENGINE.md) — Executed comparison and accepted Phaser 3.90.0 decision.
 
-`SIMULATION_SPEC.md` is the source of truth for numerical simulation behavior. `TECHNICAL_DESIGN.md` documents the production architecture; the full editor/game loop and Azure deployment remain future work.
+`SIMULATION_SPEC.md` is the source of truth for numerical simulation behavior. `TECHNICAL_DESIGN.md` documents the architecture. The implemented local loop still requires human learning validation before demo-readiness claims; hosting requires separate authorization.
 
-Document expansion is frozen at these six documents for the MVP. The implemented headless engine passes the independent nine-configuration reference matrix and intervention/replay checks; browser tests cover the first real baseline scene. Full gameplay and human playtesting are not complete. Phaser is accepted; human playtesting, Azure deployment and external telemetry retain separate approval/evidence gates.
+Document expansion is frozen at these six documents for the MVP. The headless engine passes the independent nine-configuration reference matrix and intervention/replay checks; browser tests exercise editing, pause/graphics recovery, live actions, local save recovery, results and Cache/WAF redesign. Automated checks do not establish that a first-time human understands the lessons. Phaser is accepted; human playtesting, Azure deployment and external telemetry retain separate approval/evidence gates.
 
 ## Important boundaries
 
