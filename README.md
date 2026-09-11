@@ -45,7 +45,7 @@ docs/
   GAMEPLAY_SPEC.md       Gameplay specification v0.3
   SIMULATION_SPEC.md     Simulation specification v0.2
   TECHNICAL_DESIGN.md    Technical design v0.3 (implemented structure)
-  VISUAL_DIRECTION.md    Visual direction v0.2 and acceptance criteria
+  VISUAL_DIRECTION.md    Visual direction v0.2: Azure identity + custom game assets
   IMPLEMENTATION_PLAN.md Delivery phases and pre-implementation gates
   adr/
     ADR-002-GAME-ENGINE.md Engine experiment evidence (Accepted: Phaser 3.90.0)
@@ -77,7 +77,7 @@ Use Node 22.22.0 and pnpm 10.32.1. Verification commands and limits are document
 - [Gameplay Specification](docs/GAMEPLAY_SPEC.md) — What the player sees, does, and experiences (v0.3).
 - [Simulation Specification](docs/SIMULATION_SPEC.md) — Corrected simulation rules, authoritative values, and arithmetic reference matrix (v0.2).
 - [Technical Design](docs/TECHNICAL_DESIGN.md) — Actual four-package structure, app-local controller/renderer/UI, and planned hosting (v0.3).
-- [Visual Direction](docs/VISUAL_DIRECTION.md) — Tactical cloud base-building direction, resource/traffic vocabulary and responsive visual acceptance criteria (v0.2; implementation tracked in #52–#55).
+- [Visual Direction](docs/VISUAL_DIRECTION.md) — Microsoft Internal Hackathon direction: unchanged official Azure icons identify services; custom buildings, environment, traffic and effects create the game world (owner-revised v0.2, 45 sections). This is a design target, not a claim that the icon/assets or redesigned UI are implemented.
 - [Implementation Plan](docs/IMPLEMENTATION_PLAN.md) — Delivery sequence and current human-validation/hosting gates (v0.6); work is tracked with GitHub Issues and labels, without milestones or a Project board.
 
 The [ordered MVP backlog (#7)](https://github.com/yeongseon/stack-and-survive/issues/7) links all currently planned work. Prepare the backlog first, then execute one issue at a time in dependency order; individual issues are the source of status and completion evidence.
