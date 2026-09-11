@@ -10,7 +10,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "build": "pnpm --filter @stack-and-survive/web build",
-    "test:browser": "playwright test"
+    "test:browser": "playwright test",
+    "test:performance": "playwright test --config playwright.performance.config.ts"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.0",

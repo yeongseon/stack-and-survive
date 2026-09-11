@@ -2,7 +2,8 @@ import type { Architecture, Scenario } from '@stack-and-survive/schema';
 import { compare } from './economy';
 import { accumulateAttribution, emptyAttribution, explain, type Attribution } from './attribution';
 import { advanceService, createServiceState, type ServiceState } from './outcomes';
-import { startRuntime, type Action } from './runtime';
+import { startRuntime, validateActionSchedule, type Action } from './runtime';
+import { parseScenario } from '@stack-and-survive/scenarios';
 
 export type PhaseAttribution = { start: number; end: number; data: Attribution };
 export type SimulationState = ServiceState & { attribution: Attribution; phases: PhaseAttribution[] };
@@ -56,7 +57,9 @@ export function simulationResult(state: SimulationState, scenario: Scenario) {
   };
 }
 export function simulateScenario(architecture: Architecture, scenario: Scenario, actions: readonly Action[] = []) {
-  let state = createSimulation(architecture, scenario); state.runtime = startRuntime(state.runtime);
-  while (state.runtime.status === 'RUNNING') state = advanceSimulation(state, scenario, actions.filter(a => a.time === state.runtime.time)).nextState;
-  return simulationResult(state, scenario);
+  const validated = parseScenario(scenario);
+  validateActionSchedule(actions, validated.duration);
+  let state = createSimulation(architecture, validated); state.runtime = startRuntime(state.runtime);
+  while (state.runtime.status === 'RUNNING') state = advanceSimulation(state, validated, actions.filter(a => a.time === state.runtime.time)).nextState;
+  return simulationResult(state, validated);
 }

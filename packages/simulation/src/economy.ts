@@ -1,5 +1,6 @@
 import type { Architecture, Scenario } from '@stack-and-survive/schema';
 import { definitions } from '@stack-and-survive/cloud-domain';
+import { parseScenario } from '@stack-and-survive/scenarios';
 import { advanceRuntime, createPreparation, type Action, type Runtime, type TickTransition } from './runtime';
 
 export const value = Object.freeze({ browse: .002, order: .05, incident: .25 });
@@ -16,7 +17,8 @@ export function emptyEconomy(budget: number): Economy {
   return { revenue: 0, potentialRevenue: 0, infrastructureCost: 0, emergencyCost: 0, incidentLoss: 0, remainingBudget: budget, netBusinessValue: 0 };
 }
 export function createEconomicState(architecture: Architecture, scenario: Scenario): EconomicState {
-  return { runtime: createPreparation(architecture), economy: emptyEconomy(scenario.budget) };
+  const validated = parseScenario(scenario);
+  return { runtime: createPreparation(architecture), economy: emptyEconomy(validated.budget) };
 }
 export function activeCostPerMinute(architecture: Architecture): number {
   return architecture.resources.reduce((sum, resource) => sum + (resource.remaining === 0 ? definitions[resource.kind].cost * resource.instances : 0), 0);

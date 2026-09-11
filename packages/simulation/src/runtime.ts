@@ -87,6 +87,12 @@ function validAction(action: Action): void {
   if (!['SCALE_OUT', 'RATE_LIMIT', 'EMERGENCY_WAF'].includes(action.type)) throw new Error('Unsupported action type');
   if (action.type === 'RATE_LIMIT' && typeof action.enabled !== 'boolean') throw new Error('Rate limit state must be boolean');
 }
+export function validateActionSchedule(actions: readonly Action[], duration: number): void {
+  for (const action of actions) {
+    validAction(action);
+    if (action.time >= duration) throw new Error('Action timestamp must be within the scenario duration');
+  }
+}
 export function advanceRuntime(state: Runtime, scenario: Scenario, actions: readonly Action[], gate: ActionGate): TickTransition {
   const next = copy(state);
   const outcomes: ActionOutcome[] = [];

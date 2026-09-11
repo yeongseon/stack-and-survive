@@ -1,6 +1,7 @@
 import type { Architecture, Scenario } from '@stack-and-survive/schema';
 import { advanceEconomy, compare, createEconomicState, type EconomicState } from './economy';
-import { startRuntime, type Action } from './runtime';
+import { startRuntime, validateActionSchedule, type Action } from './runtime';
+import { parseScenario } from '@stack-and-survive/scenarios';
 import type { RequestSnapshot } from './index';
 
 export type Termination = 'budget' | 'availability' | 'order' | 'completed' | null;
@@ -79,8 +80,10 @@ export function advanceService(state: ServiceState, scenario: Scenario, actions:
   };
 }
 export function runServiceScenario(architecture: Architecture, scenario: Scenario, actions: readonly Action[] = []): ServiceState {
-  let state = createServiceState(architecture, scenario);
+  const validated = parseScenario(scenario);
+  validateActionSchedule(actions, validated.duration);
+  let state = createServiceState(architecture, validated);
   state.runtime = startRuntime(state.runtime);
-  while (state.runtime.status === 'RUNNING') state = advanceService(state, scenario, actions.filter(a => a.time === state.runtime.time)).nextState;
+  while (state.runtime.status === 'RUNNING') state = advanceService(state, validated, actions.filter(a => a.time === state.runtime.time)).nextState;
   return state;
 }
