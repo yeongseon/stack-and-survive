@@ -2,6 +2,7 @@ import type { Controller, View } from './controller';
 import { compare } from '@stack-and-survive/simulation/economy';
 import { definitions } from '@stack-and-survive/cloud-domain';
 import { positionError, project, snap, unproject, validTargets, type Point } from './editor';
+import { representativeCount, visualFlows } from './traffic';
 
 export function utilizationLabel(u: number | null): string {
   return u === null ? 'READY' : compare(u, 1) > 0 ? '! OVERLOADED' : compare(u, .7) > 0 ? 'WARNING' : 'HEALTHY';
@@ -50,7 +51,7 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
         const targets = view.connecting && view.connectionSource ? validTargets(architecture, view.connectionSource) : [];
         positions.forEach((p, i) => {
           const resource = resources[i];
-          const u = resource.kind === 'compute' ? appU : resource.kind === 'database' ? sqlU : null;
+          const u = resource.kind === 'compute' ? appU : resource.kind === 'database' ? sqlU : resource.kind === 'cache' ? requests?.cache.utilization ?? null : null;
           const connected = architecture.connections.some(c => c.from === resource.id || c.to === resource.id);
           const state = resource.remaining > 0 ? `PROVISIONING ${resource.remaining}s` : !connected ? 'DISCONNECTED' : utilizationLabel(u);
           const color = state === '! OVERLOADED' ? 0xf58a78 : state === 'WARNING' ? 0xefc27b : 0x9bdac7;
@@ -70,21 +71,28 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
         let packetCount = 0;
         if (view.state.runtime.status === 'RUNNING' && !view.error && requests) {
           const at = (kind: string) => positions[resources.findIndex(r => r.kind === kind)];
-          const flows = [
-            ...(requests.edge.active ? [{ a: at('internet'), b: at('edge'), volume: requests.offered.browse + requests.offered.order + requests.offered.bot }, { a: at('edge'), b: at('compute'), volume: requests.app.incoming }]
-              : [{ a: at('internet'), b: at('compute'), volume: requests.app.incoming }]),
-            ...(requests.cache.active ? [{ a: at('compute'), b: at('cache'), volume: requests.cache.eligible }, { a: at('cache'), b: at('database'), volume: requests.sql.readDemand }, { a: at('compute'), b: at('database'), volume: requests.sql.writeDemand }]
-              : [{ a: at('compute'), b: at('database'), volume: requests.sql.readDemand + requests.sql.writeDemand }]),
-          ];
-          flows.forEach(({ a, b, volume }) => {
-            const count = Math.min(30, Math.ceil(volume / 12)); packetCount += count;
+          const flows = visualFlows(requests);
+          flows.forEach((flow, lane) => {
+            const a = at(flow.from); const b = at(flow.to);
+            if (!a || !b) return;
+            const count = representativeCount(flow.volume); packetCount += count;
             for (let i = 0; i < count; i++) {
-              const p = (time / 3000 + i / count) % 1;
-              if (!a || !b) continue;
-              g.fillStyle(0xdbead6); g.fillCircle(a.x + (b.x - a.x) * p, a.y + (b.y - a.y) * p, 3);
+              const p = (time / 3000 + i / count + lane * .07) % 1;
+              const ingressRejected = flow.end === 'filtered' && flow.to === 'compute';
+              const progress = ingressRejected ? p * .25 : p;
+              const x = a.x + (b.x - a.x) * progress; const y = a.y + (b.y - a.y) * progress + (lane % 3 - 1) * 7;
+              const color = flow.kind === 'bot' ? 0xf58a78 : flow.kind === 'order' ? 0xefc27b : 0x9bdac7;
+              g.fillStyle(color); g.lineStyle(2, color);
+              if (p > .85 && (flow.end === 'failed' || flow.end === 'filtered')) {
+                g.lineBetween(x - 4, y - 4, x + 4, y + 4); g.lineBetween(x - 4, y + 4, x + 4, y - 4);
+              } else if (p > .85 && flow.end === 'success' && flow.to === 'cache') g.strokeCircle(x, y, 7);
+              else if (flow.kind === 'order') g.fillRect(x - 3, y - 3, 6, 6);
+              else if (flow.kind === 'bot') g.fillTriangle(x - 4, y + 4, x, y - 4, x + 4, y + 4);
+              else g.fillCircle(x, y, 3);
             }
           });
-        }
+          host.dataset.flows = JSON.stringify(flows);
+        } else host.dataset.flows = '[]';
         host.dataset.frames = String(++frames); host.dataset.packets = String(packetCount);
         host.dataset.appState = utilizationLabel(appU); host.dataset.sqlState = utilizationLabel(sqlU);
         host.dataset.tick = String(view.state.runtime.time);

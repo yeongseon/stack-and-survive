@@ -2,6 +2,7 @@ import { expect, test, type Page } from '@playwright/test';
 
 async function node(page: Page, id: string) {
   const surface = page.locator('[data-renderer="ready"]');
+  await surface.scrollIntoViewIfNeeded();
   const box = (await surface.boundingBox())!;
   const nodes: { id: string; x: number; y: number }[] = JSON.parse((await surface.getAttribute('data-nodes'))!);
   const n = nodes.find(n => n.id === id)!; return { x: box.x + n.x, y: box.y + n.y };
