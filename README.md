@@ -44,7 +44,8 @@ docs/
   PRD.md                 Product requirements v0.5
   GAMEPLAY_SPEC.md       Gameplay specification v0.3
   SIMULATION_SPEC.md     Simulation specification v0.2
-  TECHNICAL_DESIGN.md    Technical design v0.2
+  TECHNICAL_DESIGN.md    Technical design v0.3 (implemented structure)
+  VISUAL_DIRECTION.md    Visual direction v0.2 and acceptance criteria
   IMPLEMENTATION_PLAN.md Delivery phases and pre-implementation gates
   adr/
     ADR-002-GAME-ENGINE.md Engine experiment evidence (Accepted: Phaser 3.90.0)
@@ -75,15 +76,16 @@ Use Node 22.22.0 and pnpm 10.32.1. Verification commands and limits are document
 - [Product Requirements Document](docs/PRD.md) — What we are building and why; scope, product principles, and acceptance criteria (v0.5).
 - [Gameplay Specification](docs/GAMEPLAY_SPEC.md) — What the player sees, does, and experiences (v0.3).
 - [Simulation Specification](docs/SIMULATION_SPEC.md) — Corrected simulation rules, authoritative values, and arithmetic reference matrix (v0.2).
-- [Technical Design](docs/TECHNICAL_DESIGN.md) — Software structure, state ownership, intended stack, and deployment design (v0.2).
-- [Implementation Plan](docs/IMPLEMENTATION_PLAN.md) — Phased delivery, scope guardrails, and verification gates (v0.5, draft); work is tracked with GitHub Issues and labels, without milestones or a Project board.
+- [Technical Design](docs/TECHNICAL_DESIGN.md) — Actual four-package structure, app-local controller/renderer/UI, and planned hosting (v0.3).
+- [Visual Direction](docs/VISUAL_DIRECTION.md) — Tactical cloud base-building direction, resource/traffic vocabulary and responsive visual acceptance criteria (v0.2; implementation tracked in #52–#55).
+- [Implementation Plan](docs/IMPLEMENTATION_PLAN.md) — Delivery sequence and current human-validation/hosting gates (v0.6); work is tracked with GitHub Issues and labels, without milestones or a Project board.
 
 The [ordered MVP backlog (#7)](https://github.com/yeongseon/stack-and-survive/issues/7) links all currently planned work. Prepare the backlog first, then execute one issue at a time in dependency order; individual issues are the source of status and completion evidence.
 - [ADR-002: Game Engine Selection](docs/adr/ADR-002-GAME-ENGINE.md) — Executed comparison and accepted Phaser 3.90.0 decision.
 
 `SIMULATION_SPEC.md` is the source of truth for numerical simulation behavior. `TECHNICAL_DESIGN.md` documents the architecture. The implemented local loop still requires human learning validation before demo-readiness claims; hosting requires separate authorization.
 
-Document expansion is frozen at these six documents for the MVP. The headless engine passes the independent nine-configuration reference matrix and intervention/replay checks; browser tests exercise editing, pause/graphics recovery, live actions, local save recovery, results and Cache/WAF redesign. Automated checks do not establish that a first-time human understands the lessons. Phaser is accepted; human playtesting, Azure deployment and external telemetry retain separate approval/evidence gates.
+The owner explicitly added Visual Direction to the original six-document set. Further document expansion remains deferred unless requested. The headless engine passes the independent nine-configuration reference matrix and intervention/replay checks; browser tests exercise editing, pause/graphics recovery, live actions, local save recovery, results and Cache/WAF redesign. Automated checks do not establish that a first-time human understands the lessons. Phaser is accepted; human playtesting, Azure deployment and external telemetry retain separate approval/evidence gates.
 
 ## Important boundaries
 
