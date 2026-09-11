@@ -34,6 +34,7 @@ test('Cache redesign changes failure to survival and WAF redesign improves full-
   await page.getByRole('button', { name: 'Place Protected Edge / WAF', exact: true }).click();
   await surface.scrollIntoViewIfNeeded(); box = (await surface.boundingBox())!;
   await page.mouse.click(box.x + box.width / 2 + 100, box.y + box.height / 2 - 200);
+  await expect(page.getByRole('region', { name: 'Selected resource' })).toContainText('Protected Edge / WAF');
   await expect(page.getByTestId('resource-status')).toHaveText('Active', { timeout: 8000 });
   await page.locator('summary').filter({ hasText: 'Architecture connections' }).click();
   await page.getByRole('button', { name: 'Remove connection internet to compute', exact: true }).click();

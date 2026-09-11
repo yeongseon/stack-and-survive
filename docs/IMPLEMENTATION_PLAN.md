@@ -1,7 +1,7 @@
 # Stack & Survive — Implementation Plan
 
-**Version:** 0.5  
-**Status:** Draft — renderer experiment executed; production implementation not started  
+**Version:** 0.6  
+**Status:** Browser MVP implemented and automated QA completed; human validation and Azure hosting pending  
 **Scope:** Hackathon MVP, one Black Friday scenario
 
 ## 1. Purpose and document freeze
@@ -16,19 +16,19 @@ Use the existing sources of truth:
 - [Technical Design](TECHNICAL_DESIGN.md): implementation boundaries and intended stack.
 - [Engine ADR](adr/ADR-002-GAME-ENGINE.md): engine selection after evidence from the spike.
 
-Freeze document expansion at these six documents. Correct contradictions in existing documents as needed; do not add separate UI, scenario, asset, audio, mobile, or backend specifications for the MVP. A TypeScript ADR is not required now.
+The owner explicitly added [Visual Direction](VISUAL_DIRECTION.md) and subsequently supplied a replacement v0.2 with 45 sections for the Microsoft Internal Hackathon. Its primary rule is: official Azure icons identify services; custom game assets create the game world. This replaces the earlier short v0.2 criteria draft. The updated P0 sequence is #52 document/responsive baseline → #57 official icons and provenance → #53 custom structures → #54 traffic/state VFX → #58 tactical HUD/composition → #59 objectives/event feed → #60 development-only diagnostics → #55 visual verification → #25 actual human validation. #29 contains only optional P1 polish beyond this required slice. This document/issue update does not download assets, certify icon/asset usage permissions, alter simulation rules, or authorize hosting/telemetry. Confirm current source and usage terms for each asset before importing it; internal Hackathon context is not a blanket license. Treat UI mockup numbers as illustrations and preserve `SIMULATION_SPEC.md` as numerical truth. Further standalone specifications remain deferred unless requested; the asset provenance record requested by Visual Direction is created when assets are actually introduced.
 
 ## 2. Entry gates
 
 ### A. Select one renderer
 
-Execute the timeboxed comparative spike in ADR-002 when implementation begins. Record the evidence, select one engine, and mark the ADR Accepted before building the production game world. The engine-independent core can be evaluated without this decision.
+Completed: the comparative spike was executed and the owner accepted Phaser 3.90.0 in ADR-002. The implementation phases below describe the delivery sequence; their current state is recorded in the linked issues, not inferred from future-tense checklist wording.
 
 ### B. Implement the corrected simulation contract as tests
 
 The review's numerical and lifecycle corrections are now incorporated into Simulation Specification v0.2, Gameplay v0.3, PRD v0.5, and Technical Design v0.2. The canonical values and reference metrics live in `SIMULATION_SPEC.md`, not this plan.
 
-| Reviewed issue | Documented resolution | Implementation verification still required |
+| Reviewed issue | Documented resolution | Regression obligation (implemented) |
 |---|---|---|
 | Unreachable 99% availability target | Revised SQL write capacity and bot-heavy peak make protected three-instance and unprotected four-instance Cache designs meet targets. | Reproduce section 110 full-run metrics. |
 | Rate Limit forced failure | Modest load shedding now trades latency against customer success without automatically crossing the hard-failure threshold. It is explicitly not a throughput-recovery mechanic. | Cover both saturated and unsaturated admission and the recorded peak policy. |
@@ -37,7 +37,16 @@ The review's numerical and lifecycle corrections are now incorporated into Simul
 | SQL lesson hidden by later losses | Preserve phase summaries and use a controlled four-instance Cache/no-Cache pair to isolate the DB effect. | Verify truthful final cause plus phase-level attribution. |
 | Ambiguous execution/retry rules | Explicit tick intervals, event/action ordering, zero-demand outputs, loss attribution, comparison tolerance, and pending-capacity persistence. | Turn those boundaries into headless tests; no renderer-dependent calculations. |
 
-Section 110 contains independent arithmetic reference calculations with explicit initial states and action schedules. These are not implemented-engine tests or evidence of player-tested difficulty. Future golden tests must reproduce them before the demo is declared working. The default maximum stack plus emergency stays within budget; a reduced-budget fixture verifies exact-zero failure.
+Section 110 contains independent arithmetic reference calculations with explicit initial states and action schedules. The implemented regression suite now reproduces those reference outcomes and intervention policies. This establishes automated correctness, not player-tested difficulty or understanding. The default maximum stack plus emergency stays within budget; a reduced-budget fixture verifies exact-zero failure.
+
+### Current delivery checkpoint
+
+- Core simulation, editor, live controls, results/replay, local persistence, onboarding and automated integrated QA are implemented through issue #24.
+- Issue #25 remains open for actual first-time-player learning validation. Recruit 2–3 participants if feasible; record uncoached observations and answers, not just whether the app runs. Responsive fixes address reported usability problems but do not themselves complete this validation.
+- Prioritize UI/game-feel changes supported by those observations. Do not add simulation mechanics or split packages without a concrete need.
+- Issues #26–#27 cover Azure Static Web Apps preparation and explicitly authorized deployment; neither hosting nor deployment readiness is currently claimed.
+- Rehearse the final Hackathon presentation after hosted smoke checks. A preliminary local walkthrough can happen during player testing; multiple complete 180-second runs do not fit a 3–4 minute pitch.
+- Track these gates rather than unsupported percentage-complete estimates. Optional polish (#29) is not a reason to claim human validation or hosted delivery has passed.
 
 ## 3. Delivery phases
 
@@ -129,7 +138,7 @@ Do not introduce authentication, cloud saves, Functions, Service Bus, multiplaye
 
 If time is limited, cut audio, decorative polish, optional telemetry, and optional speed controls before cutting simulation correctness, clear feedback, or redesign/replay.
 
-The isolated `apps/engine-spike/` experiment has been executed; the owner accepted Phaser in ADR-002. The next production goal is a truthful App → SQL loop, not another specification. Production phases above remain implementation guidance, not GitHub milestones.
+The isolated engine experiment and the local architecture → traffic → result → redesign loop are implemented. The next validation goal is evidence that first-time players understand that loop. The phases above remain delivery guidance, not GitHub milestones or a claim that the remaining human/hosting gates have passed.
 
 ## 5. Project management rules
 

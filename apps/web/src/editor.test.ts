@@ -1,6 +1,6 @@
 import { expect, it } from 'vitest';
 import { baseline } from '@stack-and-survive/cloud-domain';
-import { connectResources, disconnectResources, moveResource, placeResource, positionError, project, removeResource, unproject, validTargets } from './editor';
+import { connectResources, disconnectResources, moveResource, placeResource, positionError, project, removeResource, unproject, validTargets, viewportCamera } from './editor';
 import { validateStart } from '@stack-and-survive/cloud-domain';
 it('places a disconnected resource with full provisioning and snaps position', () => {
   const a = baseline(); const placed = placeResource(a, 'cache', { x: -241, y: 181 });
@@ -31,4 +31,14 @@ it('connection editing preserves validation and direct write requirements', () =
   expect(() => connectResources(a, 'compute', 'database')).toThrow('already exists');
   a = connectResources(a, 'internet', 'compute'); expect(validateStart(a).join()).toContain('Exactly one');
   a = disconnectResources(a, 'internet', 'compute'); expect(validateStart(a)).toEqual([]);
+});
+it('fits narrow boards while keeping pointer projection invertible', () => {
+  for (const width of [294, 364, 600, 1080]) {
+    const camera = viewportCamera({ x: 0, y: 0, zoom: 1 }, width, 400);
+    for (const point of [{ x: -260, y: -100 }, { x: 260, y: 100 }]) {
+      const pixel = project(point, camera, width, 400);
+      expect(pixel.x).toBeGreaterThan(34); expect(pixel.x).toBeLessThan(width - 34);
+      expect(unproject(pixel, camera, width, 400).x).toBeCloseTo(point.x);
+    }
+  }
 });
