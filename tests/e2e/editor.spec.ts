@@ -9,10 +9,12 @@ async function node(page: Page, id: string) {
 test('build palette places provisions selects moves and removes a resource', async ({ page }, info) => {
   const errors: string[] = []; page.on('pageerror', e => errors.push(e.message));
   await page.goto('/'); const surface = page.locator('[data-renderer="ready"]'); await expect(surface).toHaveCount(1);
-  const box = (await surface.boundingBox())!;
   await page.getByRole('button', { name: 'Place Azure Managed Redis', exact: true }).click();
+  await surface.scrollIntoViewIfNeeded();
   const app = await node(page, 'compute'); await page.mouse.move(app.x, app.y); await page.mouse.click(app.x, app.y);
   await expect(page.getByRole('alert')).toContainText('overlap');
+  await surface.scrollIntoViewIfNeeded();
+  const box = (await surface.boundingBox())!;
   const free = { x: box.x + box.width / 2 - 240, y: box.y + box.height / 2 + 200 };
   await page.mouse.move(free.x, free.y); await expect(surface).toHaveAttribute('data-placement', 'valid');
   await page.mouse.click(free.x, free.y);

@@ -21,8 +21,9 @@ test('repairs missing write path with accessible connection controls', async ({ 
 
 test('partly connected cache blocks start while complete read and write paths work', async ({ page }) => {
   await page.goto('/'); const surface = page.locator('[data-renderer="ready"]'); await expect(surface).toHaveCount(1);
-  const box = (await surface.boundingBox())!;
   await page.getByRole('button', { name: 'Place Azure Managed Redis', exact: true }).click();
+  await surface.scrollIntoViewIfNeeded();
+  const box = (await surface.boundingBox())!;
   await page.mouse.click(box.x + box.width / 2 - 240, box.y + box.height / 2 + 200);
   await expect(page.getByTestId('resource-status')).toHaveText('Active', { timeout: 8000 });
   await page.getByRole('button', { name: 'Connect resources', exact: true }).click();
