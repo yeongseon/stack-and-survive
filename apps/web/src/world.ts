@@ -1,7 +1,7 @@
 import type { Controller, View } from './controller';
 import { compare } from '@stack-and-survive/simulation/economy';
 import { definitions } from '@stack-and-survive/cloud-domain';
-import { positionError, project, snap, unproject, validTargets, type Point } from './editor';
+import { positionError, project, snap, unproject, validTargets, viewportCamera, type Point } from './editor';
 import { representativeCount, visualFlows } from './traffic';
 
 export function utilizationLabel(u: number | null): string {
@@ -29,7 +29,8 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
         const width = this.scale.width; const height = this.scale.height;
         const architecture = view.state.runtime.architecture;
         const resources = architecture.resources;
-        const positions = resources.map(r => project(r, view.camera, width, height));
+        const camera = viewportCamera(view.camera, width, height);
+        const positions = resources.map(r => project(r, camera, width, height));
         const g = this.graphics.clear();
         g.lineStyle(1, 0x223b4b, .6);
         for (let x = -height; x < width + height; x += 56) { g.lineBetween(x, 0, x + height, height); g.lineBetween(x, 0, x - height, height); }
@@ -60,10 +61,13 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
           g.fillStyle(color, .75); g.fillTriangle(p.x - 34, p.y - 22, p.x, p.y - 42, p.x + 34, p.y - 22);
           if (state === '! OVERLOADED') { g.fillStyle(0xffffff); g.fillRect(p.x - 3, p.y - 12, 6, 17); g.fillCircle(p.x, p.y + 14, 3); }
           if (targets.includes(resource.id)) { g.lineStyle(2, 0xefc27b); g.strokeCircle(p.x, p.y, 48); }
-          this.captions[i].setVisible(true).setPosition(p.x, p.y + 48).setText(`${definitions[resource.kind].name}${resource.kind === 'compute' ? ` ×${resource.instances}` : ''}\n${resource.kind === 'internet' ? 'EXTERNAL TRAFFIC' : `${state}${u === null ? '' : ` · ${(u * 100).toFixed(1)}%`}`}`);
+          const name = width < 600 ? { internet: 'Internet', compute: 'App', database: 'SQL', cache: 'Cache', edge: 'WAF' }[resource.kind] : definitions[resource.kind].name;
+          this.captions[i].setFontSize(width < 600 ? 10 : 13).setWordWrapWidth(width < 600 ? 100 : 260, true)
+            .setVisible(true).setPosition(Math.max(58, Math.min(width - 58, p.x)), p.y + 48)
+            .setText(`${name}${resource.kind === 'compute' ? ` ×${resource.instances}` : ''}\n${resource.kind === 'internet' ? 'TRAFFIC' : `${state}${u === null ? '' : ` · ${(u * 100).toFixed(1)}%`}`}`);
         });
         if (view.building && view.preview) {
-          const point = snap(view.preview); const p = project(point, view.camera, width, height);
+          const point = snap(view.preview); const p = project(point, camera, width, height);
           const invalid = !!positionError(architecture, point);
           g.lineStyle(3, invalid ? 0xf58a78 : 0x9bdac7); g.strokeRect(p.x - 40, p.y - 40, 80, 80);
           host.dataset.placement = invalid ? 'invalid' : 'valid';
@@ -117,13 +121,14 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
     canvas.addEventListener('webglcontextlost', contextLost);
     removeContextHandler = () => canvas.removeEventListener('webglcontextlost', contextLost);
     const point = (e: PointerEvent): Point => { const r = canvas.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; };
-    const logical = (p: Point) => unproject(p, view.camera, canvas.clientWidth, canvas.clientHeight);
+    const camera = () => viewportCamera(view.camera, canvas.clientWidth, canvas.clientHeight);
+    const logical = (p: Point) => unproject(p, camera(), canvas.clientWidth, canvas.clientHeight);
     let drag: { pointer: number; id: string | null; last: Point; offset: Point } | null = null;
     const down = (e: PointerEvent) => {
       if (e.button !== 0 || drag) return;
       const p = point(e);
       if (view.building) { controller.place(logical(p)); return; }
-      const resource = view.state.runtime.architecture.resources.find(r => { const s = project(r, view.camera, canvas.clientWidth, canvas.clientHeight); return Math.abs(s.x - p.x) < 40 && Math.abs(s.y - p.y) < 44; });
+      const resource = view.state.runtime.architecture.resources.find(r => { const s = project(r, camera(), canvas.clientWidth, canvas.clientHeight); return Math.abs(s.x - p.x) < 40 && Math.abs(s.y - p.y) < 44; });
       if (view.connecting) { if (resource) controller.connectNode(resource.id); return; }
       controller.select(resource?.id ?? null);
       const local = logical(p);
@@ -134,7 +139,7 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
       const p = point(e); if (view.building) controller.preview(logical(p));
       if (!drag || drag.pointer !== e.pointerId) return;
       if (drag.id) { const local = logical(p); controller.move(drag.id, { x: local.x - drag.offset.x, y: local.y - drag.offset.y }); }
-      else controller.setCamera({ ...view.camera, x: view.camera.x + (p.x - drag.last.x) / view.camera.zoom, y: view.camera.y + (p.y - drag.last.y) / view.camera.zoom });
+      else controller.setCamera({ ...view.camera, x: view.camera.x + (p.x - drag.last.x) / camera().zoom, y: view.camera.y + (p.y - drag.last.y) / camera().zoom });
       drag.last = p;
     };
     const up = (e: PointerEvent) => { if (drag?.pointer === e.pointerId) { if (canvas.hasPointerCapture(e.pointerId)) canvas.releasePointerCapture(e.pointerId); drag = null; } };

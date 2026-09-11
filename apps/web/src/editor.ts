@@ -3,6 +3,10 @@ import { allowsConnection, definitions, parseArchitecture } from '@stack-and-sur
 
 export type Point = { x: number; y: number };
 export type Camera = Point & { zoom: number };
+export function viewportCamera(camera: Camera, width: number, height: number): Camera {
+  const fit = width >= 640 ? 1 : Math.min(1, Math.max(0.1, (width - 120) / 520), Math.max(0.1, (height - 140) / 400));
+  return { ...camera, zoom: camera.zoom * fit };
+}
 export function positionError(architecture: Architecture, position: Point, movingId?: string): string | null {
   if (![position.x, position.y].every(Number.isFinite) || Math.abs(position.x) > 900 || Math.abs(position.y) > 600) return 'Place inside the build area (±900 × ±600).';
   if (architecture.resources.some(r => r.id !== movingId && Math.abs(r.x - position.x) < 90 && Math.abs(r.y - position.y) < 100)) return 'Resource footprints overlap.';

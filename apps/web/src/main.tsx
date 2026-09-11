@@ -28,6 +28,7 @@ function App() {
   const [controller] = useState(() => createController(undefined, browserSaveRepository(() => window.localStorage)));
   const view = useSyncExternalStore(controller.subscribe, controller.getSnapshot);
   const [inspecting, setInspecting] = useState(false);
+  const [buildOpen, setBuildOpen] = useState(() => window.innerWidth >= 900);
   const [scaleConfirmation, setScaleConfirmation] = useState<{ generation: number; epoch: number } | null>(null);
   useEffect(() => () => controller.destroy(), [controller]);
   const running = view.state.runtime.status === 'RUNNING';
@@ -74,6 +75,7 @@ function App() {
       <div><span>Budget left</span><strong>{economy.remainingBudget.toFixed(2)}</strong></div>
     </section>
     {(running || paused) && view.snapshot?.critical && <p role="status" className="critical">! CRITICAL — {view.state.streaks.availability > 0 ? `${view.snapshot.failureCountdown.availability} consecutive bad seconds until availability failure.` : 'Resource overload or budget pressure.'} {view.state.streaks.order > 0 ? `Order-flow failure in ${view.snapshot.failureCountdown.order} bad seconds.` : ''}</p>}
+    <details className="build-panel" open={buildOpen} onToggle={e => setBuildOpen(e.currentTarget.open)}><summary>Build &amp; connections</summary>
     <section className="build-tools" aria-label="Build palette">
       {(['compute', 'database', 'cache', 'edge'] as Kind[]).map(kind => <button type="button" key={kind} disabled={!preparing || architecture.resources.some(r => r.kind === kind)} aria-pressed={view.building === kind} onClick={() => controller.build(kind)}>Place {definitions[kind].name}</button>)}
       <button type="button" disabled={!view.building} onClick={() => controller.build(null)}>Cancel placement</button>
@@ -90,9 +92,10 @@ function App() {
     <details className="connections"><summary>Architecture connections ({architecture.connections.length})</summary>
       {architecture.connections.map(c => <p key={`${c.from}:${c.to}`}>{c.from} → {c.to} <button type="button" aria-label={`Remove connection ${c.from} to ${c.to}`} disabled={!preparing} onClick={() => controller.disconnect(c.from, c.to)}>Remove connection</button></p>)}
     </details>
+    </details>
     {preparing && readyErrors.length > 0 && <p role="status">Cannot start: {readyErrors.join('; ')}</p>}
     {view.error && <section className="error" role="alert"><p>{view.error} — simulation clock stopped; saved runtime metrics remain intact.</p><button type="button" disabled={view.recoveringRenderer} onClick={() => controller.recoverRenderer()}>Rebuild renderer</button>{view.recoveringRenderer && <p>Rebuilding — waiting for the renderer to report ready.</p>}<p>If recovery fails again, reload to return to the baseline; browser persistence arrives in its own issue.</p></section>}
-    <section className="playfield"><World controller={controller} generation={view.rendererGeneration} /><aside>
+    <section className="playfield"><div className="board-area"><div className="board-tools"><span>Cloud architecture</span><button type="button" onClick={() => controller.setCamera({ x: 0, y: 0, zoom: 1 })}>Fit view</button></div><World controller={controller} generation={view.rendererGeneration} /></div><aside>
       <p className="eyebrow">CURRENT PRESSURE</p>
       <h2>App Service</h2><p className="reading" data-testid="app-pressure">{utilizationLabel(appU)} {appU === null ? '' : `${(appU * 100).toFixed(1)}%`}</p>
       <h2>Azure SQL</h2><p className="reading" data-testid="sql-pressure">{utilizationLabel(sqlU)} {sqlU === null ? '' : `${(sqlU * 100).toFixed(1)}%`}</p>
