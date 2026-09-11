@@ -8,6 +8,7 @@ import type { Kind } from '@stack-and-survive/schema';
 import { positionError, snap, validTargets } from './editor';
 import { activeCostPerMinute } from '@stack-and-survive/simulation/economy';
 import { ResultPanel } from './ResultPanel';
+import { ComparisonPanel } from './ComparisonPanel';
 
 function World({ controller, generation }: { controller: Controller; generation: number }) {
   const host = useRef<HTMLDivElement>(null);
@@ -57,6 +58,7 @@ function App() {
     </section>
     {preparing && <section aria-label="Black Friday briefing" className="briefing"><h2>Black Friday is approaching</h2><p>Read-heavy business traffic will increase. Unusual automated traffic may consume capacity. Keep customers served without overspending.</p><p>Availability target: 99% · Latency target: 300 ms · Budget: 140 game credits · Duration: 180 seconds</p><p>Preparation is free. Your connections determine request paths; physical distance does not change performance.</p></section>}
     {paused && <p role="status">Paused — inspect the architecture and metrics. Time, costs, provisioning and failure counters are frozen; editing is disabled.</p>}
+    {preparing && view.previousResult && <section className="briefing" aria-label="Previous attempt context"><h2>Previous issue: {view.previousResult.primary}</h2><p>{view.previousResult.insight}</p><p>Previous attempt: {view.previousResult.status} at {view.previousResult.elapsedTime}s. Edit your existing architecture, then retry the same workload.</p></section>}
     <section aria-label="Live service and business metrics" className="metrics-bar">
       <div><span>Availability</span><strong data-testid="availability">{metrics ? `${(metrics.availability * 100).toFixed(2)}%` : '—'}</strong></div>
       <div><span>Latency</span><strong data-testid="latency">{metrics?.averageLatency == null ? '—' : `${metrics.averageLatency.toFixed(0)} ms`}</strong></div>
@@ -128,6 +130,7 @@ function App() {
     </section>
     {view.queuedActions.length > 0 && <p role="status">Queued for the next simulation tick: {view.queuedActions.map(a => a.type).join(', ')}. {paused ? 'Preserved while paused; executes after resume.' : 'No capacity or charge applied until the tick accepts the action.'}</p>}
     {view.result && <ResultPanel result={view.result} onRedesign={() => { controller.redesign(); setInspecting(false); setScaleConfirmation(null); }} />}
+    {view.result && view.previousResult && <ComparisonPanel previous={view.previousResult} current={view.result} />}
     <details><summary>Developer inspector (not a player speed control)</summary><button type="button" disabled={!running || !!view.error} onClick={() => { setInspecting(true); controller.inspectNextTick(); }}>Step one tick</button><p>{inspecting ? 'Manual stepping: automatic clock stopped. Reset to return to 1×.' : 'Stepping stops automatic time; each click advances exactly one real simulation tick.'}</p><pre data-testid="diagnostics">{JSON.stringify({ time: view.state.runtime.time, status: view.state.runtime.status, snapshot: view.snapshot, architecture, selected: view.selected, camera: view.camera }, null, 2)}</pre></details>
     <footer>BUILD THE CLOUD. SURVIVE THE TRAFFIC.<span>Baseline only · Editing and live actions arrive in subsequent issues.</span></footer>
   </main>;
