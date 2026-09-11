@@ -10,7 +10,7 @@ Stack & Survive is a cloud architecture strategy game where players build and gr
 
 **Hackathon MVP — Scope Locked · PRD v0.5**
 
-This repository currently contains planning documents and an initial directory structure. The game, simulation engine, build tooling, and automated tests have not been implemented. The technical design records the intended stack and recommended tooling; the renderer engine remains pending a PlayCanvas vs Phaser spike. No implementation or deployment has started.
+This repository contains planning documents, production directory placeholders, and an isolated Phaser/PlayCanvas comparison in `apps/engine-spike/`. The spike has local build and test tooling, but the production game, simulation engine, production CI, and Azure deployment have not been implemented. Renderer selection awaits owner approval of the experiment's recommendation.
 
 ## MVP
 
@@ -47,8 +47,9 @@ docs/
   TECHNICAL_DESIGN.md    Technical design v0.2
   IMPLEMENTATION_PLAN.md Delivery phases and pre-implementation gates
   adr/
-    ADR-002-GAME-ENGINE.md Engine selection (Proposed; spike pending)
+    ADR-002-GAME-ENGINE.md Engine experiment evidence (Proposed; approval pending)
 apps/
+  engine-spike/          Disposable two-engine experiment and tests
   game/                  Future browser game and renderer
 packages/
   schema/                Future shared schemas and validation
@@ -57,7 +58,13 @@ packages/
   scenarios/             Future data-driven scenario definitions
 ```
 
-The application and package directories are placeholders, not configured workspaces. The proposed structure in [Technical Design](docs/TECHNICAL_DESIGN.md) uses `apps/web/` and additional packages; the current directories have not been reorganized or implemented.
+Only `apps/engine-spike/` is runnable. The production application/package directories remain placeholders, not configured workspaces. [Technical Design](docs/TECHNICAL_DESIGN.md) proposes `apps/web/`; the spike does not choose or scaffold the production monorepo.
+
+## Run the engine experiment
+
+From `apps/engine-spike/`, run `pnpm install --frozen-lockfile`, then `pnpm dev --port 43871 --strictPort`. Open `http://127.0.0.1:43871/` and use the renderer selector to compare the two views.
+
+Use Node 22.22.0 and pnpm 10.32.1. Verification commands and limits are documented in [ADR-002](docs/adr/ADR-002-GAME-ENGINE.md#reproduction-and-evidence). This is a synthetic rendering experiment, not playable Black Friday.
 
 ## Documents
 
@@ -66,11 +73,11 @@ The application and package directories are placeholders, not configured workspa
 - [Simulation Specification](docs/SIMULATION_SPEC.md) — Corrected simulation rules, authoritative values, and arithmetic reference matrix (v0.2).
 - [Technical Design](docs/TECHNICAL_DESIGN.md) — Software structure, state ownership, intended stack, and deployment design (v0.2).
 - [Implementation Plan](docs/IMPLEMENTATION_PLAN.md) — Phased delivery, scope guardrails, and verification gates (v0.3, draft); project management rules are accepted.
-- [ADR-002: Game Engine Selection](docs/adr/ADR-002-GAME-ENGINE.md) — Comparative spike criteria; no engine selected yet (Proposed).
+- [ADR-002: Game Engine Selection](docs/adr/ADR-002-GAME-ENGINE.md) — Executed comparison, evidence and recommendation; owner decision pending (Proposed).
 
-`SIMULATION_SPEC.md` is the source of truth for numerical simulation behavior. `TECHNICAL_DESIGN.md` documents the implementation architecture; the engine spike, implementation, and Azure deployment remain future work.
+`SIMULATION_SPEC.md` is the source of truth for numerical simulation behavior. `TECHNICAL_DESIGN.md` documents the production architecture; the simulation/game implementation and Azure deployment remain future work.
 
-Document expansion is frozen at these six documents for the MVP. The reviewed balance and lifecycle corrections are now reflected in the existing specifications. Reference metrics were checked arithmetically; engine tests and player playtesting have not run. Renderer selection remains Proposed pending its spike.
+Document expansion is frozen at these six documents for the MVP. Simulation reference metrics were checked arithmetically; gameplay tests and player playtesting have not run. The rendering spike's unit/browser tests have run, but do not verify simulation correctness. Renderer selection remains Proposed pending owner approval.
 
 ## Important boundaries
 

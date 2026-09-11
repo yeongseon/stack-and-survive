@@ -1,7 +1,7 @@
 # Stack & Survive — Implementation Plan
 
 **Version:** 0.3  
-**Status:** Draft — documentation only; implementation not started  
+**Status:** Draft — M0 renderer experiment executed; production implementation not started  
 **Scope:** Hackathon MVP, one Black Friday scenario
 
 ## 1. Purpose and document freeze
@@ -129,16 +129,17 @@ Do not introduce authentication, cloud saves, Functions, Service Bus, multiplaye
 
 If time is limited, cut audio, decorative polish, optional telemetry, and optional speed controls before cutting simulation correctness, clear feedback, or redesign/replay.
 
-The next implementation milestone is a truthful App → SQL loop, not another specification. All phases above remain planned work until execution begins.
+The isolated `apps/engine-spike/` experiment has been executed; ADR-002 records observations and awaits owner acceptance. The next production milestone is a truthful App → SQL loop, not another specification. Production phases above remain planned work.
 
 ## 5. Project management rules
 
-**Status: Accepted by the project owner.** These rules govern future project work; acceptance does not mean that a GitHub Project, issues, branch protection, CI, or automation already exists or authorize their creation. Keep the rules here rather than introducing another management document. The implementation plan remains draft and renderer selection remains pending its spike.
+**Status: Accepted by the project owner.** These rules govern project work; adopting a rule alone does not authorize remote operations. Documentation publication and initial issues/milestones were subsequently requested and created. No Project board, branch protection, production CI, or deployment is implied. Keep the rules here rather than introducing another management document. The implementation plan remains draft; renderer selection awaits owner approval of the executed spike.
 
 ### Work tracking and scope
 
 - Use GitHub Issues as the authoritative task list. A GitHub Project board is optional; avoid a second duplicate backlog.
 - Use four states: Backlog → Ready → In Progress → Done. Mark blocked work explicitly with its dependency and reason; blocked is not done.
+- Initially represent the first three states with mutually exclusive `status:backlog`, `status:ready`, and `status:in-progress` labels. Done is a completed closed issue after review/merge, not a separate board. Closing as not planned is not completion. Use P0/P1/P2 labels; due dates remain unset until provided. Initial issues #1–#5 cover the spike, production setup, first simulation slice, visualization, and boundary-test follow-up.
 - One issue should deliver one observable result, normally within half a day to one day. Split larger features into independently verifiable slices; record a dependency rather than starting everything at once.
 - Each issue records purpose, in-scope work, exclusions, relevant specification sections, acceptance criteria, verification method, owner, and dependencies. Dates are added when the Hackathon deadline and availability are known, not invented.
 - Priorities: P0 = required for the core demo; P1 = useful after P0; P2 = post-MVP. New ideas go to Backlog and do not automatically enter the current milestone.
