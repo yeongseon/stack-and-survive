@@ -155,6 +155,7 @@ export function createController(timer: Clock = clock, repository?: SaveReposito
       publish({ ...view, previousResult: structuredClone(view.result), state: createSimulation(view.state.runtime.architecture, blackFriday), snapshot: null, result: null,
         queuedActions: [], notice: '', building: null, preview: null, connecting: false, connectionSource: null,
         rendererGeneration: view.rendererGeneration + 1, confirmationEpoch: view.confirmationEpoch + 1 });
+      if (view.state.runtime.architecture.resources.some(r => r.remaining > 0)) schedule(prepare);
     },
     pause() {
       if (destroyed || view.error || view.state.runtime.status !== 'RUNNING') return;

@@ -208,3 +208,16 @@ it('does not silently overwrite corrupt saves and permits explicit recovery', ()
   controller.saveArchitecture(); expect(controller.getSnapshot().saveMessage).toContain('saved locally');
   expect(repository.load()!.resources.find(r => r.kind === 'compute')!.x).toBe(40); controller.destroy();
 });
+it('restarts pending disconnected deployment clock after redesign', () => {
+  const f = fixture(); f.controller.build('cache'); f.controller.place({ x: -240, y: 200 });
+  f.tick(); f.tick();
+  expect(f.controller.getSnapshot().state.runtime.architecture.resources.find(r => r.kind === 'cache')!.remaining).toBe(3);
+  f.controller.start();
+  while (f.controller.getSnapshot().state.runtime.status === 'RUNNING') f.tick();
+  f.controller.redesign(); expect(f.active()).toBe(1);
+  for (let i = 0; i < 3; i++) f.tick();
+  expect(f.controller.getSnapshot().state.runtime.architecture.resources.find(r => r.kind === 'cache')!.remaining).toBe(0);
+  expect(f.controller.getSnapshot().state.runtime.time).toBe(0);
+  expect(f.controller.getSnapshot().state.economy.infrastructureCost).toBe(0);
+  expect(f.active()).toBe(0); f.controller.destroy();
+});

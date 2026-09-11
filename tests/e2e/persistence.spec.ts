@@ -15,6 +15,8 @@ test('refresh restores architecture but discards pending runtime and totals', as
   await expect(page.getByLabel('Initial App instances')).toHaveValue('2');
   await expect(page.getByTestId('cloud-cost')).toHaveText('0.00');
   await expect(page.getByTestId('scale-progress')).toHaveText('2 active instances');
+  await page.getByRole('button', { name: 'Reset baseline', exact: true }).click();
+  await expect(page.getByLabel('Initial App instances')).toHaveValue('1');
   await page.getByRole('button', { name: 'Clear local state', exact: true }).click();
   expect(await page.evaluate(k => localStorage.getItem(k), key)).toBeNull();
   await page.reload(); await expect(page.getByLabel('Initial App instances')).toHaveValue('1');
