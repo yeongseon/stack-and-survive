@@ -1,7 +1,7 @@
 import { baseline, validateStart } from '@stack-and-survive/cloud-domain';
 import { blackFriday } from '@stack-and-survive/scenarios';
 import { advanceSimulation, createSimulation, simulationResult } from '@stack-and-survive/simulation/results';
-import { advancePreparation, requestPreparationScale, startRuntime } from '@stack-and-survive/simulation/runtime';
+import { advancePreparation, pauseRuntime, requestPreparationScale, resumeRuntime, startRuntime } from '@stack-and-survive/simulation/runtime';
 import type { Architecture, Kind } from '@stack-and-survive/schema';
 import { connectResources, disconnectResources, moveResource, placeResource, removeResource, type Camera, type Point } from './editor';
 
@@ -17,6 +17,8 @@ export type View = Readonly<{
   notice: string;
   connecting: boolean;
   connectionSource: string | null;
+  rendererGeneration: number;
+  recoveringRenderer: boolean;
 }>;
 export interface Clock {
   start(callback: () => void): () => void;
@@ -30,7 +32,7 @@ export function createController(timer: Clock = clock) {
     const architecture = baseline(instances);
     architecture.resources.forEach((r, i) => { r.x = (i - 1) * 260; r.y = (i - 1) * 100; });
     return { state: createSimulation(architecture, blackFriday), snapshot: null, result: null, error: null,
-      selected: null, building: null, preview: null, camera: { x: 0, y: 0, zoom: 1 }, notice: '', connecting: false, connectionSource: null };
+      selected: null, building: null, preview: null, camera: { x: 0, y: 0, zoom: 1 }, notice: '', connecting: false, connectionSource: null, rendererGeneration: 0, recoveringRenderer: false };
   };
   let view: View = initial();
   let cancel: (() => void) | undefined;
@@ -63,7 +65,7 @@ export function createController(timer: Clock = clock) {
     if (!runtime.architecture.resources.some(r => r.remaining > 0) && runtime.preparationScaleDue === null) stop();
   };
   const edit = (operation: (a: Architecture) => Architecture): boolean => {
-    if (destroyed || view.state.runtime.status !== 'PREPARATION') return false;
+    if (destroyed || view.error || view.state.runtime.status !== 'PREPARATION') return false;
     try {
       const architecture = operation(view.state.runtime.architecture);
       publish({ ...view, state: { ...view.state, runtime: { ...view.state.runtime, architecture } }, notice: '' });
@@ -83,9 +85,26 @@ export function createController(timer: Clock = clock) {
       schedule(advance);
     },
     reset(instances = 1) {
-      if (destroyed) return;
+      if (destroyed || view.error || view.state.runtime.status === 'PAUSED') return;
       if (!Number.isInteger(instances) || instances < 1 || instances > 4) throw new Error('Invalid instance configuration');
-      stop(); publish(initial(instances));
+      stop(); publish({ ...initial(instances), rendererGeneration: view.rendererGeneration + 1 });
+    },
+    pause() {
+      if (destroyed || view.error || view.state.runtime.status !== 'RUNNING') return;
+      stop(); publish({ ...view, state: { ...view.state, runtime: pauseRuntime(view.state.runtime) } });
+    },
+    resume() {
+      if (destroyed || view.error || view.state.runtime.status !== 'PAUSED') return;
+      publish({ ...view, state: { ...view.state, runtime: resumeRuntime(view.state.runtime) } }); schedule(advance);
+    },
+    recoverRenderer() {
+      if (destroyed || !view.error || view.recoveringRenderer) return;
+      publish({ ...view, recoveringRenderer: true, rendererGeneration: view.rendererGeneration + 1 });
+    },
+    rendererReady(generation: number) {
+      if (destroyed || generation !== view.rendererGeneration || !view.recoveringRenderer) return;
+      publish({ ...view, error: null, recoveringRenderer: false });
+      if (view.state.runtime.status === 'PREPARATION' && (view.state.runtime.preparationScaleDue !== null || view.state.runtime.architecture.resources.some(r => r.remaining > 0))) schedule(prepare);
     },
     select(id: string | null) { if (!destroyed) publish({ ...view, selected: id }); },
     build(kind: Kind | null) { if (!destroyed && view.state.runtime.status === 'PREPARATION') publish({ ...view, building: kind, preview: null, notice: '', connecting: false, connectionSource: null }); },
@@ -120,7 +139,7 @@ export function createController(timer: Clock = clock) {
       }
     },
     scalePreparation() {
-      if (view.state.runtime.status !== 'PREPARATION') return;
+      if (destroyed || view.error || view.state.runtime.status !== 'PREPARATION') return;
       try {
         publish({ ...view, state: { ...view.state, runtime: requestPreparationScale(view.state.runtime) }, notice: '' });
         if (!cancel) schedule(prepare);
@@ -133,7 +152,12 @@ export function createController(timer: Clock = clock) {
     }); },
     setCamera(camera: Camera) { if (!destroyed) publish({ ...view, camera: { x: Math.max(-1200, Math.min(1200, camera.x)), y: Math.max(-900, Math.min(900, camera.y)), zoom: Math.max(.5, Math.min(1.6, camera.zoom)) } }); },
     inspectNextTick() { stop(); advance(); },
-    presentationFailed(message: string) { stop(); publish({ ...view, error: message }); },
+    presentationFailed(message: string) {
+      if (destroyed) return;
+      stop();
+      const runtime = view.state.runtime.status === 'RUNNING' ? pauseRuntime(view.state.runtime) : view.state.runtime;
+      publish({ ...view, state: { ...view.state, runtime }, error: message, recoveringRenderer: false });
+    },
     destroy() { stop(); destroyed = true; listeners.clear(); },
   };
 }
