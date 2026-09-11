@@ -5,163 +5,1441 @@
 **Version:** 0.2  
 **Status:** Hackathon Visual Direction  
 **Related Documents:** `PRD.md`, `GAMEPLAY_SPEC.md`, `SIMULATION_SPEC.md`, `TECHNICAL_DESIGN.md`  
-**Primary Goal:** Make Stack & Survive feel like a cloud strategy game rather than an architecture simulator or operations dashboard.
+**Primary Context:** Microsoft Internal Hackathon  
+**Primary Goal:** Make Stack & Survive immediately recognizable as both an Azure architecture experience and a strategy game.
 
 ---
 
-# 1. Visual Goal
+# 1. Visual Vision
 
-Stack & Survive must achieve three things at the same time:
+Stack & Survive should look like:
 
-1. **Look like a game**
-   - It should not feel like an architecture diagram, admin portal, or monitoring dashboard.
+> **A tactical Azure cloud base-building game where official Azure service identity is combined with custom game-world assets.**
 
-2. **Make cloud behavior immediately readable**
-   - Traffic flow, bottlenecks, caching, security filtering, and scale-out should be visible without requiring the player to study detailed metrics.
+The player should immediately understand:
 
-3. **Create strong first-impression value for a Hackathon demo**
-   - Within the first 10 seconds, the viewer should understand:
+- This is a game.
+- This is about Azure architecture.
+- Azure services are real recognizable services.
+- The buildings, environment, traffic, and effects belong to Stack & Survive.
+- Architecture decisions visibly change system behavior.
 
-> This is a strategy game where cloud architecture itself acts as the defense system.
+The visual layer must not resemble only:
 
----
+- an Azure Portal page,
+- an architecture diagram,
+- a monitoring dashboard,
+- or a generic sci-fi game.
 
-# 2. High-Level Art Direction
-
-The recommended visual direction is:
-
-> **Azure-inspired tactical base-building game**
-
-The experience should borrow the visual grammar of strategy and base-building games while keeping the architecture technically understandable.
-
-Primary influences:
-
-- Base-building strategy games
-- RTS readability
-- Clean cloud infrastructure visualization
-- Stylized 2.5D / isometric environments
-- Modern technical aesthetics
-
-The goal is not to imitate any specific existing game.
+It should combine Azure identity with an original game presentation.
 
 ---
 
-# 3. Style Keywords
+# 2. Core Visual Principle
 
-## Desired
+The primary rule is:
 
-- Isometric
-- 2.5D
-- Tactical
-- Clean
-- Stylized
-- Modular
-- Readable
-- Modern cloud infrastructure
-- Animated system flow
-- Compact strategy base
+> **Official Azure icons identify the service. Custom game assets create the game world.**
 
-## Avoid
-
-- Enterprise admin dashboard
-- Generic monitoring console
-- Flat architecture diagram
-- Dark hacker interface
-- Excessive cyberpunk styling
-- Realistic military visuals
-- Generic fantasy tower defense
-- Large amounts of persistent text
-- Dense metric panels covering the world
-
----
-
-# 4. Core Visual Principles
-
-## 4.1 Architecture Must Look Buildable
-
-Cloud resources should look like structures the player is constructing and operating.
-
-The player should feel that they are building a cloud base rather than arranging diagram nodes.
-
----
-
-## 4.2 Traffic Must Feel Alive
-
-Traffic is one of the main visual actors in the game.
-
-The player should be able to see:
+These responsibilities must remain separate.
 
 ```text
-Traffic arrives
-      ↓
-Architecture processes it
-      ↓
-Some requests succeed through App and SQL
-Some eligible reads succeed through Cache hits
-Some bots are filtered before compute
-Some legitimate requests are rejected or fail
+Official Azure Icon
+        +
+Custom Building Asset
+        +
+Custom State Overlay
+        +
+Custom VFX
+        +
+Service Name
+        ↓
+Recognizable Azure Game Resource
 ```
 
-Cache hits are successful requests, not a separate failure/success category. Motion is a projection of engine snapshots, never a source of request counts or outcomes.
+Example:
 
-## 4.3 World-First Information Layout
+```text
+      [Official App Service Icon]
 
-The architecture is the primary play surface. On the baseline at 1440×900 and 1024×768, the board should be visible without scrolling past documentation. At 390×844 and 320×568, show the top of the board in the initial viewport and keep the full baseline graph inside the board after Fit view. Larger player-built layouts remain reachable through pan/zoom; fitting the baseline does not promise every arbitrary layout is always visible.
+              ↓
 
-Keep start/pause controls, time and essential pressure/economy signals easy to reach. Put full explanations, saves, glossary and detailed metrics in secondary panels or disclosures rather than covering the world. Do not delete educational information merely to reduce visible text. On small screens, panels may stack or collapse, but their controls must remain discoverable and keyboard/touch accessible.
+       ┌───────────────┐
+       │               │
+       │  CUSTOM APP   │
+       │   BUILDING    │
+       │               │
+       └───────────────┘
 
-## 4.4 Resource and State Identity
+          App Service
+              ×3
+```
 
-Use original lightweight Phaser geometry or original sprites. The following are minimal silhouette references, not mandatory exact artwork:
+The official icon communicates:
 
-| Resource | Buildable silhouette | Operational identity |
-|---|---|---|
-| Internet source | Arrival platform or cloud beacon | External traffic origin, not deployable compute |
-| App Service | Modular compute building with visible bays | Completed instances add modules; pending instances are not active capacity |
-| Azure SQL | Cylindrical data store on a platform | Separate read/write dependency, not another App building |
-| Cache | Compact layered memory structure | Read shortcut with a visible local response cue |
-| Protected Edge / WAF | Gateway or arch | Traffic crosses it before App only on the active protected path |
+> "This represents Azure App Service."
 
-| State | Minimum non-color cue |
-|---|---|
-| Selected | Outline/brackets and resource name/details |
-| Provisioning | Incomplete scaffold/outline and remaining time; no fake processed traffic |
-| Active | Complete structure and status label |
-| Warning / overloaded | Explicit label and warning glyph; restrained emphasis rather than constant screen shake |
-| Disconnected | Broken-link or disconnected label; no traffic effect, runtime cost still applies if active |
+The custom building communicates:
 
-Colors support these differences but are never the only cue. Azure-inspired means recognizable cloud-service roles and a clean technical palette, not official branding or a replica Azure portal. Prefer calm blue/teal surfaces, clear warm warning accents and readable contrast over neon hacker/cyberpunk styling. Review asset provenance and brand guidance before public distribution.
+> "This is a resource inside the Stack & Survive game world."
 
-## 4.5 Traffic Outcome Vocabulary
+---
 
-| Engine event | Visual requirement |
-|---|---|
-| Browse | Read marker distinguishable from Order and Bot by shape |
-| Order | Write marker follows App → SQL; Cache never removes writes |
-| Cache hit | Local response/ring at Cache; that representative read does not continue to SQL |
-| Cache miss / overflow | Read continues Cache → SQL according to snapshot volumes |
-| WAF bot filter | Threat-marked packet stops at the connected Edge; no off-path filtering aura |
-| WAF false positive / rate rejection | Rejected-customer cue, not a successful response or security-score gain |
-| App / SQL drop | Failure marker at its first loss stage; do not count the same loss twice visually as two requests |
-| Completed scale-out | Completed instance becomes a full module when the engine grants capacity, not at button click |
+# 3. Why This Approach
 
-Continue to use aggregated simulation and bounded representative markers, not one entity per request. Labels and the legend explain shapes and outcomes. Rate-limited requests stop before App processing; blocked or failed traffic must not be animated as success. Disconnected resources do not receive decorative request flow.
+Using only custom fictional buildings would make the game feel more generic.
 
-## 4.6 Motion and Technical Limits
+Using only official Azure icons would make the experience feel more like an architecture editor or technical diagram.
 
-Phaser 3.90.0 remains the accepted renderer. Isometric/2.5D here means a fixed, stylized 2D presentation; this direction does not authorize a full 3D renderer, engine change, free camera rotation, physical-distance latency or new gameplay mechanics.
+Combining both provides:
 
-Use animation to explain arrival, processing, filtering, provisioning and capacity completion. Respect reduced-motion preferences with static symbols and status text in place of optional pulses/travel effects. Pause freezes gameplay time; visual motion must not imply that traffic continues to be processed during pause or after termination.
+```text
+Azure Recognition
+       +
+Game Identity
+       +
+Architecture Readability
+```
 
-## 5. Visual Acceptance and Review
+This is especially valuable for the internal Hackathon demo.
 
-1. At the baseline and a connected Cache/WAF design, reviewers can identify every resource by silhouette plus label without relying only on color.
-2. Capture desktop/tablet/phone views and exercise selection, placement, connections, pan/zoom and Fit view. No core control is obscured by fixed panels; no horizontal page overflow is required to access controls.
-3. Show healthy, provisioning, overloaded and disconnected states. Status remains understandable with animation reduced and color cues ignored.
-4. Replay known snapshots: Cache-hit response ends locally, Order bypasses Cache, filtered bots stop at Edge, and failures match the first loss stage. The existing simulation reference matrix must remain unchanged.
-5. Run the full browser regression suite and repeat peak rendering measurement with the actual graphics backend disclosed. Screenshots and FPS establish presentation/technical evidence only.
-6. For the first-ten-seconds goal, show the initial play surface to an unfamiliar person and ask “What do you build, and what puts it under pressure?” Record the actual response under the human-validation issue; do not infer understanding from automated tests.
+---
 
-Implementation order: [#52](https://github.com/yeongseon/stack-and-survive/issues/52) criteria and responsive baseline → [#53](https://github.com/yeongseon/stack-and-survive/issues/53) resource silhouettes → [#54](https://github.com/yeongseon/stack-and-survive/issues/54) traffic/state motion → [#55](https://github.com/yeongseon/stack-and-survive/issues/55) visual verification → [#25](https://github.com/yeongseon/stack-and-survive/issues/25) actual human validation.
+# 4. Azure Icon Usage Principle
 
-Numerical behavior remains authoritative in `SIMULATION_SPEC.md`. Player-facing paths and accessibility principles remain authoritative in `GAMEPLAY_SPEC.md`. This document refines their visual expression and does not certify the game as human-validated or hosted.
+Official Azure icons may be used as service-identification elements.
+
+Examples:
+
+- Build palette
+- Resource selector
+- Resource detail panel
+- Small badge above or beside a building
+- Tooltip
+- Architecture information panel
+- Result screen resource reference
+
+The official icon should remain visually distinct from the custom game artwork.
+
+---
+
+# 5. Do Not Transform Official Icons
+
+Official Azure icons must remain unchanged.
+
+Do not:
+
+- reshape them,
+- crop them into new symbols,
+- rotate them,
+- distort them,
+- redraw them,
+- recolor them,
+- merge multiple icons into a new logo,
+- convert them into the physical shape of a building,
+- or use them as the Stack & Survive product logo.
+
+The custom game artwork must be created around the icon rather than by modifying it.
+
+---
+
+# 6. Asset Composition Model
+
+Every deployable resource should be composed from multiple visual layers.
+
+```text
+Layer 1
+Custom building
+
+Layer 2
+Official Azure service icon
+
+Layer 3
+Resource name
+
+Layer 4
+Gameplay state
+
+Layer 5
+Dynamic VFX
+```
+
+Example:
+
+```text
+        App Service Icon
+              │
+              ▼
+       ╭────────────╮
+       │ APP TOWER  │
+       │            │
+       ╰────────────╯
+         App Service
+             ×2
+
+        HEALTHY / 64%
+```
+
+During normal gameplay, the label and state should remain compact.
+
+Detailed metrics appear only when selected.
+
+---
+
+# 7. Brand Separation
+
+Stack & Survive must have its own visual identity.
+
+## Stack & Survive owns
+
+- Product logo
+- Game logo
+- Game buildings
+- Environment
+- Map
+- Traffic visuals
+- Effects
+- HUD structure
+- Status effects
+- Animation
+- Scenario presentation
+- Game typography
+- Game-specific symbols
+
+## Azure provides service identity
+
+- Azure service names
+- Official Azure service icons
+- Azure terminology where appropriate
+
+This separation must remain clear.
+
+---
+
+# 8. Product Logo
+
+The Stack & Survive product logo must be original.
+
+Do not build the product logo from Azure service icons.
+
+Possible original motifs:
+
+- stacked infrastructure blocks,
+- shield,
+- cloud fortress,
+- traffic path,
+- architecture nodes,
+- defensive layers,
+- stylized "S",
+- modular grid.
+
+Possible concept:
+
+```text
+Architecture Blocks
+       +
+Shield
+       +
+Traffic Flow
+       =
+Stack & Survive
+```
+
+Azure identity should come from the game content rather than from copying Azure branding into the product logo.
+
+---
+
+# 9. Main Screen Composition
+
+The target Hackathon experience should follow a game-oriented layout.
+
+```text
+┌──────────────────────────────────────────────────────────────┐
+│ STACK & SURVIVE   Credits   Traffic   Availability   Latency │
+├──────────────┬───────────────────────────────────┬───────────┤
+│              │                                   │           │
+│ BUILD        │                                   │ OBJECTIVE │
+│              │                                   │           │
+│ Azure        │                                   │ EVENTS    │
+│              │          GAME WORLD               │           │
+│ Compute      │                                   │ TRAFFIC   │
+│ Data         │                                   │           │
+│ Security     │                                   │ MINI MAP  │
+│              │                                   │           │
+├──────────────┴───────────────────────────────────┴───────────┤
+│ SELECTED RESOURCE / LIVE ACTIONS / RESOURCE DETAILS          │
+└──────────────────────────────────────────────────────────────┘
+```
+
+The map must remain the dominant visual element.
+
+Target:
+
+```text
+Game World:
+approximately 65–75%
+
+HUD and panels:
+approximately 25–35%
+```
+
+---
+
+# 10. Build Palette
+
+The Build palette is one of the best places to use official Azure icons.
+
+Example:
+
+```text
+BUILD
+
+Azure
+
+COMPUTE
+[official icon]
+App Service
+
+DATA
+[official icon]
+Azure SQL
+
+[official icon]
+Azure Managed Redis
+
+SECURITY
+[official icon]
+Protected Edge
+```
+
+For the MVP, show only resources that can actually be deployed.
+
+Do not populate the catalog with unavailable services purely for visual richness.
+
+---
+
+# 11. MVP Resource Set
+
+The Hackathon MVP should visually focus on four deployable resources.
+
+```text
+Azure App Service
+
+Azure SQL
+
+Azure Managed Redis
+
+Protected Edge / WAF
+```
+
+Supporting object:
+
+```text
+Internet / External Traffic Source
+```
+
+Future resources must not appear as active Build choices until they are implemented.
+
+---
+
+# 12. App Service Visual Design
+
+## Azure Identity
+
+Use the official Azure App Service icon unchanged.
+
+Possible locations:
+
+```text
+Building badge
+
+Build palette
+
+Selected-resource panel
+```
+
+## Custom Game Asset
+
+Visual concept:
+
+> **Application Processing Hub**
+
+Characteristics:
+
+- modular compute tower,
+- visible processing core,
+- expandable instance modules,
+- clean Azure-inspired lighting,
+- medium height,
+- recognizable compute silhouette.
+
+Example:
+
+```text
+      [App Service Icon]
+
+        ┌───────┐
+     ┌──┤ CORE  ├──┐
+     │  └───────┘  │
+     │ COMPUTE HUB │
+     └─────────────┘
+
+       App Service
+           ×3
+```
+
+---
+
+# 13. App Service Scale-Out
+
+Scale-out must be visually dramatic.
+
+Sequence:
+
+```text
+Current:
+App Service ×1
+
+Player:
+Scale Out
+
+        ↓
+
+Ghost instance module appears
+
+        ↓
+
+Provisioning animation
+
+        ↓
+
+Module becomes active
+
+        ↓
+
+App Service ×2
+
+        ↓
+
+Traffic distributes
+
+        ↓
+
+Utilization decreases
+```
+
+The Azure icon does not change.
+
+Only the custom building representation changes.
+
+---
+
+# 14. Azure SQL Visual Design
+
+## Azure Identity
+
+Use the official Azure SQL service icon unchanged.
+
+## Custom Game Asset
+
+Visual concept:
+
+> **Data Vault**
+
+Characteristics:
+
+- heavy structure,
+- cylindrical or layered storage form,
+- reinforced base,
+- animated data core,
+- visually more stable than App Service.
+
+Example:
+
+```text
+          [SQL Icon]
+
+           ╭──────╮
+          ╱  DATA  ╲
+         │  CORE    │
+         │==========│
+         │==========│
+          ╲________╱
+
+           Azure SQL
+```
+
+---
+
+# 15. SQL Pressure Visuals
+
+Healthy:
+
+```text
+Calm blue data pulse
+```
+
+Warning:
+
+```text
+Amber data-ring acceleration
+```
+
+Overloaded:
+
+```text
+Red data pulse
+Error sparks
+Warning ring
+Dropped requests near SQL
+```
+
+The player should immediately understand:
+
+> The application is still running, but the database is now the bottleneck.
+
+---
+
+# 16. Azure Managed Redis Visual Design
+
+## Azure Identity
+
+Use the official Azure Managed Redis icon unchanged.
+
+## Custom Game Asset
+
+Visual concept:
+
+> **High-Speed Cache Node**
+
+Characteristics:
+
+- smaller footprint,
+- compact accelerator module,
+- fast cyan energy pulse,
+- visible memory-cell elements.
+
+Example:
+
+```text
+       [Redis Icon]
+
+         ◇ ◇ ◇
+       ┌───────┐
+       │ CACHE │
+       └───────┘
+
+    Azure Managed Redis
+```
+
+---
+
+# 17. Cache-Hit Animation
+
+Cache behavior must be visible.
+
+Hit:
+
+```text
+Browse Request
+      ↓
+    Cache
+      ✦
+   request ends
+```
+
+Miss:
+
+```text
+Browse Request
+      ↓
+    Cache
+      ↓
+     SQL
+```
+
+Possible hit effect:
+
+- short cyan flash,
+- small sparkle,
+- absorption ring,
+- packet disappears.
+
+This should visually explain why SQL traffic decreases.
+
+---
+
+# 18. Protected Edge / WAF Visual Design
+
+The MVP uses a game abstraction representing protected ingress behavior.
+
+## Azure Identity
+
+Where appropriate, use the relevant official Azure service icon unchanged in UI and supporting resource identification.
+
+The game resource itself remains labeled:
+
+> **Protected Edge**
+
+with explanatory Azure context where needed.
+
+## Custom Game Asset
+
+Visual concept:
+
+> **Security Gateway**
+
+Characteristics:
+
+- defensive gateway,
+- shield field,
+- security pylons,
+- perimeter checkpoint.
+
+Example:
+
+```text
+        [Azure Service Icon]
+
+          ╭─────────╮
+      ────│ SHIELD  │────
+          ╰─────────╯
+
+          Protected Edge
+```
+
+---
+
+# 19. Bot Blocking
+
+Bot traffic must visibly collide with the Protected Edge.
+
+Sequence:
+
+```text
+Bot packet
+     ↓
+
+Protected Edge
+
+     ↓
+
+Shield impact
+
+     ↓
+
+Packet fragments / disappears
+```
+
+Normal mode:
+
+- moderate defensive pulse.
+
+Emergency WAF mode:
+
+- brighter barrier,
+- larger shield,
+- stronger block animation,
+- more visible bot interception.
+
+---
+
+# 20. Internet Source
+
+Internet does not need an Azure product icon.
+
+It should be a custom environmental object.
+
+Possible concepts:
+
+- cloud portal,
+- external traffic gateway,
+- network uplink,
+- edge-of-map traffic entry point.
+
+Example:
+
+```text
+       CLOUD / INTERNET
+              ↓
+       Incoming Traffic
+              ↓
+        Protected Edge
+```
+
+---
+
+# 21. Traffic Visual Language
+
+Traffic must remain entirely custom game artwork.
+
+Do not use Azure icons for requests.
+
+## Browse
+
+```text
+Shape:
+circle
+
+Color:
+cyan / blue
+
+Meaning:
+normal customer read traffic
+```
+
+## Order
+
+```text
+Shape:
+diamond or square
+
+Color:
+gold / bright accent
+
+Meaning:
+business-critical write traffic
+```
+
+## Bot
+
+```text
+Shape:
+triangle / sharp packet
+
+Color:
+orange-red
+
+Meaning:
+unwanted automated traffic
+```
+
+## Failed
+
+```text
+Shape:
+broken packet / X / fragment
+
+Color:
+red
+```
+
+---
+
+# 22. Traffic Density
+
+Traffic visuals are representative.
+
+Do not render every simulated request.
+
+Example:
+
+```text
+500 simulated requests/sec
+
+↓
+
+25 representative particles
+```
+
+Higher traffic increases:
+
+- particle density,
+- movement frequency,
+- visual pressure.
+
+It must not increase simulation load or alter simulation results.
+
+---
+
+# 23. Custom VFX
+
+All gameplay effects should be custom Stack & Survive assets.
+
+Required MVP VFX:
+
+```text
+Provisioning
+
+Scale Out
+
+Overload
+
+Cache Hit
+
+WAF Block
+
+Request Failure
+
+Critical Warning
+
+Scenario Success
+
+Scenario Failure
+```
+
+These effects must not modify official Azure icons.
+
+---
+
+# 24. Provisioning Effect
+
+Recommended:
+
+```text
+Placement
+
+↓
+
+Hologram building
+
+↓
+
+Construction ring
+
+↓
+
+Materialization
+
+↓
+
+ACTIVE
+```
+
+The Azure icon may appear once the resource identity needs to be communicated.
+
+The construction effect belongs to the custom building, not the official icon.
+
+---
+
+# 25. State Overlay Model
+
+Do not create a different Azure icon for each gameplay state.
+
+Use custom overlays.
+
+Example:
+
+```text
+Official App Service Icon
+        unchanged
+
+Custom building
+        +
+
+Healthy overlay
+Warning overlay
+Overloaded overlay
+Provisioning overlay
+```
+
+This prevents Azure identity and game state from becoming visually mixed.
+
+---
+
+# 26. HUD
+
+The HUD should be original Stack & Survive UI.
+
+Do not reproduce Azure Portal UI.
+
+Top HUD:
+
+```text
+Credits
+
+Traffic
+
+Availability
+
+Latency
+
+Scenario Phase
+```
+
+Example:
+
+```text
+BLACK FRIDAY
+
+1,250 credits
+320 req/s
+99.92% availability
+184 ms latency
+Wave 3 / 5
+```
+
+The goal is immediate game readability.
+
+---
+
+# 27. Objectives Panel
+
+Useful Hackathon objectives:
+
+```text
+☑ Survive all traffic phases
+
+□ Maintain availability ≥ 99%
+
+□ Keep average latency < 300 ms
+
+□ Stay within budget
+```
+
+This turns technical requirements into game objectives.
+
+---
+
+# 28. Event Feed
+
+The event feed is important for explaining simulation behavior.
+
+Examples:
+
+```text
+10:23 Bot traffic detected
+
+10:22 Protected Edge blocked malicious traffic
+
+10:21 App Service overloaded
+
+10:20 Scale-out completed
+
+10:19 Cache deployed
+```
+
+Events should be generated from actual simulation state.
+
+They must not invent events that did not occur.
+
+---
+
+# 29. Selected Resource Panel
+
+When a resource is selected:
+
+```text
+[Official Service Icon]
+
+App Service
+
+● Running
+
+Requests
+280 / 400 req/s
+
+Utilization
+72%
+
+Instances
+3
+
+Latency
+186 ms
+
+[ Scale Out ]
+
+[ View Details ]
+```
+
+The icon acts as an identity badge.
+
+The rest of the panel is original Stack & Survive UI.
+
+---
+
+# 30. Resource Labels
+
+On-map labels should remain compact.
+
+Example:
+
+```text
+[icon]
+
+App Service
+×3
+
+██████░░
+```
+
+Avoid showing large amounts of text beneath every building.
+
+Detailed information belongs in the selected-resource panel.
+
+---
+
+# 31. Environment Assets
+
+The environment must be custom or properly licensed game artwork.
+
+Possible sources for prototype assets:
+
+- Kenney CC0 packs
+- OpenGameArt CC0 assets
+- Brackeys CC0 VFX
+- Original project artwork
+
+Environment assets include:
+
+```text
+Ground
+
+Road / connection path
+
+Walls
+
+Trees
+
+Rocks
+
+Water
+
+Build pads
+
+Decorative infrastructure
+```
+
+They must not visually compete with resource buildings.
+
+---
+
+# 32. Custom Building Asset Strategy
+
+For the Hackathon, avoid creating dozens of original resources.
+
+Build only:
+
+```text
+App Service Building
+
+Azure SQL Building
+
+Managed Redis Building
+
+Protected Edge Building
+```
+
+These four should receive the highest visual polish.
+
+Generic environmental assets may come from reusable asset packs.
+
+---
+
+# 33. Asset Layering
+
+Recommended runtime composition:
+
+```text
+Resource Container
+
+├── Shadow
+├── Building Sprite
+├── Azure Icon Badge
+├── Status Ring
+├── Resource Label
+├── Instance Indicator
+└── Dynamic Effects
+```
+
+Example:
+
+```text
+                    ⚠
+                    │
+             [Azure Icon]
+                    │
+            ┌─────────────┐
+            │ APP SERVICE │
+            │    TOWER    │
+            └─────────────┘
+                 ×3
+              ███████░
+```
+
+---
+
+# 34. Phaser Implementation Model
+
+Conceptually:
+
+```ts
+ResourceView
+ ├─ buildingSprite
+ ├─ serviceIcon
+ ├─ statusOverlay
+ ├─ label
+ ├─ instanceBadge
+ └─ effects
+```
+
+The official icon is a separate sprite or image layer.
+
+It is not baked into the custom building texture unless the usage policy for that asset specifically permits it.
+
+Keeping it separate also makes later replacement easier.
+
+---
+
+# 35. Recommended Asset Structure
+
+```text
+apps/web/public/assets/
+
+  azure-icons/
+    app-service.svg
+    azure-sql.svg
+    managed-redis.svg
+    application-gateway.svg
+
+  buildings/
+    app-service.webp
+    azure-sql.webp
+    managed-redis.webp
+    protected-edge.webp
+
+  environment/
+    ground/
+    build-pad/
+    walls/
+    vegetation/
+
+  traffic/
+    browse.webp
+    order.webp
+    bot.webp
+
+  effects/
+    provisioning/
+    scale-out/
+    overload/
+    cache-hit/
+    waf-block/
+    failure/
+
+  ui/
+    actions/
+    status/
+    metrics/
+
+  audio/
+```
+
+Official Azure icon files should remain clearly separated from original game assets.
+
+---
+
+# 36. Asset Provenance
+
+Track where every asset came from.
+
+Recommended:
+
+```text
+assets/
+  ATTRIBUTION.md
+```
+
+Example:
+
+```markdown
+# Asset Attribution
+
+## Microsoft Azure Icons
+
+Source:
+Azure Architecture Center
+
+Usage:
+Service identification only.
+
+Files:
+- app-service.svg
+- azure-sql.svg
+- managed-redis.svg
+
+Modifications:
+None.
+
+
+## Kenney Assets
+
+Pack:
+Sci-Fi RTS
+
+License:
+CC0
+
+Usage:
+Prototype environment assets.
+```
+
+This becomes especially important if the repository is later made public.
+
+---
+
+# 37. Internal Hackathon Boundary
+
+This visual direction is designed primarily for:
+
+> **Microsoft Internal Hackathon use.**
+
+The internal context allows Azure identity to be central to the experience.
+
+However, internal use and future public distribution should remain separate decisions.
+
+Before:
+
+```text
+Public GitHub release
+
+Public hosted game
+
+Marketing material
+
+External commercial use
+```
+
+review:
+
+- asset licenses,
+- Azure icon usage,
+- Microsoft trademark requirements,
+- Hackathon IP rules,
+- employer OSS policy.
+
+The architecture should make official icons easy to replace if required.
+
+---
+
+# 38. Public-Release Compatibility
+
+To preserve future flexibility:
+
+```text
+Do not bake official icons permanently
+into custom building textures.
+```
+
+Instead:
+
+```text
+Building Asset
++
+Icon Layer
+```
+
+If external-use requirements change later:
+
+```text
+Official Icon
+
+can be replaced with
+
+Neutral Service Badge
+```
+
+without redesigning the entire building.
+
+---
+
+# 39. Visual Vertical Slice
+
+The next visual implementation should focus on a single polished scene.
+
+Required architecture:
+
+```text
+Internet
+    ↓
+Protected Edge
+    ↓
+App Service ×2
+    ├────→ Azure SQL
+    ↓
+Managed Redis
+    ↓
+Azure SQL
+```
+
+It should demonstrate:
+
+- official Azure icons,
+- custom buildings,
+- custom environment,
+- Browse traffic,
+- Order traffic,
+- Bot traffic,
+- WAF blocking,
+- Cache hits,
+- SQL overload,
+- App scale-out,
+- provisioning,
+- live HUD,
+- objectives,
+- event feed.
+
+---
+
+# 40. Visual Vertical Slice Acceptance Criteria
+
+A first-time viewer should understand within approximately ten seconds:
+
+```text
+1. This is a game.
+
+2. The game uses Azure services.
+
+3. Traffic is entering the architecture.
+
+4. Azure resources process that traffic.
+
+5. Some resources are under pressure.
+
+6. Architecture changes affect the outcome.
+```
+
+The viewer should not need to read the documentation first.
+
+---
+
+# 41. Hackathon Visual Priorities
+
+## P0
+
+- Game-world redesign
+- Custom buildings for four MVP resources
+- Official Azure icon integration
+- Traffic animation
+- Provisioning animation
+- Scale-out animation
+- Cache-hit effect
+- WAF-block effect
+- Overload feedback
+- Tactical HUD
+- Objectives
+- Event feed
+- Result comparison polish
+
+## P1
+
+- Better environment assets
+- Additional VFX
+- Small audio set
+- Better transitions
+- Mini-map
+- Additional camera polish
+
+## P2
+
+- Additional Azure services
+- Multiple environment themes
+- Advanced lighting
+- Full animation system
+- Mobile-specific visual redesign
+- Characters / specialists
+
+---
+
+# 42. Current Engineering UI Migration
+
+The existing engineering MVP should be transformed rather than rewritten.
+
+Keep:
+
+```text
+Simulation engine
+
+Architecture editor
+
+Traffic state
+
+Live actions
+
+Result calculations
+
+Replay
+
+Persistence
+```
+
+Replace or redesign:
+
+```text
+Primitive resource rectangles
+
+Engineering-console styling
+
+Large persistent text sections
+
+Always-visible diagnostic information
+
+Developer-oriented layout
+```
+
+The simulation remains untouched.
+
+Only the presentation layer becomes game-oriented.
+
+---
+
+# 43. Developer Inspector
+
+Developer diagnostics remain valuable.
+
+They should remain available only through a development mode.
+
+Normal player experience should not show:
+
+- JSON state,
+- internal counters,
+- debug controls,
+- engine diagnostics,
+- detailed regression information.
+
+---
+
+# 44. Final Visual Architecture
+
+The intended visual architecture becomes:
+
+```text
+                    Azure Identity
+                         │
+              Official Service Icons
+                         │
+                         ▼
+              ┌─────────────────────┐
+              │                     │
+              │  Stack & Survive    │
+              │    Game Assets      │
+              │                     │
+              └─────────────────────┘
+                         │
+            ┌────────────┼─────────────┐
+            │            │             │
+            ▼            ▼             ▼
+        Buildings      Traffic         VFX
+            │            │             │
+            └────────────┼─────────────┘
+                         │
+                         ▼
+                 Simulation State
+```
+
+Azure identity explains **what the resource is**.
+
+Stack & Survive visuals explain **what the resource is doing**.
+
+---
+
+# 45. Core Rule
+
+The project should consistently follow:
+
+> **Azure owns the service identity. Stack & Survive owns the game experience.**
+
+And:
+
+> **Official Azure icons remain official. Everything around them becomes a game.**
