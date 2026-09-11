@@ -10,7 +10,7 @@ Stack & Survive is a cloud architecture strategy game where players build and gr
 
 **Hackathon MVP — Scope Locked · PRD v0.5**
 
-This repository contains planning documents, production directory placeholders, and an isolated Phaser/PlayCanvas comparison in `apps/engine-spike/`. The spike has local build and test tooling, but the production game, simulation engine, production CI, and Azure deployment have not been implemented. Renderer selection awaits owner approval of the experiment's recommendation.
+This repository contains planning documents, production directory placeholders, and an isolated Phaser/PlayCanvas comparison in `apps/engine-spike/`. The spike has local build and test tooling, but the production game, simulation engine, production CI, and Azure deployment have not been implemented. The owner has accepted Phaser 3.90.0 for production development.
 
 ## MVP
 
@@ -47,7 +47,7 @@ docs/
   TECHNICAL_DESIGN.md    Technical design v0.2
   IMPLEMENTATION_PLAN.md Delivery phases and pre-implementation gates
   adr/
-    ADR-002-GAME-ENGINE.md Engine experiment evidence (Proposed; approval pending)
+    ADR-002-GAME-ENGINE.md Engine experiment evidence (Accepted: Phaser 3.90.0)
 apps/
   engine-spike/          Disposable two-engine experiment and tests
   game/                  Future browser game and renderer
@@ -72,12 +72,14 @@ Use Node 22.22.0 and pnpm 10.32.1. Verification commands and limits are document
 - [Gameplay Specification](docs/GAMEPLAY_SPEC.md) — What the player sees, does, and experiences (v0.3).
 - [Simulation Specification](docs/SIMULATION_SPEC.md) — Corrected simulation rules, authoritative values, and arithmetic reference matrix (v0.2).
 - [Technical Design](docs/TECHNICAL_DESIGN.md) — Software structure, state ownership, intended stack, and deployment design (v0.2).
-- [Implementation Plan](docs/IMPLEMENTATION_PLAN.md) — Phased delivery, scope guardrails, and verification gates (v0.3, draft); project management rules are accepted.
-- [ADR-002: Game Engine Selection](docs/adr/ADR-002-GAME-ENGINE.md) — Executed comparison, evidence and recommendation; owner decision pending (Proposed).
+- [Implementation Plan](docs/IMPLEMENTATION_PLAN.md) — Phased delivery, scope guardrails, and verification gates (v0.5, draft); work is tracked with GitHub Issues and labels, without milestones or a Project board.
+
+The [ordered MVP backlog (#7)](https://github.com/yeongseon/stack-and-survive/issues/7) links all currently planned work. Prepare the backlog first, then execute one issue at a time in dependency order; individual issues are the source of status and completion evidence.
+- [ADR-002: Game Engine Selection](docs/adr/ADR-002-GAME-ENGINE.md) — Executed comparison and accepted Phaser 3.90.0 decision.
 
 `SIMULATION_SPEC.md` is the source of truth for numerical simulation behavior. `TECHNICAL_DESIGN.md` documents the production architecture; the simulation/game implementation and Azure deployment remain future work.
 
-Document expansion is frozen at these six documents for the MVP. Simulation reference metrics were checked arithmetically; gameplay tests and player playtesting have not run. The rendering spike's unit/browser tests have run, but do not verify simulation correctness. Renderer selection remains Proposed pending owner approval.
+Document expansion is frozen at these six documents for the MVP. Simulation reference metrics were checked arithmetically; gameplay tests and player playtesting have not run. The rendering spike's unit/browser tests have run, but do not verify simulation correctness. Phaser is accepted; human playtesting, Azure deployment and external telemetry retain separate approval/evidence gates.
 
 ## Important boundaries
 

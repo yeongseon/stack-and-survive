@@ -1,7 +1,7 @@
 # Stack & Survive — Implementation Plan
 
-**Version:** 0.3  
-**Status:** Draft — M0 renderer experiment executed; production implementation not started  
+**Version:** 0.5  
+**Status:** Draft — renderer experiment executed; production implementation not started  
 **Scope:** Hackathon MVP, one Black Friday scenario
 
 ## 1. Purpose and document freeze
@@ -129,36 +129,57 @@ Do not introduce authentication, cloud saves, Functions, Service Bus, multiplaye
 
 If time is limited, cut audio, decorative polish, optional telemetry, and optional speed controls before cutting simulation correctness, clear feedback, or redesign/replay.
 
-The isolated `apps/engine-spike/` experiment has been executed; ADR-002 records observations and awaits owner acceptance. The next production milestone is a truthful App → SQL loop, not another specification. Production phases above remain planned work.
+The isolated `apps/engine-spike/` experiment has been executed; the owner accepted Phaser in ADR-002. The next production goal is a truthful App → SQL loop, not another specification. Production phases above remain implementation guidance, not GitHub milestones.
 
 ## 5. Project management rules
 
-**Status: Accepted by the project owner.** These rules govern project work; adopting a rule alone does not authorize remote operations. Documentation publication and initial issues/milestones were subsequently requested and created. No Project board, branch protection, production CI, or deployment is implied. Keep the rules here rather than introducing another management document. The implementation plan remains draft; renderer selection awaits owner approval of the executed spike.
+**Status: Accepted by the project owner.** Track work with GitHub Issues and labels only; do not use GitHub milestones or a Project board. The initial five milestones were removed at the owner's request without deleting issues. Keep the rules here rather than introducing another management document. The owner has now approved Phaser and sequential verified development/commit/push/PR merges. This does not authorize Azure deployment, external telemetry, new scope or balance changes.
 
 ### Work tracking and scope
 
-- Use GitHub Issues as the authoritative task list. A GitHub Project board is optional; avoid a second duplicate backlog.
+- Use GitHub Issues as the authoritative task list, with saved label filters instead of a separate board or milestone hierarchy.
 - Use four states: Backlog → Ready → In Progress → Done. Mark blocked work explicitly with its dependency and reason; blocked is not done.
 - Initially represent the first three states with mutually exclusive `status:backlog`, `status:ready`, and `status:in-progress` labels. Done is a completed closed issue after review/merge, not a separate board. Closing as not planned is not completion. Use P0/P1/P2 labels; due dates remain unset until provided. Initial issues #1–#5 cover the spike, production setup, first simulation slice, visualization, and boundary-test follow-up.
 - One issue should deliver one observable result, normally within half a day to one day. Split larger features into independently verifiable slices; record a dependency rather than starting everything at once.
 - Each issue records purpose, in-scope work, exclusions, relevant specification sections, acceptance criteria, verification method, owner, and dependencies. Dates are added when the Hackathon deadline and availability are known, not invented.
-- Priorities: P0 = required for the core demo; P1 = useful after P0; P2 = post-MVP. New ideas go to Backlog and do not automatically enter the current milestone.
+- Priorities: P0 = required for the core demo; P1 = useful after P0; P2 = post-MVP. New ideas go to Backlog and do not automatically enter current work.
 - Limit work in progress to one primary issue per contributor. Parallel AI investigations are allowed, but avoid overlapping edits to the same files.
 - The project owner approves scope changes, renderer selection, and balance changes. Proposed changes must explain the effect on the demo and what existing work they displace.
 
-### Milestones
+### Backlog first, sequential execution
 
-Group the implementation phases by a demonstrable outcome:
+Create the currently known scope-locked MVP backlog before starting further production work. [Issue #7](https://github.com/yeongseon/stack-and-survive/issues/7) is the ordered link index: 25 required execution issues, two optional P1 issues, and the index itself (28 issues total). It is not a milestone, second status board, or additional concurrent implementation task. Read each linked issue for current status, scope, acceptance criteria, verification, and dependencies.
 
-| Milestone | Deliverable | Exit evidence |
+Execute one issue at a time in the index's dependency order, not numeric issue order. The initial sequence is #1 → #2 → #8 → #3 → #5. Complete implementation, verification, and authorized review/merge before promoting the next item. The owner explicitly accepted Phaser and authorized sequential development, commits, pushes and reviewed PR merges. Actual human playtesting, Azure deployment, external telemetry and new scope/balance changes are not covered by that authorization.
+
+The index groups work from validated inputs through simulation, full-run regressions, editor/gameplay, results/retry/save, accessibility and human testing, then hosting preparation and explicitly approved deployment. Basic tests ship with each implementation; dedicated regression issues add coverage rather than defer testing. Optional visual/audio polish and telemetry do not block core completion.
+
+Upfront coverage is not a claim that every future bug is knowable. Before starting an issue, refine acceptance criteria using what is now known; split a task if it cannot deliver one reviewable outcome within a reasonable session. Newly discovered defects become linked issues and are inserted at the appropriate dependency point. Do not expand into post-MVP features or continue through a blocking issue just to follow the original list.
+
+The tracking index is a coordination exception to the code-PR completion rule: it closes when its required child work has actual completion evidence, without a separate implementation PR. Human comprehension testing requires real participant evidence; engine choice, merges, external telemetry, and cloud deployment retain their explicit approval boundaries. Creating issues does not authorize executing all of them automatically.
+
+### Issue labels
+
+Keep classification small and reuse existing GitHub labels rather than creating duplicate synonyms.
+
+| Dimension | Labels | Rule |
 |---|---|---|
-| M0 — Engine decision | Comparable Phaser/PlayCanvas spike and accepted ADR | Recorded checks and selection rationale |
-| M1 — Headless truth | Minimal setup, simulation core, and Black Friday regression suite | Repeatable tests matching reference behavior |
-| M2 — First playable | Baseline world, placement/connections, and visualization | Browser walkthrough showing a real simulation bottleneck |
-| M3 — Complete loop | Live actions, local save, results, redesign, comparison | A complete fail → understand → redesign → retry walkthrough |
-| M4 — Demo ready | Focused polish and requested Azure deployment | Rehearsed demo and deployed smoke checks |
+| Priority | `P0`, `P1`, `P2` | Exactly one per planned task |
+| Progress | `status:backlog`, `status:ready`, `status:in-progress` | Exactly one per open planned task; replace the old label when moving |
+| Main work type | `enhancement`, `bug`, `documentation`, `spike`, `test`, `chore` | Choose one main type: feature, defect, docs, experiment, dedicated tests, or tooling/maintenance |
+| Optional flag | `blocked` | Add only when progress is prevented; name the dependency/decision in the issue and remove when resolved |
 
-These milestones group existing phases; they do not add features or authorize implementation/deployment.
+An ordinary future task with known dependencies can stay in Backlog without `blocked`; use the flag when the obstruction needs attention. Awaiting routine PR review remains In Progress. On successful completion after review/merge, close the issue and remove its progress and blocked labels; retain priority/type for history. Closing as not planned is not Done.
+
+Initial classification: #1 `spike`, #2 `chore`, #3 and #4 `enhancement`, #5 `test`. They retain their existing P0 and progress labels. Existing special-purpose labels such as `accessibility` or `duplicate` may be used when relevant, but are not another required classification axis. Do not create area labels for every package before there is a demonstrated filtering need. Git release tags are separate from issue labels and are not needed for this setup.
+
+Useful issue filters:
+
+```text
+is:issue is:open label:P0 label:status:ready
+is:issue is:open label:status:in-progress
+is:issue is:open label:blocked
+```
 
 ### Branches, commits, and pull requests
 
@@ -181,7 +202,7 @@ An issue is Ready when its outcome and acceptance checks are clear, prerequisite
 - Simulation/balance changes update the authoritative specification, balance version, and corresponding regression expectations together. Passing arithmetic checks is not equivalent to engine tests or player playtesting.
 - Player-facing work is exercised in the browser, with observed behavior and any limitations recorded. A renderer screenshot alone does not verify simulation correctness.
 - Changed behavior is reflected in the existing documents; no secrets, confidential data, or unlicensed assets are added.
-- The PR is reviewed and merged, and its issue is closed. Code awaiting review remains In Progress. Local completion, merge, and deployment are distinct statuses; deployment is required only for a deployment issue or the demo-ready milestone.
+- The PR is reviewed and merged, and its issue is closed. Code awaiting review remains In Progress. Local completion, merge, and deployment are distinct statuses; deployment is required only for an issue whose acceptance criteria explicitly require it.
 
 ### Session handoff and risk reporting
 
