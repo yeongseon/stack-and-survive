@@ -9,6 +9,7 @@ export type View = Readonly<{
   state: ReturnType<typeof createSimulation>;
   snapshot: ReturnType<typeof advanceSimulation>['snapshot'];
   result: ReturnType<typeof simulationResult> | null;
+  previousResult: ReturnType<typeof simulationResult> | null;
   error: string | null;
   selected: string | null;
   building: Kind | null;
@@ -34,7 +35,7 @@ export function createController(timer: Clock = clock) {
   const initial = (instances = 1): View => {
     const architecture = baseline(instances);
     architecture.resources.forEach((r, i) => { r.x = (i - 1) * 260; r.y = (i - 1) * 100; });
-    return { state: createSimulation(architecture, blackFriday), snapshot: null, result: null, error: null,
+    return { state: createSimulation(architecture, blackFriday), snapshot: null, result: null, previousResult: null, error: null,
       selected: null, building: null, preview: null, camera: { x: 0, y: 0, zoom: 1 }, notice: '', connecting: false, connectionSource: null, rendererGeneration: 0, recoveringRenderer: false, queuedActions: [], confirmationEpoch: 0 };
   };
   let view: View = initial();
@@ -112,7 +113,7 @@ export function createController(timer: Clock = clock) {
     redesign() {
       if (destroyed || !view.result) return;
       stop();
-      publish({ ...view, state: createSimulation(view.state.runtime.architecture, blackFriday), snapshot: null, result: null,
+      publish({ ...view, previousResult: structuredClone(view.result), state: createSimulation(view.state.runtime.architecture, blackFriday), snapshot: null, result: null,
         queuedActions: [], notice: '', building: null, preview: null, connecting: false, connectionSource: null,
         rendererGeneration: view.rendererGeneration + 1, confirmationEpoch: view.confirmationEpoch + 1 });
     },

@@ -164,3 +164,21 @@ it('uses engine rejection reasons for instance limits and absent WAF paths', () 
   f.controller.queueAction({ type: 'EMERGENCY_WAF' });
   expect(f.controller.getSnapshot().queuedActions).toEqual([]); f.controller.destroy();
 });
+it('redesign preserves layout and completed capacity, resets runtime and retains previous result', () => {
+  const f = fixture(); f.controller.move('compute', { x: 40, y: 0 }); f.controller.start();
+  for (let i = 0; i < 34; i++) f.tick(); f.controller.queueAction({ type: 'SCALE_OUT' });
+  while (f.controller.getSnapshot().state.runtime.time < 135) f.tick();
+  f.controller.queueAction({ type: 'SCALE_OUT' });
+  while (f.controller.getSnapshot().state.runtime.status === 'RUNNING') f.tick();
+  const finished = structuredClone(f.controller.getSnapshot());
+  expect(finished.state.runtime.scaleDue).not.toBeNull();
+  f.controller.redesign(); const retry = f.controller.getSnapshot();
+  expect(retry.state.runtime.architecture).toEqual(finished.state.runtime.architecture);
+  expect(retry.state.runtime.architecture.resources.find(r => r.kind === 'compute')!.instances).toBe(2);
+  expect(retry.state.runtime.scaleDue).toBeNull(); expect(retry.state.runtime.actionLog).toEqual([]);
+  expect(retry.state.economy.infrastructureCost).toBe(0); expect(retry.state.economy.remainingBudget).toBe(140);
+  expect(retry.previousResult).toEqual(finished.result); expect(retry.result).toBeNull();
+  f.controller.move('compute', { x: 80, y: 0 });
+  expect(f.controller.getSnapshot().previousResult).toEqual(finished.result);
+  f.controller.destroy();
+});
