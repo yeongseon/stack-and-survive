@@ -500,7 +500,7 @@ The game engine is NOT responsible for:
 
 # 17. Game Engine Decision
 
-The Hackathon renderer engine must be selected through a short technical spike.
+The Hackathon renderer is Phaser 3.90.0, accepted by the project owner after the comparative spike. ADR-002 records the evidence and limitations. The evaluation criteria below remain the historical selection rationale.
 
 Final candidates:
 
@@ -614,7 +614,7 @@ interface GameRenderer {
 }
 ```
 
-Phaser or PlayCanvas implements this interface.
+The production Phaser adapter implements this interface. PlayCanvas remains isolated to the comparison experiment.
 
 ---
 
@@ -1688,7 +1688,7 @@ Vitest
 Game engine:
 
 ```text
-Pending PlayCanvas vs Phaser spike
+Phaser 3.90.0 (accepted in ADR-002)
 ```
 
 ---
@@ -1796,7 +1796,7 @@ Cloud
 Azure
 
 Game Engine
-One of PlayCanvas / Phaser after spike
+Phaser 3.90.0
 ```
 
 Do not change these unless a blocking technical issue appears.

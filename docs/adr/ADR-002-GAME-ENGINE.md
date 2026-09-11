@@ -2,7 +2,7 @@
 
 ## Status
 
-Proposed — comparative spike executed on 2026-09-11; recommendation ready for owner review. No production engine has been accepted. Tracking: [issue #1](https://github.com/yeongseon/stack-and-survive/issues/1).
+Accepted — the project owner explicitly selected “Phaser 확정·순차 진행” in the development session, authorizing Phaser and sequential verified commit/push/PR merges. The comparative spike was executed on 2026-09-11. Tracking: [issue #1](https://github.com/yeongseon/stack-and-survive/issues/1). Human playtesting, Azure deployment, and external telemetry require separate evidence/approval.
 
 ## Context
 
@@ -85,9 +85,9 @@ Dependency audit found a moderate advisory in the initial Vitest 3 toolchain; up
 
 ## Decision
 
-**Recommendation: Phaser for the initial 2D MVP, pending project-owner acceptance.** Both tested versions met the limited scene requirements. Phaser required fewer engine-specific entities/materials and produced the smaller observed engine chunk; the experiment did not demonstrate a game requirement that needs PlayCanvas's 3D machinery. This is a simplicity/scope recommendation, not a performance ranking.
+**Decision: Phaser 3.90.0 for the initial 2D MVP, accepted by the project owner.** Both tested versions met the limited scene requirements. Phaser required fewer engine-specific entities/materials and produced the smaller observed engine chunk; the experiment did not demonstrate a game requirement that needs PlayCanvas's 3D machinery. This is a simplicity/scope decision, not a performance ranking.
 
-If the owner prefers true 3D visual depth, PlayCanvas remains a working alternative. Do not proceed with a production engine decision until the owner reviews the experiment and records acceptance here.
+PlayCanvas remains a future alternative if true 3D depth becomes a justified requirement. Production uses only Phaser; keep the comparative experiment isolated from production dependencies.
 
 Prefer Phaser if sprite-based 2D / isometric rendering meets the needs with lower implementation effort. Prefer PlayCanvas if depth and 3D transforms provide a demonstrated benefit that justifies additional complexity. These are selection criteria, not test results.
 
