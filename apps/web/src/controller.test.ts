@@ -76,3 +76,24 @@ it('ignores callbacks from cancelled timer generations after reset and restart',
   controller.destroy(); callbacks[2]();
   expect(controller.getSnapshot().state.runtime.time).toBe(1);
 });
+it('connects only during preparation and clears stale connection selection', () => {
+  const f = fixture(); f.controller.disconnect('compute', 'database');
+  f.controller.start(); expect(f.controller.getSnapshot().state.runtime.status).toBe('PREPARATION');
+  f.controller.connectMode(true); f.controller.connectNode('compute'); f.controller.connectNode('database');
+  expect(f.controller.getSnapshot().state.runtime.architecture.connections).toHaveLength(2);
+  f.controller.connectNode('compute'); f.controller.build('cache');
+  expect(f.controller.getSnapshot().connectionSource).toBeNull();
+  f.controller.start(); const architecture = structuredClone(f.controller.getSnapshot().state.runtime.architecture);
+  f.controller.disconnect('compute', 'database'); f.controller.connectMode(true); f.controller.connectNode('database');
+  expect(f.controller.getSnapshot().state.runtime.architecture).toEqual(architecture); f.controller.destroy();
+});
+it('retains invalid connection feedback and clears notices on successful start', () => {
+  const f = fixture(); f.controller.connectMode(true); f.controller.connectNode('database'); f.controller.connectNode('compute');
+  expect(f.controller.getSnapshot().notice).toContain('Invalid connection direction');
+  expect(f.controller.getSnapshot().connectionSource).toBe('database');
+  f.controller.connectMode(true); f.controller.connectNode('compute'); f.controller.connectNode('database');
+  expect(f.controller.getSnapshot().notice).toContain('already exists');
+  expect(f.controller.getSnapshot().connectionSource).toBe('compute');
+  f.controller.start(); expect(f.controller.getSnapshot().notice).toBe('');
+  expect(f.controller.getSnapshot().connectionSource).toBeNull(); f.controller.destroy();
+});

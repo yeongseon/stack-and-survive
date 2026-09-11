@@ -1,7 +1,7 @@
 import type { Controller, View } from './controller';
 import { compare } from '@stack-and-survive/simulation/economy';
 import { definitions } from '@stack-and-survive/cloud-domain';
-import { positionError, project, snap, unproject, type Point } from './editor';
+import { positionError, project, snap, unproject, validTargets, type Point } from './editor';
 
 export function utilizationLabel(u: number | null): string {
   return u === null ? 'READY' : compare(u, 1) > 0 ? '! OVERLOADED' : compare(u, .7) > 0 ? 'WARNING' : 'HEALTHY';
@@ -46,6 +46,7 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller): 
         const appU = requests?.app.utilization ?? null;
         const sqlU = requests ? Math.max(requests.sql.readUtilization, requests.sql.writeUtilization) : null;
         this.captions.forEach(c => c.setVisible(false));
+        const targets = view.connecting && view.connectionSource ? validTargets(architecture, view.connectionSource) : [];
         positions.forEach((p, i) => {
           const resource = resources[i];
           const u = resource.kind === 'compute' ? appU : resource.kind === 'database' ? sqlU : null;
@@ -56,6 +57,7 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller): 
           g.lineStyle(view.selected === resource.id ? 4 : 2, view.selected === resource.id ? 0xffffff : color); g.strokeRect(p.x - 34, p.y - 22, 68, 52);
           g.fillStyle(color, .75); g.fillTriangle(p.x - 34, p.y - 22, p.x, p.y - 42, p.x + 34, p.y - 22);
           if (state === '! OVERLOADED') { g.fillStyle(0xffffff); g.fillRect(p.x - 3, p.y - 12, 6, 17); g.fillCircle(p.x, p.y + 14, 3); }
+          if (targets.includes(resource.id)) { g.lineStyle(2, 0xefc27b); g.strokeCircle(p.x, p.y, 48); }
           this.captions[i].setVisible(true).setPosition(p.x, p.y + 48).setText(`${definitions[resource.kind].name}${resource.kind === 'compute' ? ` ×${resource.instances}` : ''}\n${resource.kind === 'internet' ? 'EXTERNAL TRAFFIC' : `${state}${u === null ? '' : ` · ${(u * 100).toFixed(1)}%`}`}`);
         });
         if (view.building && view.preview) {
@@ -66,13 +68,17 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller): 
         } else host.dataset.placement = 'none';
         let packetCount = 0;
         if (view.state.runtime.status === 'RUNNING' && !view.error && requests) {
-          const volumes = [requests.app.incoming, requests.sql.readDemand + requests.sql.writeDemand];
-          const route = ['internet', 'compute', 'database'].map(kind => positions[resources.findIndex(r => r.kind === kind)]);
-          volumes.forEach((volume, edge) => {
+          const at = (kind: string) => positions[resources.findIndex(r => r.kind === kind)];
+          const flows = [
+            ...(requests.edge.active ? [{ a: at('internet'), b: at('edge'), volume: requests.offered.browse + requests.offered.order + requests.offered.bot }, { a: at('edge'), b: at('compute'), volume: requests.app.incoming }]
+              : [{ a: at('internet'), b: at('compute'), volume: requests.app.incoming }]),
+            ...(requests.cache.active ? [{ a: at('compute'), b: at('cache'), volume: requests.cache.eligible }, { a: at('cache'), b: at('database'), volume: requests.sql.readDemand }, { a: at('compute'), b: at('database'), volume: requests.sql.writeDemand }]
+              : [{ a: at('compute'), b: at('database'), volume: requests.sql.readDemand + requests.sql.writeDemand }]),
+          ];
+          flows.forEach(({ a, b, volume }) => {
             const count = Math.min(30, Math.ceil(volume / 12)); packetCount += count;
             for (let i = 0; i < count; i++) {
               const p = (time / 3000 + i / count) % 1;
-              const a = route[edge]; const b = route[edge + 1];
               if (!a || !b) continue;
               g.fillStyle(0xdbead6); g.fillCircle(a.x + (b.x - a.x) * p, a.y + (b.y - a.y) * p, 3);
             }
@@ -105,6 +111,7 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller): 
       const p = point(e);
       if (view.building) { controller.place(logical(p)); return; }
       const resource = view.state.runtime.architecture.resources.find(r => { const s = project(r, view.camera, canvas.clientWidth, canvas.clientHeight); return Math.abs(s.x - p.x) < 40 && Math.abs(s.y - p.y) < 44; });
+      if (view.connecting) { if (resource) controller.connectNode(resource.id); return; }
       controller.select(resource?.id ?? null);
       const local = logical(p);
       drag = { pointer: e.pointerId, id: resource?.id ?? null, last: p, offset: { x: local.x - (resource?.x ?? 0), y: local.y - (resource?.y ?? 0) } };

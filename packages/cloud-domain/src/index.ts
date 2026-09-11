@@ -8,6 +8,7 @@ export const definitions: Record<Kind, { name: string; cost: number; provisionin
   edge: { name: 'Protected Edge / WAF', cost: 3, provisioning: 4 },
 };
 const allowed = new Set(['internet:compute', 'internet:edge', 'edge:compute', 'compute:database', 'compute:cache', 'cache:database']);
+export function allowsConnection(from: Kind, to: Kind): boolean { return allowed.has(`${from}:${to}`); }
 export function parseArchitecture(input: unknown): Architecture {
   const raw = record(input, 'architecture');
   if (raw.version !== 1) throw new Error('Unsupported architecture version');
@@ -24,7 +25,7 @@ export function parseArchitecture(input: unknown): Architecture {
   }).filter((c, i, all) => all.findIndex(a => a.from === c.from && a.to === c.to) === i);
   for (const c of connections) {
     const from = resources.find(r => r.id === c.from); const to = resources.find(r => r.id === c.to);
-    if (!from || !to || !allowed.has(`${from.kind}:${to.kind}`)) throw new Error('Invalid connection direction or endpoint');
+    if (!from || !to || !allowsConnection(from.kind, to.kind)) throw new Error('Invalid connection direction or endpoint');
   }
   for (const kind of Object.keys(definitions) as Kind[]) {
     const count = resources.filter(r => r.kind === kind).length;
