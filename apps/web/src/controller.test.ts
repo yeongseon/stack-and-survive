@@ -40,3 +40,39 @@ it('renderer failure halts the clock without changing simulation totals', () => 
   expect(f.active()).toBe(0); expect(f.controller.getSnapshot().state).toEqual(previous);
   expect(f.controller.getSnapshot().error).toBe('Renderer failed'); f.controller.destroy();
 });
+it('provisions optional resources only in preparation without charging runtime', () => {
+  const f = fixture(); f.controller.build('cache'); f.controller.place({ x: -240, y: 200 });
+  expect(f.active()).toBe(1);
+  for (let i = 0; i < 5; i++) f.tick();
+  expect(f.controller.getSnapshot().state.runtime.architecture.resources.find(r => r.kind === 'cache')!.remaining).toBe(0);
+  expect(f.controller.getSnapshot().state.runtime.time).toBe(0);
+  expect(f.controller.getSnapshot().state.economy.infrastructureCost).toBe(0);
+  expect(f.active()).toBe(0); f.controller.destroy();
+});
+it('rejects architecture edits while running and safely removes pending compute', () => {
+  const f = fixture(); f.controller.scalePreparation(); expect(f.active()).toBe(1);
+  f.controller.remove('compute'); f.tick();
+  expect(f.active()).toBe(0); expect(f.controller.getSnapshot().state.runtime.preparationScaleDue).toBeNull();
+  f.controller.reset(); f.controller.start();
+  const architecture = structuredClone(f.controller.getSnapshot().state.runtime.architecture);
+  f.controller.move('compute', { x: 600, y: 200 }); f.controller.remove('database'); f.controller.build('cache'); f.controller.scalePreparation();
+  expect(f.controller.getSnapshot().state.runtime.architecture).toEqual(architecture);
+  f.controller.destroy();
+});
+it('ignores callbacks from cancelled timer generations after reset and restart', () => {
+  const callbacks: (() => void)[] = [];
+  const timer: Clock = { start(callback) { callbacks.push(callback); return () => {}; } };
+  const controller = createController(timer);
+  controller.build('cache'); controller.place({ x: -240, y: 200 });
+  const oldPrepare = callbacks[0];
+  controller.reset();
+  const baselineState = structuredClone(controller.getSnapshot());
+  oldPrepare(); expect(controller.getSnapshot()).toEqual(baselineState);
+  controller.start(); const oldRun = callbacks[1];
+  controller.reset(); controller.start();
+  oldPrepare(); oldRun();
+  expect(controller.getSnapshot().state.runtime.time).toBe(0);
+  callbacks[2](); expect(controller.getSnapshot().state.runtime.time).toBe(1);
+  controller.destroy(); callbacks[2]();
+  expect(controller.getSnapshot().state.runtime.time).toBe(1);
+});
