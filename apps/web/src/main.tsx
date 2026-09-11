@@ -24,6 +24,7 @@ function App() {
   const [controller] = useState(() => createController());
   const view = useSyncExternalStore(controller.subscribe, controller.getSnapshot);
   const [inspecting, setInspecting] = useState(false);
+  const [scaleConfirmation, setScaleConfirmation] = useState<{ generation: number; epoch: number } | null>(null);
   useEffect(() => () => controller.destroy(), [controller]);
   const running = view.state.runtime.status === 'RUNNING';
   const r = view.snapshot?.requests;
@@ -39,6 +40,11 @@ function App() {
   const placementError = view.preview ? positionError(architecture, snap(view.preview)) : null;
   const metrics = view.snapshot?.metrics;
   const economy = view.state.economy;
+  const runtime = view.state.runtime;
+  const scaleReason = controller.actionReason({ type: 'SCALE_OUT' });
+  const rateReason = controller.actionReason({ type: 'RATE_LIMIT', enabled: !runtime.rateLimit });
+  const wafReason = controller.actionReason({ type: 'EMERGENCY_WAF' });
+  const confirmScale = scaleConfirmation?.generation === view.rendererGeneration && scaleConfirmation.epoch === view.confirmationEpoch;
   return <main>
     <header><div><p className="eyebrow">STACK &amp; SURVIVE / FIRST PLAYABLE SLICE</p><h1>Your architecture<br />is your defense.</h1></div><div className="scenario"><span>BLACK FRIDAY</span><strong data-testid="status">{view.error ? 'STOPPED · ERROR' : inspecting && running ? 'MANUAL INSPECTION' : view.state.runtime.status}</strong><span><b data-testid="elapsed">{view.state.runtime.time}</b> / 180 seconds</span></div></header>
     <section className="controls" aria-label="Scenario controls">
@@ -101,6 +107,25 @@ function App() {
       </section>}
     </aside></section>
     <p className="traffic-legend">● Browse · ■ Order / write · ▲ Bot · × Dropped / filtered · ○ Cache response. Representative markers; hits stop at Cache, filtered bots stop at Edge.</p>
+    <section className="live-actions" aria-label="Live interventions">
+      <div><h2>Scale out App</h2><p>+150 req/s after 8 seconds · +5 credits/min when active.</p>
+        <button type="button" disabled={!!scaleReason} aria-describedby="scale-reason" onClick={() => setScaleConfirmation({ generation: view.rendererGeneration, epoch: view.confirmationEpoch })}>Scale out App</button>
+        {confirmScale && !scaleReason && <div role="group" aria-label="Confirm scale-out"><p>Provision one additional instance? Capacity and cost begin after 8 seconds.</p><button type="button" onClick={() => { controller.queueAction({ type: 'SCALE_OUT' }); setScaleConfirmation(null); }}>Confirm scale-out</button><button type="button" onClick={() => setScaleConfirmation(null)}>Cancel scale-out</button></div>}
+        <p id="scale-reason">{scaleReason ?? 'Ready to request.'}</p>
+        <p data-testid="scale-progress">{runtime.scaleDue === null ? `${instances} active instances` : `${instances} active · additional instance pending: ${runtime.scaleDue - runtime.time}s · not contributing capacity`}</p>
+      </div>
+      <div><h2>Rate Limit</h2><p>Reject 5% of remaining traffic, including customers. Lower pressure can cost revenue and availability.</p>
+        <button type="button" disabled={!!rateReason} aria-describedby="rate-reason" onClick={() => controller.queueAction({ type: 'RATE_LIMIT', enabled: !runtime.rateLimit })}>{runtime.rateLimit ? 'Disable Rate Limit' : 'Enable Rate Limit'}</button>
+        <p id="rate-reason">{rateReason ?? '2-second activation/deactivation delay; 5-second toggle interval.'}</p>
+        <p data-testid="rate-progress">{runtime.rateTransition ? `Transition pending: ${runtime.rateTransition.due - runtime.time}s` : runtime.rateLimit ? 'Rate Limit ON' : 'Rate Limit OFF'}</p>
+      </div>
+      <div><h2>Emergency WAF</h2><p>8 credits once per attempt · 1-second delay · 30 seconds of 90% bot filtering with 3% false positives.</p>
+        <button type="button" disabled={!!wafReason} aria-describedby="waf-reason" onClick={() => controller.queueAction({ type: 'EMERGENCY_WAF' })}>Activate Emergency WAF</button>
+        <p id="waf-reason">{wafReason ?? 'Requires active protected ingress; filtering returns to normal after expiry.'}</p>
+        <p data-testid="waf-progress">{runtime.emergency ? runtime.time <= runtime.emergency.start ? 'Emergency activation pending' : `Emergency mode: ${Math.max(0, runtime.emergency.end - runtime.time)}s remaining` : runtime.emergencyUsed ? 'Emergency use consumed' : 'Normal WAF mode'}</p>
+      </div>
+    </section>
+    {view.queuedActions.length > 0 && <p role="status">Queued for the next simulation tick: {view.queuedActions.map(a => a.type).join(', ')}. {paused ? 'Preserved while paused; executes after resume.' : 'No capacity or charge applied until the tick accepts the action.'}</p>}
     {view.result && <section className="outcome" role="status"><p className="eyebrow">SCENARIO OUTCOME</p><h2>{view.result.primary}</h2><p>{view.result.insight}</p></section>}
     <details><summary>Developer inspector (not a player speed control)</summary><button type="button" disabled={!running || !!view.error} onClick={() => { setInspecting(true); controller.inspectNextTick(); }}>Step one tick</button><p>{inspecting ? 'Manual stepping: automatic clock stopped. Reset to return to 1×.' : 'Stepping stops automatic time; each click advances exactly one real simulation tick.'}</p><pre data-testid="diagnostics">{JSON.stringify({ time: view.state.runtime.time, status: view.state.runtime.status, snapshot: view.snapshot, architecture, selected: view.selected, camera: view.camera }, null, 2)}</pre></details>
     <footer>BUILD THE CLOUD. SURVIVE THE TRAFFIC.<span>Baseline only · Editing and live actions arrive in subsequent issues.</span></footer>

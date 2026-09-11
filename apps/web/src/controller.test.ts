@@ -120,3 +120,47 @@ it('renderer recovery remounts without advancing or silently resuming runtime', 
   expect(f.active()).toBe(0); f.controller.resume(); f.tick();
   expect(f.controller.getSnapshot().state.runtime.time).toBe(2); f.controller.destroy();
 });
+it('queues sequenced live actions without advancing time or spending during preview', () => {
+  const f = fixture(); f.controller.start();
+  const before = structuredClone(f.controller.getSnapshot().state);
+  expect(f.controller.actionReason({ type: 'SCALE_OUT' })).toBeNull();
+  expect(f.controller.getSnapshot().state).toEqual(before);
+  f.controller.queueAction({ type: 'SCALE_OUT' });
+  expect(f.controller.getSnapshot().state).toEqual(before);
+  expect(f.controller.actionReason({ type: 'SCALE_OUT' })).toContain('pending');
+  f.controller.queueAction({ type: 'RATE_LIMIT', enabled: true });
+  expect(f.controller.getSnapshot().queuedActions.map(a => a.sequence)).toEqual([0, 1]);
+  f.tick(); expect(f.controller.getSnapshot().queuedActions).toEqual([]);
+  expect(f.controller.getSnapshot().state.runtime.scaleDue).toBe(8);
+  expect(f.controller.getSnapshot().state.runtime.rateTransition?.due).toBe(2);
+  f.controller.pause(); const queued = f.controller.getSnapshot().queuedActions;
+  f.controller.queueAction({ type: 'SCALE_OUT' }); expect(f.controller.getSnapshot().queuedActions).toEqual(queued);
+  f.controller.destroy();
+});
+it('controller reactive scale follows the exact accepted action policy', () => {
+  const f = fixture(); f.controller.start();
+  for (let i = 0; i < 34; i++) f.tick();
+  f.controller.queueAction({ type: 'SCALE_OUT' });
+  for (let i = 34; i < 43; i++) f.tick();
+  expect(f.controller.getSnapshot().snapshot!.requests.app.capacity).toBe(300);
+  expect(f.controller.getSnapshot().state.streaks.availability).toBe(0);
+  expect(f.controller.getSnapshot().state.runtime.actionLog[0]).toMatchObject({ accepted: true, action: { time: 34, type: 'SCALE_OUT' } });
+  f.controller.destroy();
+});
+it('preserves already queued actions while paused but clears them on reset', () => {
+  const f = fixture(); f.controller.start(); f.controller.queueAction({ type: 'SCALE_OUT' });
+  f.controller.pause(); const before = structuredClone(f.controller.getSnapshot().state);
+  f.tick(); expect(f.controller.getSnapshot().state).toEqual(before);
+  expect(f.controller.getSnapshot().queuedActions).toHaveLength(1);
+  f.controller.resume(); f.tick();
+  expect(f.controller.getSnapshot().state.runtime.scaleDue).toBe(8);
+  expect(f.controller.getSnapshot().state.runtime.actionLog).toHaveLength(1);
+  f.controller.reset(); expect(f.controller.getSnapshot().queuedActions).toEqual([]); f.controller.destroy();
+});
+it('uses engine rejection reasons for instance limits and absent WAF paths', () => {
+  const f = fixture(); f.controller.reset(4); f.controller.start();
+  expect(f.controller.actionReason({ type: 'SCALE_OUT' })).toContain('limit');
+  expect(f.controller.actionReason({ type: 'EMERGENCY_WAF' })).toContain('protected ingress');
+  f.controller.queueAction({ type: 'EMERGENCY_WAF' });
+  expect(f.controller.getSnapshot().queuedActions).toEqual([]); f.controller.destroy();
+});
