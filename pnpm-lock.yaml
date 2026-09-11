@@ -49,6 +49,20 @@ importers:
         specifier: 6.4.3
         version: 6.4.3
 
+  packages/cloud-domain:
+    dependencies:
+      '@stack-and-survive/schema':
+        specifier: workspace:*
+        version: link:../schema
+
+  packages/scenarios:
+    dependencies:
+      '@stack-and-survive/schema':
+        specifier: workspace:*
+        version: link:../schema
+
+  packages/schema: {}
+
 packages:
 
   '@esbuild/aix-ppc64@0.25.12':
