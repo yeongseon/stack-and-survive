@@ -1,4 +1,5 @@
 {
   "name":"@stack-and-survive/simulation","version":"0.0.0","private":true,"type":"module","exports":"./src/index.ts",
-  "dependencies":{"@stack-and-survive/schema":"workspace:*","@stack-and-survive/cloud-domain":"workspace:*"}
+  "dependencies":{"@stack-and-survive/schema":"workspace:*","@stack-and-survive/cloud-domain":"workspace:*"},
+  "devDependencies":{"@stack-and-survive/scenarios":"workspace:*"}
 }

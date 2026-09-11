@@ -71,6 +71,10 @@ importers:
       '@stack-and-survive/schema':
         specifier: workspace:*
         version: link:../schema
+    devDependencies:
+      '@stack-and-survive/scenarios':
+        specifier: workspace:*
+        version: link:../scenarios
 
 packages:
 
