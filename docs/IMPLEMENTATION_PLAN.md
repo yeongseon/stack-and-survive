@@ -1,6 +1,6 @@
 # Stack & Survive — Implementation Plan
 
-**Version:** 0.2  
+**Version:** 0.3  
 **Status:** Draft — documentation only; implementation not started  
 **Scope:** Hackathon MVP, one Black Friday scenario
 
@@ -130,3 +130,62 @@ Do not introduce authentication, cloud saves, Functions, Service Bus, multiplaye
 If time is limited, cut audio, decorative polish, optional telemetry, and optional speed controls before cutting simulation correctness, clear feedback, or redesign/replay.
 
 The next implementation milestone is a truthful App → SQL loop, not another specification. All phases above remain planned work until execution begins.
+
+## 5. Project management rules
+
+**Status: Accepted by the project owner.** These rules govern future project work; acceptance does not mean that a GitHub Project, issues, branch protection, CI, or automation already exists or authorize their creation. Keep the rules here rather than introducing another management document. The implementation plan remains draft and renderer selection remains pending its spike.
+
+### Work tracking and scope
+
+- Use GitHub Issues as the authoritative task list. A GitHub Project board is optional; avoid a second duplicate backlog.
+- Use four states: Backlog → Ready → In Progress → Done. Mark blocked work explicitly with its dependency and reason; blocked is not done.
+- One issue should deliver one observable result, normally within half a day to one day. Split larger features into independently verifiable slices; record a dependency rather than starting everything at once.
+- Each issue records purpose, in-scope work, exclusions, relevant specification sections, acceptance criteria, verification method, owner, and dependencies. Dates are added when the Hackathon deadline and availability are known, not invented.
+- Priorities: P0 = required for the core demo; P1 = useful after P0; P2 = post-MVP. New ideas go to Backlog and do not automatically enter the current milestone.
+- Limit work in progress to one primary issue per contributor. Parallel AI investigations are allowed, but avoid overlapping edits to the same files.
+- The project owner approves scope changes, renderer selection, and balance changes. Proposed changes must explain the effect on the demo and what existing work they displace.
+
+### Milestones
+
+Group the implementation phases by a demonstrable outcome:
+
+| Milestone | Deliverable | Exit evidence |
+|---|---|---|
+| M0 — Engine decision | Comparable Phaser/PlayCanvas spike and accepted ADR | Recorded checks and selection rationale |
+| M1 — Headless truth | Minimal setup, simulation core, and Black Friday regression suite | Repeatable tests matching reference behavior |
+| M2 — First playable | Baseline world, placement/connections, and visualization | Browser walkthrough showing a real simulation bottleneck |
+| M3 — Complete loop | Live actions, local save, results, redesign, comparison | A complete fail → understand → redesign → retry walkthrough |
+| M4 — Demo ready | Focused polish and requested Azure deployment | Rehearsed demo and deployed smoke checks |
+
+These milestones group existing phases; they do not add features or authorize implementation/deployment.
+
+### Branches, commits, and pull requests
+
+- Keep `main` as the reviewed baseline. After the initial documentation bootstrap, use short-lived branches; no separate `develop` or release-branch hierarchy is needed for the MVP.
+- Name branches by purpose and issue, for example `docs/12-project-rules`, `spike/13-engine-comparison`, `feat/14-traffic-split`, or `fix/15-budget-boundary`.
+- Default to one focused PR per issue. A PR explains why the change is needed, links the issue, lists verification actually performed, and notes limitations. Visual changes include a screenshot or short recording when useful.
+- Use small, meaningful commits with English imperative descriptions, consistent with the initial history. A specific commit prefix convention is not required. Keep a directly related test with its implementation; do not split changes merely to reach a file-count target.
+- Prefer squash merge for a focused feature PR, preserving the issue reference and verification summary. Do not rewrite already-shared history or force-push `main`.
+- Require project-owner review before merge. In solo work, a documented self-review is acceptable; AI review is supporting evidence, not a claim that a second human approved the change. Repository protections must remain achievable for the actual team size.
+- Existing permission boundaries still apply: AI does not commit, push, create remote issues/PRs, merge, change repository settings, or deploy merely because this workflow describes those actions. Obtain an explicit request for those operations. Permission for a commit does not imply permission to push or deploy.
+
+### Definition of Ready
+
+An issue is Ready when its outcome and acceptance checks are clear, prerequisite decisions are available, it fits the MVP, and its dependencies are finished or explicitly accounted for. An engine spike can be Ready without an engine decision: its output is that decision.
+
+### Definition of Done
+
+- The issue's acceptance criteria are met, not just its code written.
+- Relevant tests and checks pass. Once tooling exists, this includes lint, type-check, unit/regression tests, and build as applicable. Before tooling exists, document-only work records structural/content checks instead; do not claim unrun tests passed.
+- Simulation/balance changes update the authoritative specification, balance version, and corresponding regression expectations together. Passing arithmetic checks is not equivalent to engine tests or player playtesting.
+- Player-facing work is exercised in the browser, with observed behavior and any limitations recorded. A renderer screenshot alone does not verify simulation correctness.
+- Changed behavior is reflected in the existing documents; no secrets, confidential data, or unlicensed assets are added.
+- The PR is reviewed and merged, and its issue is closed. Code awaiting review remains In Progress. Local completion, merge, and deployment are distinct statuses; deployment is required only for a deployment issue or the demo-ready milestone.
+
+### Session handoff and risk reporting
+
+At the end of a work session, summarize what changed, checks run and results, what remains blocked, and the single next step. Keep permanent task status in the issue rather than relying on chat history alone.
+
+Report blockers when found; do not silently invent requirements or keep retrying an unsuitable approach indefinitely. Timebox the engine comparison as specified in ADR-002. If a required capability fails, record evidence and revisit the decision with the project owner.
+
+Before calling the MVP demo-ready, confirm the end-to-end journey with a person unfamiliar with the implementation. Use the existing gameplay validation questions; passing unit tests alone is not proof that the game teaches its intended lesson.
