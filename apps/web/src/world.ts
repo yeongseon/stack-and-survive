@@ -6,7 +6,7 @@ import { positionError, project, snap, unproject, validTargets, type Point } fro
 export function utilizationLabel(u: number | null): string {
   return u === null ? 'READY' : compare(u, 1) > 0 ? '! OVERLOADED' : compare(u, .7) > 0 ? 'WARNING' : 'HEALTHY';
 }
-export async function mountWorld(host: HTMLDivElement, controller: Controller): Promise<() => void> {
+export async function mountWorld(host: HTMLDivElement, controller: Controller, generation: number): Promise<() => void> {
   const { default: Phaser } = await import('phaser');
   if (!host.isConnected) return () => {};
   let view: View = controller.getSnapshot();
@@ -21,6 +21,7 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller): 
         fontFamily: 'monospace', fontSize: '13px', color: '#e6f0ed', align: 'center', backgroundColor: '#10202d', padding: { x: 8, y: 6 },
       }).setOrigin(.5, 0));
       host.dataset.renderer = 'ready';
+      controller.rendererReady(generation);
     }
     update(time: number) {
       try {
@@ -98,11 +99,15 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller): 
   let game: InstanceType<typeof Phaser.Game> | undefined;
   let resize: ResizeObserver | undefined;
   let removeInput = () => {};
-  const destroy = () => { resize?.disconnect(); removeInput(); unsubscribe(); game?.destroy(true); };
+  let removeContextHandler = () => {};
+  const destroy = () => { resize?.disconnect(); removeInput(); removeContextHandler(); unsubscribe(); game?.destroy(true); };
   try {
     game = new Phaser.Game({ type: Phaser.WEBGL, parent: host, width: host.clientWidth, height: host.clientHeight,
       backgroundColor: '#10202d', banner: false, scene: World, input: { keyboard: false, mouse: false, touch: false } });
     const canvas = game.canvas; canvas.style.touchAction = 'none';
+    const contextLost = () => { host.dataset.renderer = 'error'; controller.presentationFailed('Graphics context lost'); };
+    canvas.addEventListener('webglcontextlost', contextLost);
+    removeContextHandler = () => canvas.removeEventListener('webglcontextlost', contextLost);
     const point = (e: PointerEvent): Point => { const r = canvas.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; };
     const logical = (p: Point) => unproject(p, view.camera, canvas.clientWidth, canvas.clientHeight);
     let drag: { pointer: number; id: string | null; last: Point; offset: Point } | null = null;

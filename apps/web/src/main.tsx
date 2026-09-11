@@ -7,16 +7,16 @@ import { definitions, validateStart } from '@stack-and-survive/cloud-domain';
 import type { Kind } from '@stack-and-survive/schema';
 import { positionError, snap, validTargets } from './editor';
 
-function World({ controller }: { controller: Controller }) {
+function World({ controller, generation }: { controller: Controller; generation: number }) {
   const host = useRef<HTMLDivElement>(null);
   useEffect(() => {
     let disposed = false; let cleanup: (() => void) | undefined;
     const surface = document.createElement('div'); surface.className = 'surface'; surface.dataset.renderer = 'loading';
     host.current!.append(surface);
-    mountWorld(surface, controller).then(destroy => { if (disposed) destroy(); else cleanup = destroy; })
+    mountWorld(surface, controller, generation).then(destroy => { if (disposed) destroy(); else cleanup = destroy; })
       .catch(error => { if (!disposed) controller.presentationFailed(error instanceof Error ? error.message : 'Renderer failed to load'); });
     return () => { disposed = true; cleanup?.(); surface.remove(); };
-  }, [controller]);
+  }, [controller, generation]);
   return <div className="world" ref={host} data-testid="world" aria-label="Internet to App Service to Azure SQL architecture" />;
 }
 function App() {
@@ -31,18 +31,22 @@ function App() {
   const instances = view.state.runtime.architecture.resources.find(n => n.kind === 'compute')?.instances ?? 1;
   const architecture = view.state.runtime.architecture;
   const selected = architecture.resources.find(r => r.id === view.selected);
-  const preparing = view.state.runtime.status === 'PREPARATION';
+  const preparing = view.state.runtime.status === 'PREPARATION' && !view.error;
+  const paused = view.state.runtime.status === 'PAUSED';
   const readyErrors = validateStart(architecture);
   if (view.state.runtime.preparationScaleDue !== null) readyErrors.push('Scale-out is provisioning');
   const placementError = view.preview ? positionError(architecture, snap(view.preview)) : null;
   return <main>
     <header><div><p className="eyebrow">STACK &amp; SURVIVE / FIRST PLAYABLE SLICE</p><h1>Your architecture<br />is your defense.</h1></div><div className="scenario"><span>BLACK FRIDAY</span><strong data-testid="status">{view.error ? 'STOPPED · ERROR' : inspecting && running ? 'MANUAL INSPECTION' : view.state.runtime.status}</strong><span><b data-testid="elapsed">{view.state.runtime.time}</b> / 180 seconds</span></div></header>
     <section className="controls" aria-label="Scenario controls">
-      <label>Initial App instances <select aria-label="Initial App instances" value={instances} disabled={running} onChange={e => { controller.reset(Number(e.target.value)); setInspecting(false); }}><option>1</option><option>2</option><option>4</option></select></label>
+      <label>Initial App instances <select aria-label="Initial App instances" value={instances} disabled={!preparing} onChange={e => { controller.reset(Number(e.target.value)); setInspecting(false); }}><option>1</option><option>2</option><option>4</option></select></label>
       <button type="button" disabled={!preparing || !!view.error || readyErrors.length > 0} onClick={() => controller.start()}>Start traffic</button>
-      <button type="button" onClick={() => { controller.reset(instances); setInspecting(false); }}>Reset baseline</button>
+      <button type="button" disabled={paused || !!view.error} onClick={() => { controller.reset(instances); setInspecting(false); }}>Reset baseline</button>
+      <button type="button" disabled={(!running && !paused) || !!view.error} onClick={() => { if (paused) controller.resume(); else controller.pause(); setInspecting(false); }}>{paused ? 'Resume traffic' : 'Pause traffic'}</button>
       <p>Real simulation · 1 tick / second · Representative traffic, not one sprite per request</p>
     </section>
+    {preparing && <section aria-label="Black Friday briefing" className="briefing"><h2>Black Friday is approaching</h2><p>Read-heavy business traffic will increase. Unusual automated traffic may consume capacity. Keep customers served without overspending.</p><p>Availability target: 99% · Latency target: 300 ms · Budget: 140 game credits · Duration: 180 seconds</p><p>Preparation is free. Your connections determine request paths; physical distance does not change performance.</p></section>}
+    {paused && <p role="status">Paused — inspect the architecture and metrics. Time, costs, provisioning and failure counters are frozen; editing is disabled.</p>}
     <section className="build-tools" aria-label="Build palette">
       {(['compute', 'database', 'cache', 'edge'] as Kind[]).map(kind => <button type="button" key={kind} disabled={!preparing || architecture.resources.some(r => r.kind === kind)} aria-pressed={view.building === kind} onClick={() => controller.build(kind)}>Place {definitions[kind].name}</button>)}
       <button type="button" disabled={!view.building} onClick={() => controller.build(null)}>Cancel placement</button>
@@ -59,8 +63,8 @@ function App() {
       {architecture.connections.map(c => <p key={`${c.from}:${c.to}`}>{c.from} → {c.to} <button type="button" aria-label={`Remove connection ${c.from} to ${c.to}`} disabled={!preparing} onClick={() => controller.disconnect(c.from, c.to)}>Remove connection</button></p>)}
     </details>
     {preparing && readyErrors.length > 0 && <p role="status">Cannot start: {readyErrors.join('; ')}</p>}
-    {view.error && <p className="error" role="alert">{view.error} — simulation clock stopped. Reset or reload to recover.</p>}
-    <section className="playfield"><World controller={controller} /><aside>
+    {view.error && <section className="error" role="alert"><p>{view.error} — simulation clock stopped; saved runtime metrics remain intact.</p><button type="button" disabled={view.recoveringRenderer} onClick={() => controller.recoverRenderer()}>Rebuild renderer</button>{view.recoveringRenderer && <p>Rebuilding — waiting for the renderer to report ready.</p>}<p>If recovery fails again, reload to return to the baseline; browser persistence arrives in its own issue.</p></section>}
+    <section className="playfield"><World controller={controller} generation={view.rendererGeneration} /><aside>
       <p className="eyebrow">CURRENT PRESSURE</p>
       <h2>App Service</h2><p className="reading" data-testid="app-pressure">{utilizationLabel(appU)} {appU === null ? '' : `${(appU * 100).toFixed(1)}%`}</p>
       <h2>Azure SQL</h2><p className="reading" data-testid="sql-pressure">{utilizationLabel(sqlU)} {sqlU === null ? '' : `${(sqlU * 100).toFixed(1)}%`}</p>

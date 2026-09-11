@@ -3,6 +3,7 @@ import { createController, type Clock } from './controller';
 import { baseline } from '@stack-and-survive/cloud-domain';
 import { blackFriday } from '@stack-and-survive/scenarios';
 import { simulateScenario } from '@stack-and-survive/simulation/results';
+import { pauseRuntime } from '@stack-and-survive/simulation/runtime';
 
 function fixture() {
   let callback = () => {}; let active = 0;
@@ -37,7 +38,7 @@ it('renderer failure halts the clock without changing simulation totals', () => 
   const f = fixture(); f.controller.start(); f.tick();
   const previous = f.controller.getSnapshot().state;
   f.controller.presentationFailed('Renderer failed'); f.tick();
-  expect(f.active()).toBe(0); expect(f.controller.getSnapshot().state).toEqual(previous);
+  expect(f.active()).toBe(0); expect(f.controller.getSnapshot().state).toEqual({ ...previous, runtime: pauseRuntime(previous.runtime) });
   expect(f.controller.getSnapshot().error).toBe('Renderer failed'); f.controller.destroy();
 });
 it('provisions optional resources only in preparation without charging runtime', () => {
@@ -96,4 +97,26 @@ it('retains invalid connection feedback and clears notices on successful start',
   expect(f.controller.getSnapshot().connectionSource).toBe('compute');
   f.controller.start(); expect(f.controller.getSnapshot().notice).toBe('');
   expect(f.controller.getSnapshot().connectionSource).toBeNull(); f.controller.destroy();
+});
+it('pause freezes all state despite stale callbacks and blocks edits and reset', () => {
+  const f = fixture(); f.controller.start(); f.tick(); f.controller.pause();
+  const paused = structuredClone(f.controller.getSnapshot());
+  f.tick(); f.controller.move('compute', { x: 500, y: 200 }); f.controller.remove('database');
+  f.controller.build('cache'); f.controller.reset(4); f.controller.scalePreparation();
+  expect(f.controller.getSnapshot()).toEqual(paused); expect(f.active()).toBe(0);
+  f.controller.resume(); expect(f.active()).toBe(1); f.tick();
+  expect(f.controller.getSnapshot().state.runtime.time).toBe(2); f.controller.destroy();
+});
+it('renderer recovery remounts without advancing or silently resuming runtime', () => {
+  const f = fixture(); f.controller.start(); f.tick(); f.controller.presentationFailed('GPU context lost');
+  const stopped = structuredClone(f.controller.getSnapshot().state);
+  f.controller.recoverRenderer(); expect(f.controller.getSnapshot().state).toEqual(stopped);
+  expect(f.controller.getSnapshot().rendererGeneration).toBe(1); expect(f.controller.getSnapshot().error).toBe('GPU context lost');
+  expect(f.controller.getSnapshot().recoveringRenderer).toBe(true);
+  f.controller.rendererReady(0); f.controller.resume(); f.controller.reset();
+  expect(f.controller.getSnapshot().state).toEqual(stopped); expect(f.active()).toBe(0);
+  f.controller.rendererReady(1); expect(f.controller.getSnapshot().error).toBeNull();
+  expect(f.controller.getSnapshot().recoveringRenderer).toBe(false);
+  expect(f.active()).toBe(0); f.controller.resume(); f.tick();
+  expect(f.controller.getSnapshot().state.runtime.time).toBe(2); f.controller.destroy();
 });
