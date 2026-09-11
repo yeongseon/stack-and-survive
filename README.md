@@ -10,7 +10,7 @@ Stack & Survive is a cloud architecture strategy game where players build and gr
 
 **Hackathon MVP — Scope Locked · PRD v0.5**
 
-This repository contains planning documents, a minimal production workspace in `apps/web/`, and an isolated Phaser/PlayCanvas comparison in `apps/engine-spike/`. Root commands run production lint, types, tests and build; GitHub Actions runs the same quality checks. The game, simulation engine and Azure deployment remain in progress/not implemented. The owner has accepted Phaser 3.90.0 for production development.
+This repository contains a verified headless simulation and the first real-snapshot Phaser scene in `apps/web/`, plus an isolated engine comparison in `apps/engine-spike/`. The baseline scene starts traffic, shows independent App/SQL pressure, and stops at the simulated outcome. Editing, full gameplay controls, result comparison and persistence remain future issues. There is no Azure deployment or backend.
 
 ## MVP
 
@@ -50,15 +50,17 @@ docs/
     ADR-002-GAME-ENGINE.md Engine experiment evidence (Accepted: Phaser 3.90.0)
 apps/
   engine-spike/          Disposable two-engine experiment and tests
-  web/                   Production React shell; Phaser selected
+  web/                   React UI and real-snapshot Phaser baseline scene
 packages/
-  schema/                Future shared schemas and validation
-  cloud-domain/          Future provider-neutral architecture model
-  simulation/            Future deterministic simulation engine
-  scenarios/             Future data-driven scenario definitions
+  schema/                Shared schemas and validation primitives
+  cloud-domain/          Azure resource roles and architecture validation
+  simulation/            Deterministic simulation and reference regressions
+  scenarios/             Versioned Black Friday content
 ```
 
-From the repository root with Node 22.22.0 and pnpm 10.32.1: `pnpm install --frozen-lockfile`, then `pnpm dev`. Verification: `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build`. The initial web shell is not the playable game. Packages are added only when their implementation issue starts. The engine spike is excluded from the production workspace; run its commands from its own directory.
+From the repository root with Node 22.22.0 and pnpm 10.32.1: `pnpm install --frozen-lockfile`, then `pnpm dev`. Open the local URL printed by Vite and press Start traffic. Reset to compare initial App instance counts; the developer inspector steps real ticks and stops automatic time. This is a baseline slice, not the complete MVP.
+
+Verification: `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build`. For browser checks, install Chromium with `pnpm exec playwright install chromium`, build first, then run `pnpm test:browser`. Tests start/stop a production preview on port 43872; screenshots are generated under ignored `test-results/`. CI runs these same checks. Software-WebGL browser tests verify behavior, not hardware FPS. The engine spike stays outside the production workspace.
 
 ## Run the engine experiment
 
@@ -77,9 +79,9 @@ Use Node 22.22.0 and pnpm 10.32.1. Verification commands and limits are document
 The [ordered MVP backlog (#7)](https://github.com/yeongseon/stack-and-survive/issues/7) links all currently planned work. Prepare the backlog first, then execute one issue at a time in dependency order; individual issues are the source of status and completion evidence.
 - [ADR-002: Game Engine Selection](docs/adr/ADR-002-GAME-ENGINE.md) — Executed comparison and accepted Phaser 3.90.0 decision.
 
-`SIMULATION_SPEC.md` is the source of truth for numerical simulation behavior. `TECHNICAL_DESIGN.md` documents the production architecture; the simulation/game implementation and Azure deployment remain future work.
+`SIMULATION_SPEC.md` is the source of truth for numerical simulation behavior. `TECHNICAL_DESIGN.md` documents the production architecture; the full editor/game loop and Azure deployment remain future work.
 
-Document expansion is frozen at these six documents for the MVP. Simulation reference metrics were checked arithmetically; gameplay tests and player playtesting have not run. The rendering spike's unit/browser tests have run, but do not verify simulation correctness. Phaser is accepted; human playtesting, Azure deployment and external telemetry retain separate approval/evidence gates.
+Document expansion is frozen at these six documents for the MVP. The implemented headless engine passes the independent nine-configuration reference matrix and intervention/replay checks; browser tests cover the first real baseline scene. Full gameplay and human playtesting are not complete. Phaser is accepted; human playtesting, Azure deployment and external telemetry retain separate approval/evidence gates.
 
 ## Important boundaries
 
