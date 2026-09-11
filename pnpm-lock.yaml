@@ -83,13 +83,12 @@ importers:
       '@stack-and-survive/cloud-domain':
         specifier: workspace:*
         version: link:../cloud-domain
-      '@stack-and-survive/schema':
-        specifier: workspace:*
-        version: link:../schema
-    devDependencies:
       '@stack-and-survive/scenarios':
         specifier: workspace:*
         version: link:../scenarios
+      '@stack-and-survive/schema':
+        specifier: workspace:*
+        version: link:../schema
 
 packages:
 
