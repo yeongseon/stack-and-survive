@@ -1,13 +1,20 @@
-import { baseline } from '@stack-and-survive/cloud-domain';
+import { baseline, validateStart } from '@stack-and-survive/cloud-domain';
 import { blackFriday } from '@stack-and-survive/scenarios';
 import { advanceSimulation, createSimulation, simulationResult } from '@stack-and-survive/simulation/results';
-import { startRuntime } from '@stack-and-survive/simulation/runtime';
+import { advancePreparation, requestPreparationScale, startRuntime } from '@stack-and-survive/simulation/runtime';
+import type { Architecture, Kind } from '@stack-and-survive/schema';
+import { moveResource, placeResource, removeResource, type Camera, type Point } from './editor';
 
 export type View = Readonly<{
   state: ReturnType<typeof createSimulation>;
   snapshot: ReturnType<typeof advanceSimulation>['snapshot'];
   result: ReturnType<typeof simulationResult> | null;
   error: string | null;
+  selected: string | null;
+  building: Kind | null;
+  preview: Point | null;
+  camera: Camera;
+  notice: string;
 }>;
 export interface Clock {
   start(callback: () => void): () => void;
@@ -17,37 +24,97 @@ const clock: Clock = {
 };
 
 export function createController(timer: Clock = clock) {
-  let view: View = { state: createSimulation(baseline(), blackFriday), snapshot: null, result: null, error: null };
+  const initial = (instances = 1): View => {
+    const architecture = baseline(instances);
+    architecture.resources.forEach((r, i) => { r.x = (i - 1) * 260; r.y = (i - 1) * 100; });
+    return { state: createSimulation(architecture, blackFriday), snapshot: null, result: null, error: null,
+      selected: null, building: null, preview: null, camera: { x: 0, y: 0, zoom: 1 }, notice: '' };
+  };
+  let view: View = initial();
   let cancel: (() => void) | undefined;
   let destroyed = false;
+  let timerGeneration = 0;
   const listeners = new Set<() => void>();
   const publish = (next: View) => { view = next; listeners.forEach(listener => listener()); };
-  const stop = () => { cancel?.(); cancel = undefined; };
+  const stop = () => { timerGeneration++; cancel?.(); cancel = undefined; };
+  const schedule = (callback: () => void) => {
+    stop();
+    const generation = timerGeneration;
+    cancel = timer.start(() => { if (!destroyed && generation === timerGeneration) callback(); });
+  };
   const advance = () => {
     if (destroyed || view.error || view.state.runtime.status !== 'RUNNING') return;
     try {
       const transition = advanceSimulation(view.state, blackFriday);
       const terminal = transition.nextState.runtime.status !== 'RUNNING';
       if (terminal) stop();
-      publish({ state: transition.nextState, snapshot: transition.snapshot,
+      publish({ ...view, state: transition.nextState, snapshot: transition.snapshot,
         result: terminal ? simulationResult(transition.nextState, blackFriday) : null, error: null });
     } catch (error) {
       stop(); publish({ ...view, error: error instanceof Error ? error.message : 'Simulation could not advance' });
     }
+  };
+  const prepare = () => {
+    if (destroyed || view.state.runtime.status !== 'PREPARATION') return;
+    const runtime = advancePreparation(view.state.runtime);
+    publish({ ...view, state: { ...view.state, runtime } });
+    if (!runtime.architecture.resources.some(r => r.remaining > 0) && runtime.preparationScaleDue === null) stop();
+  };
+  const edit = (operation: (a: Architecture) => Architecture) => {
+    if (destroyed || view.state.runtime.status !== 'PREPARATION') return;
+    try {
+      const architecture = operation(view.state.runtime.architecture);
+      publish({ ...view, state: { ...view.state, runtime: { ...view.state.runtime, architecture } }, notice: '' });
+      if (architecture.resources.some(r => r.remaining > 0) && !cancel) schedule(prepare);
+    } catch (error) { publish({ ...view, notice: error instanceof Error ? error.message : 'Invalid edit' }); }
   };
   return {
     getSnapshot: () => view,
     subscribe(listener: () => void) { listeners.add(listener); return () => { listeners.delete(listener); }; },
     start() {
       if (destroyed || view.state.runtime.status !== 'PREPARATION' || view.error) return;
-      publish({ ...view, state: { ...view.state, runtime: startRuntime(view.state.runtime) } });
-      cancel = timer.start(advance);
+      const errors = validateStart(view.state.runtime.architecture);
+      if (view.state.runtime.preparationScaleDue !== null) errors.push('Scale-out is provisioning');
+      if (errors.length) { publish({ ...view, notice: errors.join('; ') }); return; }
+      stop(); publish({ ...view, building: null, preview: null, state: { ...view.state, runtime: startRuntime(view.state.runtime) } });
+      schedule(advance);
     },
     reset(instances = 1) {
       if (destroyed) return;
       if (!Number.isInteger(instances) || instances < 1 || instances > 4) throw new Error('Invalid instance configuration');
-      stop(); publish({ state: createSimulation(baseline(instances), blackFriday), snapshot: null, result: null, error: null });
+      stop(); publish(initial(instances));
     },
+    select(id: string | null) { if (!destroyed) publish({ ...view, selected: id }); },
+    build(kind: Kind | null) { if (!destroyed && view.state.runtime.status === 'PREPARATION') publish({ ...view, building: kind, preview: null, notice: '' }); },
+    preview(point: Point | null) { if (!destroyed && view.building) publish({ ...view, preview: point }); },
+    place(point: Point) {
+      if (!view.building) return;
+      const kind = view.building; edit(a => placeResource(a, kind, point));
+      if (!view.notice) publish({ ...view, building: null, preview: null, selected: kind });
+    },
+    move(id: string, point: Point) { edit(a => moveResource(a, id, point)); },
+    remove(id: string) {
+      if (view.state.runtime.status !== 'PREPARATION') return;
+      edit(a => removeResource(a, id));
+      if (!view.notice) {
+        const runtime = { ...view.state.runtime };
+        if (!runtime.architecture.resources.some(r => r.kind === 'compute')) runtime.preparationScaleDue = null;
+        publish({ ...view, selected: null, state: { ...view.state, runtime } });
+      }
+    },
+    scalePreparation() {
+      if (view.state.runtime.status !== 'PREPARATION') return;
+      try {
+        publish({ ...view, state: { ...view.state, runtime: requestPreparationScale(view.state.runtime) }, notice: '' });
+        if (!cancel) schedule(prepare);
+      } catch (error) { publish({ ...view, notice: error instanceof Error ? error.message : 'Scale unavailable' }); }
+    },
+    reduceInstances() { edit(a => {
+      const app = a.resources.find(r => r.kind === 'compute');
+      if (!app || app.instances <= 1 || view.state.runtime.preparationScaleDue !== null) throw new Error('Cannot reduce instances while at minimum or provisioning.');
+      const next = structuredClone(a); next.resources.find(r => r.kind === 'compute')!.instances--; return next;
+    }); },
+    setCamera(camera: Camera) { if (!destroyed) publish({ ...view, camera: { x: Math.max(-1200, Math.min(1200, camera.x)), y: Math.max(-900, Math.min(900, camera.y)), zoom: Math.max(.5, Math.min(1.6, camera.zoom)) } }); },
     inspectNextTick() { stop(); advance(); },
     presentationFailed(message: string) { stop(); publish({ ...view, error: message }); },
     destroy() { stop(); destroyed = true; listeners.clear(); },

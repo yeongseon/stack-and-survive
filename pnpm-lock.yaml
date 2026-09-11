@@ -35,6 +35,9 @@ importers:
       '@stack-and-survive/scenarios':
         specifier: workspace:*
         version: link:../../packages/scenarios
+      '@stack-and-survive/schema':
+        specifier: workspace:*
+        version: link:../../packages/schema
       '@stack-and-survive/simulation':
         specifier: workspace:*
         version: link:../../packages/simulation
