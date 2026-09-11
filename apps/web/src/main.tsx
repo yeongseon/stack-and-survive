@@ -6,6 +6,7 @@ import './style.css';
 import { definitions, validateStart } from '@stack-and-survive/cloud-domain';
 import type { Kind } from '@stack-and-survive/schema';
 import { positionError, snap, validTargets } from './editor';
+import { activeCostPerMinute } from '@stack-and-survive/simulation/economy';
 
 function World({ controller, generation }: { controller: Controller; generation: number }) {
   const host = useRef<HTMLDivElement>(null);
@@ -36,6 +37,8 @@ function App() {
   const readyErrors = validateStart(architecture);
   if (view.state.runtime.preparationScaleDue !== null) readyErrors.push('Scale-out is provisioning');
   const placementError = view.preview ? positionError(architecture, snap(view.preview)) : null;
+  const metrics = view.snapshot?.metrics;
+  const economy = view.state.economy;
   return <main>
     <header><div><p className="eyebrow">STACK &amp; SURVIVE / FIRST PLAYABLE SLICE</p><h1>Your architecture<br />is your defense.</h1></div><div className="scenario"><span>BLACK FRIDAY</span><strong data-testid="status">{view.error ? 'STOPPED · ERROR' : inspecting && running ? 'MANUAL INSPECTION' : view.state.runtime.status}</strong><span><b data-testid="elapsed">{view.state.runtime.time}</b> / 180 seconds</span></div></header>
     <section className="controls" aria-label="Scenario controls">
@@ -47,6 +50,16 @@ function App() {
     </section>
     {preparing && <section aria-label="Black Friday briefing" className="briefing"><h2>Black Friday is approaching</h2><p>Read-heavy business traffic will increase. Unusual automated traffic may consume capacity. Keep customers served without overspending.</p><p>Availability target: 99% · Latency target: 300 ms · Budget: 140 game credits · Duration: 180 seconds</p><p>Preparation is free. Your connections determine request paths; physical distance does not change performance.</p></section>}
     {paused && <p role="status">Paused — inspect the architecture and metrics. Time, costs, provisioning and failure counters are frozen; editing is disabled.</p>}
+    <section aria-label="Live service and business metrics" className="metrics-bar">
+      <div><span>Availability</span><strong data-testid="availability">{metrics ? `${(metrics.availability * 100).toFixed(2)}%` : '—'}</strong></div>
+      <div><span>Latency</span><strong data-testid="latency">{metrics?.averageLatency == null ? '—' : `${metrics.averageLatency.toFixed(0)} ms`}</strong></div>
+      <div><span>Error rate</span><strong>{metrics ? `${(metrics.errorRate * 100).toFixed(2)}%` : '—'}</strong></div>
+      <div><span>Cloud cost</span><strong data-testid="cloud-cost">{economy.infrastructureCost.toFixed(2)}</strong></div>
+      <div><span>Revenue</span><strong>{economy.revenue.toFixed(2)}</strong></div>
+      <div><span>Net value</span><strong>{economy.netBusinessValue.toFixed(2)}</strong></div>
+      <div><span>Budget left</span><strong>{economy.remainingBudget.toFixed(2)}</strong></div>
+    </section>
+    {(running || paused) && view.snapshot?.critical && <p role="status" className="critical">! CRITICAL — {view.state.streaks.availability > 0 ? `${view.snapshot.failureCountdown.availability} consecutive bad seconds until availability failure.` : 'Resource overload or budget pressure.'} {view.state.streaks.order > 0 ? `Order-flow failure in ${view.snapshot.failureCountdown.order} bad seconds.` : ''}</p>}
     <section className="build-tools" aria-label="Build palette">
       {(['compute', 'database', 'cache', 'edge'] as Kind[]).map(kind => <button type="button" key={kind} disabled={!preparing || architecture.resources.some(r => r.kind === kind)} aria-pressed={view.building === kind} onClick={() => controller.build(kind)}>Place {definitions[kind].name}</button>)}
       <button type="button" disabled={!view.building} onClick={() => controller.build(null)}>Cancel placement</button>
@@ -72,18 +85,22 @@ function App() {
         <dt>Tick availability</dt><dd>{view.snapshot ? `${(view.snapshot.metrics.availability * 100).toFixed(2)}%` : '—'}</dd>
         <dt>App dropped/s</dt><dd>{r ? (r.app.dropped.browse + r.app.dropped.order + r.app.dropped.bot).toFixed(1) : '—'}</dd>
         <dt>SQL dropped/s</dt><dd>{r ? (r.sql.readsDropped + r.sql.writesDropped).toFixed(1) : '—'}</dd></dl>
+      <dl><dt>Bots reaching App/s</dt><dd data-testid="bots-at-app">{r ? r.rateLimit.passed.bot.toFixed(1) : '—'}</dd><dt>WAF-filtered bots/s</dt><dd data-testid="filtered-bots">{r ? r.edge.filtered.bot.toFixed(1) : '—'}</dd>
+        <dt>Cache hit ratio</dt><dd data-testid="cache-hit">{r?.cache.hitRatio == null ? 'N/A' : `${(r.cache.hitRatio * 100).toFixed(1)}%`}</dd><dt>SQL reads avoided/s</dt><dd>{r?.cache.hits.toFixed(1) ?? '—'}</dd>
+        <dt>Running cost/min</dt><dd>{activeCostPerMinute(architecture)} credits</dd></dl>
       <p className="hint">Adding App instances changes compute capacity, not SQL capacity. Try a different initial configuration after resetting.</p>
       {selected && <section aria-label="Selected resource" className="resource-details">
         <h2>{definitions[selected.kind].name}</h2>
         <p data-testid="resource-status">{selected.remaining > 0 ? `Provisioning: ${selected.remaining}s` : 'Active'}</p>
         <p>{architecture.connections.some(c => c.from === selected.id || c.to === selected.id) ? 'Connected' : 'Disconnected — no traffic effect'}</p>
         <p>Runtime cost: {definitions[selected.kind].cost * selected.instances} credits/min when active. Build Mode is free.</p>
-        <p>{selected.kind === 'compute' ? `${selected.instances} instances · ${selected.instances * 150} req/s` : selected.kind === 'database' ? 'Reads: 180/s · Writes: 70/s' : selected.kind === 'cache' ? 'Eligible reads: 500/s · Hit ratio: 80%' : selected.kind === 'edge' ? 'Bot filter: 70% · False positives: 0.5%' : 'External workload source'}</p>
+        <p>Base game capability (not live throughput or Azure specifications): {selected.kind === 'compute' ? `${selected.instances} configured instances · ${selected.instances * 150} req/s capacity when active` : selected.kind === 'database' ? 'Read capacity: 180/s · Write capacity: 70/s' : selected.kind === 'cache' ? 'Eligible read capacity: 500/s · Configured hit ratio: 80%' : selected.kind === 'edge' ? 'Normal mode: bot filter 70% · False positives 0.5%; emergency mode differs' : 'External workload source'}</p>
         {selected.kind === 'compute' && <><button type="button" disabled={!preparing || selected.remaining > 0 || selected.instances >= 4 || view.state.runtime.preparationScaleDue !== null} onClick={() => controller.scalePreparation()}>Provision instance</button><button type="button" disabled={!preparing || selected.instances <= 1 || view.state.runtime.preparationScaleDue !== null} onClick={() => controller.reduceInstances()}>Reduce instance</button>
           {view.state.runtime.preparationScaleDue !== null && <p>New instance pending: {view.state.runtime.preparationScaleDue - view.state.runtime.preparationTime}s · not contributing capacity</p>}</>}
         <button type="button" disabled={!preparing || selected.kind === 'internet'} onClick={() => controller.remove(selected.id)}>Remove resource</button>
       </section>}
     </aside></section>
+    <p className="traffic-legend">● Browse · ■ Order / write · ▲ Bot · × Dropped / filtered · ○ Cache response. Representative markers; hits stop at Cache, filtered bots stop at Edge.</p>
     {view.result && <section className="outcome" role="status"><p className="eyebrow">SCENARIO OUTCOME</p><h2>{view.result.primary}</h2><p>{view.result.insight}</p></section>}
     <details><summary>Developer inspector (not a player speed control)</summary><button type="button" disabled={!running || !!view.error} onClick={() => { setInspecting(true); controller.inspectNextTick(); }}>Step one tick</button><p>{inspecting ? 'Manual stepping: automatic clock stopped. Reset to return to 1×.' : 'Stepping stops automatic time; each click advances exactly one real simulation tick.'}</p><pre data-testid="diagnostics">{JSON.stringify({ time: view.state.runtime.time, status: view.state.runtime.status, snapshot: view.snapshot, architecture, selected: view.selected, camera: view.camera }, null, 2)}</pre></details>
     <footer>BUILD THE CLOUD. SURVIVE THE TRAFFIC.<span>Baseline only · Editing and live actions arrive in subsequent issues.</span></footer>
