@@ -11,6 +11,9 @@ importers:
       '@eslint/js':
         specifier: ^9.39.0
         version: 9.39.5
+      '@playwright/test':
+        specifier: 1.63.0
+        version: 1.63.0
       eslint:
         specifier: ^9.39.0
         version: 9.39.5
@@ -26,6 +29,15 @@ importers:
 
   apps/web:
     dependencies:
+      '@stack-and-survive/cloud-domain':
+        specifier: workspace:*
+        version: link:../../packages/cloud-domain
+      '@stack-and-survive/scenarios':
+        specifier: workspace:*
+        version: link:../../packages/scenarios
+      '@stack-and-survive/simulation':
+        specifier: workspace:*
+        version: link:../../packages/simulation
       phaser:
         specifier: 3.90.0
         version: 3.90.0
@@ -301,6 +313,11 @@ packages:
     cpu: [x64]
     os: [linux]
     libc: [glibc]
+
+  '@playwright/test@1.63.0':
+    resolution: {integrity: sha1-gIAgxG6La5H51ijNDry7Mr39i2w=, tarball: https://ms-feed-25.pkgs.visualstudio.com/1es-public/_packaging/npm-public/npm/registry/@playwright/test/-/test-1.63.0.tgz}
+    engines: {node: '>=20'}
+    hasBin: true
 
   '@rollup/rollup-android-arm-eabi@4.63.1':
     resolution: {integrity: sha1-0Dum6lT57IBojRU3Y80yWi0qWvY=, tarball: https://ms-feed-25.pkgs.visualstudio.com/1es-public/_packaging/npm-public/npm/registry/@rollup/rollup-android-arm-eabi/-/rollup-android-arm-eabi-4.63.1.tgz}
@@ -867,6 +884,16 @@ packages:
     resolution: {integrity: sha1-YxM2ADTMs2s9xh7L3/eBIfkP4h8=, tarball: https://ms-feed-25.pkgs.visualstudio.com/1es-public/_packaging/npm-public/npm/registry/picomatch/-/picomatch-4.0.7.tgz}
     engines: {node: '>=12'}
 
+  playwright-core@1.63.0:
+    resolution: {integrity: sha1-5XZlvDKEbCE6w5oeTVvGIo52s3Y=, tarball: https://ms-feed-25.pkgs.visualstudio.com/1es-public/_packaging/npm-public/npm/registry/playwright-core/-/playwright-core-1.63.0.tgz}
+    engines: {node: '>=20'}
+    hasBin: true
+
+  playwright@1.63.0:
+    resolution: {integrity: sha1-mbVvn2mxtwxE8Av4Sy/lI0iuJRE=, tarball: https://ms-feed-25.pkgs.visualstudio.com/1es-public/_packaging/npm-public/npm/registry/playwright/-/playwright-1.63.0.tgz}
+    engines: {node: '>=20'}
+    hasBin: true
+
   postcss@8.5.28:
     resolution: {integrity: sha1-2kVjqZoG5i1sHNGsrjYyJLyu1uk=, tarball: https://ms-feed-25.pkgs.visualstudio.com/1es-public/_packaging/npm-public/npm/registry/postcss/-/postcss-8.5.28.tgz}
     engines: {node: ^10 || ^12 || >=14}
@@ -1237,6 +1264,10 @@ snapshots:
 
   '@napi-rs/lzma-linux-x64-gnu@1.5.1':
     optional: true
+
+  '@playwright/test@1.63.0':
+    dependencies:
+      playwright: 1.63.0
 
   '@rollup/rollup-android-arm-eabi@4.63.1':
     optional: true
@@ -1777,6 +1808,12 @@ snapshots:
   picocolors@1.1.1: {}
 
   picomatch@4.0.7: {}
+
+  playwright-core@1.63.0: {}
+
+  playwright@1.63.0:
+    dependencies:
+      playwright-core: 1.63.0
 
   postcss@8.5.28:
     dependencies:
