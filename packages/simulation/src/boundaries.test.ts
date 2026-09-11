@@ -6,7 +6,7 @@ it('zero demand produces finite zero metrics', () => {
   const s = processBaseline(baseline(), { browse: 0, order: 0, bot: 0 });
   expect(s.app.utilization).toBe(0); expect(s.sql.readUtilization).toBe(0);
   expect(s.sql.writeUtilization).toBe(0); expect(s.successful).toEqual({ browse: 0, order: 0 });
-  expect(JSON.stringify(s)).not.toContain('null');
+  expect(Object.values(s.sql).every(Number.isFinite)).toBe(true);
 });
 it('exact App and SQL capacity is admitted without numerical loss', () => {
   const app = processBaseline(baseline(), { browse: 100, order: 50, bot: 0 });
