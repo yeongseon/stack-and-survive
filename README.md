@@ -77,7 +77,8 @@ Use Node 22.22.0 and pnpm 10.32.1. Verification commands and limits are document
 - [Gameplay Specification](docs/GAMEPLAY_SPEC.md) — What the player sees, does, and experiences (v0.3).
 - [Simulation Specification](docs/SIMULATION_SPEC.md) — Corrected simulation rules, authoritative values, and arithmetic reference matrix (v0.2).
 - [Technical Design](docs/TECHNICAL_DESIGN.md) — Actual four-package structure, app-local controller/renderer/UI, and planned hosting (v0.3).
-- [Visual Direction](docs/VISUAL_DIRECTION.md) — Microsoft Internal Hackathon direction: unchanged official Azure icons identify services; custom buildings, environment, traffic and effects create the game world (owner-revised v0.2, 45 sections). This is a design target, not a claim that the icon/assets or redesigned UI are implemented.
+- [Visual Direction](docs/VISUAL_DIRECTION.md) — Microsoft Internal Hackathon direction: unchanged official Azure icons identify services; custom buildings, environment, traffic and effects create the game world (owner-revised v0.2, 45 sections). Identity badges are implemented; the wider visual redesign remains a target.
+- [Asset provenance](apps/web/public/assets/ATTRIBUTION.md) — Original V24 Azure SVG sources, checksums, bundled terms and remaining usage-review limitations.
 - [Implementation Plan](docs/IMPLEMENTATION_PLAN.md) — Delivery sequence and current human-validation/hosting gates (v0.6); work is tracked with GitHub Issues and labels, without milestones or a Project board.
 
 The [ordered MVP backlog (#7)](https://github.com/yeongseon/stack-and-survive/issues/7) links all currently planned work. Prepare the backlog first, then execute one issue at a time in dependency order; individual issues are the source of status and completion evidence.
@@ -93,3 +94,4 @@ The owner explicitly added Visual Direction to the original six-document set. Fu
 - AWS/GCP, accounts, multiplayer, AI features, regions, and real infrastructure deployment are out of scope.
 - No third-party game assets, internal Microsoft data, or confidential telemetry should be added.
 - Public release and license selection require review of applicable employer, IP, OSS, trademark, and Hackathon policies. No open-source license has been selected yet.
+- Azure SVGs are separate, unchanged service-identification images, not project-owned art or the product logo. Integration follows the owner's explicit request; no separate Microsoft permission or policy clearance has been established. Review applicable use and distribution conditions before public release; source terms are preserved with the assets.
