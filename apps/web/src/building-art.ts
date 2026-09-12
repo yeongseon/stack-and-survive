@@ -108,23 +108,3 @@ export function drawBuilding(g: Graphics, point: Point, resource: Resource, conn
   g.restore();
   return state;
 }
-
-export function drawEnvironment(g: Graphics, width: number, height: number) {
-  g.fillGradientStyle(0x294e6a, 0x345f79, 0x547d88, 0x3e727e); g.fillRect(0, 0, width, height);
-  for (let i = 0; i < 8; i++) {
-    const x = ((i * 191 + 47) % 997) / 997 * width;
-    const y = ((i * 127 + 23) % 463) / 463 * height;
-    g.fillStyle(0xe2f5ff, .035); g.fillEllipse(x, y, 210, 70);
-  }
-  const top = 32; const bottom = height - 30;
-  polygon(g, [[width * .08, top + 40], [width * .8, top], [width * .96, bottom - 40], [width * .2, bottom + 15]], 0x193e4b, .6);
-  polygon(g, [[width * .08, top + 28], [width * .8, top - 12], [width * .96, bottom - 52], [width * .2, bottom + 3]], 0x527777);
-  g.lineStyle(1, 0x91b2b0, .17);
-  for (let x = -height; x < width + height; x += 64) { g.lineBetween(x, 0, x + height, height); g.lineBetween(x, 0, x - height, height); }
-  for (let i = 0; i < 12; i++) {
-    const x = 30 + i * (width - 60) / 11;
-    const y = i % 2 === 0 ? 25 : height - 28;
-    block(g, x, y, 13, 10, 5, 0x93b5b2, 0x426569, 0x2d505a);
-    g.fillStyle(0xbee4d8); g.fillCircle(x, y - 3, 2);
-  }
-}
