@@ -3,6 +3,7 @@ import { compare } from '@stack-and-survive/simulation/economy';
 import { definitions } from '@stack-and-survive/cloud-domain';
 import { positionError, project, snap, unproject, validTargets, viewportCamera, type Point } from './editor';
 import { representativeCount, visualFlows } from './traffic';
+import { createServiceBadge } from './service-icons';
 
 export function utilizationLabel(u: number | null): string {
   return u === null ? 'READY' : compare(u, 1) > 0 ? '! OVERLOADED' : compare(u, .7) > 0 ? 'WARNING' : 'HEALTHY';
@@ -12,6 +13,9 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
   if (!host.isConnected) return () => {};
   let view: View = controller.getSnapshot();
   let frames = 0;
+  const badgeLayer = document.createElement('div');
+  badgeLayer.className = 'world-service-badges'; host.append(badgeLayer);
+  const badges = new Map<string, HTMLSpanElement>();
   const unsubscribe = controller.subscribe(() => { view = controller.getSnapshot(); });
   class World extends Phaser.Scene {
     graphics!: Phaser.GameObjects.Graphics;
@@ -31,6 +35,20 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
         const resources = architecture.resources;
         const camera = viewportCamera(view.camera, width, height);
         const positions = resources.map(r => project(r, camera, width, height));
+        for (const [id, badge] of badges) {
+          if (!resources.some(r => r.id === id)) { badge.remove(); badges.delete(id); }
+        }
+        resources.forEach((resource, i) => {
+          let badge = badges.get(resource.id);
+          if (!badge) {
+            const created = createServiceBadge(resource.kind);
+            if (!created) return;
+            badge = created; badges.set(resource.id, badge); badgeLayer.append(badge);
+          }
+          const p = positions[i];
+          badge.hidden = p.x < 16 || p.x > width - 16 || p.y < 80 || p.y > height;
+          badge.style.left = `${p.x - 16}px`; badge.style.top = `${p.y - 80}px`;
+        });
         const g = this.graphics.clear();
         g.lineStyle(1, 0x223b4b, .6);
         for (let x = -height; x < width + height; x += 56) { g.lineBetween(x, 0, x + height, height); g.lineBetween(x, 0, x - height, height); }
@@ -112,7 +130,7 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
   let resize: ResizeObserver | undefined;
   let removeInput = () => {};
   let removeContextHandler = () => {};
-  const destroy = () => { resize?.disconnect(); removeInput(); removeContextHandler(); unsubscribe(); game?.destroy(true); };
+  const destroy = () => { resize?.disconnect(); removeInput(); removeContextHandler(); unsubscribe(); badgeLayer.remove(); badges.clear(); game?.destroy(true); };
   try {
     game = new Phaser.Game({ type: Phaser.WEBGL, parent: host, width: host.clientWidth, height: host.clientHeight,
       backgroundColor: '#10202d', banner: false, scene: World, input: { keyboard: false, mouse: false, touch: false } });

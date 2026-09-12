@@ -11,6 +11,7 @@ import { ResultPanel } from './ResultPanel';
 import { ComparisonPanel } from './ComparisonPanel';
 import { browserSaveRepository } from './persistence';
 import { glossary, pressureHint } from './help';
+import { ServiceIcon } from './ServiceIcon';
 
 function World({ controller, generation }: { controller: Controller; generation: number }) {
   const host = useRef<HTMLDivElement>(null);
@@ -77,13 +78,13 @@ function App() {
     {(running || paused) && view.snapshot?.critical && <p role="status" className="critical">! CRITICAL — {view.state.streaks.availability > 0 ? `${view.snapshot.failureCountdown.availability} consecutive bad seconds until availability failure.` : 'Resource overload or budget pressure.'} {view.state.streaks.order > 0 ? `Order-flow failure in ${view.snapshot.failureCountdown.order} bad seconds.` : ''}</p>}
     <details className="build-panel" open={buildOpen} onToggle={e => setBuildOpen(e.currentTarget.open)}><summary>Build &amp; connections</summary>
     <section className="build-tools" aria-label="Build palette">
-      {(['compute', 'database', 'cache', 'edge'] as Kind[]).map(kind => <button type="button" key={kind} disabled={!preparing || architecture.resources.some(r => r.kind === kind)} aria-pressed={view.building === kind} onClick={() => controller.build(kind)}>Place {definitions[kind].name}</button>)}
+      {(['compute', 'database', 'cache', 'edge'] as Kind[]).map(kind => <button type="button" key={kind} disabled={!preparing || architecture.resources.some(r => r.kind === kind)} aria-pressed={view.building === kind} onClick={() => controller.build(kind)}><ServiceIcon kind={kind} decorative />Place {definitions[kind].name}</button>)}
       <button type="button" disabled={!view.building} onClick={() => controller.build(null)}>Cancel placement</button>
       <button type="button" disabled={!preparing} aria-pressed={view.connecting} onClick={() => controller.connectMode(!view.connecting)}>Connect resources</button>
       <p>Click to select · Drag a building to move · Drag empty ground to pan · Scroll to zoom</p>
     </section>
     {view.building && <p role="status">Placing {definitions[view.building].name}: {placementError ?? 'click a free footprint on the board.'}</p>}
-    <nav aria-label="Inspect resources" className="resource-list">{architecture.resources.map(resource => <button type="button" key={resource.id} aria-pressed={view.selected === resource.id} onClick={() => controller.select(resource.id)}>Inspect {definitions[resource.kind].name}</button>)}</nav>
+    <nav aria-label="Inspect resources" className="resource-list">{architecture.resources.map(resource => <button type="button" key={resource.id} aria-pressed={view.selected === resource.id} onClick={() => controller.select(resource.id)}><ServiceIcon kind={resource.kind} decorative />Inspect {definitions[resource.kind].name}</button>)}</nav>
     {view.notice && <p role="alert">{view.notice}</p>}
     {view.connecting && <section className="connection-panel" aria-label="Connection selection"><p>{view.connectionSource ? `Source: ${view.connectionSource}. Select a highlighted valid target.` : 'Select a source on the board or below.'}</p>
       {architecture.resources.map(resource => <button type="button" key={resource.id} disabled={view.connectionSource !== null && !validTargets(architecture, view.connectionSource).includes(resource.id)} onClick={() => controller.connectNode(resource.id)}>{definitions[resource.kind].name}</button>)}
@@ -97,8 +98,8 @@ function App() {
     {view.error && <section className="error" role="alert"><p>{view.error} — simulation clock stopped; saved runtime metrics remain intact.</p><button type="button" disabled={view.recoveringRenderer} onClick={() => controller.recoverRenderer()}>Rebuild renderer</button>{view.recoveringRenderer && <p>Rebuilding — waiting for the renderer to report ready.</p>}<p>If recovery fails again, reload to return to the baseline; browser persistence arrives in its own issue.</p></section>}
     <section className="playfield"><div className="board-area"><div className="board-tools"><span>Cloud architecture</span><button type="button" onClick={() => controller.setCamera({ x: 0, y: 0, zoom: 1 })}>Fit view</button></div><World controller={controller} generation={view.rendererGeneration} /></div><aside>
       <p className="eyebrow">CURRENT PRESSURE</p>
-      <h2>App Service</h2><p className="reading" data-testid="app-pressure">{utilizationLabel(appU)} {appU === null ? '' : `${(appU * 100).toFixed(1)}%`}</p>
-      <h2>Azure SQL</h2><p className="reading" data-testid="sql-pressure">{utilizationLabel(sqlU)} {sqlU === null ? '' : `${(sqlU * 100).toFixed(1)}%`}</p>
+      <h2><ServiceIcon kind="compute" decorative />App Service</h2><p className="reading" data-testid="app-pressure">{utilizationLabel(appU)} {appU === null ? '' : `${(appU * 100).toFixed(1)}%`}</p>
+      <h2><ServiceIcon kind="database" decorative />Azure SQL</h2><p className="reading" data-testid="sql-pressure">{utilizationLabel(sqlU)} {sqlU === null ? '' : `${(sqlU * 100).toFixed(1)}%`}</p>
       <dl><dt>Incoming requests/s</dt><dd data-testid="traffic">{r ? r.offered.browse + r.offered.order + r.offered.bot : '—'}</dd>
         <dt>Tick availability</dt><dd>{view.snapshot ? `${(view.snapshot.metrics.availability * 100).toFixed(2)}%` : '—'}</dd>
         <dt>App dropped/s</dt><dd>{r ? (r.app.dropped.browse + r.app.dropped.order + r.app.dropped.bot).toFixed(1) : '—'}</dd>
@@ -108,7 +109,8 @@ function App() {
         <dt>Running cost/min</dt><dd>{activeCostPerMinute(architecture)} credits</dd></dl>
       <p className="hint" data-testid="pressure-hint">{view.result ? view.result.insight : pressureHint(r ?? null)}</p>
       {selected && <section aria-label="Selected resource" className="resource-details">
-        <h2>{definitions[selected.kind].name}</h2>
+        <h2><ServiceIcon kind={selected.kind} decorative />{definitions[selected.kind].name}</h2>
+        {selected.kind === 'edge' && <p>Azure identity: Application Gateway with WAF. Protected Edge is a game abstraction, not a separate Azure product.</p>}
         <p data-testid="resource-status">{selected.remaining > 0 ? `Provisioning: ${selected.remaining}s` : 'Active'}</p>
         <p>{architecture.connections.some(c => c.from === selected.id || c.to === selected.id) ? 'Connected' : 'Disconnected — no traffic effect'}</p>
         <p>Runtime cost: {definitions[selected.kind].cost * selected.instances} credits/min when active. Build Mode is free.</p>

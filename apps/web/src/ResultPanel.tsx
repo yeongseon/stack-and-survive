@@ -1,4 +1,5 @@
 import type { simulationResult } from '@stack-and-survive/simulation/results';
+import { ServiceIcon } from './ServiceIcon';
 
 export type Result = ReturnType<typeof simulationResult>;
 export function displayLatency(value: number | null): string { return value === null ? 'N/A — no successful requests' : `${value.toFixed(1)} ms`; }
@@ -19,6 +20,7 @@ export function ResultPanel({ result, onRedesign }: { result: Result; onRedesign
     <p>Targets: {allTargets ? 'All met' : 'Not all met'} — availability {result.targetAttainment.availability ? 'met' : 'not met'}, latency {result.targetAttainment.latency ? 'met' : 'not met'}, business value {result.targetAttainment.businessValue ? 'met' : 'not met'}. Survival is not the same as meeting every target.</p>
     <dl className="result-metrics">{entries.map(([label, content]) => <div key={label}><dt>{label}</dt><dd>{content}</dd></div>)}</dl>
     <p>Physical bottleneck: {result.bottleneck ?? 'None — this outcome is not attributed to a saturated resource.'}</p>
+    {result.bottleneck && <p className="result-service"><ServiceIcon kind={result.bottleneck === 'App Service' ? 'compute' : 'database'} decorative />Azure service reference: {result.bottleneck}</p>}
     <p>Contributing causes: {result.contributors.length ? result.contributors.join(' · ') : 'None above the reporting threshold.'}</p>
     <button type="button" onClick={onRedesign}>Redesign &amp; Retry</button>
     <details><summary>View result details</summary>
