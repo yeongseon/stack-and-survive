@@ -2,7 +2,7 @@
 
 ## Gameplay Specification
 
-**Version:** 0.3  
+**Version:** 0.4  
 **Status:** Hackathon MVP Gameplay Definition  
 **Related Documents:** `PRD.md`, `SIMULATION_SPEC.md`, `TECHNICAL_DESIGN.md`  
 **Primary Provider:** Microsoft Azure  
@@ -28,24 +28,24 @@ This document intentionally focuses on player-facing behavior rather than implem
 
 # 2. Gameplay Vision
 
-Stack & Survive is a cloud architecture strategy game where the player's architecture acts as the defensive system.
+Stack & Survive is a real-time cloud infrastructure management game where architecture is a processing system. Demand flows through Azure services; the player observes constraints and expands or optimizes capacity.
 
 The player should experience the following loop:
 
 ```text
-Observe
+Observe Demand
    ↓
 Build
    ↓
 Connect
    ↓
-Run Traffic
+Start Operation
    ↓
-Detect Pressure
+Detect Flow Pressure
    ↓
 Respond
    ↓
-Survive / Fail
+Complete / Fail
    ↓
 Understand Why
    ↓
@@ -60,13 +60,13 @@ The player should feel like they are operating a cloud system, not answering a c
 
 # 3. Core Gameplay Principle
 
-> **Your architecture is your defense.**
+> **Build. Scale. Keep the business flowing.**
 
-The player does not directly attack enemies.
+The player manages growing workload, not enemies or combat waves.
 
 The player manages a cloud architecture under pressure.
 
-Primary MVP threats include:
+Primary MVP pressure conditions include:
 
 - Increasing legitimate traffic
 - Bot traffic
@@ -75,7 +75,7 @@ Primary MVP threats include:
 - Poor architectural decisions
 - Excessive infrastructure cost
 
-Future threats may include:
+Future operational conditions may include:
 
 - Queue backlog
 - Retry storms
@@ -86,6 +86,8 @@ Future threats may include:
 ---
 
 # 4. Azure Fidelity Principle
+
+Visual queues are representative pressure markers derived from current utilization and drops, not a waiting-request metric or FIFO. The engine has no buffered queue in this MVP. A dropped request cannot later complete. Build/Manage changes and live-action availability stay as specified: new Cache/Edge deployment remains preparation-only. Player labels may say Start operation, demand phase and data center; internal runtime identifiers and numeric rules remain unchanged.
 
 Stack & Survive should preserve real Azure concepts wherever they affect architectural reasoning.
 
@@ -1165,7 +1167,7 @@ Filtered traffic should visibly stop at the protected edge.
 
 # 47. Live Intervention
 
-Traffic defense is not a passive auto-battler.
+Flow management is not a passive observation exercise.
 
 The player may take a small number of live actions.
 
@@ -1981,7 +1983,7 @@ Recommended Hackathon demo story:
 ```text
 1. Show App → SQL baseline
 
-2. Start traffic
+2. Start operation
 
 3. Show compute pressure
 
@@ -2008,7 +2010,7 @@ Recommended Hackathon demo story:
 14. Compare results
 
 15. End with:
-   "Your architecture is your defense."
+"Build. Scale. Keep the business flowing."
 ```
 
 The demo should tell one coherent story rather than list features.
@@ -2026,7 +2028,7 @@ The gameplay layer is complete when a player can:
 3. Connect valid resources
 4. Receive useful feedback for invalid connections
 5. Understand when provisioning is incomplete
-6. Start traffic
+6. Start operation
 7. Watch traffic follow the architecture
 8. Distinguish Browse, Order, and Bot behavior
 9. Identify a resource under pressure

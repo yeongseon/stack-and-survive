@@ -2,11 +2,11 @@
 
 ## Product Requirements Document
 
-**Version:** 0.5  
+**Version:** 0.6  
 **Status:** Hackathon MVP — Scope Locked  
 **Primary Platform:** Web  
 **Initial Cloud Provider:** Microsoft Azure  
-**Genre:** Cloud Architecture Strategy / Persistent Base Building / Defense Simulation  
+**Genre:** Cloud Infrastructure Tycoon / Real-Time Flow Management / Architecture Strategy  
 **Target Gameplay Session:** 3–6 minutes  
 **MVP Simulation Type:** Deterministic, browser-based cloud architecture simulation
 
@@ -18,17 +18,13 @@
 
 ## 1.1 One-Line Definition
 
-**Stack & Survive is a cloud architecture strategy game where players build and grow a cloud environment, then defend it against realistic traffic, failures, and cost pressure.**
+**Stack & Survive is a real-time cloud infrastructure management game where players scale and optimize Azure architecture as demand grows, keeping traffic flowing, customers served, and costs under control.**
 
 ## 1.2 Core Message
 
-> **Your architecture is your defense.**
+> **Build. Scale. Keep the business flowing.**
 
-Players do not build weapons or traditional defense towers.
-
-They build cloud architecture.
-
-Players survive by making better architectural decisions:
+Players operate a living digital business through cloud infrastructure. They improve flow by making better architectural decisions:
 
 - Scale compute
 - Add caching
@@ -68,7 +64,7 @@ Every architectural decision costs money.
 
 Stack & Survive turns these concepts into gameplay.
 
-Players build a cloud base and repeatedly test it against short workload scenarios.
+Players plan a data center, start operation, observe growing demand and visible processing pressure, then expand or optimize infrastructure. Failures and weaker results lead to analysis, redesign and replay of the same workload.
 
 The long-term vision is to make cloud architecture something players can:
 
@@ -80,17 +76,11 @@ The long-term vision is to make cloud architecture something players can:
 
 Stack & Survive is built around one idea:
 
-> **You don't build defenses. You build architecture.**
+> **The world shows the problem. The metrics explain it. The player fixes it.**
 
-Traditional defense games ask:
+The primary question is: **Where is the flow slowing down, and what should I expand next?**
 
-> Which tower should I place?
-
-Stack & Survive asks:
-
-> How should I design this system?
-
-The player's defensive tools are architectural decisions such as:
+The player's operational tools are architectural decisions such as:
 
 - Load balancing
 - Scaling
@@ -105,6 +95,8 @@ The player's defensive tools are architectural decisions such as:
 - Observability
 
 Architecture itself is the gameplay.
+
+The primary loop is demand → flow → pressure → decision → expansion/optimization → observed outcome → higher demand. Improved throughput or value is not guaranteed: downstream capacity and operating costs still matter. Representative visual queues depict current pressure, not actual buffered requests. Dropped requests never wait to be served later. The existing deterministic simulation and numerical specification remain unchanged; see `TYCOON_REFRAME_IMPLEMENTATION_PLAN.md`.
 
 ---
 
@@ -328,13 +320,13 @@ Secondary audience:
 
 Stack & Survive combines:
 
-1. Persistent base building
-2. Short traffic-defense sessions
+1. Persistent infrastructure planning
+2. Short real-time flow-management sessions
 3. Long-term architecture progression
 
 ---
 
-# 9. Persistent Cloud Base
+# 9. Persistent Cloud Infrastructure
 
 The long-term product gives each player a persistent cloud environment.
 
@@ -356,7 +348,7 @@ Typical long-term loop:
 ```text
 LOGIN
   ↓
-VIEW CLOUD BASE
+VIEW DATA CENTER
   ↓
 BUILD / UPGRADE / REDESIGN
   ↓
@@ -364,7 +356,7 @@ SELECT SCENARIO
   ↓
 START TRAFFIC
   ↓
-DEFEND
+KEEP OPERATION RUNNING
   ↓
 RESULT
   ↓
@@ -379,13 +371,13 @@ Account-based persistence is not required.
 
 ---
 
-# 10. Base Building Inspiration
+# 10. Flow-Management Inspiration
 
-The building interaction may borrow familiar interaction patterns from persistent base-building games such as Clash of Clans.
+The interaction borrows from production, logistics and small business-management games: demand arrives, facilities process it, constraints become visible, and the player expands or optimizes. This is not a combat game or a reproduction of a particular commercial game.
 
 Useful concepts include:
 
-- Persistent base
+- Persistent infrastructure
 - Build menu
 - Placement
 - Construction state
@@ -397,7 +389,7 @@ Stack & Survive must remain visually and mechanically distinct.
 
 ---
 
-# 11. Base Building Flow
+# 11. Infrastructure Building Flow
 
 ```text
 OPEN BUILD MENU
@@ -993,7 +985,7 @@ Real pricing integration is Post-MVP.
 
 # 42. Live Intervention
 
-Traffic defense is not completely passive.
+Real-time flow management is not completely passive.
 
 Players may intervene while traffic is running.
 
@@ -2582,15 +2574,15 @@ It is:
 
 ## Primary
 
-> **Stack & Survive is a cloud architecture strategy game where your infrastructure is your defense.**
+> **Stack & Survive is a real-time Azure infrastructure tycoon where growing demand makes bottlenecks visible and architecture decisions keep the business running.**
 
 ## Main Tagline
 
-> **Your architecture is your defense.**
+> **Build. Scale. Keep the business flowing.**
 
 ## Secondary Tagline
 
-> **Build the cloud. Survive the traffic.**
+> **Watch demand grow. Find the bottleneck. Expand the cloud.**
 
 ---
 
