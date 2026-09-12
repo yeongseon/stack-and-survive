@@ -54,10 +54,16 @@ test('emergency WAF on active ingress charges once and expires to normal filteri
   await page.getByRole('button', { name: 'Start operation', exact: true }).click();
   await page.locator('summary').filter({ hasText: 'Developer inspector' }).click(); await stepUntil(page, 75);
   await page.getByRole('button', { name: 'Activate Emergency WAF', exact: true }).click(); await stepUntil(page, 76);
-  await expect(page.getByTestId('filtered-bots')).toHaveText('42.0');
+  const checkFiltered = async (value: string) => {
+    await page.getByRole('button', { name: 'Why & metrics', exact: true }).click();
+    await expect(page.getByTestId('filtered-bots')).toBeVisible();
+    await expect(page.getByTestId('filtered-bots')).toHaveText(value);
+    await page.getByRole('button', { name: 'Close metrics', exact: true }).click();
+  };
+  await checkFiltered('42.0');
   await expect(page.getByRole('button', { name: 'Activate Emergency WAF', exact: true })).toBeDisabled();
-  await stepUntil(page, 77); await expect(page.getByTestId('filtered-bots')).toHaveText('54.0');
-  await stepUntil(page, 107); await expect(page.getByTestId('filtered-bots')).toHaveText('42.0');
+  await stepUntil(page, 77); await checkFiltered('54.0');
+  await stepUntil(page, 107); await checkFiltered('42.0');
   await expect(page.getByTestId('waf-progress')).toHaveText('Emergency use consumed');
   const snapshot = JSON.parse((await page.getByTestId('diagnostics').textContent())!).snapshot;
   expect(snapshot.economy.emergencyCost).toBe(8);
