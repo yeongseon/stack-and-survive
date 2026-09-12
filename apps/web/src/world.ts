@@ -4,7 +4,7 @@ import { definitions } from '@stack-and-survive/cloud-domain';
 import { positionError, project, snap, unproject, validTargets, viewportCamera, type Point } from './editor';
 import { representativeCount, visualFlows } from './traffic';
 import { createServiceBadge } from './service-icons';
-import { drawBuilding, drawEnvironment, insideBuilding } from './building-art';
+import { buildingPresentation, drawBuilding, drawEnvironment, insideBuilding } from './building-art';
 
 export function utilizationLabel(u: number | null): string {
   return u === null ? 'READY' : compare(u, 1) > 0 ? '! OVERLOADED' : compare(u, .7) > 0 ? 'WARNING' : 'HEALTHY';
@@ -14,6 +14,7 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
   if (!host.isConnected) return () => {};
   let view: View = controller.getSnapshot();
   let frames = 0;
+  let renderVisible = true;
   const badgeLayer = document.createElement('div');
   badgeLayer.className = 'world-service-badges'; host.append(badgeLayer);
   const badges = new Map<string, HTMLSpanElement>();
@@ -24,6 +25,9 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
     structureSignature = '';
     environment!: Phaser.GameObjects.Graphics;
     backgroundSize = '';
+    wasVisible = true;
+    diagnosticView: View | null = null;
+    diagnosticSize = '';
     captions: Phaser.GameObjects.Text[] = [];
     create() {
       this.environment = this.add.graphics();
@@ -42,6 +46,28 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
         const resources = architecture.resources;
         const camera = viewportCamera(view.camera, width, height);
         const positions = resources.map(r => project(r, camera, width, height));
+        this.scene.setVisible(renderVisible);
+        host.dataset.renderVisible = String(renderVisible);
+        if (this.wasVisible !== renderVisible) {
+          this.structureSignature = ''; this.backgroundSize = ''; this.wasVisible = renderVisible;
+        }
+        const requests = view.snapshot?.requests;
+        const appU = requests?.app.utilization ?? null;
+        const sqlU = requests ? Math.max(requests.sql.readUtilization, requests.sql.writeUtilization) : null;
+        const flows = view.state.runtime.status === 'RUNNING' && !view.error && requests ? visualFlows(requests) : [];
+        if (this.diagnosticView !== view || this.diagnosticSize !== `${width}:${height}`) {
+          this.diagnosticView = view; this.diagnosticSize = `${width}:${height}`;
+          host.dataset.appState = utilizationLabel(appU); host.dataset.sqlState = utilizationLabel(sqlU);
+          host.dataset.tick = String(view.state.runtime.time);
+          host.dataset.nodes = JSON.stringify(resources.map((r, i) => ({ id: r.id, ...positions[i] })));
+          host.dataset.flows = JSON.stringify(flows);
+          host.dataset.packets = String(flows.reduce((sum, flow) => sum + representativeCount(flow.volume), 0));
+          host.dataset.buildings = JSON.stringify(resources.map(resource => ({ id: resource.id,
+            ...buildingPresentation(resource, architecture.connections.some(c => c.from === resource.id || c.to === resource.id), view.selected === resource.id,
+              resource.kind === 'compute' && (view.state.runtime.scaleDue !== null || view.state.runtime.preparationScaleDue !== null)) })));
+          host.dataset.placement = view.building && view.preview ? positionError(architecture, snap(view.preview)) ? 'invalid' : 'valid' : 'none';
+        }
+        if (!renderVisible) return;
         for (const [id, badge] of badges) {
           if (!resources.some(r => r.id === id)) { badge.remove(); badges.delete(id); }
         }
@@ -60,9 +86,6 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
         if (this.backgroundSize !== `${width}:${height}`) {
           drawEnvironment(this.environment.clear(), width, height); this.backgroundSize = `${width}:${height}`;
         }
-        const requests = view.snapshot?.requests;
-        const appU = requests?.app.utilization ?? null;
-        const sqlU = requests ? Math.max(requests.sql.readUtilization, requests.sql.writeUtilization) : null;
         const signature = JSON.stringify([width, height, architecture, camera, view.selected, view.connectionSource, view.preview, view.building, appU, sqlU, requests?.cache.utilization, view.state.runtime.scaleDue, view.state.runtime.preparationScaleDue]);
         if (signature !== this.structureSignature) {
         this.structureSignature = signature; g.clear();
@@ -107,7 +130,6 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
         let packetCount = 0;
         if (view.state.runtime.status === 'RUNNING' && !view.error && requests) {
           const at = (kind: string) => positions[resources.findIndex(r => r.kind === kind)];
-          const flows = visualFlows(requests);
           flows.forEach((flow, lane) => {
             const a = at(flow.from); const b = at(flow.to);
             if (!a || !b) return;
@@ -142,9 +164,10 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
   }
   let game: InstanceType<typeof Phaser.Game> | undefined;
   let resize: ResizeObserver | undefined;
+  let intersection: IntersectionObserver | undefined;
   let removeInput = () => {};
   let removeContextHandler = () => {};
-  const destroy = () => { resize?.disconnect(); removeInput(); removeContextHandler(); unsubscribe(); badgeLayer.remove(); badges.clear(); game?.destroy(true); };
+  const destroy = () => { resize?.disconnect(); intersection?.disconnect(); removeInput(); removeContextHandler(); unsubscribe(); badgeLayer.remove(); badges.clear(); game?.destroy(true); };
   try {
     game = new Phaser.Game({ type: Phaser.WEBGL, parent: host, width: host.clientWidth, height: host.clientHeight,
       backgroundColor: '#345f79', banner: false, scene: World, input: { keyboard: false, mouse: false, touch: false } });
@@ -183,6 +206,11 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
     canvas.addEventListener('pointerdown', down); canvas.addEventListener('pointermove', move); canvas.addEventListener('pointerup', up); canvas.addEventListener('pointercancel', up); canvas.addEventListener('wheel', wheel, { passive: false });
     removeInput = () => { canvas.removeEventListener('pointerdown', down); canvas.removeEventListener('pointermove', move); canvas.removeEventListener('pointerup', up); canvas.removeEventListener('pointercancel', up); canvas.removeEventListener('wheel', wheel); };
     resize = new ResizeObserver(() => { if (host.clientWidth > 0 && host.clientHeight > 0) game?.scale.resize(host.clientWidth, host.clientHeight); });
+    intersection = new IntersectionObserver(entries => {
+      const entry = entries[entries.length - 1];
+      renderVisible = entry.isIntersecting && entry.intersectionRatio > 0;
+    }, { threshold: 0 });
+    intersection.observe(host);
     resize.observe(host); return destroy;
   } catch (error) { destroy(); throw error; }
 }

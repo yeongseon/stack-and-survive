@@ -26,6 +26,8 @@ test('real baseline reaches compute pressure and fails at the verified tick', as
   await expect(page.getByTestId('status')).toHaveText('FAILED');
   await expect(page.getByRole('heading', { name: 'App Service Saturation' })).toBeVisible();
   await expect(surface).toHaveAttribute('data-packets', '0');
+  await surface.scrollIntoViewIfNeeded();
+  await expect(surface).toHaveAttribute('data-render-visible', 'true');
   const previousFrames = Number(await surface.getAttribute('data-frames'));
   await expect.poll(async () => Number(await surface.getAttribute('data-frames'))).toBeGreaterThan(previousFrames + 10);
   await expect(page.getByTestId('elapsed')).toHaveText('50');
