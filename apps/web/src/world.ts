@@ -5,6 +5,7 @@ import { positionError, project, snap, unproject, validTargets, viewportCamera, 
 import { representativeCount, visualFlows } from './traffic';
 import { createServiceBadge } from './service-icons';
 import { buildingPresentation, drawBuilding, drawEnvironment, insideBuilding } from './building-art';
+import { activeEffects, completedResources, drawEffect, effectMotion } from './effects';
 
 export function utilizationLabel(u: number | null): string {
   return u === null ? 'READY' : compare(u, 1) > 0 ? '! OVERLOADED' : compare(u, .7) > 0 ? 'WARNING' : 'HEALTHY';
@@ -15,13 +16,24 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
   let view: View = controller.getSnapshot();
   let frames = 0;
   let renderVisible = true;
+  const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
+  let reducedMotion = motionPreference.matches;
+  const updateMotion = () => { reducedMotion = motionPreference.matches; };
+  motionPreference.addEventListener('change', updateMotion);
   const badgeLayer = document.createElement('div');
   badgeLayer.className = 'world-service-badges'; host.append(badgeLayer);
   const badges = new Map<string, HTMLSpanElement>();
-  const unsubscribe = controller.subscribe(() => { view = controller.getSnapshot(); });
+  let animationTime = 0;
+  const completions = new Map<string, number>();
+  const unsubscribe = controller.subscribe(() => {
+    const next = controller.getSnapshot();
+    for (const kind of completedResources(view, next)) completions.set(kind, animationTime + 1400);
+    view = next;
+  });
   class World extends Phaser.Scene {
     graphics!: Phaser.GameObjects.Graphics;
     trafficGraphics!: Phaser.GameObjects.Graphics;
+    effectsGraphics!: Phaser.GameObjects.Graphics;
     structureSignature = '';
     environment!: Phaser.GameObjects.Graphics;
     backgroundSize = '';
@@ -33,13 +45,15 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
       this.environment = this.add.graphics();
       this.graphics = this.add.graphics();
       this.trafficGraphics = this.add.graphics();
+      this.effectsGraphics = this.add.graphics();
       this.captions = Array.from({ length: 5 }, () => this.add.text(0, 0, '', {
         fontFamily: 'Trebuchet MS, sans-serif', fontSize: '13px', fontStyle: 'bold', color: '#f2faff', align: 'center', backgroundColor: '#234253', padding: { x: 8, y: 5 },
       }).setOrigin(.5, 0));
       host.dataset.renderer = 'ready';
       controller.rendererReady(generation);
     }
-    update(time: number) {
+    update(time: number, delta: number) {
+      if (!view.error && (view.state.runtime.status === 'RUNNING' || view.state.runtime.status === 'PREPARATION')) animationTime += delta;
       try {
         const width = this.scale.width; const height = this.scale.height;
         const architecture = view.state.runtime.architecture;
@@ -48,6 +62,8 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
         const positions = resources.map(r => project(r, camera, width, height));
         this.scene.setVisible(renderVisible);
         host.dataset.renderVisible = String(renderVisible);
+        host.dataset.reducedMotion = String(reducedMotion);
+        host.dataset.effects = JSON.stringify(activeEffects(view));
         if (this.wasVisible !== renderVisible) {
           this.structureSignature = ''; this.backgroundSize = ''; this.wasVisible = renderVisible;
         }
@@ -127,6 +143,29 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
         } else host.dataset.placement = 'none';
         }
         g = this.trafficGraphics.clear();
+        const effects = activeEffects(view);
+        const fx = this.effectsGraphics.clear();
+        for (const effect of effects) {
+          const index = resources.findIndex(r => r.kind === effect.resource);
+          if (index >= 0) drawEffect(fx, effect, positions[index], time, effectMotion(view, reducedMotion));
+        }
+        for (const [kind, until] of completions) {
+          if (animationTime >= until) { completions.delete(kind); continue; }
+          const p = positions[resources.findIndex(r => r.kind === kind)];
+          if (p) {
+            const progress = reducedMotion ? .5 : 1 - (until - animationTime) / 1400;
+            fx.lineStyle(3, 0xd6ffe5, 1 - progress); fx.strokeEllipse(p.x, p.y + 8, 80 + progress * 60, 28 + progress * 22);
+          }
+        }
+        host.dataset.completions = JSON.stringify([...completions.keys()]);
+        if (view.state.runtime.status === 'FAILED' || view.state.runtime.status === 'COMPLETED') {
+          fx.lineStyle(4, view.state.runtime.status === 'FAILED' ? 0xffa49b : 0x90e9c4, .8);
+          fx.strokeRoundedRect(4, 4, Math.max(1, width - 8), Math.max(1, height - 8), 12);
+        } else if (view.snapshot?.critical) {
+          fx.lineStyle(3, 0xffac82, effectMotion(view, reducedMotion) ? .4 + .2 * Math.sin(time / 400) : .6);
+          fx.strokeRect(2, 2, Math.max(1, width - 4), Math.max(1, height - 4));
+        }
+        host.dataset.effects = JSON.stringify(effects);
         let packetCount = 0;
         if (view.state.runtime.status === 'RUNNING' && !view.error && requests) {
           const at = (kind: string) => positions[resources.findIndex(r => r.kind === kind)];
@@ -135,7 +174,7 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
             if (!a || !b) return;
             const count = representativeCount(flow.volume); packetCount += count;
             for (let i = 0; i < count; i++) {
-              const p = (time / 3000 + i / count + lane * .07) % 1;
+              const p = reducedMotion ? (i + .5) / count : (time / 3000 + i / count + lane * .07) % 1;
               const ingressRejected = flow.end === 'filtered' && flow.to === 'compute';
               const progress = ingressRejected ? p * .25 : p;
               const x = a.x + (b.x - a.x) * progress; const y = a.y + (b.y - a.y) * progress + (lane % 3 - 1) * 7;
@@ -167,12 +206,12 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
   let intersection: IntersectionObserver | undefined;
   let removeInput = () => {};
   let removeContextHandler = () => {};
-  const destroy = () => { resize?.disconnect(); intersection?.disconnect(); removeInput(); removeContextHandler(); unsubscribe(); badgeLayer.remove(); badges.clear(); game?.destroy(true); };
+  const destroy = () => { resize?.disconnect(); intersection?.disconnect(); motionPreference.removeEventListener('change', updateMotion); removeInput(); removeContextHandler(); unsubscribe(); badgeLayer.remove(); badges.clear(); game?.destroy(true); };
   try {
     game = new Phaser.Game({ type: Phaser.WEBGL, parent: host, width: host.clientWidth, height: host.clientHeight,
       backgroundColor: '#345f79', banner: false, scene: World, input: { keyboard: false, mouse: false, touch: false } });
     const canvas = game.canvas; canvas.style.touchAction = 'none';
-    const contextLost = () => { host.dataset.renderer = 'error'; controller.presentationFailed('Graphics context lost'); };
+    const contextLost = (event: Event) => { event.preventDefault(); host.dataset.renderer = 'error'; controller.presentationFailed('Graphics context lost'); };
     canvas.addEventListener('webglcontextlost', contextLost);
     removeContextHandler = () => canvas.removeEventListener('webglcontextlost', contextLost);
     const point = (e: PointerEvent): Point => { const r = canvas.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; };
