@@ -13,7 +13,10 @@ test('refresh restores architecture but discards pending runtime and totals', as
   await expect(page.getByTestId('status')).toHaveText('PREPARATION');
   await expect(page.getByTestId('elapsed')).toHaveText('0');
   await expect(page.getByLabel('Initial App instances')).toHaveValue('2');
+  await page.getByRole('button', { name: 'Why & metrics', exact: true }).click();
+  await expect(page.getByTestId('cloud-cost')).toBeVisible();
   await expect(page.getByTestId('cloud-cost')).toHaveText('0.00');
+  await page.getByRole('button', { name: 'Close metrics', exact: true }).click();
   await expect(page.getByTestId('scale-progress')).toHaveText('2 active instances');
   await page.getByRole('button', { name: 'Reset baseline', exact: true }).click();
   await expect(page.getByLabel('Initial App instances')).toHaveValue('1');

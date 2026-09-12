@@ -4,7 +4,7 @@ import { createController, type Controller } from './controller';
 import { mountWorld, utilizationLabel } from './world';
 import './style.css';
 import { definitions, validateStart } from '@stack-and-survive/cloud-domain';
-import { activeCostPerMinute } from '@stack-and-survive/simulation/economy';
+import { PrimaryHUD } from './PrimaryHUD';
 import { ResultPanel } from './ResultPanel';
 import { ComparisonPanel } from './ComparisonPanel';
 import { browserSaveRepository } from './persistence';
@@ -53,8 +53,6 @@ function App() {
   const paused = view.state.runtime.status === 'PAUSED';
   const readyErrors = validateStart(architecture);
   if (view.state.runtime.preparationScaleDue !== null) readyErrors.push('Scale-out is provisioning');
-  const metrics = view.snapshot?.metrics;
-  const economy = view.state.economy;
   const runtime = view.state.runtime;
   const scaleReason = controller.actionReason({ type: 'SCALE_OUT' });
   const rateReason = controller.actionReason({ type: 'RATE_LIMIT', enabled: !runtime.rateLimit });
@@ -77,16 +75,7 @@ function App() {
     {preparing && <section aria-label="Black Friday briefing" className="briefing"><h2>Black Friday is approaching</h2><p>Read-heavy business traffic will increase. Unusual automated traffic may consume capacity. Keep customers served without overspending.</p><p>Availability target: 99% · Latency target: 300 ms · Budget: 140 game credits · Duration: 180 seconds</p><p>Preparation is free. Your connections determine request paths; physical distance does not change performance.</p></section>}
     {paused && <p role="status" className="session-notice">Paused — time and costs frozen. Inspect only; editing is disabled.</p>}
     {preparing && view.previousResult && <section className="briefing" aria-label="Previous attempt context"><h2>Previous issue: {view.previousResult.primary}</h2><p>{view.previousResult.insight}</p><p>Previous attempt: {view.previousResult.status} at {view.previousResult.elapsedTime}s. Edit your existing architecture, then retry the same workload.</p></section>}
-    <section aria-label="Live service and business metrics" className="metrics-bar">
-      <div><span>Availability</span><strong data-testid="availability">{metrics ? `${(metrics.availability * 100).toFixed(2)}%` : '—'}</strong></div>
-      <div><span>Latency</span><strong data-testid="latency">{metrics?.averageLatency == null ? '—' : `${metrics.averageLatency.toFixed(0)} ms`}</strong></div>
-      <div><span>Error rate</span><strong>{metrics ? `${(metrics.errorRate * 100).toFixed(2)}%` : '—'}</strong></div>
-      <div><span>Cloud cost</span><strong data-testid="cloud-cost">{economy.infrastructureCost.toFixed(2)}</strong></div>
-      <div><span>Revenue</span><strong>{economy.revenue.toFixed(2)}</strong></div>
-      <div><span>Net value</span><strong>{economy.netBusinessValue.toFixed(2)}</strong></div>
-      <div><span>Budget left</span><strong>{economy.remainingBudget.toFixed(2)}</strong></div>
-    </section>
-    {(running || paused) && view.snapshot?.critical && <p role="status" className="critical">! CRITICAL — {view.state.streaks.availability > 0 ? `${view.snapshot.failureCountdown.availability} consecutive bad seconds until availability failure.` : 'Resource overload or budget pressure.'} {view.state.streaks.order > 0 ? `Order-flow failure in ${view.snapshot.failureCountdown.order} bad seconds.` : ''}</p>}
+    <PrimaryHUD view={view} />
     {view.notice && <p role="alert">{view.notice}</p>}
     {preparing && readyErrors.length > 0 && <p className="session-notice" role="status">Cannot start: {readyErrors.join('; ')}</p>}
     {view.error && <section className="error" role="alert"><p>{view.error} — simulation clock stopped; saved runtime metrics remain intact.</p><button type="button" disabled={view.recoveringRenderer} onClick={() => controller.recoverRenderer()}>Rebuild renderer</button>{view.recoveringRenderer && <p>Rebuilding — waiting for the renderer to report ready.</p>}<p>If recovery fails again, reload to return to the baseline; browser persistence arrives in its own issue.</p></section>}
@@ -98,13 +87,6 @@ function App() {
       <p className="eyebrow">CURRENT PRESSURE</p>
       <h2><ServiceIcon kind="compute" decorative />App Service</h2><p className="reading" data-testid="app-pressure">{utilizationLabel(appU)} {appU === null ? '' : `${(appU * 100).toFixed(1)}%`}</p>
       <h2><ServiceIcon kind="database" decorative />Azure SQL</h2><p className="reading" data-testid="sql-pressure">{utilizationLabel(sqlU)} {sqlU === null ? '' : `${(sqlU * 100).toFixed(1)}%`}</p>
-      <details className="telemetry-details" open={!!selected}><summary>Detailed telemetry</summary><dl><dt>Incoming requests/s</dt><dd data-testid="traffic">{r ? r.offered.browse + r.offered.order + r.offered.bot : '—'}</dd>
-        <dt>Tick availability</dt><dd>{view.snapshot ? `${(view.snapshot.metrics.availability * 100).toFixed(2)}%` : '—'}</dd>
-        <dt>App dropped/s</dt><dd>{r ? (r.app.dropped.browse + r.app.dropped.order + r.app.dropped.bot).toFixed(1) : '—'}</dd>
-        <dt>SQL dropped/s</dt><dd>{r ? (r.sql.readsDropped + r.sql.writesDropped).toFixed(1) : '—'}</dd></dl>
-      <dl><dt>Bots reaching App/s</dt><dd data-testid="bots-at-app">{r ? r.rateLimit.passed.bot.toFixed(1) : '—'}</dd><dt>WAF-filtered bots/s</dt><dd data-testid="filtered-bots">{r ? r.edge.filtered.bot.toFixed(1) : '—'}</dd>
-        <dt>Cache hit ratio</dt><dd data-testid="cache-hit">{r?.cache.hitRatio == null ? 'N/A' : `${(r.cache.hitRatio * 100).toFixed(1)}%`}</dd><dt>SQL reads avoided/s</dt><dd>{r?.cache.hits.toFixed(1) ?? '—'}</dd>
-        <dt>Running cost/min</dt><dd>{activeCostPerMinute(architecture)} credits</dd></dl></details>
       <p className="hint" data-testid="pressure-hint">{view.result ? view.result.insight : pressureHint(r ?? null)}</p>
       {selected && <section aria-label="Selected resource" className="resource-details">
         <h2><ServiceIcon kind={selected.kind} decorative />{definitions[selected.kind].name}</h2>

@@ -24,9 +24,12 @@ test('protected cached design shows actual class paths and live accounting', asy
   await page.getByRole('button', { name: 'Start operation', exact: true }).click();
   await page.locator('summary').filter({ hasText: 'Developer inspector' }).click();
   while (Number(await page.getByTestId('elapsed').textContent()) < 121) await page.getByRole('button', { name: 'Step one tick', exact: true }).click();
+  await page.getByRole('button', { name: 'Why & metrics', exact: true }).click();
+  await expect(page.getByTestId('filtered-bots')).toBeVisible();
   await expect(page.getByTestId('filtered-bots')).toHaveText('140.0');
   await expect(page.getByTestId('bots-at-app')).toHaveText('60.0');
   await expect(page.getByTestId('cache-hit')).toHaveText('80.0%');
+  await page.getByRole('button', { name: 'Close metrics', exact: true }).click();
   await expect(page.getByTestId('availability')).toHaveText('99.50%');
   await expect(surface).toHaveAttribute('data-tick', '121');
   const flows: { from: string; to: string; kind: string; volume: number; end: string }[] = JSON.parse((await surface.getAttribute('data-flows'))!);
@@ -36,6 +39,9 @@ test('protected cached design shows actual class paths and live accounting', asy
   expect(flows.some(f => f.to === 'database' && f.kind === 'bot')).toBe(false);
   expect(Number(await surface.getAttribute('data-packets'))).toBeLessThanOrEqual(200);
   const state = JSON.parse((await page.getByTestId('diagnostics').textContent())!);
+  await page.getByRole('button', { name: 'Why & metrics', exact: true }).click();
+  await expect(page.getByTestId('cloud-cost')).toBeVisible();
   expect(Number(await page.getByTestId('cloud-cost').textContent())).toBeCloseTo(state.snapshot.economy.infrastructureCost, 2);
+  await page.getByRole('button', { name: 'Close metrics', exact: true }).click();
   await surface.scrollIntoViewIfNeeded(); await page.screenshot({ path: info.outputPath('protected-traffic.png') });
 });
