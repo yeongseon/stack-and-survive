@@ -83,7 +83,7 @@ Use Node 22.22.0 and pnpm 10.32.1. Verification commands and limits are document
 - [Simulation Specification](docs/SIMULATION_SPEC.md) — Corrected simulation rules, authoritative values, and arithmetic reference matrix (v0.2).
 - [Technical Design](docs/TECHNICAL_DESIGN.md) — Actual four-package structure, app-local controller/renderer/UI, and planned hosting (v0.3).
 - [Visual Direction](docs/VISUAL_DIRECTION.md) — Data-center flow tycoon direction with separate official Azure identity (v0.3). Earlier visual foundation exists; the new indoor environment/pressure/HUD reframe remains in progress.
-- [Tycoon Reframe Plan](docs/TYCOON_REFRAME_IMPLEMENTATION_PLAN.md) — Owner reference-image interpretation, P0 environment/pressure priorities and dependency order (v0.1).
+- [Tycoon Reframe Plan](docs/TYCOON_REFRAME_IMPLEMENTATION_PLAN.md) — Owner reference-image interpretation, P0 environment/pressure priorities and post-environment asset quality gate (v0.2). Current custom art is procedural; production sprites are not claimed implemented.
 - [Asset provenance](apps/web/public/assets/ATTRIBUTION.md) — Original V24 Azure SVG sources, checksums, bundled terms and remaining usage-review limitations.
 - [Implementation Plan](docs/IMPLEMENTATION_PLAN.md) — Current reframe sequence and human-validation/deferred-hosting gates (v0.8); issues and labels, not milestones or a Project board.
 

@@ -6,7 +6,7 @@
 
 ## 1. Purpose and document freeze
 
-The owner requested [the Data-Center Tycoon Reframe](TYCOON_REFRAME_IMPLEMENTATION_PLAN.md), an explicit additional planning document. Current sequential P0 work is #80 → #81 (environment) → #83 (lanes) → #82 (representative pressure queues) → #84 (compact HUD) → #88 (Insights/Events/Why) → #86 (Build/Manage) → #87 (processing effects) → #85 (technical/visual acceptance) → #25 (real people). The earlier completed visual sequence below is historical foundation, not completion of this new direction. Core packages and `SIMULATION_SPEC.md` remain unchanged; Phase 2 live Cache/Edge deployment is deferred.
+The owner requested [the Data-Center Tycoon Reframe](TYCOON_REFRAME_IMPLEMENTATION_PLAN.md), an explicit additional planning document. Current sequential P0 work is #80 → #81 (environment) → #91 (review actual art quality; implement targeted sprites only if justified) → #83 (lanes) → #82 (representative pressure queues) → #84 (compact HUD) → #88 (Insights/Events/Why) → #86 (Build/Manage) → #87 (processing effects) → #85 (technical/visual acceptance) → #25 (real people). The earlier completed visual sequence below is historical foundation, not completion of this new direction or a delivered PNG/WebP asset pipeline. Core packages and `SIMULATION_SPEC.md` remain unchanged; Phase 2 live Cache/Edge deployment is deferred.
 
 Turn the existing specifications into a short, verifiable delivery sequence. This plan is not authorization to install packages, implement the game, execute the engine spike, or deploy Azure resources.
 
