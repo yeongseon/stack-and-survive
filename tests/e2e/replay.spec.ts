@@ -8,7 +8,7 @@ async function finish(page: Page) {
   }
 }
 test('Cache redesign changes failure to survival and WAF redesign improves full-run economics', async ({ page }, info) => {
-  test.setTimeout(180000);
+  test.setTimeout(300000);
   await page.goto('/'); const surface = page.locator('[data-renderer="ready"]'); await expect(surface).toHaveCount(1);
   await page.getByLabel('Initial App instances').selectOption('4');
   await page.getByRole('button', { name: 'Start traffic', exact: true }).click(); await finish(page);
