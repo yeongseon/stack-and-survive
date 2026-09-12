@@ -4,7 +4,8 @@ import { allowsConnection, definitions, parseArchitecture } from '@stack-and-sur
 export type Point = { x: number; y: number };
 export type Camera = Point & { zoom: number };
 export function viewportCamera(camera: Camera, width: number, height: number): Camera {
-  const fit = width >= 640 ? 1 : Math.min(1, Math.max(0.1, (width - 120) / 520), Math.max(0.1, (height - 140) / 400));
+  const fit = width >= 640 ? Math.min(1, Math.max(.1, (height - 200) / 200))
+    : Math.min(1, Math.max(0.1, (width - 120) / 520), Math.max(0.1, (height - 140) / 400));
   return { ...camera, zoom: camera.zoom * fit };
 }
 export function positionError(architecture: Architecture, position: Point, movingId?: string): string | null {
