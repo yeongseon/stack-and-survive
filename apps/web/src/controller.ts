@@ -6,6 +6,7 @@ import type { Architecture, Kind } from '@stack-and-survive/schema';
 import { connectResources, disconnectResources, moveResource, placeResource, removeResource, type Camera, type Point } from './editor';
 import type { SaveRepository } from './persistence';
 import { updateEvents, type GameEvent } from './observations';
+import { diagnosticsEnabled } from './mode';
 
 export type View = Readonly<{
   state: ReturnType<typeof createSimulation>;
@@ -221,7 +222,7 @@ export function createController(timer: Clock = clock, repository?: SaveReposito
       const next = structuredClone(a); next.resources.find(r => r.kind === 'compute')!.instances--; return next;
     }); },
     setCamera(camera: Camera) { if (!destroyed) publish({ ...view, camera: { x: Math.max(-1200, Math.min(1200, camera.x)), y: Math.max(-900, Math.min(900, camera.y)), zoom: Math.max(.5, Math.min(1.6, camera.zoom)) } }); },
-    inspectNextTick() { stop(); advance(); },
+    inspectNextTick() { if (diagnosticsEnabled) { stop(); advance(); } },
     presentationFailed(message: string) {
       if (destroyed) return;
       stop();

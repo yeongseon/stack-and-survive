@@ -14,6 +14,7 @@ import { useViewportLayout } from './useViewportLayout';
 import { BuildPanel } from './BuildPanel';
 import { blackFriday } from '@stack-and-survive/scenarios';
 import { MissionPanel } from './MissionPanel';
+import { diagnosticsEnabled } from './mode';
 
 function World({ controller, generation, onInspect }: { controller: Controller; generation: number; onInspect: (open: boolean) => void }) {
   const host = useRef<HTMLDivElement>(null);
@@ -138,7 +139,7 @@ function App() {
     {view.queuedActions.length > 0 && <p className="session-notice" role="status">Queued: {view.queuedActions.map(a => a.type).join(', ')}. {paused ? 'Preserved while paused; executes after resume.' : 'Takes effect at the next simulation tick.'}</p>}
     {view.result && <ResultPanel result={view.result} onRedesign={() => { controller.redesign(); setInspecting(false); setScaleConfirmation(null); }} />}
     {view.result && view.previousResult && <ComparisonPanel previous={view.previousResult} current={view.result} />}
-    <details><summary>Developer inspector (not a player speed control)</summary><button type="button" disabled={!running || !!view.error} onClick={() => { setInspecting(true); controller.inspectNextTick(); }}>Step one tick</button><p>{inspecting ? 'Manual stepping: automatic clock stopped. Reset to return to 1×.' : 'Stepping stops automatic time; each click advances exactly one real simulation tick.'}</p><pre data-testid="diagnostics">{JSON.stringify({ time: view.state.runtime.time, status: view.state.runtime.status, snapshot: view.snapshot, architecture, selected: view.selected, camera: view.camera }, null, 2)}</pre></details>
+    {diagnosticsEnabled && <details><summary>Developer inspector (not a player speed control)</summary><button type="button" disabled={!running || !!view.error} onClick={() => { setInspecting(true); controller.inspectNextTick(); }}>Step one tick</button><p>{inspecting ? 'Manual stepping: automatic clock stopped. Reset to return to 1×.' : 'Stepping stops automatic time; each click advances exactly one real simulation tick.'}</p><pre data-testid="diagnostics">{JSON.stringify({ time: view.state.runtime.time, status: view.state.runtime.status, snapshot: view.snapshot, architecture, selected: view.selected, camera: view.camera }, null, 2)}</pre></details>}
     <footer>BUILD THE CLOUD. SURVIVE THE TRAFFIC.<span>Simplified game values, not Azure performance or pricing. Human playtesting and hosted deployment are still pending.</span></footer>
   </main>;
 }

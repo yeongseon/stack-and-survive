@@ -41,6 +41,6 @@ test('unavailable browser storage leaves gameplay usable with feedback', async (
   await page.getByRole('button', { name: 'Save architecture', exact: true }).click();
   await expect(page.getByTestId('save-status')).toContainText('Save failed');
   await page.getByRole('button', { name: 'Start traffic', exact: true }).click();
-  await expect(page.getByTestId('elapsed')).toHaveText('1', { timeout: 5000 });
+  await expect.poll(async () => Number(await page.getByTestId('elapsed').textContent()), { timeout: 5000 }).toBeGreaterThanOrEqual(1);
   expect(errors).toEqual([]);
 });

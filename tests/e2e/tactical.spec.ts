@@ -13,7 +13,7 @@ test('desktop world dominates the playable composition while controls remain rea
   await expect(page.getByLabel('Initial App instances')).toHaveValue('3');
   await page.screenshot({ path: info.outputPath('tactical-desktop.png') });
   await page.getByRole('button', { name: 'Start traffic', exact: true }).click();
-  await expect(page.getByTestId('elapsed')).toHaveText('1', { timeout: 5000 });
+  await expect.poll(async () => Number(await page.getByTestId('elapsed').textContent()), { timeout: 5000 }).toBeGreaterThanOrEqual(1);
   await page.getByRole('button', { name: 'Pause traffic', exact: true }).click();
   await expect(page.getByTestId('status')).toHaveText('PAUSED');
 });

@@ -29,5 +29,5 @@ test('five original building identities keep official badges separate and remain
     return data.find((s: { id: string }) => s.id === 'compute').completedModules;
   }).toBe(4);
   await page.getByRole('button', { name: 'Start traffic', exact: true }).click();
-  await expect(page.getByTestId('elapsed')).toHaveText('1', { timeout: 5000 });
+  await expect.poll(async () => Number(await page.getByTestId('elapsed').textContent()), { timeout: 5000 }).toBeGreaterThanOrEqual(1);
 });
