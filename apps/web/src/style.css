@@ -94,3 +94,67 @@ button, select { max-width: 100%; white-space: normal; }
 .result-panel { order: 5; }
 .service-icon{display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;width:32px;height:32px;flex:0 0 32px;background:#fff;border:1px solid #c9d6db;border-radius:4px;padding:3px;margin-right:8px;color:#173746;font:8px ui-monospace,monospace;line-height:1;overflow:visible}.service-icon img{display:block;width:24px;height:24px;object-fit:contain;filter:none;transform:none;opacity:1}.world-service-badges{position:absolute;inset:0;z-index:2;pointer-events:none;overflow:hidden}.world-service-badges>.service-icon{position:absolute;margin:0}.world-service-badges>.service-icon[hidden]{display:none}.result-service{display:flex;align-items:center;gap:4px}
 .build-tools button:disabled,.resource-list button:disabled{opacity:1;color:#9aadb6;border-color:#40515c;background:#172630}
+.viewport-shell{max-width:none;padding:12px;gap:8px}
+.viewport-shell header{height:58px;padding:0 0 8px;flex:none}
+.viewport-shell h1{font-size:24px;line-height:1.1;margin:0 0 4px}
+.viewport-shell .scenario{display:flex;align-items:center;gap:12px;font-size:11px}
+.viewport-shell .controls{position:static;padding:0;gap:6px;min-height:58px;flex-wrap:wrap;flex:none}
+.viewport-shell .controls button,.viewport-shell .controls select{min-height:38px;padding:8px 12px}
+.viewport-shell .controls label{font-size:10px;gap:3px}
+.viewport-shell .metrics-bar{padding:8px 0;min-height:52px;flex:none}
+.viewport-shell .metrics-bar strong{font-size:17px}
+.viewport-shell .playfield{position:relative;grid-template-columns:minmax(0,1fr);gap:10px;height:calc(100dvh - 340px);min-height:240px;order:1}
+.viewport-shell .playfield.with-inspector{grid-template-columns:minmax(0,1fr) 280px}
+.viewport-shell .board-area{display:flex;flex-direction:column;min-height:0;height:100%}
+.viewport-shell .board-tools{height:36px;flex:none;margin:0}
+.viewport-shell .board-tools>div{display:flex;gap:6px}
+.viewport-shell .board-tools button{padding:4px 10px;min-height:30px}
+.viewport-shell .world{height:auto;flex:1;min-height:0;scroll-margin:0}
+.viewport-shell .surface{scroll-margin:0}
+.viewport-shell .playfield>aside{height:100%;max-height:100%;overflow:auto;padding:10px;overscroll-behavior:contain}
+.viewport-shell .playfield>aside[hidden]{display:none}
+.close-inspector{float:right;font-size:10px;padding:4px 8px;min-height:28px}
+.viewport-shell .traffic-legend{font-size:10px;line-height:1.4;order:2}
+.viewport-shell .live-actions{order:3;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:0;border:0}
+.viewport-shell .live-actions>div{padding:8px;position:relative;min-width:0}
+.viewport-shell .live-actions h2{display:none}
+.viewport-shell .live-actions>div>p{display:none}
+.viewport-shell .live-actions>div>p[data-testid]{display:block;font:11px ui-monospace,monospace;margin:4px 0 0}
+.viewport-shell .live-actions>div>button{width:100%;margin:0;min-height:38px}
+.viewport-shell .live-actions.expanded>div>p{display:block}
+.viewport-shell .live-actions [role=group]{position:absolute;bottom:100%;left:0;width:max(100%,260px);z-index:15;padding:14px;background:#19313e;border:1px solid #c5dcce;box-shadow:0 5px 24px #0008}
+.viewport-shell .action-help-toggle{order:4;align-self:flex-end;font-size:11px;padding:4px 8px;min-height:28px}
+.viewport-shell .build-panel{order:6;padding:8px}
+.viewport-shell .build-panel:not([open]){display:none}
+.viewport-shell .session-notice,.viewport-shell>.critical{order:0;padding:6px 10px;font-size:12px;margin:0}
+@media(max-width:1100px){
+ .viewport-shell .playfield.with-inspector{grid-template-columns:minmax(0,1fr)}
+ .viewport-shell .playfield>aside{position:absolute;right:0;top:36px;bottom:0;width:min(330px,90%);height:auto;max-height:calc(100% - 36px);z-index:5;background:#142631;box-shadow:-8px 0 24px #0005}
+}
+@media(max-width:600px){
+ .viewport-shell{padding:8px;gap:6px}
+ .viewport-shell header{height:48px}
+ .viewport-shell h1{font-size:20px}
+ .viewport-shell header .eyebrow{font-size:8px;max-width:180px}
+ .viewport-shell .scenario{display:grid;gap:3px;font-size:9px;text-align:right}
+ .viewport-shell .scenario strong{font-size:10px}
+ .viewport-shell .controls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));min-height:80px;align-items:stretch}
+ .viewport-shell .controls label{grid-row:span 2;justify-content:center}
+ .viewport-shell .controls button,.viewport-shell .controls select{font-size:10px;padding:5px;min-height:40px}
+ .viewport-shell .metrics-bar{min-height:64px;padding:4px 0;gap:4px}
+ .viewport-shell .metrics-bar strong{font-size:13px}
+ .viewport-shell .playfield{height:calc(100dvh - 365px);min-height:300px}
+ .viewport-shell .traffic-legend{white-space:nowrap;overflow-x:auto;min-height:18px;font-size:9px}
+ .viewport-shell .live-actions{gap:4px}
+ .viewport-shell .live-actions>div{padding:4px}
+ .viewport-shell .live-actions>div>button{font-size:10px;padding:4px;min-height:44px}
+ .viewport-shell .live-actions>div>p[data-testid]{font-size:9px;line-height:1.4}
+ .viewport-shell .live-actions [role=group]{position:fixed;left:8px;right:8px;bottom:16px;width:auto}
+}
+@media (min-width:601px) and (max-width:899px){
+ .viewport-shell .metrics-bar{grid-template-columns:repeat(7,minmax(0,1fr));min-height:52px}
+ .viewport-shell .playfield{height:calc(100dvh - 420px)}
+ .viewport-shell .controls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));min-height:88px}
+ .viewport-shell .controls label{grid-row:span 2;justify-content:center}
+}
+.viewport-shell .playfield{height:var(--field-height,calc(100dvh - 380px));min-height:260px}

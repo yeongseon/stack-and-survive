@@ -12,24 +12,29 @@ import { ComparisonPanel } from './ComparisonPanel';
 import { browserSaveRepository } from './persistence';
 import { glossary, pressureHint } from './help';
 import { ServiceIcon } from './ServiceIcon';
+import { useViewportLayout } from './useViewportLayout';
 
-function World({ controller, generation }: { controller: Controller; generation: number }) {
+function World({ controller, generation, onInspect }: { controller: Controller; generation: number; onInspect: (open: boolean) => void }) {
   const host = useRef<HTMLDivElement>(null);
   useEffect(() => {
     let disposed = false; let cleanup: (() => void) | undefined;
     const surface = document.createElement('div'); surface.className = 'surface'; surface.dataset.renderer = 'loading';
     host.current!.append(surface);
-    mountWorld(surface, controller, generation).then(destroy => { if (disposed) destroy(); else cleanup = destroy; })
+    mountWorld(surface, controller, generation, () => onInspect(true)).then(destroy => { if (disposed) destroy(); else cleanup = destroy; })
       .catch(error => { if (!disposed) controller.presentationFailed(error instanceof Error ? error.message : 'Renderer failed to load'); });
     return () => { disposed = true; cleanup?.(); surface.remove(); };
-  }, [controller, generation]);
+  }, [controller, generation, onInspect]);
   return <div className="world" ref={host} data-testid="world" aria-label="Internet to App Service to Azure SQL architecture" />;
 }
 function App() {
+  const shell = useRef<HTMLElement>(null);
+  useViewportLayout(shell);
   const [controller] = useState(() => createController(undefined, browserSaveRepository(() => window.localStorage)));
   const view = useSyncExternalStore(controller.subscribe, controller.getSnapshot);
   const [inspecting, setInspecting] = useState(false);
   const [buildOpen, setBuildOpen] = useState(() => window.innerWidth >= 900);
+  const [showInspector, setShowInspector] = useState(() => window.innerWidth >= 1100);
+  const [actionDetails, setActionDetails] = useState(false);
   const [scaleConfirmation, setScaleConfirmation] = useState<{ generation: number; epoch: number } | null>(null);
   useEffect(() => () => controller.destroy(), [controller]);
   const running = view.state.runtime.status === 'RUNNING';
@@ -39,6 +44,7 @@ function App() {
   const instances = view.state.runtime.architecture.resources.find(n => n.kind === 'compute')?.instances ?? 1;
   const architecture = view.state.runtime.architecture;
   const selected = architecture.resources.find(r => r.id === view.selected);
+  useEffect(() => { if (view.selected) setShowInspector(true); }, [view.selected]);
   const preparing = view.state.runtime.status === 'PREPARATION' && !view.error;
   const paused = view.state.runtime.status === 'PAUSED';
   const readyErrors = validateStart(architecture);
@@ -51,20 +57,21 @@ function App() {
   const rateReason = controller.actionReason({ type: 'RATE_LIMIT', enabled: !runtime.rateLimit });
   const wafReason = controller.actionReason({ type: 'EMERGENCY_WAF' });
   const confirmScale = scaleConfirmation?.generation === view.rendererGeneration && scaleConfirmation.epoch === view.confirmationEpoch;
-  return <main>
+  return <main className="viewport-shell" ref={shell}>
     <a href="#scenario-controls" className="skip-link">Skip to scenario controls</a>
-    <header><div><p className="eyebrow">STACK &amp; SURVIVE / HACKATHON MVP</p><h1>Your architecture<br />is your defense.</h1></div><div className="scenario"><span>BLACK FRIDAY</span><strong data-testid="status">{view.error ? 'STOPPED · ERROR' : inspecting && running ? 'MANUAL INSPECTION' : view.state.runtime.status}</strong><span><b data-testid="elapsed">{view.state.runtime.time}</b> / 180 seconds</span></div></header>
+    <header><div><h1>Stack &amp; Survive</h1><p className="eyebrow">YOUR ARCHITECTURE IS YOUR DEFENSE</p></div><div className="scenario"><span>BLACK FRIDAY</span><strong data-testid="status">{view.error ? 'STOPPED · ERROR' : inspecting && running ? 'MANUAL INSPECTION' : view.state.runtime.status}</strong><span><b data-testid="elapsed">{view.state.runtime.time}</b> / 180 seconds</span></div></header>
     <section id="scenario-controls" tabIndex={-1} className="controls" aria-label="Scenario controls">
       <label>Initial App instances <select aria-label="Initial App instances" value={instances} disabled={!preparing} onChange={e => { controller.reset(Number(e.target.value)); setInspecting(false); }}><option>1</option><option>2</option><option>4</option></select></label>
       <button type="button" disabled={!preparing || !!view.error || readyErrors.length > 0} onClick={() => controller.start()}>Start traffic</button>
       <button type="button" disabled={paused || !!view.error} onClick={() => { controller.reset(); setInspecting(false); }}>Reset baseline</button>
       <button type="button" disabled={(!running && !paused) || !!view.error} onClick={() => { if (paused) controller.resume(); else controller.pause(); setInspecting(false); }}>{paused ? 'Resume traffic' : 'Pause traffic'}</button>
+      <button type="button" aria-expanded={buildOpen} aria-controls="build-panel" onClick={() => setBuildOpen(!buildOpen)}>Build &amp; connections</button>
       <p>Real simulation · 1 tick / second · Representative traffic, not one sprite per request</p>
     </section>
     <details className="help"><summary>How to play &amp; glossary</summary><p>Your application is online. Black Friday traffic is approaching. Keep the service available while protecting business value.</p><ol><li>Select a resource to inspect its role and cost.</li><li>Place and connect resources before starting; wait for required provisioning.</li><li>Start traffic, observe pressure, and use live actions deliberately.</li><li>Review the result, redesign, and retry the same workload.</li></ol><p>Click or tap controls; the resource list below also supports keyboard selection. Drag buildings to move, drag empty ground to pan, and scroll to zoom. Pause is for inspection, not free recovery. No sound is required.</p><dl>{glossary.map(([term, definition]) => <div key={term}><dt>{term}</dt><dd>{definition}</dd></div>)}</dl></details>
     <section aria-label="Local architecture save" className="save-controls"><button type="button" onClick={() => controller.saveArchitecture()}>Save architecture</button><button type="button" disabled={!preparing} onClick={() => controller.clearLocalState()}>Clear local state</button><p role="status" data-testid="save-status">{view.saveMessage}</p><p>Only the architecture is saved. Refresh returns to Build Mode, cancels unfinished scale-out and restarts unfinished resource deployment. Scenario progress is not saved.</p></section>
     {preparing && <section aria-label="Black Friday briefing" className="briefing"><h2>Black Friday is approaching</h2><p>Read-heavy business traffic will increase. Unusual automated traffic may consume capacity. Keep customers served without overspending.</p><p>Availability target: 99% · Latency target: 300 ms · Budget: 140 game credits · Duration: 180 seconds</p><p>Preparation is free. Your connections determine request paths; physical distance does not change performance.</p></section>}
-    {paused && <p role="status">Paused — inspect the architecture and metrics. Time, costs, provisioning and failure counters are frozen; editing is disabled.</p>}
+    {paused && <p role="status" className="session-notice">Paused — time and costs frozen. Inspect only; editing is disabled.</p>}
     {preparing && view.previousResult && <section className="briefing" aria-label="Previous attempt context"><h2>Previous issue: {view.previousResult.primary}</h2><p>{view.previousResult.insight}</p><p>Previous attempt: {view.previousResult.status} at {view.previousResult.elapsedTime}s. Edit your existing architecture, then retry the same workload.</p></section>}
     <section aria-label="Live service and business metrics" className="metrics-bar">
       <div><span>Availability</span><strong data-testid="availability">{metrics ? `${(metrics.availability * 100).toFixed(2)}%` : '—'}</strong></div>
@@ -76,7 +83,7 @@ function App() {
       <div><span>Budget left</span><strong>{economy.remainingBudget.toFixed(2)}</strong></div>
     </section>
     {(running || paused) && view.snapshot?.critical && <p role="status" className="critical">! CRITICAL — {view.state.streaks.availability > 0 ? `${view.snapshot.failureCountdown.availability} consecutive bad seconds until availability failure.` : 'Resource overload or budget pressure.'} {view.state.streaks.order > 0 ? `Order-flow failure in ${view.snapshot.failureCountdown.order} bad seconds.` : ''}</p>}
-    <details className="build-panel" open={buildOpen} onToggle={e => setBuildOpen(e.currentTarget.open)}><summary>Build &amp; connections</summary>
+    <details id="build-panel" className="build-panel" open={buildOpen} onToggle={e => setBuildOpen(e.currentTarget.open)}><summary>Build &amp; connections</summary>
     <section className="build-tools" aria-label="Build palette">
       {(['compute', 'database', 'cache', 'edge'] as Kind[]).map(kind => <button type="button" key={kind} disabled={!preparing || architecture.resources.some(r => r.kind === kind)} aria-pressed={view.building === kind} onClick={() => controller.build(kind)}><ServiceIcon kind={kind} decorative />Place {definitions[kind].name}</button>)}
       <button type="button" disabled={!view.building} onClick={() => controller.build(null)}>Cancel placement</button>
@@ -84,7 +91,7 @@ function App() {
       <p>Click to select · Drag a building to move · Drag empty ground to pan · Scroll to zoom</p>
     </section>
     {view.building && <p role="status">Placing {definitions[view.building].name}: {placementError ?? 'click a free footprint on the board.'}</p>}
-    <nav aria-label="Inspect resources" className="resource-list">{architecture.resources.map(resource => <button type="button" key={resource.id} aria-pressed={view.selected === resource.id} onClick={() => controller.select(resource.id)}><ServiceIcon kind={resource.kind} decorative />Inspect {definitions[resource.kind].name}</button>)}</nav>
+    <nav aria-label="Inspect resources" className="resource-list">{architecture.resources.map(resource => <button type="button" key={resource.id} aria-pressed={view.selected === resource.id} onClick={() => { controller.select(resource.id); setShowInspector(true); }}><ServiceIcon kind={resource.kind} decorative />Inspect {definitions[resource.kind].name}</button>)}</nav>
     {view.notice && <p role="alert">{view.notice}</p>}
     {view.connecting && <section className="connection-panel" aria-label="Connection selection"><p>{view.connectionSource ? `Source: ${view.connectionSource}. Select a highlighted valid target.` : 'Select a source on the board or below.'}</p>
       {architecture.resources.map(resource => <button type="button" key={resource.id} disabled={view.connectionSource !== null && !validTargets(architecture, view.connectionSource).includes(resource.id)} onClick={() => controller.connectNode(resource.id)}>{definitions[resource.kind].name}</button>)}
@@ -94,9 +101,10 @@ function App() {
       {architecture.connections.map(c => <p key={`${c.from}:${c.to}`}>{c.from} → {c.to} <button type="button" aria-label={`Remove connection ${c.from} to ${c.to}`} disabled={!preparing} onClick={() => controller.disconnect(c.from, c.to)}>Remove connection</button></p>)}
     </details>
     </details>
-    {preparing && readyErrors.length > 0 && <p role="status">Cannot start: {readyErrors.join('; ')}</p>}
+    {preparing && readyErrors.length > 0 && <p className="session-notice" role="status">Cannot start: {readyErrors.join('; ')}</p>}
     {view.error && <section className="error" role="alert"><p>{view.error} — simulation clock stopped; saved runtime metrics remain intact.</p><button type="button" disabled={view.recoveringRenderer} onClick={() => controller.recoverRenderer()}>Rebuild renderer</button>{view.recoveringRenderer && <p>Rebuilding — waiting for the renderer to report ready.</p>}<p>If recovery fails again, reload to return to the baseline; browser persistence arrives in its own issue.</p></section>}
-    <section className="playfield"><div className="board-area"><div className="board-tools"><span>Cloud architecture</span><button type="button" onClick={() => controller.setCamera({ x: 0, y: 0, zoom: 1 })}>Fit view</button></div><World controller={controller} generation={view.rendererGeneration} /></div><aside>
+    <section className={`playfield${showInspector ? ' with-inspector' : ''}`}><div className="board-area"><div className="board-tools"><span>Cloud architecture</span><div><button type="button" aria-expanded={showInspector} aria-controls="resource-inspector" onClick={() => setShowInspector(!showInspector)}>{showInspector ? 'Hide details' : 'Show details'}</button><button type="button" onClick={() => controller.setCamera({ x: 0, y: 0, zoom: 1 })}>Fit view</button></div></div><World controller={controller} generation={view.rendererGeneration} onInspect={setShowInspector} /></div><aside id="resource-inspector" hidden={!showInspector}>
+      <button className="close-inspector" type="button" onClick={() => setShowInspector(false)}>Close details</button>
       <p className="eyebrow">CURRENT PRESSURE</p>
       <h2><ServiceIcon kind="compute" decorative />App Service</h2><p className="reading" data-testid="app-pressure">{utilizationLabel(appU)} {appU === null ? '' : `${(appU * 100).toFixed(1)}%`}</p>
       <h2><ServiceIcon kind="database" decorative />Azure SQL</h2><p className="reading" data-testid="sql-pressure">{utilizationLabel(sqlU)} {sqlU === null ? '' : `${(sqlU * 100).toFixed(1)}%`}</p>
@@ -121,7 +129,7 @@ function App() {
       </section>}
     </aside></section>
     <p className="traffic-legend">● Browse · ■ Order / write · ▲ Bot · × Dropped / filtered · ○ Cache response. Representative markers; hits stop at Cache, filtered bots stop at Edge.</p>
-    <section className="live-actions" aria-label="Live interventions">
+    <section className={`live-actions${actionDetails ? ' expanded' : ''}`} aria-label="Live interventions">
       <div><h2>Scale out App</h2><p>+150 req/s after 8 seconds · +5 credits/min when active.</p>
         <button type="button" disabled={!!scaleReason} aria-describedby="scale-reason" onClick={() => setScaleConfirmation({ generation: view.rendererGeneration, epoch: view.confirmationEpoch })}>Scale out App</button>
         {confirmScale && !scaleReason && <div role="group" aria-label="Confirm scale-out"><p>Provision one additional instance? Capacity and cost begin after 8 seconds.</p><button type="button" onClick={() => { controller.queueAction({ type: 'SCALE_OUT' }); setScaleConfirmation(null); }}>Confirm scale-out</button><button type="button" onClick={() => setScaleConfirmation(null)}>Cancel scale-out</button></div>}
@@ -139,7 +147,8 @@ function App() {
         <p data-testid="waf-progress">{runtime.emergency ? runtime.time <= runtime.emergency.start ? 'Emergency activation pending' : `Emergency mode: ${Math.max(0, runtime.emergency.end - runtime.time)}s remaining` : runtime.emergencyUsed ? 'Emergency use consumed' : 'Normal WAF mode'}</p>
       </div>
     </section>
-    {view.queuedActions.length > 0 && <p role="status">Queued for the next simulation tick: {view.queuedActions.map(a => a.type).join(', ')}. {paused ? 'Preserved while paused; executes after resume.' : 'No capacity or charge applied until the tick accepts the action.'}</p>}
+    <button className="action-help-toggle" type="button" aria-expanded={actionDetails} onClick={() => setActionDetails(!actionDetails)}>{actionDetails ? 'Hide action explanations' : 'Action costs & explanations'}</button>
+    {view.queuedActions.length > 0 && <p className="session-notice" role="status">Queued: {view.queuedActions.map(a => a.type).join(', ')}. {paused ? 'Preserved while paused; executes after resume.' : 'Takes effect at the next simulation tick.'}</p>}
     {view.result && <ResultPanel result={view.result} onRedesign={() => { controller.redesign(); setInspecting(false); setScaleConfirmation(null); }} />}
     {view.result && view.previousResult && <ComparisonPanel previous={view.previousResult} current={view.result} />}
     <details><summary>Developer inspector (not a player speed control)</summary><button type="button" disabled={!running || !!view.error} onClick={() => { setInspecting(true); controller.inspectNextTick(); }}>Step one tick</button><p>{inspecting ? 'Manual stepping: automatic clock stopped. Reset to return to 1×.' : 'Stepping stops automatic time; each click advances exactly one real simulation tick.'}</p><pre data-testid="diagnostics">{JSON.stringify({ time: view.state.runtime.time, status: view.state.runtime.status, snapshot: view.snapshot, architecture, selected: view.selected, camera: view.camera }, null, 2)}</pre></details>

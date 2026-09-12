@@ -8,7 +8,7 @@ import { createServiceBadge } from './service-icons';
 export function utilizationLabel(u: number | null): string {
   return u === null ? 'READY' : compare(u, 1) > 0 ? '! OVERLOADED' : compare(u, .7) > 0 ? 'WARNING' : 'HEALTHY';
 }
-export async function mountWorld(host: HTMLDivElement, controller: Controller, generation: number): Promise<() => void> {
+export async function mountWorld(host: HTMLDivElement, controller: Controller, generation: number, onInspect: () => void): Promise<() => void> {
   const { default: Phaser } = await import('phaser');
   if (!host.isConnected) return () => {};
   let view: View = controller.getSnapshot();
@@ -149,6 +149,7 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
       const resource = view.state.runtime.architecture.resources.find(r => { const s = project(r, camera(), canvas.clientWidth, canvas.clientHeight); return Math.abs(s.x - p.x) < 40 && Math.abs(s.y - p.y) < 44; });
       if (view.connecting) { if (resource) controller.connectNode(resource.id); return; }
       controller.select(resource?.id ?? null);
+      if (resource) onInspect();
       const local = logical(p);
       drag = { pointer: e.pointerId, id: resource?.id ?? null, last: p, offset: { x: local.x - (resource?.x ?? 0), y: local.y - (resource?.y ?? 0) } };
       canvas.setPointerCapture(e.pointerId);
