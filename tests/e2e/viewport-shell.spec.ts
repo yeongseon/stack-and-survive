@@ -18,9 +18,9 @@ for (const size of [{ width: 1440, height: 900 }, { width: 1366, height: 768 }, 
     await page.getByRole('button', { name: 'Action costs & explanations', exact: true }).click();
     await expect(page.locator('#scale-reason')).toBeVisible();
     await page.getByRole('button', { name: 'Hide action explanations', exact: true }).click();
-    if (size.width < 1100) {
+    {
       await expect(page.locator('#resource-inspector')).not.toBeVisible();
-      await page.getByRole('button', { name: 'Show details', exact: true }).click();
+      await page.getByRole('button', { name: 'Insights', exact: true }).click();
       await expect(page.getByRole('button', { name: 'Close details', exact: true })).toBeVisible();
       await page.getByRole('button', { name: 'Close details', exact: true }).click();
       await expect(page.locator('#resource-inspector')).not.toBeVisible();
@@ -45,6 +45,7 @@ test('critical pressure and queued actions do not push controls below the laptop
   await page.locator('summary').filter({ hasText: 'Developer inspector' }).click();
   while (Number(await page.getByTestId('elapsed').textContent()) < 31) await page.getByRole('button', { name: 'Step one tick', exact: true }).click();
   await page.evaluate(() => window.scrollTo(0, 0));
+  await page.getByRole('button', { name: 'Why', exact: true }).click();
   await expect(page.getByTestId('app-pressure')).toContainText('OVERLOADED');
   for (const name of ['Pause operation', 'Scale out App', 'Enable Rate Limit', 'Activate Emergency WAF']) {
     const box = (await page.getByRole('button', { name, exact: true }).boundingBox())!;

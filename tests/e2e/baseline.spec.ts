@@ -18,6 +18,7 @@ test('real baseline reaches compute pressure and fails at the verified tick', as
   await expect.poll(async () => Number(await surface.getAttribute('data-packets'))).toBeGreaterThan(0);
   await page.locator('summary').filter({ hasText: 'Developer inspector' }).click();
   await stepUntil(page, 31);
+  await page.getByRole('button', { name: 'Why', exact: true }).click();
   await expect(page.getByTestId('app-pressure')).toContainText('OVERLOADED');
   await expect(surface).toHaveAttribute('data-app-state', '! OVERLOADED');
   await expect(page.getByTestId('traffic')).toHaveText('220');
@@ -43,6 +44,7 @@ test('more compute leaves SQL capacity unchanged and exposes read bottleneck', a
   await page.getByRole('button', { name: 'Start operation' }).click();
   await page.locator('summary').filter({ hasText: 'Developer inspector' }).click();
   await stepUntil(page, 76);
+  await page.getByRole('button', { name: 'Why', exact: true }).click();
   await expect(page.getByTestId('sql-pressure')).toContainText('OVERLOADED');
   await expect(page.getByTestId('app-pressure')).toContainText('HEALTHY');
   await expect(page.locator('[data-renderer="ready"]')).toHaveAttribute('data-sql-state', '! OVERLOADED');

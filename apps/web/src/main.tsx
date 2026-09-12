@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { createRoot } from 'react-dom/client';
 import { createController, type Controller } from './controller';
 import { mountWorld, utilizationLabel } from './world';
@@ -36,7 +36,22 @@ function App() {
   const view = useSyncExternalStore(controller.subscribe, controller.getSnapshot);
   const [inspecting, setInspecting] = useState(false);
   const [buildOpen, setBuildOpen] = useState(() => window.innerWidth >= 900);
-  const [showInspector, setShowInspector] = useState(() => window.innerWidth >= 1100);
+  const [showInspector, setShowInspector] = useState(false);
+  const [analysisSection, setAnalysisSection] = useState<'insights' | 'events' | 'why'>('insights');
+  const inspectorOpener = useRef<HTMLElement | null>(null);
+  const inspectorClose = useRef<HTMLButtonElement>(null);
+  const insightsButton = useRef<HTMLButtonElement>(null);
+  const openInspector = useCallback((open: boolean) => {
+    if (open) inspectorOpener.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    setShowInspector(open);
+  }, []);
+  const closeInspector = () => {
+    setShowInspector(false);
+    const opener = inspectorOpener.current;
+    if (opener?.isConnected && opener.getClientRects().length) opener.focus();
+    else insightsButton.current?.focus();
+  };
+  useEffect(() => { if (showInspector) inspectorClose.current?.focus({ preventScroll: true }); }, [showInspector]);
   const [actionDetails, setActionDetails] = useState(false);
   const [scaleConfirmation, setScaleConfirmation] = useState<{ generation: number; epoch: number } | null>(null);
   useEffect(() => () => controller.destroy(), [controller]);
@@ -79,15 +94,19 @@ function App() {
     {view.notice && <p role="alert">{view.notice}</p>}
     {preparing && readyErrors.length > 0 && <p className="session-notice" role="status">Cannot start: {readyErrors.join('; ')}</p>}
     {view.error && <section className="error" role="alert"><p>{view.error} — simulation clock stopped; saved runtime metrics remain intact.</p><button type="button" disabled={view.recoveringRenderer} onClick={() => controller.recoverRenderer()}>Rebuild renderer</button>{view.recoveringRenderer && <p>Rebuilding — waiting for the renderer to report ready.</p>}<p>If recovery fails again, reload to return to the baseline; browser persistence arrives in its own issue.</p></section>}
-    <section className={`playfield${showInspector ? ' with-inspector' : ''}${buildOpen ? ' with-build' : ''}`}>
-      <BuildPanel view={view} controller={controller} open={buildOpen} setOpen={setBuildOpen} inspect={() => setShowInspector(true)} />
-      <div className="board-area"><div className="board-tools"><span>AZURE DATA CENTER <small>Phase {phase < 0 ? '—' : phase + 1} / {blackFriday.traffic.length}</small></span><div><button type="button" aria-expanded={showInspector} aria-controls="resource-inspector" onClick={() => setShowInspector(!showInspector)}>{showInspector ? 'Hide details' : 'Show details'}</button><button type="button" onClick={() => controller.setCamera({ x: 0, y: 0, zoom: 1 })}>Fit view</button></div></div><World controller={controller} generation={view.rendererGeneration} onInspect={setShowInspector} /></div><aside id="resource-inspector" hidden={!showInspector}>
-      <button className="close-inspector" type="button" onClick={() => setShowInspector(false)}>Close details</button>
-      {!selected && <MissionPanel view={view} />}
+    <section className={`playfield${buildOpen ? ' with-build' : ''}`}>
+      <BuildPanel view={view} controller={controller} open={buildOpen} setOpen={setBuildOpen} inspect={() => openInspector(true)} />
+      <div className="board-area"><div className="board-tools"><span>AZURE DATA CENTER <small>Phase {phase < 0 ? '—' : phase + 1} / {blackFriday.traffic.length}</small></span><div>{(['insights', 'events', 'why'] as const).map(section => <button key={section} ref={section === 'insights' ? insightsButton : undefined} type="button" aria-expanded={showInspector && analysisSection === section} aria-controls="resource-inspector" onClick={() => { setAnalysisSection(section); openInspector(true); }}>{section === 'insights' ? 'Insights' : section === 'events' ? 'Events' : 'Why'}</button>)}<button type="button" onClick={() => controller.setCamera({ x: 0, y: 0, zoom: 1 })}>Fit view</button></div></div><World controller={controller} generation={view.rendererGeneration} onInspect={openInspector} /></div><aside id="resource-inspector" className="analysis-drawer" aria-label="Operation analysis" hidden={!showInspector} onKeyDown={event => { if (event.key === 'Escape') { event.stopPropagation(); closeInspector(); } }}>
+      <button ref={inspectorClose} className="close-inspector" type="button" onClick={closeInspector}>Close details</button>
+      <h2>{analysisSection === 'events' ? 'Events' : analysisSection === 'why' ? 'Why' : 'Insights'}</h2>
+      {analysisSection !== 'why' && <MissionPanel view={view} section={analysisSection} />}
+      {analysisSection === 'why' && <>
       <p className="eyebrow">CURRENT PRESSURE</p>
       <h2><ServiceIcon kind="compute" decorative />App Service</h2><p className="reading" data-testid="app-pressure">{utilizationLabel(appU)} {appU === null ? '' : `${(appU * 100).toFixed(1)}%`}</p>
       <h2><ServiceIcon kind="database" decorative />Azure SQL</h2><p className="reading" data-testid="sql-pressure">{utilizationLabel(sqlU)} {sqlU === null ? '' : `${(sqlU * 100).toFixed(1)}%`}</p>
       <p className="hint" data-testid="pressure-hint">{view.result ? view.result.insight : pressureHint(r ?? null)}</p>
+      <p className="objective-note">{running ? 'Latest measured tick.' : 'Last measured values; time advances only while running.'} Detailed accounting is available from Why &amp; metrics above the world.</p>
+      </>}
       {selected && <section aria-label="Selected resource" className="resource-details">
         <h2><ServiceIcon kind={selected.kind} decorative />{definitions[selected.kind].name}</h2>
         {selected.kind === 'edge' && <p>Azure identity: Application Gateway with WAF. Protected Edge is a game abstraction, not a separate Azure product.</p>}
