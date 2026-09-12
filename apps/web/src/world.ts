@@ -8,6 +8,7 @@ import { buildingPresentation, drawBuilding, insideBuilding } from './building-a
 import { drawEnvironment } from './environment-art';
 import { buildingAssets, buildingLayers, moduleAsset, resourceArtBounds } from './building-assets';
 import { BuildingSprites } from './building-sprites';
+import { drawProcessingLane, lanePoint, processingLanes } from './processing-lanes';
 import { activeEffects, completedResources, drawEffect, effectMotion } from './effects';
 import { diagnosticsEnabled } from './mode';
 import { placeCaptions } from './annotations';
@@ -46,6 +47,7 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
     trafficGraphics!: Phaser.GameObjects.Graphics;
     effectsGraphics!: Phaser.GameObjects.Graphics;
     structureSignature = '';
+    structureDraws = 0;
     environment!: Phaser.GameObjects.Graphics;
     backgroundSize = '';
     wasVisible = true;
@@ -128,22 +130,19 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
           const environment = drawEnvironment(this.environment.clear(), width, height); this.backgroundSize = `${width}:${height}`;
           if (diagnosticsEnabled) host.dataset.environment = JSON.stringify(environment);
         }
-        const signature = JSON.stringify([width, height, architecture, camera, view.selected, view.connectionSource, view.preview, view.building, appU, sqlU, requests?.cache.utilization, view.state.runtime.scaleDue, view.state.runtime.preparationScaleDue]);
+        const lanes = processingLanes(architecture, requests ?? null);
+        const signature = JSON.stringify([width, height, architecture, camera, view.selected, view.connectionSource, view.preview, view.building, appU, sqlU, requests?.cache.utilization, view.state.runtime.scaleDue, view.state.runtime.preparationScaleDue, lanes]);
         if (signature !== this.structureSignature) {
         this.structureSignature = signature; g.clear(); this.stateGraphics.clear();
+        if (diagnosticsEnabled) host.dataset.structureDraws = String(++this.structureDraws);
         this.sprites.retain(resources.map(r => r.id));
-        for (const connection of architecture.connections) {
+        for (const connection of lanes) {
           const a = positions[resources.findIndex(r => r.id === connection.from)];
           const b = positions[resources.findIndex(r => r.id === connection.to)];
           if (!a || !b) continue;
-          g.lineStyle(12, 0x254554, .7); g.lineBetween(a.x, a.y + 12, b.x, b.y + 12);
-          g.lineStyle(5, 0x90b7b9, .65); g.lineBetween(a.x, a.y, b.x, b.y);
-          g.lineStyle(1, 0xd4eaf0, .8); g.lineBetween(a.x, a.y, b.x, b.y);
-          const x = a.x + (b.x - a.x) * .65; const y = a.y + (b.y - a.y) * .65;
-          const angle = Math.atan2(b.y - a.y, b.x - a.x);
-          g.lineBetween(x, y, x - 12 * Math.cos(angle - .5), y - 12 * Math.sin(angle - .5));
-          g.lineBetween(x, y, x - 12 * Math.cos(angle + .5), y - 12 * Math.sin(angle + .5));
+          drawProcessingLane(g, a, b, connection);
         }
+        if (diagnosticsEnabled) host.dataset.lanes = JSON.stringify(lanes);
         this.captions.forEach(c => c.setVisible(false));
         const targets = view.connecting && view.connectionSource ? validTargets(architecture, view.connectionSource) : [];
         const buildingStates: { id: string; silhouette: string; completedModules: number; pendingModule: boolean; provisioning: boolean }[] = [];
@@ -230,7 +229,10 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
               const p = reducedMotion ? (i + .5) / count : (time / 3000 + i / count + lane * .07) % 1;
               const ingressRejected = flow.end === 'filtered' && flow.to === 'compute';
               const progress = ingressRejected ? p * .25 : p;
-              const x = a.x + (b.x - a.x) * progress; const y = a.y + (b.y - a.y) * progress + (lane % 3 - 1) * 7;
+              const point = lanePoint(a, b, progress);
+              const length = Math.hypot(b.x - a.x, b.y - a.y) || 1;
+              const offset = (lane % 3 - 1) * 4;
+              const x = point.x - (b.y - a.y) / length * offset; const y = point.y + (b.x - a.x) / length * offset;
               const color = flow.kind === 'bot' ? 0xf58a78 : flow.kind === 'order' ? 0xefc27b : 0x9bdac7;
               g.fillStyle(color); g.lineStyle(2, color);
               if (p > .85 && (flow.end === 'failed' || flow.end === 'filtered')) {
