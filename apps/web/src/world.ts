@@ -20,12 +20,15 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
   const unsubscribe = controller.subscribe(() => { view = controller.getSnapshot(); });
   class World extends Phaser.Scene {
     graphics!: Phaser.GameObjects.Graphics;
+    trafficGraphics!: Phaser.GameObjects.Graphics;
+    structureSignature = '';
     environment!: Phaser.GameObjects.Graphics;
     backgroundSize = '';
     captions: Phaser.GameObjects.Text[] = [];
     create() {
       this.environment = this.add.graphics();
       this.graphics = this.add.graphics();
+      this.trafficGraphics = this.add.graphics();
       this.captions = Array.from({ length: 5 }, () => this.add.text(0, 0, '', {
         fontFamily: 'Trebuchet MS, sans-serif', fontSize: '13px', fontStyle: 'bold', color: '#f2faff', align: 'center', backgroundColor: '#234253', padding: { x: 8, y: 5 },
       }).setOrigin(.5, 0));
@@ -53,10 +56,16 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
           badge.hidden = p.x < 16 || p.x > width - 16 || p.y < 80 || p.y > height;
           badge.style.left = `${p.x - 16}px`; badge.style.top = `${p.y - 80}px`;
         });
-        const g = this.graphics.clear();
+        let g = this.graphics;
         if (this.backgroundSize !== `${width}:${height}`) {
           drawEnvironment(this.environment.clear(), width, height); this.backgroundSize = `${width}:${height}`;
         }
+        const requests = view.snapshot?.requests;
+        const appU = requests?.app.utilization ?? null;
+        const sqlU = requests ? Math.max(requests.sql.readUtilization, requests.sql.writeUtilization) : null;
+        const signature = JSON.stringify([width, height, architecture, camera, view.selected, view.connectionSource, view.preview, view.building, appU, sqlU, requests?.cache.utilization, view.state.runtime.scaleDue, view.state.runtime.preparationScaleDue]);
+        if (signature !== this.structureSignature) {
+        this.structureSignature = signature; g.clear();
         for (const connection of architecture.connections) {
           const a = positions[resources.findIndex(r => r.id === connection.from)];
           const b = positions[resources.findIndex(r => r.id === connection.to)];
@@ -69,9 +78,6 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
           g.lineBetween(x, y, x - 12 * Math.cos(angle - .5), y - 12 * Math.sin(angle - .5));
           g.lineBetween(x, y, x - 12 * Math.cos(angle + .5), y - 12 * Math.sin(angle + .5));
         }
-        const requests = view.snapshot?.requests;
-        const appU = requests?.app.utilization ?? null;
-        const sqlU = requests ? Math.max(requests.sql.readUtilization, requests.sql.writeUtilization) : null;
         this.captions.forEach(c => c.setVisible(false));
         const targets = view.connecting && view.connectionSource ? validTargets(architecture, view.connectionSource) : [];
         const buildingStates: { id: string; silhouette: string; completedModules: number; pendingModule: boolean; provisioning: boolean }[] = [];
@@ -96,6 +102,8 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
           g.lineStyle(3, invalid ? 0xf58a78 : 0x9bdac7); g.strokeRect(p.x - 40, p.y - 40, 80, 80);
           host.dataset.placement = invalid ? 'invalid' : 'valid';
         } else host.dataset.placement = 'none';
+        }
+        g = this.trafficGraphics.clear();
         let packetCount = 0;
         if (view.state.runtime.status === 'RUNNING' && !view.error && requests) {
           const at = (kind: string) => positions[resources.findIndex(r => r.kind === kind)];
