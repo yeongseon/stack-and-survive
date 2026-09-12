@@ -6,6 +6,8 @@ import { representativeCount, visualFlows } from './traffic';
 import { createServiceBadge } from './service-icons';
 import { buildingPresentation, drawBuilding, insideBuilding } from './building-art';
 import { drawEnvironment } from './environment-art';
+import { buildingAssets, buildingLayers, moduleAsset, resourceArtBounds } from './building-assets';
+import { BuildingSprites } from './building-sprites';
 import { activeEffects, completedResources, drawEffect, effectMotion } from './effects';
 import { diagnosticsEnabled } from './mode';
 import { placeCaptions } from './annotations';
@@ -40,6 +42,7 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
   });
   class World extends Phaser.Scene {
     graphics!: Phaser.GameObjects.Graphics;
+    stateGraphics!: Phaser.GameObjects.Graphics;
     trafficGraphics!: Phaser.GameObjects.Graphics;
     effectsGraphics!: Phaser.GameObjects.Graphics;
     structureSignature = '';
@@ -49,14 +52,25 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
     diagnosticView: View | null = null;
     diagnosticSize = '';
     captions: Phaser.GameObjects.Text[] = [];
+    sprites!: BuildingSprites;
+    preload() {
+      for (const asset of [...Object.values(buildingAssets), moduleAsset]) {
+        this.load.image(asset.texture, asset.src);
+      }
+    }
     create() {
       this.environment = this.add.graphics();
       this.graphics = this.add.graphics();
+      this.stateGraphics = this.add.graphics().setDepth(buildingLayers.state);
       this.trafficGraphics = this.add.graphics();
       this.effectsGraphics = this.add.graphics();
+      this.sprites = new BuildingSprites(this);
+      this.trafficGraphics.setDepth(buildingLayers.traffic); this.effectsGraphics.setDepth(buildingLayers.effects);
+      this.events.once('shutdown', () => this.sprites.destroy());
       this.captions = Array.from({ length: 5 }, () => this.add.text(0, 0, '', {
         fontFamily: 'Trebuchet MS, sans-serif', fontSize: '13px', fontStyle: 'bold', color: '#f2faff', align: 'center', backgroundColor: '#234253', padding: { x: 8, y: 5 },
-      }).setOrigin(.5, 0));
+      }).setOrigin(.5, 0).setDepth(buildingLayers.labels));
+      if (diagnosticsEnabled) host.dataset.textureStatus = JSON.stringify(Object.entries(buildingAssets).map(([kind, asset]) => ({ kind, loaded: this.textures.exists(asset.texture) })));
       host.dataset.renderer = 'ready';
       controller.rendererReady(generation);
     }
@@ -105,8 +119,9 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
             badge = created; badges.set(resource.id, badge); badgeLayer.append(badge);
           }
           const p = positions[i];
-          badge.hidden = p.x < 16 || p.x > width - 16 || p.y < 80 || p.y > height;
-          badge.style.left = `${p.x - 16}px`; badge.style.top = `${p.y - 80}px`;
+          const badgeY = p.y + resourceArtBounds(resource.kind).y - 36;
+          badge.hidden = p.x < 16 || p.x > width - 16 || badgeY < 0 || badgeY > height - 32;
+          badge.style.left = `${p.x - 16}px`; badge.style.top = `${badgeY}px`;
         });
         let g = this.graphics;
         if (this.backgroundSize !== `${width}:${height}`) {
@@ -115,7 +130,8 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
         }
         const signature = JSON.stringify([width, height, architecture, camera, view.selected, view.connectionSource, view.preview, view.building, appU, sqlU, requests?.cache.utilization, view.state.runtime.scaleDue, view.state.runtime.preparationScaleDue]);
         if (signature !== this.structureSignature) {
-        this.structureSignature = signature; g.clear();
+        this.structureSignature = signature; g.clear(); this.stateGraphics.clear();
+        this.sprites.retain(resources.map(r => r.id));
         for (const connection of architecture.connections) {
           const a = positions[resources.findIndex(r => r.id === connection.from)];
           const b = positions[resources.findIndex(r => r.id === connection.to)];
@@ -132,14 +148,16 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
         const targets = view.connecting && view.connectionSource ? validTargets(architecture, view.connectionSource) : [];
         const buildingStates: { id: string; silhouette: string; completedModules: number; pendingModule: boolean; provisioning: boolean }[] = [];
         const sorted = resources.map((resource, i) => ({ resource, i, p: positions[i] })).sort((a, b) => a.p.y - b.p.y);
-        sorted.forEach(({ p, i, resource }) => {
+        sorted.forEach(({ p, i, resource }, rank) => {
           const u = resource.kind === 'compute' ? appU : resource.kind === 'database' ? sqlU : resource.kind === 'cache' ? requests?.cache.utilization ?? null : null;
           const connected = architecture.connections.some(c => c.from === resource.id || c.to === resource.id);
           const state = resource.remaining > 0 ? `PROVISIONING ${resource.remaining}s` : !connected ? 'DISCONNECTED' : utilizationLabel(u);
+          const pending = resource.kind === 'compute' && (view.state.runtime.scaleDue !== null || view.state.runtime.preparationScaleDue !== null);
+          const spriteBody = this.sprites.update(resource, p, pending, rank);
           const building = drawBuilding(g, p, resource, connected, view.selected === resource.id,
-            resource.kind === 'compute' && (view.state.runtime.scaleDue !== null || view.state.runtime.preparationScaleDue !== null), state === 'WARNING', state === '! OVERLOADED');
+            pending, state === 'WARNING', state === '! OVERLOADED', spriteBody, this.stateGraphics);
           buildingStates.push({ id: resource.id, ...building });
-          if (targets.includes(resource.id)) { g.lineStyle(2, 0xefc27b); g.strokeCircle(p.x, p.y, 48); }
+          if (targets.includes(resource.id)) { this.stateGraphics.lineStyle(2, 0xefc27b); this.stateGraphics.strokeCircle(p.x, p.y, 48); }
           const name = width < 600 ? { internet: 'Internet', compute: 'App', database: 'SQL', cache: 'Cache', edge: 'WAF' }[resource.kind] : definitions[resource.kind].name;
           this.captions[i].setFontSize(width < 600 ? 11 : 13).setWordWrapWidth(width < 600 ? 82 : 260, true)
             .setVisible(true).setPosition(Math.max(58, Math.min(width - 58, p.x)), p.y + 48)
@@ -148,10 +166,11 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
               : `${name}${resource.kind === 'compute' ? ` ×${resource.instances}` : ''}\n${resource.kind === 'internet' ? 'TRAFFIC' : `${state}${u === null ? '' : ` · ${(u * 100).toFixed(1)}%`}`}`);
         });
         if (width < 600) {
-          const obstacles = positions.flatMap((p, i) => [
-            { x: p.x - 58, y: p.y - 65, width: 116, height: 98 },
-            ...(resources[i].kind === 'internet' ? [] : [{ x: p.x - 16, y: p.y - 80, width: 32, height: 32 }]),
-          ]);
+          const obstacles = positions.flatMap((p, i) => {
+            const bounds = resourceArtBounds(resources[i].kind);
+            return [{ ...bounds, x: p.x + bounds.x, y: p.y + bounds.y },
+              ...(resources[i].kind === 'internet' ? [] : [{ x: p.x - 16, y: p.y + bounds.y - 36, width: 32, height: 32 }])];
+          });
           const labels = placeCaptions(positions, resources.map((_, i) => ({ width: this.captions[i].width, height: this.captions[i].height })), { width, height }, obstacles);
           labels.forEach((label, i) => {
             this.captions[i].setPosition(label.x + label.width / 2, label.y);
@@ -160,11 +179,15 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
           });
           if (diagnosticsEnabled) host.dataset.labels = JSON.stringify(labels);
         }
-        if (diagnosticsEnabled) host.dataset.buildings = JSON.stringify(buildingStates);
+        if (diagnosticsEnabled) {
+          host.dataset.buildings = JSON.stringify(buildingStates);
+          host.dataset.spriteViews = JSON.stringify(this.sprites.diagnostics());
+          host.dataset.spriteLayers = JSON.stringify({ state: this.stateGraphics.depth, traffic: this.trafficGraphics.depth, effects: this.effectsGraphics.depth, labels: this.captions[0].depth });
+        }
         if (view.building && view.preview) {
           const point = snap(view.preview); const p = project(point, camera, width, height);
           const invalid = !!positionError(architecture, point);
-          g.lineStyle(3, invalid ? 0xf58a78 : 0x9bdac7); g.strokeRect(p.x - 40, p.y - 40, 80, 80);
+          this.stateGraphics.lineStyle(3, invalid ? 0xf58a78 : 0x9bdac7); this.stateGraphics.strokeRect(p.x - 40, p.y - 40, 80, 80);
           if (diagnosticsEnabled) host.dataset.placement = invalid ? 'invalid' : 'valid';
         } else if (diagnosticsEnabled) host.dataset.placement = 'none';
         }
@@ -256,7 +279,11 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
       if (view.building) { controller.place(logical(p)); return; }
       const resource = view.state.runtime.architecture.resources
         .map(r => ({ resource: r, center: project(r, camera(), canvas.clientWidth, canvas.clientHeight) }))
-        .filter(item => insideBuilding(p, item.center))
+        .filter(item => {
+          const bounds = resourceArtBounds(item.resource.kind);
+          return insideBuilding(p, item.center) || (p.x >= item.center.x + bounds.x && p.x <= item.center.x + bounds.x + bounds.width
+            && p.y >= item.center.y + bounds.y && p.y <= item.center.y + bounds.y + bounds.height);
+        })
         .sort((a, b) => Math.hypot(p.x - a.center.x, p.y - a.center.y) - Math.hypot(p.x - b.center.x, p.y - b.center.y) || b.resource.y - a.resource.y)[0]?.resource;
       if (view.connecting) { if (resource) controller.connectNode(resource.id); return; }
       controller.select(resource?.id ?? null);

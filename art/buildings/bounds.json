@@ -1,0 +1,52 @@
+{
+  "app-service": {
+    "sourceWidth": 512,
+    "sourceHeight": 512,
+    "left": 136,
+    "top": 63,
+    "width": 250,
+    "height": 324,
+    "bytes": 48075,
+    "sha256": "c4691b185c206dea3b9dbfa13c4357c69901b2c47f4abfae38dfdcd0e0ed1d8d"
+  },
+  "app-module": {
+    "sourceWidth": 512,
+    "sourceHeight": 512,
+    "left": 194,
+    "top": 145,
+    "width": 134,
+    "height": 195,
+    "bytes": 21422,
+    "sha256": "c14cd7dc0acf07dea454a6aae1ef0e2eae0f271d8df30c441f5ffd0bb758361b"
+  },
+  "azure-sql": {
+    "sourceWidth": 512,
+    "sourceHeight": 512,
+    "left": 140,
+    "top": 69,
+    "width": 240,
+    "height": 334,
+    "bytes": 52614,
+    "sha256": "a8a68e116d81e06613249aa06bd64226be62aa8a489f4cd721aed5a20c8420f2"
+  },
+  "redis": {
+    "sourceWidth": 512,
+    "sourceHeight": 512,
+    "left": 148,
+    "top": 158,
+    "width": 216,
+    "height": 228,
+    "bytes": 28850,
+    "sha256": "6af8d7deda94d3f8124f74fa8dcb77a27e3825422c87badbde22c69c39ed321d"
+  },
+  "protected-edge": {
+    "sourceWidth": 512,
+    "sourceHeight": 512,
+    "left": 120,
+    "top": 96,
+    "width": 270,
+    "height": 322,
+    "bytes": 45623,
+    "sha256": "caa417cecc9e5d4140cbc8a45d308965bd98783e2483b1130144474d6e9c1a9a"
+  }
+}
