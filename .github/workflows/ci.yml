@@ -18,6 +18,7 @@ jobs:
           node-version: 22.22.0
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      - run: node --test scripts/work-item-format.test.mjs
       - run: pnpm lint
       - run: pnpm typecheck
       - run: pnpm test
