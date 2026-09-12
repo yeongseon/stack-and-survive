@@ -1,7 +1,7 @@
 # Stack & Survive — Implementation Plan
 
-**Version:** 0.6  
-**Status:** Browser MVP implemented and automated QA completed; human validation and Azure hosting pending  
+**Version:** 0.7  
+**Status:** Browser gameplay and required visual features implemented; automated visual acceptance verified locally, human validation pending, hosting deferred  
 **Scope:** Hackathon MVP, one Black Friday scenario
 
 ## 1. Purpose and document freeze
@@ -42,11 +42,20 @@ Section 110 contains independent arithmetic reference calculations with explicit
 ### Current delivery checkpoint
 
 - Core simulation, editor, live controls, results/replay, local persistence, onboarding and automated integrated QA are implemented through issue #24.
+- Required visual features are implemented through #53, #54, #58, #59 and #60: original structures/environment, separate identity badges, actual-state effects, tactical UI, objectives/events and production/QA separation. #55 records final technical acceptance and #78 the corrected mobile label collision. The owner-requested ultrawork scope is the implemented game presentation, not fabricated human approval or hosting.
 - Issue #25 remains open for actual first-time-player learning validation. Recruit 2–3 participants if feasible; record uncoached observations and answers, not just whether the app runs. Responsive fixes address reported usability problems but do not themselves complete this validation.
 - Prioritize UI/game-feel changes supported by those observations. Do not add simulation mechanics or split packages without a concrete need.
-- Issues #26–#27 cover Azure Static Web Apps preparation and explicitly authorized deployment; neither hosting nor deployment readiness is currently claimed.
+- The owner subsequently requested GitHub Pages for the demo, then explicitly deferred hosting after GitHub rejected Pages for the current private-repository plan. No site, subscription change or public-repository conversion was performed. #26–#27 remain deferred; confirm the actual hosting destination and approval before resuming, rather than automatically provisioning Azure from the earlier plan.
 - Rehearse the final Hackathon presentation after hosted smoke checks. A preliminary local walkthrough can happen during player testing; multiple complete 180-second runs do not fit a 3–4 minute pitch.
 - Track these gates rather than unsupported percentage-complete estimates. Optional polish (#29) is not a reason to claim human validation or hosted delivery has passed.
+
+### Final visual verification evidence
+
+- 154 unit/regression tests and 41 QA browser cases pass locally; six ordinary-player cases verify real-time play plus five viewport captures with diagnostics absent.
+- Official icon hashes and missing-image fallback remain tested; source terms and unresolved applicable-use review remain in the asset attribution record, not certified by test results.
+- Full Cache/WAF redesign, actual SQL overload, reduced motion, graphics recovery, same-tick event identity and narrow label/icon separation are covered. Original numerical reference scores remain unchanged.
+- Two Apple M1 Pro/Metal peak measurements with the final visual feature set show about 60.02 FPS and 20 ticks over 20 seconds. Exact environment and limits are in README; software-WebGL CI is not a hardware benchmark.
+- Final Oracle read-only source/test review reported PASS; it did not independently certify aesthetic preference, asset permission or human comprehension. New acceptance changes still require their own PR CI before #55 closes.
 
 ## 3. Delivery phases
 
