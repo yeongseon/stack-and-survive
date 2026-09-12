@@ -46,13 +46,14 @@ test('narrow viewport placement and resize preserve architecture and input align
   await page.setViewportSize({ width: 390, height: 844 }); await page.goto('/');
   const surface = await waitForRenderer(page);
   await expect(page.getByRole('button', { name: 'Place Azure Managed Redis', exact: true })).not.toBeVisible();
-  await page.locator('summary').filter({ hasText: 'Build & connections' }).click();
+  await page.getByRole('button', { name: 'Build & connections', exact: true }).click();
   await page.getByRole('button', { name: 'Place Azure Managed Redis', exact: true }).click();
   await surface.scrollIntoViewIfNeeded(); const box = (await surface.boundingBox())!;
   const x = box.x + box.width / 2 - 80; const y = box.y + box.height / 2 + 100;
   await page.mouse.move(x, y); await page.mouse.click(x, y);
   await expect(page.getByRole('region', { name: 'Selected resource' })).toContainText('Azure Managed Redis');
   await expect(page.getByTestId('resource-status')).toHaveText('Active', { timeout: 8000 });
+  await page.getByRole('button', { name: 'Close details', exact: true }).click();
   const before = JSON.parse((await page.getByTestId('diagnostics').textContent())!).architecture;
   await page.setViewportSize({ width: 1440, height: 900 });
   await expect.poll(async () => (await surface.boundingBox())!.width).toBeGreaterThan(900);

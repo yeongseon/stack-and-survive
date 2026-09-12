@@ -42,3 +42,12 @@ it('fits narrow boards while keeping pointer projection invertible', () => {
     }
   }
 });
+it('fits baseline labels vertically when viewport controls reduce board height', () => {
+  const camera = viewportCamera({ x: 0, y: 0, zoom: 1 }, 1000, 370);
+  for (const point of [{ x: -260, y: -100 }, { x: 260, y: 100 }]) {
+    const pixel = project(point, camera, 1000, 370);
+    expect(pixel.y).toBeGreaterThan(80);
+    expect(pixel.y).toBeLessThan(280);
+    expect(unproject(pixel, camera, 1000, 370).y).toBeCloseTo(point.y);
+  }
+});
