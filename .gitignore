@@ -19,4 +19,5 @@ dist/
 dist-qa/
 .work-item-backups/
 test-results/
+test-results-player/
 playwright-report/

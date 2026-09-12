@@ -1,5 +1,6 @@
 import { defineConfig } from '@playwright/test';
 export default defineConfig({
+  outputDir: './test-results-player',
   testDir: './tests/player', workers: 1, timeout: 120000, expect: { timeout: 20000 },
   use: { baseURL: 'http://127.0.0.1:43874', viewport: { width: 1440, height: 900 },
     launchOptions: { args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] } },
