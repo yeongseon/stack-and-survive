@@ -9,6 +9,7 @@ import { drawEnvironment } from './environment-art';
 import { buildingAssets, buildingLayers, moduleAsset, resourceArtBounds } from './building-assets';
 import { BuildingSprites } from './building-sprites';
 import { drawProcessingLane, lanePoint, processingLanes } from './processing-lanes';
+import { pressureLosses, pressurePositions, pressureQueues } from './queue-visualization';
 import { activeEffects, completedResources, drawEffect, effectMotion } from './effects';
 import { diagnosticsEnabled } from './mode';
 import { placeCaptions } from './annotations';
@@ -97,12 +98,15 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
         const appU = requests?.app.utilization ?? null;
         const sqlU = requests ? Math.max(requests.sql.readUtilization, requests.sql.writeUtilization) : null;
         const flows = view.state.runtime.status === 'RUNNING' && !view.error && requests ? visualFlows(requests) : [];
+        const queues = pressureQueues(requests ?? null);
         if (diagnosticsEnabled && (this.diagnosticView !== view || this.diagnosticSize !== `${width}:${height}`)) {
           this.diagnosticView = view; this.diagnosticSize = `${width}:${height}`;
           host.dataset.appState = utilizationLabel(appU); host.dataset.sqlState = utilizationLabel(sqlU);
           host.dataset.tick = String(view.state.runtime.time);
           host.dataset.nodes = JSON.stringify(resources.map((r, i) => ({ id: r.id, ...positions[i] })));
           host.dataset.flows = JSON.stringify(flows);
+          host.dataset.pressureQueues = JSON.stringify(queues);
+          host.dataset.pressureLosses = JSON.stringify(pressureLosses(requests ?? null));
           host.dataset.packets = String(flows.reduce((sum, flow) => sum + representativeCount(flow.volume), 0));
           host.dataset.buildings = JSON.stringify(resources.map(resource => ({ id: resource.id,
             ...buildingPresentation(resource, architecture.connections.some(c => c.from === resource.id || c.to === resource.id), view.selected === resource.id,
@@ -193,6 +197,33 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
         g = this.trafficGraphics.clear();
         const effects = activeEffects(view);
         const fx = this.effectsGraphics.clear();
+        for (const queue of queues) {
+          const target = resources.findIndex(r => r.kind === queue.resource);
+          const sourceKind = queue.resource === 'compute' ? requests?.edge.active ? 'edge' : 'internet'
+            : queue.signal === 'sql-read' && requests?.cache.active ? 'cache' : 'compute';
+          const source = resources.findIndex(r => r.kind === sourceKind);
+          if (target < 0 || source < 0) continue;
+          const markers = pressurePositions(positions[source], positions[target], queue.count);
+          const color = queue.severity === 'critical' ? 0xf8af87 : queue.severity === 'warning' ? 0xf2d49a : 0xafd8e8;
+          markers.forEach((point, i) => {
+            const pulse = effectMotion(view, reducedMotion) ? Math.sin(time / 350 + i) * .8 : 0;
+            fx.fillStyle(0x173647, .7); fx.fillEllipse(point.x + 2, point.y + 5, 11, 5);
+            fx.fillStyle(color, .85); fx.fillRoundedRect(point.x - 4, point.y - 4 + pulse, 8, 8, 1);
+            fx.lineStyle(1, 0xeff7f4, .8); fx.strokeRect(point.x - 4, point.y - 4 + pulse, 8, 8);
+          });
+        }
+        for (const loss of pressureLosses(requests ?? null)) {
+          const from = positions[resources.findIndex(r => r.kind === loss.from)];
+          const to = positions[resources.findIndex(r => r.kind === loss.to)];
+          if (!from || !to) continue;
+          const points = pressurePositions(from, to, loss.count);
+          fx.lineStyle(2, loss.stage === 'sql-write' ? 0xf0c77e : 0xff8e83);
+          for (const point of points) {
+            const y = point.y + (loss.stage === 'sql-write' ? 24 : 15);
+            fx.lineBetween(point.x - 3, y - 3, point.x + 3, y + 3);
+            fx.lineBetween(point.x - 3, y + 3, point.x + 3, y - 3);
+          }
+        }
         for (const effect of effects) {
           const index = resources.findIndex(r => r.kind === effect.resource);
           if (index >= 0) drawEffect(fx, effect, positions[index], time, effectMotion(view, reducedMotion));
