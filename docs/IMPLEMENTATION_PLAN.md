@@ -201,6 +201,8 @@ is:issue is:open label:blocked
 
 ### Branches, commits, and pull requests
 
+Use the issue/bug and PR templates in `.github/` for every new work item, including CLI-created items. Fill each required section and run `node scripts/check-work-item.mjs issue|pr <body-file>` before publication. See [the work-item guide](../.github/WORK_ITEM_GUIDE.md) for exact fields, format checks and historical migration limits. A successful format check is not evidence of implementation, test execution or approval. Existing records were retrospectively aligned while preserving their original descriptions; do not treat historical placeholder fields as newly accepted requirements.
+
 - Keep `main` as the reviewed baseline. After the initial documentation bootstrap, use short-lived branches; no separate `develop` or release-branch hierarchy is needed for the MVP.
 - Name branches by purpose and issue, for example `docs/12-project-rules`, `spike/13-engine-comparison`, `feat/14-traffic-split`, or `fix/15-budget-boundary`.
 - Default to one focused PR per issue. A PR explains why the change is needed, links the issue, lists verification actually performed, and notes limitations. Visual changes include a screenshot or short recording when useful.

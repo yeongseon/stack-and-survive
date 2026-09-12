@@ -17,5 +17,6 @@ Thumbs.db
 node_modules/
 dist/
 dist-qa/
+.work-item-backups/
 test-results/
 playwright-report/
