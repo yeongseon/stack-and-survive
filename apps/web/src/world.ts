@@ -6,6 +6,7 @@ import { representativeCount, visualFlows } from './traffic';
 import { createServiceBadge } from './service-icons';
 import { buildingPresentation, drawBuilding, drawEnvironment, insideBuilding } from './building-art';
 import { activeEffects, completedResources, drawEffect, effectMotion } from './effects';
+import { diagnosticsEnabled } from './mode';
 
 export function utilizationLabel(u: number | null): string {
   return u === null ? 'READY' : compare(u, 1) > 0 ? '! OVERLOADED' : compare(u, .7) > 0 ? 'WARNING' : 'HEALTHY';
@@ -66,9 +67,11 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
         const camera = viewportCamera(view.camera, width, height);
         const positions = resources.map(r => project(r, camera, width, height));
         this.scene.setVisible(renderVisible);
-        host.dataset.renderVisible = String(renderVisible);
-        host.dataset.reducedMotion = String(reducedMotion);
-        host.dataset.effects = JSON.stringify(activeEffects(view));
+        if (diagnosticsEnabled) {
+          host.dataset.renderVisible = String(renderVisible);
+          host.dataset.reducedMotion = String(reducedMotion);
+          host.dataset.effects = JSON.stringify(activeEffects(view));
+        }
         if (this.wasVisible !== renderVisible) {
           this.structureSignature = ''; this.backgroundSize = ''; this.wasVisible = renderVisible;
         }
@@ -76,7 +79,7 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
         const appU = requests?.app.utilization ?? null;
         const sqlU = requests ? Math.max(requests.sql.readUtilization, requests.sql.writeUtilization) : null;
         const flows = view.state.runtime.status === 'RUNNING' && !view.error && requests ? visualFlows(requests) : [];
-        if (this.diagnosticView !== view || this.diagnosticSize !== `${width}:${height}`) {
+        if (diagnosticsEnabled && (this.diagnosticView !== view || this.diagnosticSize !== `${width}:${height}`)) {
           this.diagnosticView = view; this.diagnosticSize = `${width}:${height}`;
           host.dataset.appState = utilizationLabel(appU); host.dataset.sqlState = utilizationLabel(sqlU);
           host.dataset.tick = String(view.state.runtime.time);
@@ -139,13 +142,13 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
             .setVisible(true).setPosition(Math.max(58, Math.min(width - 58, p.x)), p.y + 48)
             .setText(`${name}${resource.kind === 'compute' ? ` ×${resource.instances}` : ''}\n${resource.kind === 'internet' ? 'TRAFFIC' : `${state}${u === null ? '' : ` · ${(u * 100).toFixed(1)}%`}`}`);
         });
-        host.dataset.buildings = JSON.stringify(buildingStates);
+        if (diagnosticsEnabled) host.dataset.buildings = JSON.stringify(buildingStates);
         if (view.building && view.preview) {
           const point = snap(view.preview); const p = project(point, camera, width, height);
           const invalid = !!positionError(architecture, point);
           g.lineStyle(3, invalid ? 0xf58a78 : 0x9bdac7); g.strokeRect(p.x - 40, p.y - 40, 80, 80);
-          host.dataset.placement = invalid ? 'invalid' : 'valid';
-        } else host.dataset.placement = 'none';
+          if (diagnosticsEnabled) host.dataset.placement = invalid ? 'invalid' : 'valid';
+        } else if (diagnosticsEnabled) host.dataset.placement = 'none';
         }
         g = this.trafficGraphics.clear();
         const effects = activeEffects(view);
@@ -163,8 +166,10 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
             fx.lineStyle(3, 0xd6ffe5, 1 - progress); fx.strokeEllipse(p.x, p.y + 8, 80 + progress * 60, 28 + progress * 22);
           }
         }
-        host.dataset.completions = JSON.stringify([...completions.keys()]);
-        host.dataset.drawnCompletions = String(drawnCompletions);
+        if (diagnosticsEnabled) {
+          host.dataset.completions = JSON.stringify([...completions.keys()]);
+          host.dataset.drawnCompletions = String(drawnCompletions);
+        }
         if (view.state.runtime.status === 'FAILED' || view.state.runtime.status === 'COMPLETED') {
           fx.lineStyle(4, view.state.runtime.status === 'FAILED' ? 0xffa49b : 0x90e9c4, .8);
           fx.strokeRoundedRect(4, 4, Math.max(1, width - 8), Math.max(1, height - 8), 12);
@@ -172,7 +177,7 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
           fx.lineStyle(3, 0xffac82, effectMotion(view, reducedMotion) ? .4 + .2 * Math.sin(time / 400) : .6);
           fx.strokeRect(2, 2, Math.max(1, width - 4), Math.max(1, height - 4));
         }
-        host.dataset.effects = JSON.stringify(effects);
+        if (diagnosticsEnabled) host.dataset.effects = JSON.stringify(effects);
         let packetCount = 0;
         if (view.state.runtime.status === 'RUNNING' && !view.error && requests) {
           const at = (kind: string) => positions[resources.findIndex(r => r.kind === kind)];
@@ -195,12 +200,14 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
               else g.fillCircle(x, y, 3);
             }
           });
-          host.dataset.flows = JSON.stringify(flows);
-        } else host.dataset.flows = '[]';
-        host.dataset.frames = String(++frames); host.dataset.packets = String(packetCount);
-        host.dataset.appState = utilizationLabel(appU); host.dataset.sqlState = utilizationLabel(sqlU);
-        host.dataset.tick = String(view.state.runtime.time);
-        host.dataset.nodes = JSON.stringify(resources.map((r, i) => ({ id: r.id, ...positions[i] })));
+          if (diagnosticsEnabled) host.dataset.flows = JSON.stringify(flows);
+        } else if (diagnosticsEnabled) host.dataset.flows = '[]';
+        if (diagnosticsEnabled) {
+          host.dataset.frames = String(++frames); host.dataset.packets = String(packetCount);
+          host.dataset.appState = utilizationLabel(appU); host.dataset.sqlState = utilizationLabel(sqlU);
+          host.dataset.tick = String(view.state.runtime.time);
+          host.dataset.nodes = JSON.stringify(resources.map((r, i) => ({ id: r.id, ...positions[i] })));
+        }
       } catch (error) {
         host.dataset.renderer = 'error';
         controller.presentationFailed(error instanceof Error ? error.message : 'Renderer failed');

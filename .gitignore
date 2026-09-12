@@ -16,5 +16,6 @@ Thumbs.db
 # Local dependency, build, and browser-check artifacts
 node_modules/
 dist/
+dist-qa/
 test-results/
 playwright-report/
