@@ -4,7 +4,8 @@ import { definitions } from '@stack-and-survive/cloud-domain';
 import { positionError, project, snap, unproject, validTargets, viewportCamera, type Point } from './editor';
 import { representativeCount, visualFlows } from './traffic';
 import { createServiceBadge } from './service-icons';
-import { buildingPresentation, drawBuilding, drawEnvironment, insideBuilding } from './building-art';
+import { buildingPresentation, drawBuilding, insideBuilding } from './building-art';
+import { drawEnvironment } from './environment-art';
 import { activeEffects, completedResources, drawEffect, effectMotion } from './effects';
 import { diagnosticsEnabled } from './mode';
 import { placeCaptions } from './annotations';
@@ -109,7 +110,8 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
         });
         let g = this.graphics;
         if (this.backgroundSize !== `${width}:${height}`) {
-          drawEnvironment(this.environment.clear(), width, height); this.backgroundSize = `${width}:${height}`;
+          const environment = drawEnvironment(this.environment.clear(), width, height); this.backgroundSize = `${width}:${height}`;
+          if (diagnosticsEnabled) host.dataset.environment = JSON.stringify(environment);
         }
         const signature = JSON.stringify([width, height, architecture, camera, view.selected, view.connectionSource, view.preview, view.building, appU, sqlU, requests?.cache.utilization, view.state.runtime.scaleDue, view.state.runtime.preparationScaleDue]);
         if (signature !== this.structureSignature) {
