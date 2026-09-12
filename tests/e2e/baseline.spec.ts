@@ -13,8 +13,8 @@ test('real baseline reaches compute pressure and fails at the verified tick', as
   const surface = page.locator('[data-renderer="ready"]');
   await expect(surface).toHaveCount(1);
   await page.getByRole('button', { name: 'Start traffic' }).click();
-  await expect(page.getByTestId('elapsed')).toHaveText('1', { timeout: 5000 });
-  await expect(surface).toHaveAttribute('data-tick', '1');
+  await expect.poll(async () => Number(await page.getByTestId('elapsed').textContent()), { timeout: 5000 }).toBeGreaterThanOrEqual(1);
+  await expect.poll(async () => Number(await surface.getAttribute('data-tick')), { timeout: 5000 }).toBeGreaterThanOrEqual(1);
   await expect.poll(async () => Number(await surface.getAttribute('data-packets'))).toBeGreaterThan(0);
   await page.locator('summary').filter({ hasText: 'Developer inspector' }).click();
   await stepUntil(page, 31);

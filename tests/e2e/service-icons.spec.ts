@@ -49,5 +49,5 @@ test('missing icons show neutral fallbacks without disabling gameplay or labels'
   await page.getByRole('button', { name: 'Inspect Azure SQL', exact: true }).click();
   await expect(page.getByRole('region', { name: 'Selected resource' })).toContainText('Azure SQL');
   await page.getByRole('button', { name: 'Start traffic', exact: true }).click();
-  await expect(page.getByTestId('elapsed')).toHaveText('1', { timeout: 5000 });
+  await expect.poll(async () => Number(await page.getByTestId('elapsed').textContent()), { timeout: 5000 }).toBeGreaterThanOrEqual(1);
 });

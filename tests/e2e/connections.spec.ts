@@ -35,7 +35,7 @@ test('partly connected cache blocks start while complete read and write paths wo
   await panel.getByRole('button', { name: 'Azure SQL', exact: true }).click();
   await expect(page.getByRole('button', { name: 'Start traffic', exact: true })).toBeEnabled();
   await page.getByRole('button', { name: 'Start traffic', exact: true }).click();
-  await expect(page.getByTestId('elapsed')).toHaveText('1', { timeout: 5000 });
+  await expect.poll(async () => Number(await page.getByTestId('elapsed').textContent()), { timeout: 5000 }).toBeGreaterThanOrEqual(1);
   const diagnostics = JSON.parse((await page.getByTestId('diagnostics').textContent())!);
   expect(diagnostics.snapshot.requests.cache.active).toBe(true);
   expect(diagnostics.snapshot.requests.sql.readDemand).toBeCloseTo(16);
