@@ -32,12 +32,15 @@ test('corrupt save is preserved and recoverable without breaking the game', asyn
   await page.reload(); await expect(page.getByTestId('save-status')).toContainText('Loaded local architecture');
 });
 test('unavailable browser storage leaves gameplay usable with feedback', async ({ page }) => {
+  const errors: string[] = []; page.on('pageerror', error => errors.push(error.message));
   await page.addInitScript(() => {
     Object.defineProperty(window, 'localStorage', { get() { throw new DOMException('Storage blocked', 'SecurityError'); } });
   });
   await page.goto('/'); await expect(page.getByTestId('save-status')).toContainText('Load failed');
+  await expect(page.locator('[data-renderer="ready"]')).toHaveCount(1, { timeout: 20000 });
   await page.getByRole('button', { name: 'Save architecture', exact: true }).click();
   await expect(page.getByTestId('save-status')).toContainText('Save failed');
   await page.getByRole('button', { name: 'Start traffic', exact: true }).click();
   await expect(page.getByTestId('elapsed')).toHaveText('1', { timeout: 5000 });
+  expect(errors).toEqual([]);
 });
