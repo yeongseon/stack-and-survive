@@ -12,6 +12,7 @@ test('five original building identities keep official badges separate and remain
   const states: { id: string; silhouette: string; completedModules: number }[] = JSON.parse((await surface.getAttribute('data-buildings'))!);
   expect(new Set(states.map(s => s.silhouette)).size).toBe(5);
   expect(states.find(s => s.id === 'compute')!.completedModules).toBe(3);
+  await expect(page.getByLabel('Initial App instances')).toHaveValue('3');
   await expect(page.locator('.world-service-badges img')).toHaveCount(4);
   await page.getByTestId('world').scrollIntoViewIfNeeded(); await page.screenshot({ path: info.outputPath('cloud-base-structures.png') });
   const box = (await surface.boundingBox())!;

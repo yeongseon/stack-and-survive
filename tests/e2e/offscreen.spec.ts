@@ -7,6 +7,7 @@ test('offscreen rendering stops without pausing authoritative ticks and restores
   await page.getByRole('button', { name: 'Start traffic', exact: true }).click();
   await page.locator('summary').filter({ hasText: 'Developer inspector' }).click();
   await page.getByRole('button', { name: 'Step one tick', exact: true }).click();
+  await page.locator('.help').evaluate(element => { (element as HTMLElement).style.minHeight = '100vh'; });
   await page.locator('footer').scrollIntoViewIfNeeded();
   await expect(surface).toHaveAttribute('data-render-visible', 'false');
   const frames = await surface.getAttribute('data-frames');

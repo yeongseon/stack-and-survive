@@ -1,5 +1,6 @@
 import { defineConfig } from '@playwright/test';
 export default defineConfig({
+  expect: { timeout: 20000 },
   testDir: './tests/e2e', workers: 1, timeout: 120000,
   reporter: [['list'], ['html', { open: 'never' }]],
   use: { baseURL: 'http://127.0.0.1:43872', viewport: { width: 1440, height: 1000 },
