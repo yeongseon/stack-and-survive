@@ -4,7 +4,7 @@ import { blackFriday } from '@stack-and-survive/scenarios';
 import { createSimulation, advanceSimulation } from '@stack-and-survive/simulation/results';
 import { startRuntime } from '@stack-and-survive/simulation/runtime';
 import { createController, type View } from './controller';
-import { activeEffects, completedResources, effectMotion } from './effects';
+import { activeEffects, completedResources, effectMotion, filterCheckpoint } from './effects';
 
 it('never invents traffic effects on disconnected resources or during pause', () => {
   const controller = createController(); const view = controller.getSnapshot();
@@ -12,6 +12,15 @@ it('never invents traffic effects on disconnected resources or during pause', ()
   expect(effectMotion(view, true)).toBe(false);
   expect(effectMotion({ ...view, state: { ...view.state, runtime: { ...view.state.runtime, status: 'PAUSED' } } }, false)).toBe(false);
   controller.destroy();
+});
+it('uses a bounded ingress scan with distinct normal and emergency indicators', () => {
+  for (let time = 0; time < 10000; time += 100) {
+    const scan = filterCheckpoint(time, true, false);
+    expect(scan.scanY).toBeGreaterThanOrEqual(-58); expect(scan.scanY).toBeLessThanOrEqual(-10);
+    expect(scan.bars).toBe(3);
+  }
+  expect(filterCheckpoint(0, false, true)).toEqual(filterCheckpoint(9999, false, true));
+  expect(filterCheckpoint(0, false, true).bars).toBe(5);
 });
 it('completion effects only come from actual preparation or scale completion', () => {
   const controller = createController(); const view = controller.getSnapshot();
