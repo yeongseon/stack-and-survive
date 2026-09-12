@@ -1,0 +1,87 @@
+import { expect, test } from '@playwright/test';
+
+test('living operation expands real capacity and activates Cache and Edge only after provisioning', async ({ page }, info) => {
+  test.setTimeout(180000);
+  await page.goto('/?tycoon');
+  await expect(page.getByRole('button', { name: 'Start Game' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Connect resources', exact: true })).toHaveCount(0);
+  await page.getByRole('button', { name: 'Start Game' }).click();
+  await expect(page.locator('[data-renderer="ready"]')).toHaveCount(1);
+  await expect(page.getByRole('button', { name: 'Ⅱ Pause', exact: true })).toBeEnabled({ timeout: 10000 });
+  await page.getByText('Tycoon QA', { exact: true }).click();
+  const step = page.getByRole('button', { name: 'Step one tick', exact: true });
+  const state = async () => JSON.parse((await page.getByTestId('diagnostics').textContent())!);
+  await step.click();
+  await page.getByRole('button', { name: /Add Cache/ }).click();
+  await page.getByRole('button', { name: /Add Protected Edge/ }).click();
+  await page.getByRole('button', { name: /App capacity/ }).click();
+  await step.click();
+  const accepted = await state();
+  expect(accepted.snapshot.requests.cache.active).toBe(false);
+  expect(accepted.snapshot.requests.edge.active).toBe(false);
+  expect(accepted.state.runtime.architecture.resources.find((r: {kind:string}) => r.kind === 'compute').instances).toBe(1);
+  await expect(page.getByTestId('slot-cache')).toContainText('Provisioning 5s');
+  await page.getByRole('button', { name: 'Ⅱ Pause', exact: true }).click();
+  const frozen = await state(); await step.click(); expect((await state()).state).toEqual(frozen.state);
+  await page.getByRole('button', { name: '▶ Resume', exact: true }).click();
+  for (let i = 0; i < 5; i++) await step.click();
+  const active = await state();
+  expect(active.snapshot.requests.cache.active).toBe(true); expect(active.snapshot.requests.edge.active).toBe(true);
+  expect(active.state.runtime.architecture.connections).toContainEqual({ from: 'compute', to: 'database' });
+  expect(active.state.runtime.architecture.connections).not.toContainEqual({ from: 'internet', to: 'compute' });
+  for (let i = 0; i < 3; i++) await step.click();
+  expect((await state()).state.runtime.architecture.resources.find((r: {kind:string}) => r.kind === 'compute').instances).toBe(2);
+  await page.evaluate(() => window.scrollTo(0,0));
+  await page.screenshot({ path: info.outputPath('tycoon-expanded.png') });
+  await expect(page.getByTestId('business-feedback')).toContainText('Orders served');
+  while (Number(await page.getByTestId('elapsed').textContent()) < 76) await step.click();
+  const bots = await state();
+  expect(bots.snapshot.requests.edge.filtered.bot).toBeGreaterThan(0);
+  expect(bots.snapshot.requests.cache.hits).toBeGreaterThan(0);
+  await page.getByTestId('slot-edge').getByRole('button').click();
+  await page.getByRole('button', { name: 'Boost filtering · 8 cr', exact: true }).click();
+  await step.click(); await step.click();
+  expect((await state()).snapshot.requests.edge.filtered.bot).toBeGreaterThan(bots.snapshot.requests.edge.filtered.bot);
+  await page.getByRole('button', { name: 'Close resource', exact: true }).click();
+  await page.getByRole('button', { name: 'Ⅱ Pause', exact: true }).click();
+  await expect(page.getByTestId('business-feedback')).toHaveCount(0);
+});
+
+test('observed App pressure falls only after a world-local expansion activates', async ({ page }, info) => {
+  await page.goto('/?tycoon'); await page.getByRole('button', { name: 'Start Game' }).click();
+  await expect(page.getByRole('button', { name: 'Ⅱ Pause', exact: true })).toBeEnabled({ timeout: 10000 });
+  await page.getByText('Tycoon QA', { exact: true }).click();
+  const step = page.getByRole('button', { name: 'Step one tick', exact: true });
+  while (Number(await page.getByTestId('elapsed').textContent()) < 31) await step.click();
+  const surface = page.locator('[data-renderer="ready"]');
+  await expect(surface).toHaveAttribute('data-tick', '31');
+  const pressure = async () => JSON.parse((await surface.getAttribute('data-pressure-queues'))!)[0].count;
+  const before = await pressure(); expect(before).toBeGreaterThan(8);
+  await page.getByRole('button', { name: /App capacity/ }).click();
+  while (Number(await page.getByTestId('elapsed').textContent()) < 39) await step.click();
+  await expect(surface).toHaveAttribute('data-tick', '39'); expect(await pressure()).toBe(before);
+  await step.click(); await expect(surface).toHaveAttribute('data-tick', '40'); expect(await pressure()).toBeLessThan(before);
+  await page.evaluate(() => window.scrollTo(0,0)); await page.screenshot({ path: info.outputPath('tycoon-pressure-relief.png') });
+});
+
+test('world-local controls stay separate and keyboard accessible on a narrow floor', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 740 }); await page.goto('/?tycoon');
+  await page.getByRole('button', { name: 'About', exact: true }).click();
+  await page.getByRole('button', { name: 'Close', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'About', exact: true })).toBeFocused();
+  await page.getByRole('button', { name: 'Start Game' }).click();
+  await expect(page.getByRole('button', { name: 'Ⅱ Pause', exact: true })).toBeEnabled({ timeout: 10000 });
+  const controls = page.locator('.world-controls > .world-slot button, .world-controls > .intake-control');
+  const boxes = await controls.evaluateAll(elements => elements.map(e => { const r = e.getBoundingClientRect(); return { x:r.x,y:r.y,w:r.width,h:r.height }; }));
+  for (let i=0;i<boxes.length;i++) for (let j=i+1;j<boxes.length;j++) {
+    const a=boxes[i], b=boxes[j]; expect(a.x < b.x+b.w && a.x+a.w>b.x && a.y<b.y+b.h && a.y+a.h>b.y, `controls ${i}/${j}: ${JSON.stringify([a,b])}`).toBe(false);
+  }
+  const intake = page.getByRole('button', { name: 'Traffic intake', exact: true });
+  await intake.focus(); await page.keyboard.press('Enter');
+  await expect(page.getByRole('button', { name: 'Close resource', exact: true })).toBeFocused();
+  await page.keyboard.press('Escape'); await expect(intake).toBeFocused();
+  const sql = page.getByRole('button', { name: 'SQL processing', exact: true });
+  await sql.focus(); await page.keyboard.press('Enter');
+  await expect(page.getByRole('region', { name: 'Resource actions' })).toContainText('Write capacity 70/s');
+  await page.keyboard.press('Escape'); await expect(sql).toBeFocused();
+});

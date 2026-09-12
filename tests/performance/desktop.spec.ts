@@ -1,24 +1,39 @@
 import { expect, test } from '@playwright/test';
 import { baseline } from '../../packages/cloud-domain/src/index';
 
-test('measure a real peak workload and disclose actual graphics backend', async ({ page, browser }, info) => {
+for (const tycoon of [false, true]) test(`measure a real peak workload and disclose actual graphics backend (${tycoon ? 'tycoon' : 'editor'})`, async ({ page, browser }, info) => {
   const architecture = baseline(3, true, true);
   const positions = [{ x: -260, y: -100 }, { x: 0, y: 0 }, { x: 260, y: 100 }, { x: -220, y: 200 }, { x: 100, y: -200 }];
   architecture.resources.forEach((r, i) => { Object.assign(r, positions[i]); });
-  await page.goto('/');
-  await page.evaluate(a => localStorage.setItem('stack-and-survive.architecture.v1', JSON.stringify({ saveVersion: 1, architecture: a })), architecture);
-  await page.reload(); const surface = page.locator('[data-renderer="ready"]'); await expect(surface).toHaveCount(1);
+  await page.goto(tycoon ? '/?tycoon' : '/');
+  if (tycoon) await page.getByRole('button', { name: 'Start Game' }).click();
+  else {
+    await page.evaluate(a => localStorage.setItem('stack-and-survive.architecture.v1', JSON.stringify({ saveVersion: 1, architecture: a })), architecture);
+    await page.reload();
+  }
+  const surface = page.locator('[data-renderer="ready"]'); await expect(surface).toHaveCount(1);
   const graphics = await page.locator('canvas').evaluate(canvas => {
     const gl = (canvas as HTMLCanvasElement).getContext('webgl2') ?? (canvas as HTMLCanvasElement).getContext('webgl');
     if (!gl) throw new Error('No active WebGL context');
     const extension = gl.getExtension('WEBGL_debug_renderer_info');
     return { renderer: extension ? gl.getParameter(extension.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER), vendor: extension ? gl.getParameter(extension.UNMASKED_VENDOR_WEBGL) : gl.getParameter(gl.VENDOR) };
   });
-  await page.getByRole('button', { name: 'Start operation', exact: true }).click();
-  await page.locator('summary').filter({ hasText: 'Developer inspector' }).click();
+  if (tycoon) {
+    await expect(page.getByRole('button', { name: 'Ⅱ Pause', exact: true })).toBeEnabled({ timeout: 10000 });
+    await page.getByText('Tycoon QA', { exact: true }).click();
+    await page.getByRole('button', { name: 'Step one tick', exact: true }).click();
+    await page.getByRole('button', { name: /Add Cache/ }).click();
+    await page.getByRole('button', { name: /Add Protected Edge/ }).click();
+    await page.getByRole('button', { name: /App capacity/ }).click();
+    for (let i=0;i<9;i++) await page.getByRole('button', { name: 'Step one tick', exact: true }).click();
+    await page.getByRole('button', { name: /App capacity/ }).click();
+  } else {
+    await page.getByRole('button', { name: 'Start operation', exact: true }).click();
+    await page.locator('summary').filter({ hasText: 'Developer inspector' }).click();
+  }
   while (Number(await page.getByTestId('elapsed').textContent()) < 121) await page.getByRole('button', { name: 'Step one tick', exact: true }).click();
-  await page.getByRole('button', { name: 'Pause operation', exact: true }).click();
-  await page.getByRole('button', { name: 'Resume operation', exact: true }).click();
+  await page.getByRole('button', { name: tycoon ? 'Ⅱ Pause' : 'Pause operation', exact: true }).click();
+  await page.getByRole('button', { name: tycoon ? '▶ Resume' : 'Resume operation', exact: true }).click();
   await surface.scrollIntoViewIfNeeded();
   const measured = await surface.evaluate(async element => {
     const start = performance.now(); let previous = start; const intervals: number[] = [];
@@ -42,8 +57,8 @@ test('measure a real peak workload and disclose actual graphics backend', async 
   });
   expect(measured.tickAfter - measured.tickBefore).toBeGreaterThanOrEqual(19);
   expect(measured.maxPackets).toBeLessThanOrEqual(200);
-  await page.getByRole('button', { name: 'Pause operation', exact: true }).click();
-  const evidence = { browser: browser.version(), graphics, viewport: { width: 1440, height: 900 }, fixture: 'Black Friday v0.2, App3 + Cache + WAF, peak500RPS/40%bots', mode: 'headless full Chromium with requested ANGLE Metal; inspect actual renderer before interpreting', measured };
+  await page.getByRole('button', { name: tycoon ? 'Ⅱ Pause' : 'Pause operation', exact: true }).click();
+  const evidence = { browser: browser.version(), graphics, viewport: { width: 1440, height: 900 }, fixture: `Black Friday v0.2, App3 + Cache + WAF, peak500RPS/40%bots, ${tycoon ? 'built through live world actions' : 'QA editor fixture'}`, mode: 'headless full Chromium with requested ANGLE Metal; inspect actual renderer before interpreting', measured };
   console.log(JSON.stringify(evidence));
   await info.attach('performance-evidence', { body: JSON.stringify(evidence, null, 2), contentType: 'application/json' });
 });
