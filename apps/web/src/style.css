@@ -92,3 +92,5 @@ button, select { max-width: 100%; white-space: normal; }
 .build-panel { order: 3; }
 .live-actions { order: 4; }
 .result-panel { order: 5; }
+.service-icon{display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;width:32px;height:32px;flex:0 0 32px;background:#fff;border:1px solid #c9d6db;border-radius:4px;padding:3px;margin-right:8px;color:#173746;font:8px ui-monospace,monospace;line-height:1;overflow:visible}.service-icon img{display:block;width:24px;height:24px;object-fit:contain;filter:none;transform:none;opacity:1}.world-service-badges{position:absolute;inset:0;z-index:2;pointer-events:none;overflow:hidden}.world-service-badges>.service-icon{position:absolute;margin:0}.world-service-badges>.service-icon[hidden]{display:none}.result-service{display:flex;align-items:center;gap:4px}
+.build-tools button:disabled,.resource-list button:disabled{opacity:1;color:#9aadb6;border-color:#40515c;background:#172630}
