@@ -13,6 +13,7 @@ for (const width of [1440, 390]) test(`analysis is on demand and preserves focus
   expect(await page.getByTestId('world').boundingBox()).toEqual(before);
   await page.keyboard.press('Escape'); await expect(drawer).not.toBeVisible(); await expect(insights).toBeFocused();
   if (width < 900) await page.getByRole('button', { name: 'Build & connections', exact: true }).click();
+  await page.getByRole('button', { name: 'Manage', exact: true }).click();
   await page.getByRole('button', { name: 'Inspect Azure SQL', exact: true }).click();
   await expect(drawer.getByRole('region', { name: 'Selected resource' })).toContainText('Write capacity: 70/s');
   await page.getByRole('button', { name: 'Events', exact: true }).click();

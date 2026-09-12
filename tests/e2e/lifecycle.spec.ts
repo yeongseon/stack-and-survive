@@ -3,6 +3,7 @@ import { expect, test } from '@playwright/test';
 test('briefing start pause inspect and resume preserve real simulation state', async ({ page }) => {
   await page.goto('/'); await expect(page.locator('[data-renderer="ready"]')).toHaveCount(1);
   await expect(page.getByRole('region', { name: 'Black Friday briefing' })).toContainText('140 game credits');
+  await page.getByRole('button', { name: 'Manage', exact: true }).click();
   await page.getByRole('button', { name: 'Start operation', exact: true }).click();
   await expect.poll(async () => Number(await page.getByTestId('elapsed').textContent()), { timeout: 5000 }).toBeGreaterThanOrEqual(1);
   await page.getByRole('button', { name: 'Pause operation', exact: true }).click();

@@ -12,6 +12,7 @@ test('protected cached design shows actual class paths and live accounting', asy
   await page.getByLabel('Initial App instances').selectOption('4'); await expect(surface).toHaveCount(1);
   await place(page, 'Azure Managed Redis', -220, 200);
   await place(page, 'Protected Edge / WAF', 100, -200);
+  await page.getByRole('button', { name: 'Manage', exact: true }).click();
   await page.locator('summary').filter({ hasText: 'Architecture connections' }).click();
   await page.getByRole('button', { name: 'Remove connection internet to compute', exact: true }).click();
   await page.getByRole('button', { name: 'Connect resources', exact: true }).click();

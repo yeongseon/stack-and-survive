@@ -20,6 +20,7 @@ test('five original building identities keep official badges separate and remain
   const sql = nodes.find(n => n.id === 'database')!;
   await page.mouse.click(box.x + sql.x + 52, box.y + sql.y);
   await expect(page.getByRole('region', { name: 'Selected resource' })).toContainText('Azure SQL');
+  await page.getByRole('button', { name: 'Manage', exact: true }).click();
   await page.getByRole('button', { name: 'Inspect Azure App Service', exact: true }).click();
   await page.getByRole('button', { name: 'Provision instance', exact: true }).click();
   await expect(surface).toHaveAttribute('data-buildings', /"pendingModule":true/);

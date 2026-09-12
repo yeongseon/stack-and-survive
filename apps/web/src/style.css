@@ -73,6 +73,10 @@ h1 span { color: var(--gold); }
 .build-panel > summary { font-weight: 700; font-size: 13px; margin: 0 0 12px; }
 .close-build { font-size: 10px; min-height: 26px; margin-bottom: 10px; padding: 4px 8px; }
 .build-tools { display: grid; gap: 8px; }
+.build-tools[hidden] { display: none; }
+.mode-switch { display: flex; gap: 5px; margin-bottom: 12px; }
+.mode-switch button { flex: 1; min-width: 0; padding: 8px 4px; }
+.manage-help { font-size: 11px; color: var(--muted); }
 .build-tools > button { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; text-align: left; padding: 8px; min-height: 40px; }
 .build-tools > button > span:not(.service-icon) { flex: 1; min-width: 50px; font-size: 11px; }
 .build-tools > button small { flex: 1 0 100%; font-size: 9px; letter-spacing: .6px; color: #a6c6d6; }
