@@ -11,7 +11,7 @@ test('Cache redesign changes failure to survival and WAF redesign improves full-
   test.setTimeout(300000);
   await page.goto('/'); const surface = page.locator('[data-renderer="ready"]'); await expect(surface).toHaveCount(1);
   await page.getByLabel('Initial App instances').selectOption('4');
-  await page.getByRole('button', { name: 'Start traffic', exact: true }).click(); await finish(page);
+  await page.getByRole('button', { name: 'Start operation', exact: true }).click(); await finish(page);
   await expect(page.getByTestId('result-score')).toHaveText('5,172');
   await page.getByRole('button', { name: 'Redesign & Retry', exact: true }).click();
   await expect(page.getByRole('region', { name: 'Previous attempt context' })).toContainText('Azure SQL Saturation');
@@ -25,7 +25,7 @@ test('Cache redesign changes failure to survival and WAF redesign improves full-
   for (const [a, b] of [['Azure App Service', 'Azure Managed Redis'], ['Azure Managed Redis', 'Azure SQL']]) {
     await panel.getByRole('button', { name: a, exact: true }).click(); await panel.getByRole('button', { name: b, exact: true }).click();
   }
-  await page.getByRole('button', { name: 'Start traffic', exact: true }).click(); await finish(page);
+  await page.getByRole('button', { name: 'Start operation', exact: true }).click(); await finish(page);
   await expect(page.getByTestId('result-score')).toHaveText('8,500');
   let comparison = page.getByRole('region', { name: 'Previous and current comparison' });
   await expect(comparison).toContainText('Different run lengths');
@@ -47,7 +47,7 @@ test('Cache redesign changes failure to survival and WAF redesign improves full-
   const nodes: { id: string; x: number; y: number }[] = JSON.parse((await surface.getAttribute('data-nodes'))!);
   const app = nodes.find(n => n.id === 'compute')!; await page.mouse.click(box.x + app.x, box.y + app.y);
   await page.getByRole('button', { name: 'Reduce instance', exact: true }).click();
-  await page.getByRole('button', { name: 'Start traffic', exact: true }).click(); await finish(page);
+  await page.getByRole('button', { name: 'Start operation', exact: true }).click(); await finish(page);
   await expect(page.getByTestId('result-score')).toHaveText('9,450');
   comparison = page.getByRole('region', { name: 'Previous and current comparison' });
   await expect(comparison).not.toContainText('Different run lengths');

@@ -4,7 +4,7 @@ test('offscreen rendering stops without pausing authoritative ticks and restores
   const errors: string[] = []; page.on('pageerror', e => errors.push(e.message));
   await page.goto('/'); const surface = page.locator('[data-renderer="ready"]');
   await expect(surface).toHaveCount(1, { timeout: 20000 });
-  await page.getByRole('button', { name: 'Start traffic', exact: true }).click();
+  await page.getByRole('button', { name: 'Start operation', exact: true }).click();
   await page.locator('summary').filter({ hasText: 'Developer inspector' }).click();
   await page.getByRole('button', { name: 'Step one tick', exact: true }).click();
   await page.locator('.help').evaluate(element => { (element as HTMLElement).style.minHeight = '100vh'; });

@@ -17,12 +17,12 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 1920, height: 108
     const unnamed = await page.getByRole('button').evaluateAll(buttons => buttons.filter(b => !(b.getAttribute('aria-label') || b.textContent || '').trim()).length);
     expect(unnamed).toBe(0);
     await page.locator('summary').filter({ hasText: 'How to play' }).click();
-    await page.getByRole('button', { name: 'Start traffic', exact: true }).click();
+    await page.getByRole('button', { name: 'Start operation', exact: true }).click();
     await page.locator('summary').filter({ hasText: 'Developer inspector' }).click();
     while (Number(await page.getByTestId('elapsed').textContent()) < 31) await page.getByRole('button', { name: 'Step one tick', exact: true }).click();
     await expect(page.getByTestId('pressure-hint')).toContainText('compute capacity');
     await expect(page.getByTestId('app-pressure')).toContainText('! OVERLOADED');
-    await page.getByRole('button', { name: 'Pause traffic', exact: true }).click();
+    await page.getByRole('button', { name: 'Pause operation', exact: true }).click();
     await expect(page.getByTestId('status')).toHaveText('PAUSED');
     await page.getByTestId('world').scrollIntoViewIfNeeded();
     await page.screenshot({ path: info.outputPath(`desktop-${viewport.width}.png`) });

@@ -1,14 +1,14 @@
 # Stack & Survive
 
-> **Your architecture is your defense.**
->
-> Build the cloud. Survive the traffic.
+> **Build. Scale. Keep the business flowing.**
 
-Stack & Survive is a cloud architecture strategy game where players build and grow a cloud environment, then defend it against realistic traffic, failures, and cost pressure.
+Stack & Survive is a real-time cloud infrastructure management game where players scale and optimize Azure architecture as demand grows, keeping requests flowing, customers served, and costs under control.
 
 ## Project status
 
-**Hackathon MVP — Scope Locked · PRD v0.5**
+**Hackathon MVP — Core simulation locked · Tycoon presentation reframe in progress · PRD v0.6**
+
+The data-center environment and representative pressure queues described in [the reframe plan](docs/TYCOON_REFRAME_IMPLEMENTATION_PLAN.md) are the next P0 presentation work, not already implemented features. The reference image guides indoor facility composition and processing-lane readability; its purchase prices, queue counts and instance/phase counts do not replace game rules. Pressure markers do not represent real buffered requests.
 
 The browser MVP in `apps/web/` includes a verified headless simulation and an implemented tactical cloud-base presentation: original layered buildings/environment, separate official Azure service badges, state-driven VFX, construction deck, mission objectives, bounded real event feed, live interventions, pause/recovery, result analysis, redesign/comparison, local saves and contextual help. Ordinary player builds exclude developer diagnostics. Automated visual acceptance includes 154 unit/regression tests, 41 QA browser cases and six ordinary-player cases; real first-time-player learning validation remains pending. Hosting (including GitHub Pages) is deferred by the owner; no repository visibility or account-plan changes were made. There is no backend or outbound product telemetry.
 
@@ -24,6 +24,8 @@ The browser MVP in `apps/web/` includes a verified headless simulation and an im
 The MVP simulates Azure architecture concepts. It does **not** deploy real Azure resources, use real Azure performance data, or require a backend.
 
 ## Core loop
+
+The primary player experience is demand → flow → pressure → expansion/optimization → observed business outcome. Results and redesign/replay support that loop. Better decisions can improve outcomes; more capacity alone does not guarantee more profit.
 
 ```text
 Architecture Decision
@@ -41,11 +43,12 @@ Better Architecture
 
 ```text
 docs/
-  PRD.md                 Product requirements v0.5
-  GAMEPLAY_SPEC.md       Gameplay specification v0.3
+  PRD.md                 Product requirements v0.6
+  GAMEPLAY_SPEC.md       Gameplay specification v0.4
   SIMULATION_SPEC.md     Simulation specification v0.2
   TECHNICAL_DESIGN.md    Technical design v0.3 (implemented structure)
-  VISUAL_DIRECTION.md    Visual direction v0.2: Azure identity + custom game assets
+  VISUAL_DIRECTION.md    Visual direction v0.3: data-center flow tycoon
+  TYCOON_REFRAME_IMPLEMENTATION_PLAN.md  Reference image and sequential reframe plan
   IMPLEMENTATION_PLAN.md Delivery phases and pre-implementation gates
   adr/
     ADR-002-GAME-ENGINE.md Engine experiment evidence (Accepted: Phaser 3.90.0)
@@ -59,7 +62,7 @@ packages/
   scenarios/             Versioned Black Friday content
 ```
 
-From the repository root with Node 22.22.0 and pnpm 10.32.1: `pnpm install --frozen-lockfile`, then `pnpm dev` for development. For ordinary play use `pnpm build` followed by `pnpm --filter @stack-and-survive/web exec vite preview --host 127.0.0.1`; open the printed URL. Inspect or edit the outpost, wait for provisioning, then Start traffic. Redesign & Retry preserves your architecture and compares attempts. Reset restores the one-instance baseline; saves never resume runtime progress.
+From the repository root with Node 22.22.0 and pnpm 10.32.1: `pnpm install --frozen-lockfile`, then `pnpm dev` for development. For ordinary play use `pnpm build` followed by `pnpm --filter @stack-and-survive/web exec vite preview --host 127.0.0.1`; open the printed URL. Inspect or edit the infrastructure, wait for provisioning, then Start operation. Redesign & Retry preserves your architecture and compares attempts. Reset restores the one-instance baseline; saves never resume runtime progress.
 
 Verification: `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build`. Install Chromium with `pnpm exec playwright install chromium`, then `pnpm test:player` tests ordinary `dist` on port 43874 using real-time gameplay. Next run `pnpm build:qa` and `pnpm test:browser`; separate `dist-qa` on port 43872 enables the inspector for full regressions. CI runs both variants in this order. Screenshots/traces live under ignored `test-results/`. Only development and compile-time `qa` contain JSON/manual-step/renderer diagnostics; URL parameters cannot enable them in production. Do not deploy `dist-qa`. Run `pnpm build:qa` before `pnpm test:performance` too. Software-WebGL tests verify behavior, not hardware FPS.
 
@@ -75,13 +78,14 @@ Use Node 22.22.0 and pnpm 10.32.1. Verification commands and limits are document
 
 ## Documents
 
-- [Product Requirements Document](docs/PRD.md) — What we are building and why; scope, product principles, and acceptance criteria (v0.5).
-- [Gameplay Specification](docs/GAMEPLAY_SPEC.md) — What the player sees, does, and experiences (v0.3).
+- [Product Requirements Document](docs/PRD.md) — Product scope, flow-management principles, and acceptance criteria (v0.6).
+- [Gameplay Specification](docs/GAMEPLAY_SPEC.md) — Player-facing flow-management experience (v0.4).
 - [Simulation Specification](docs/SIMULATION_SPEC.md) — Corrected simulation rules, authoritative values, and arithmetic reference matrix (v0.2).
 - [Technical Design](docs/TECHNICAL_DESIGN.md) — Actual four-package structure, app-local controller/renderer/UI, and planned hosting (v0.3).
-- [Visual Direction](docs/VISUAL_DIRECTION.md) — Microsoft Internal Hackathon direction: unchanged official Azure icons identify services; custom buildings, environment, traffic and effects create the game world (owner-revised v0.2, 45 sections). Required technical visual features are implemented; human first-impression validation remains separate.
+- [Visual Direction](docs/VISUAL_DIRECTION.md) — Data-center flow tycoon direction with separate official Azure identity (v0.3). Earlier visual foundation exists; the new indoor environment/pressure/HUD reframe remains in progress.
+- [Tycoon Reframe Plan](docs/TYCOON_REFRAME_IMPLEMENTATION_PLAN.md) — Owner reference-image interpretation, P0 environment/pressure priorities and post-environment asset quality gate (v0.2). Current custom art is procedural; production sprites are not claimed implemented.
 - [Asset provenance](apps/web/public/assets/ATTRIBUTION.md) — Original V24 Azure SVG sources, checksums, bundled terms and remaining usage-review limitations.
-- [Implementation Plan](docs/IMPLEMENTATION_PLAN.md) — Delivery sequence and current human-validation/deferred-hosting gates (v0.7); work is tracked with GitHub Issues and labels, without milestones or a Project board.
+- [Implementation Plan](docs/IMPLEMENTATION_PLAN.md) — Current reframe sequence and human-validation/deferred-hosting gates (v0.8); issues and labels, not milestones or a Project board.
 
 The [ordered MVP backlog (#7)](https://github.com/yeongseon/stack-and-survive/issues/7) links all currently planned work. Prepare the backlog first, then execute one issue at a time in dependency order; individual issues are the source of status and completion evidence.
 - [ADR-002: Game Engine Selection](docs/adr/ADR-002-GAME-ENGINE.md) — Executed comparison and accepted Phaser 3.90.0 decision.

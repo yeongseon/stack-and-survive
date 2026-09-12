@@ -3,9 +3,9 @@ import { expect, test } from '@playwright/test';
 test('briefing start pause inspect and resume preserve real simulation state', async ({ page }) => {
   await page.goto('/'); await expect(page.locator('[data-renderer="ready"]')).toHaveCount(1);
   await expect(page.getByRole('region', { name: 'Black Friday briefing' })).toContainText('140 game credits');
-  await page.getByRole('button', { name: 'Start traffic', exact: true }).click();
+  await page.getByRole('button', { name: 'Start operation', exact: true }).click();
   await expect.poll(async () => Number(await page.getByTestId('elapsed').textContent()), { timeout: 5000 }).toBeGreaterThanOrEqual(1);
-  await page.getByRole('button', { name: 'Pause traffic', exact: true }).click();
+  await page.getByRole('button', { name: 'Pause operation', exact: true }).click();
   const previous = await page.getByTestId('diagnostics').textContent();
   const pausedTime = Number(await page.getByTestId('elapsed').textContent());
   await expect(page.getByTestId('status')).toHaveText('PAUSED');
@@ -13,12 +13,12 @@ test('briefing start pause inspect and resume preserve real simulation state', a
   await expect(page.getByRole('button', { name: 'Connect resources', exact: true })).toBeDisabled();
   await page.waitForTimeout(2200);
   expect(await page.getByTestId('diagnostics').textContent()).toBe(previous);
-  await page.getByRole('button', { name: 'Resume traffic', exact: true }).click();
+  await page.getByRole('button', { name: 'Resume operation', exact: true }).click();
   await expect.poll(async () => Number(await page.getByTestId('elapsed').textContent()), { timeout: 5000 }).toBeGreaterThan(pausedTime);
 });
 test('graphics context failure stops time and renderer rebuild preserves runtime', async ({ page }) => {
   await page.goto('/'); await expect(page.locator('[data-renderer="ready"]')).toHaveCount(1);
-  await page.getByRole('button', { name: 'Start traffic', exact: true }).click();
+  await page.getByRole('button', { name: 'Start operation', exact: true }).click();
   await expect.poll(async () => Number(await page.getByTestId('elapsed').textContent()), { timeout: 5000 }).toBeGreaterThanOrEqual(1);
   await page.locator('canvas').evaluate(canvas => {
     const gl = (canvas as HTMLCanvasElement).getContext('webgl2') ?? (canvas as HTMLCanvasElement).getContext('webgl');
@@ -33,6 +33,6 @@ test('graphics context failure stops time and renderer rebuild preserves runtime
   await expect(page.locator('canvas')).toHaveCount(1);
   await expect(page.getByTestId('status')).toHaveText('PAUSED');
   expect(await page.getByTestId('elapsed').textContent()).toBe(time);
-  await page.getByRole('button', { name: 'Resume traffic', exact: true }).click();
+  await page.getByRole('button', { name: 'Resume operation', exact: true }).click();
   await expect.poll(async () => Number(await page.getByTestId('elapsed').textContent())).toBeGreaterThan(Number(time));
 });

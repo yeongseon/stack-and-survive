@@ -15,7 +15,7 @@ it.each([
   const result = simulateScenario(baseline(instances, cache, edge), blackFriday);
   const markup = renderToStaticMarkup(createElement(ResultPanel, { result, onRedesign: () => {} }));
   expect(markup).toContain(cause); expect(markup).toContain(result.economy.netBusinessValue.toFixed(2));
-  expect(markup).toContain(result.score.toLocaleString('en-US')); expect(markup).toContain('Traffic phase evidence');
+  expect(markup).toContain(result.score.toLocaleString('en-US')); expect(markup).toContain('Demand phase evidence');
   expect(markup).toContain(renderToStaticMarkup(createElement('p', null, result.insight)));
   expect(markup).toContain(`Physical bottleneck: ${result.bottleneck ?? 'None — this outcome is not attributed to a saturated resource.'}`);
   expect(markup).toContain(`Contributing causes: ${result.contributors.length ? result.contributors.join(' · ') : 'None above the reporting threshold.'}`);
@@ -35,7 +35,7 @@ it('distinguishes survival from all-target success', () => {
   const missed = simulateScenario(baseline(3, true, true), blackFriday, [{ time: 118, sequence: 0, type: 'RATE_LIMIT', enabled: true }, { time: 178, sequence: 1, type: 'RATE_LIMIT', enabled: false }]);
   const achieved = simulateScenario(baseline(3, true, true), blackFriday);
   const render = (result: typeof missed) => renderToStaticMarkup(createElement(ResultPanel, { result, onRedesign: () => {} }));
-  expect(render(missed)).toContain('TRAFFIC SURVIVED');
+  expect(render(missed)).toContain('OPERATION COMPLETED');
   expect(render(missed)).toContain('Targets: Not all met');
   expect(render(missed)).toContain('availability not met, latency met, business value not met');
   expect(render(achieved)).toContain('Targets: All met');

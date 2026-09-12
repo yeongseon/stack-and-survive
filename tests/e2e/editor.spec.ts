@@ -35,12 +35,12 @@ test('preparation scale delays capacity and runtime editing is blocked', async (
   await page.goto('/'); await expect(page.locator('[data-renderer="ready"]')).toHaveCount(1);
   const app = await node(page, 'compute'); await page.mouse.click(app.x, app.y);
   await page.getByRole('button', { name: 'Provision instance', exact: true }).click();
-  await expect(page.getByRole('button', { name: 'Start traffic', exact: true })).toBeDisabled();
+  await expect(page.getByRole('button', { name: 'Start operation', exact: true })).toBeDisabled();
   await expect(page.getByText(/New instance pending/)).toBeVisible();
   await expect(page.getByLabel('Initial App instances')).toHaveValue('2', { timeout: 11000 });
   await page.getByRole('button', { name: 'Reduce instance', exact: true }).click();
   await expect(page.getByLabel('Initial App instances')).toHaveValue('1');
-  await page.getByRole('button', { name: 'Start traffic', exact: true }).click();
+  await page.getByRole('button', { name: 'Start operation', exact: true }).click();
   await expect(page.getByRole('button', { name: 'Remove resource', exact: true })).toBeDisabled();
   await expect(page.getByRole('button', { name: 'Place Azure Managed Redis', exact: true })).toBeDisabled();
 });

@@ -10,7 +10,7 @@ test('real filtering and cache effects stop on pause and respect reduced motion'
   await page.reload(); const surface = page.locator('[data-renderer="ready"]');
   await expect(surface).toHaveCount(1, { timeout: 20000 });
   await expect(surface).toHaveAttribute('data-reduced-motion', 'true');
-  await page.getByRole('button', { name: 'Start traffic', exact: true }).click();
+  await page.getByRole('button', { name: 'Start operation', exact: true }).click();
   await page.locator('summary').filter({ hasText: 'Developer inspector' }).click();
   while (Number(await page.getByTestId('elapsed').textContent()) < 76) await page.getByRole('button', { name: 'Step one tick', exact: true }).click();
   await expect(surface).toHaveAttribute('data-effects', /cache-hit/); await expect(surface).toHaveAttribute('data-effects', /shield/);
@@ -18,7 +18,7 @@ test('real filtering and cache effects stop on pause and respect reduced motion'
   for (let i = 0; i < 2; i++) await page.getByRole('button', { name: 'Step one tick', exact: true }).click();
   await expect(surface).toHaveAttribute('data-effects', /emergency/);
   await surface.scrollIntoViewIfNeeded(); await page.screenshot({ path: info.outputPath('reduced-motion-emergency.png') });
-  await page.getByRole('button', { name: 'Pause traffic', exact: true }).click();
+  await page.getByRole('button', { name: 'Pause operation', exact: true }).click();
   await expect(surface).toHaveAttribute('data-effects', '[]');
   await expect(surface).toHaveAttribute('data-packets', '0');
   await page.emulateMedia({ reducedMotion: 'no-preference' });

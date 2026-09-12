@@ -28,6 +28,6 @@ test('five original building identities keep official badges separate and remain
     const data = JSON.parse((await surface.getAttribute('data-buildings'))!);
     return data.find((s: { id: string }) => s.id === 'compute').completedModules;
   }).toBe(4);
-  await page.getByRole('button', { name: 'Start traffic', exact: true }).click();
+  await page.getByRole('button', { name: 'Start operation', exact: true }).click();
   await expect.poll(async () => Number(await page.getByTestId('elapsed').textContent()), { timeout: 5000 }).toBeGreaterThanOrEqual(1);
 });

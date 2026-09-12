@@ -5,16 +5,16 @@ async function stepUntil(page: Page, target: number) {
 }
 test('live scale confirmation buys capacity only after the provisioning delay', async ({ page }) => {
   await page.goto('/'); await expect(page.locator('[data-renderer="ready"]')).toHaveCount(1);
-  await page.getByRole('button', { name: 'Start traffic', exact: true }).click();
+  await page.getByRole('button', { name: 'Start operation', exact: true }).click();
   await page.locator('summary').filter({ hasText: 'Developer inspector' }).click(); await stepUntil(page, 34);
   await page.getByRole('button', { name: 'Scale out App', exact: true }).click();
-  await page.getByRole('button', { name: 'Pause traffic', exact: true }).click();
+  await page.getByRole('button', { name: 'Pause operation', exact: true }).click();
   await expect(page.getByRole('group', { name: 'Confirm scale-out' })).toHaveCount(0);
-  await page.getByRole('button', { name: 'Resume traffic', exact: true }).click();
+  await page.getByRole('button', { name: 'Resume operation', exact: true }).click();
   await page.getByRole('button', { name: 'Step one tick', exact: true }).click();
   await expect(page.getByRole('group', { name: 'Confirm scale-out' })).toHaveCount(0);
   await page.getByRole('button', { name: 'Reset baseline', exact: true }).click();
-  await page.getByRole('button', { name: 'Start traffic', exact: true }).click();
+  await page.getByRole('button', { name: 'Start operation', exact: true }).click();
   await stepUntil(page, 34);
   await page.getByRole('button', { name: 'Scale out App', exact: true }).click();
   await expect(page.getByRole('group', { name: 'Confirm scale-out' })).toContainText('after 8 seconds');
@@ -31,7 +31,7 @@ test('live scale confirmation buys capacity only after the provisioning delay', 
   await stepUntil(page, 48);
   await page.getByRole('button', { name: 'Disable Rate Limit', exact: true }).click(); await stepUntil(page, 51);
   await expect(page.getByTestId('rate-progress')).toHaveText('Rate Limit OFF');
-  await page.getByRole('button', { name: 'Pause traffic', exact: true }).click();
+  await page.getByRole('button', { name: 'Pause operation', exact: true }).click();
   await expect(page.getByRole('button', { name: 'Scale out App', exact: true })).toBeDisabled();
   await expect(page.getByRole('button', { name: 'Enable Rate Limit', exact: true })).toBeDisabled();
   await expect(page.getByRole('button', { name: 'Activate Emergency WAF', exact: true })).toBeDisabled();
@@ -51,7 +51,7 @@ test('emergency WAF on active ingress charges once and expires to normal filteri
   for (const [a, b] of [['Internet', 'Protected Edge / WAF'], ['Protected Edge / WAF', 'Azure App Service']]) {
     await panel.getByRole('button', { name: a, exact: true }).click(); await panel.getByRole('button', { name: b, exact: true }).click();
   }
-  await page.getByRole('button', { name: 'Start traffic', exact: true }).click();
+  await page.getByRole('button', { name: 'Start operation', exact: true }).click();
   await page.locator('summary').filter({ hasText: 'Developer inspector' }).click(); await stepUntil(page, 75);
   await page.getByRole('button', { name: 'Activate Emergency WAF', exact: true }).click(); await stepUntil(page, 76);
   await expect(page.getByTestId('filtered-bots')).toHaveText('42.0');

@@ -21,7 +21,7 @@ test('protected cached design shows actual class paths and live accounting', asy
     await panel.getByRole('button', { name: to, exact: true }).click();
   }
   await panel.getByRole('button', { name: 'Cancel connection', exact: true }).click();
-  await page.getByRole('button', { name: 'Start traffic', exact: true }).click();
+  await page.getByRole('button', { name: 'Start operation', exact: true }).click();
   await page.locator('summary').filter({ hasText: 'Developer inspector' }).click();
   while (Number(await page.getByTestId('elapsed').textContent()) < 121) await page.getByRole('button', { name: 'Step one tick', exact: true }).click();
   await expect(page.getByTestId('filtered-bots')).toHaveText('140.0');

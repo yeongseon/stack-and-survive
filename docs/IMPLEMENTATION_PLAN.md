@@ -1,10 +1,12 @@
 # Stack & Survive — Implementation Plan
 
-**Version:** 0.7  
-**Status:** Browser gameplay and required visual features implemented; automated visual acceptance verified locally, human validation pending, hosting deferred  
+**Version:** 0.8  
+**Status:** Existing gameplay and visual foundation implemented; data-center tycoon reframe in progress; human validation pending, hosting deferred  
 **Scope:** Hackathon MVP, one Black Friday scenario
 
 ## 1. Purpose and document freeze
+
+The owner requested [the Data-Center Tycoon Reframe](TYCOON_REFRAME_IMPLEMENTATION_PLAN.md), an explicit additional planning document. Current sequential P0 work is #80 → #81 (environment) → #91 (review actual art quality; implement targeted sprites only if justified) → #83 (lanes) → #82 (representative pressure queues) → #84 (compact HUD) → #88 (Insights/Events/Why) → #86 (Build/Manage) → #87 (processing effects) → #85 (technical/visual acceptance) → #25 (real people). The earlier completed visual sequence below is historical foundation, not completion of this new direction or a delivered PNG/WebP asset pipeline. Core packages and `SIMULATION_SPEC.md` remain unchanged; Phase 2 live Cache/Edge deployment is deferred.
 
 Turn the existing specifications into a short, verifiable delivery sequence. This plan is not authorization to install packages, implement the game, execute the engine spike, or deploy Azure resources.
 
@@ -45,7 +47,7 @@ Section 110 contains independent arithmetic reference calculations with explicit
 - Required visual features are implemented through #53, #54, #58, #59 and #60: original structures/environment, separate identity badges, actual-state effects, tactical UI, objectives/events and production/QA separation. #55 records final technical acceptance and #78 the corrected mobile label collision. The owner-requested ultrawork scope is the implemented game presentation, not fabricated human approval or hosting.
 - Issue #25 remains open for actual first-time-player learning validation. Recruit 2–3 participants if feasible; record uncoached observations and answers, not just whether the app runs. Responsive fixes address reported usability problems but do not themselves complete this validation.
 - Prioritize UI/game-feel changes supported by those observations. Do not add simulation mechanics or split packages without a concrete need.
-- The owner subsequently requested GitHub Pages for the demo, then explicitly deferred hosting after GitHub rejected Pages for the current private-repository plan. No site, subscription change or public-repository conversion was performed. #26–#27 remain deferred; confirm the actual hosting destination and approval before resuming, rather than automatically provisioning Azure from the earlier plan.
+- The owner subsequently requested GitHub Pages, then deferred hosting. No site, subscription change or public-repository conversion was performed. Superseded Azure hosting issues #26–#27 and optional telemetry/polish #28–#29 were closed as Not planned during backlog cleanup, not delivered. Confirm a focused target and approval before opening new hosting or optional work.
 - Rehearse the final Hackathon presentation after hosted smoke checks. A preliminary local walkthrough can happen during player testing; multiple complete 180-second runs do not fit a 3–4 minute pitch.
 - Track these gates rather than unsupported percentage-complete estimates. Optional polish (#29) is not a reason to claim human validation or hosted delivery has passed.
 
@@ -166,7 +168,7 @@ The isolated engine experiment and the local architecture → traffic → result
 
 ### Backlog first, sequential execution
 
-Create the currently known scope-locked MVP backlog before starting further production work. [Issue #7](https://github.com/yeongseon/stack-and-survive/issues/7) is the ordered link index: 25 required execution issues, two optional P1 issues, and the index itself (28 issues total). It is not a milestone, second status board, or additional concurrent implementation task. Read each linked issue for current status, scope, acceptance criteria, verification, and dependencies.
+Create the known scope-locked backlog before production work. [Issue #7](https://github.com/yeongseon/stack-and-survive/issues/7) is the current ordered link index; consult it rather than historical issue counts or superseded sequences in this plan. It is not a milestone or an additional concurrent implementation task. Each linked issue owns current scope, acceptance criteria and verification evidence; all new issues and PRs use the repository templates.
 
 Execute one issue at a time in the index's dependency order, not numeric issue order. The initial sequence is #1 → #2 → #8 → #3 → #5. Complete implementation, verification, and authorized review/merge before promoting the next item. The owner explicitly accepted Phaser and authorized sequential development, commits, pushes and reviewed PR merges. Actual human playtesting, Azure deployment, external telemetry and new scope/balance changes are not covered by that authorization.
 

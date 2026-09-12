@@ -21,9 +21,9 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 1920, height: 108
     const canvas = (await page.locator('canvas').boundingBox())!;
     expect(canvas.width).toBeGreaterThan(250); expect(canvas.height).toBeGreaterThan(200);
     await page.screenshot({ path: info.outputPath(`player-world-${viewport.width}.png`) });
-    await page.getByRole('button', { name: 'Start traffic', exact: true }).click();
+    await page.getByRole('button', { name: 'Start operation', exact: true }).click();
     await expect.poll(async () => Number(await page.getByTestId('elapsed').textContent()), { timeout: 10000 }).toBeGreaterThan(0);
-    await page.getByRole('button', { name: 'Pause traffic', exact: true }).click();
+    await page.getByRole('button', { name: 'Pause operation', exact: true }).click();
     await expect(page.getByTestId('status')).toHaveText('PAUSED');
     expect(errors).toEqual([]);
   });

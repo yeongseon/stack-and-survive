@@ -34,9 +34,9 @@ for (const size of [{ width: 1440, height: 900 }, { width: 1024, height: 768 }, 
     await expect(page.getByRole('region', { name: 'Selected resource' })).toContainText('Azure App Service');
     await page.getByRole('button', { name: 'Fit view', exact: true }).click();
     await surface.scrollIntoViewIfNeeded(); await page.screenshot({ path: info.outputPath(`responsive-${size.width}.png`) });
-    await page.getByRole('button', { name: 'Start traffic', exact: true }).click();
+    await page.getByRole('button', { name: 'Start operation', exact: true }).click();
     await expect.poll(async () => Number(await page.getByTestId('elapsed').textContent()), { timeout: 5000 }).toBeGreaterThanOrEqual(1);
-    await page.getByRole('button', { name: 'Pause traffic', exact: true }).click();
+    await page.getByRole('button', { name: 'Pause operation', exact: true }).click();
     await expect(page.getByTestId('status')).toHaveText('PAUSED');
     expect(errors).toEqual([]);
   });

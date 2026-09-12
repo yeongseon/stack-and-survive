@@ -2,11 +2,11 @@
 
 ## Visual Direction
 
-**Version:** 0.2  
+**Version:** 0.3  
 **Status:** Hackathon Visual Direction  
 **Related Documents:** `PRD.md`, `GAMEPLAY_SPEC.md`, `SIMULATION_SPEC.md`, `TECHNICAL_DESIGN.md`  
 **Primary Context:** Microsoft Internal Hackathon  
-**Primary Goal:** Make Stack & Survive immediately recognizable as both an Azure architecture experience and a strategy game.
+**Primary Goal:** Make Stack & Survive recognizable as a data-center tycoon where growing workload moves through Azure infrastructure.
 
 ---
 
@@ -14,7 +14,7 @@
 
 Stack & Survive should look like:
 
-> **A tactical Azure cloud base-building game where official Azure service identity is combined with custom game-world assets.**
+> **A polished isometric data-center tycoon where Azure infrastructure behaves like a living production system and traffic behaves like visible workload moving through processing lanes.**
 
 The player should immediately understand:
 
@@ -32,6 +32,10 @@ The visual layer must not resemble only:
 - or a generic sci-fi game.
 
 It should combine Azure identity with an original game presentation.
+
+Version 0.3 supersedes the earlier outpost/defense presentation. The owner's indoor-data-center reference image is the composition target: raised floor tiles, racks/cooling/cable trays, larger interactive facilities, broad processing lanes, compact top HUD and bottom construction controls. Data Center Environment and representative Visual Queue are P0. Detailed sequence and constraints are in `TYCOON_REFRAME_IMPLEMENTATION_PLAN.md`.
+
+The default world should occupy approximately 75–85% of desktop gameplay composition; information appears on demand in Insights / Events / Why. Preserve responsive fit, focus, non-color cues and reduced motion. Never label pressure markers as measured waiting requests or imply dropped work is buffered. The simulation remains unchanged.
 
 ---
 
@@ -226,10 +230,10 @@ Possible original motifs:
 
 - stacked infrastructure blocks,
 - shield,
-- cloud fortress,
+- infrastructure facility,
 - traffic path,
 - architecture nodes,
-- defensive layers,
+- processing layers,
 - stylized "S",
 - modular grid.
 
@@ -277,10 +281,10 @@ Target:
 
 ```text
 Game World:
-approximately 65–75%
+approximately 75–85%
 
 HUD and panels:
-approximately 25–35%
+approximately 15–25%
 ```
 
 ---
@@ -366,7 +370,7 @@ Visual concept:
 
 Characteristics:
 
-- modular compute tower,
+- modular processing facility,
 - visible processing core,
 - expandable instance modules,
 - clean Azure-inspired lighting,
@@ -591,9 +595,9 @@ Visual concept:
 
 Characteristics:
 
-- defensive gateway,
-- shield field,
-- security pylons,
+- digital ingress gateway,
+- filtering field,
+- checkpoint modules,
 - perimeter checkpoint.
 
 Example:
@@ -624,21 +628,21 @@ Protected Edge
 
      ↓
 
-Shield impact
+Filter pulse
 
      ↓
 
-Packet fragments / disappears
+Blocked marker / packet terminates
 ```
 
 Normal mode:
 
-- moderate defensive pulse.
+- moderate filtering pulse.
 
 Emergency WAF mode:
 
-- brighter barrier,
-- larger shield,
+- brighter filter indicator,
+- stronger checkpoint status cue,
 - stronger block animation,
 - more visible bot interception.
 
@@ -1003,6 +1007,8 @@ Decorative infrastructure
 
 They must not visually compete with resource buildings.
 
+For the reframe, prefer indoor raised floors, rack rows, cooling units, vents, cable trays and utility equipment. Grass, trees, outdoor fortress scenery and floating platforms are no longer the target environment. Background racks have no service badges or interaction affordance.
+
 ---
 
 # 32. Custom Building Asset Strategy
@@ -1308,6 +1314,11 @@ The viewer should not need to read the documentation first.
 
 ## P0
 
+- Data-center environment and processing lanes
+- Bounded representative App/SQL pressure markers (not simulated queues)
+- Compact budget/demand/availability/pressure HUD
+- Build / Manage modes and on-demand Insights / Events / Why
+
 - Game-world redesign
 - Custom buildings for four MVP resources
 - Official Azure icon integration
@@ -1379,6 +1390,8 @@ Developer-oriented layout
 ```
 
 The simulation remains untouched.
+
+Keep existing procedural resource structures and state projections. Extract environment rendering into `environment-art.ts` when implementing the indoor scene. Add `queue-visualization.ts` only as a read-only projection of authoritative App/SQL pressure. No queue-depth metric, new price, fifth instance, fifth phase, live Cache/Edge deployment or other mockup-only mechanic is approved by the reference image.
 
 Only the presentation layer becomes game-oriented.
 
