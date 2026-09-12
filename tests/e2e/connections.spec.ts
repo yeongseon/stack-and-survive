@@ -2,6 +2,7 @@ import { expect, test } from '@playwright/test';
 
 test('repairs missing write path with accessible connection controls', async ({ page }) => {
   await page.goto('/'); await expect(page.locator('[data-renderer="ready"]')).toHaveCount(1);
+  await page.getByRole('button', { name: 'Manage', exact: true }).click();
   await page.locator('summary').filter({ hasText: 'Architecture connections' }).click();
   await page.getByRole('button', { name: 'Remove connection compute to database', exact: true }).click();
   await expect(page.getByRole('button', { name: 'Start operation', exact: true })).toBeDisabled();
@@ -26,6 +27,7 @@ test('partly connected cache blocks start while complete read and write paths wo
   const box = (await surface.boundingBox())!;
   await page.mouse.click(box.x + box.width / 2 - 240, box.y + box.height / 2 + 200);
   await expect(page.getByTestId('resource-status')).toHaveText('Active', { timeout: 8000 });
+  await page.getByRole('button', { name: 'Manage', exact: true }).click();
   await page.getByRole('button', { name: 'Connect resources', exact: true }).click();
   const panel = page.getByRole('region', { name: 'Connection selection' });
   await panel.getByRole('button', { name: 'Azure App Service', exact: true }).click();

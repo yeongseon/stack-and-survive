@@ -22,6 +22,7 @@ test('mobile inspect closes the construction deck before showing resource detail
   await page.setViewportSize({ width: 390, height: 844 }); await page.goto('/');
   await expect(page.locator('[data-renderer="ready"]')).toHaveCount(1);
   await page.getByRole('button', { name: 'Build & connections', exact: true }).click();
+  await page.getByRole('button', { name: 'Manage', exact: true }).click();
   await page.getByRole('button', { name: 'Inspect Azure SQL', exact: true }).click();
   await expect(page.getByRole('region', { name: 'Build palette' })).not.toBeVisible();
   await expect(page.getByRole('region', { name: 'Selected resource' })).toContainText('Azure SQL');

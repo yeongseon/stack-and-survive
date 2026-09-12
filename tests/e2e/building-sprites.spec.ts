@@ -51,6 +51,7 @@ test('original PNG textures load with transparent anchors and real instance modu
   }
   await expect(page.locator('.world-service-badges img')).toHaveCount(4);
   await page.screenshot({ path: info.outputPath('production-building-sprites.png') });
+  await page.getByRole('button', { name: 'Manage', exact: true }).click();
   await page.getByRole('button', { name: 'Inspect Azure App Service', exact: true }).click();
   await page.getByRole('button', { name: 'Provision instance', exact: true }).click();
   await expect(surface).toHaveAttribute('data-buildings', /"pendingModule":true/);

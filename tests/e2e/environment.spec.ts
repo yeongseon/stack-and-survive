@@ -13,6 +13,7 @@ test('indoor equipment remains decorative through camera movement resize and off
   expect(moved.architecture).toEqual(original.architecture);
   expect(moved.camera).not.toEqual(original.camera);
   await page.getByRole('button', { name: 'Fit view', exact: true }).click();
+  await page.getByRole('button', { name: 'Manage', exact: true }).click();
   await page.getByRole('button', { name: 'Inspect Azure App Service', exact: true }).click();
   await expect(page.getByRole('region', { name: 'Selected resource' })).toContainText('Azure App Service');
   await page.setViewportSize({ width: 1024, height: 768 });

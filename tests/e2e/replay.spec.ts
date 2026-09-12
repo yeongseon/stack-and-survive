@@ -20,6 +20,7 @@ test('Cache redesign changes failure to survival and WAF redesign improves full-
   await surface.scrollIntoViewIfNeeded(); let box = (await surface.boundingBox())!;
   await page.mouse.click(box.x + box.width / 2 - 220, box.y + box.height / 2 + 200);
   await expect(page.getByTestId('resource-status')).toHaveText('Active', { timeout: 8000 });
+  await page.getByRole('button', { name: 'Manage', exact: true }).click();
   await page.getByRole('button', { name: 'Connect resources', exact: true }).click();
   const panel = page.getByRole('region', { name: 'Connection selection' });
   for (const [a, b] of [['Azure App Service', 'Azure Managed Redis'], ['Azure Managed Redis', 'Azure SQL']]) {
@@ -31,11 +32,13 @@ test('Cache redesign changes failure to survival and WAF redesign improves full-
   await expect(comparison).toContainText('Different run lengths');
   await expect(comparison).toContainText('140s'); await expect(comparison).toContainText('180s');
   await page.getByRole('button', { name: 'Redesign & Retry', exact: true }).click(); await expect(surface).toHaveCount(1);
+  await page.getByRole('button', { name: 'Build', exact: true }).click();
   await page.getByRole('button', { name: 'Place Protected Edge / WAF', exact: true }).click();
   await surface.scrollIntoViewIfNeeded(); box = (await surface.boundingBox())!;
   await page.mouse.click(box.x + box.width / 2 + 100, box.y + box.height / 2 - 200);
   await expect(page.getByRole('region', { name: 'Selected resource' })).toContainText('Protected Edge / WAF');
   await expect(page.getByTestId('resource-status')).toHaveText('Active', { timeout: 8000 });
+  await page.getByRole('button', { name: 'Manage', exact: true }).click();
   await page.locator('summary').filter({ hasText: 'Architecture connections' }).click();
   await page.getByRole('button', { name: 'Remove connection internet to compute', exact: true }).click();
   await page.getByRole('button', { name: 'Connect resources', exact: true }).click();

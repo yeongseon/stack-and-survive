@@ -29,6 +29,7 @@ test('SQL pressure is destination-local and Cache decreases eligible read pressu
   await expect(surface).toHaveAttribute('data-tick', '76');
   const queues = JSON.parse((await surface.getAttribute('data-pressure-queues'))!);
   expect(queues[0].count).toBe(0); expect(queues[1]).toMatchObject({ signal: 'sql-read', severity: 'critical', droppedPerSecond: 12 });
+  await page.getByRole('button', { name: 'Manage', exact: true }).click();
   await page.getByRole('button', { name: 'Inspect Azure SQL', exact: true }).click();
   await expect(page.getByRole('region', { name: 'Selected resource' })).toContainText('not a count of waiting requests');
   await surface.scrollIntoViewIfNeeded(); await page.screenshot({ path: info.outputPath('sql-pressure.png') });

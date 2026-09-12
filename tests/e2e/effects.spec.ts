@@ -27,6 +27,7 @@ test('real filtering and cache effects stop on pause and respect reduced motion'
 test('reduced motion keeps a static preparation completion cue', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' }); await page.goto('/');
   const surface = page.locator('[data-renderer="ready"]'); await expect(surface).toHaveCount(1, { timeout: 20000 });
+  await page.getByRole('button', { name: 'Manage', exact: true }).click();
   await page.getByRole('button', { name: 'Inspect Azure App Service', exact: true }).click();
   const drawnBefore = Number(await surface.getAttribute('data-drawn-completions'));
   await page.getByRole('button', { name: 'Provision instance', exact: true }).click();

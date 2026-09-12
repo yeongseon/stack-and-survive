@@ -8,6 +8,7 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 1920, height: 108
     await page.keyboard.press('Tab');
     await expect(page.getByRole('link', { name: 'Skip to scenario controls' })).toBeFocused();
     await page.keyboard.press('Enter');
+    await page.getByRole('button', { name: 'Manage', exact: true }).click();
     await page.getByRole('button', { name: 'Inspect Azure SQL', exact: true }).focus();
     await page.keyboard.press('Enter');
     await expect(page.getByRole('region', { name: 'Selected resource' })).toContainText('Write capacity: 70/s');

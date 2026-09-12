@@ -45,6 +45,7 @@ test('emergency WAF on active ingress charges once and expires to normal filteri
   await surface.scrollIntoViewIfNeeded(); const box = (await surface.boundingBox())!;
   await page.mouse.click(box.x + box.width / 2 + 100, box.y + box.height / 2 - 200);
   await expect(page.getByTestId('resource-status')).toHaveText('Active', { timeout: 8000 });
+  await page.getByRole('button', { name: 'Manage', exact: true }).click();
   await page.locator('summary').filter({ hasText: 'Architecture connections' }).click();
   await page.getByRole('button', { name: 'Remove connection internet to compute', exact: true }).click();
   await page.getByRole('button', { name: 'Connect resources', exact: true }).click();
