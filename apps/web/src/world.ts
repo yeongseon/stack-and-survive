@@ -7,6 +7,7 @@ import { createServiceBadge } from './service-icons';
 import { buildingPresentation, drawBuilding, drawEnvironment, insideBuilding } from './building-art';
 import { activeEffects, completedResources, drawEffect, effectMotion } from './effects';
 import { diagnosticsEnabled } from './mode';
+import { placeCaptions } from './annotations';
 
 export function utilizationLabel(u: number | null): string {
   return u === null ? 'READY' : compare(u, 1) > 0 ? '! OVERLOADED' : compare(u, .7) > 0 ? 'WARNING' : 'HEALTHY';
@@ -138,10 +139,25 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
           buildingStates.push({ id: resource.id, ...building });
           if (targets.includes(resource.id)) { g.lineStyle(2, 0xefc27b); g.strokeCircle(p.x, p.y, 48); }
           const name = width < 600 ? { internet: 'Internet', compute: 'App', database: 'SQL', cache: 'Cache', edge: 'WAF' }[resource.kind] : definitions[resource.kind].name;
-          this.captions[i].setFontSize(width < 600 ? 10 : 13).setWordWrapWidth(width < 600 ? 100 : 260, true)
+          this.captions[i].setFontSize(width < 600 ? 11 : 13).setWordWrapWidth(width < 600 ? 82 : 260, true)
             .setVisible(true).setPosition(Math.max(58, Math.min(width - 58, p.x)), p.y + 48)
-            .setText(`${name}${resource.kind === 'compute' ? ` ×${resource.instances}` : ''}\n${resource.kind === 'internet' ? 'TRAFFIC' : `${state}${u === null ? '' : ` · ${(u * 100).toFixed(1)}%`}`}`);
+            .setText(width < 600
+              ? `${state === '! OVERLOADED' ? '! ' : resource.remaining > 0 ? '◷ ' : ''}${name}${resource.kind === 'compute' ? ` ×${resource.instances}` : ''}`
+              : `${name}${resource.kind === 'compute' ? ` ×${resource.instances}` : ''}\n${resource.kind === 'internet' ? 'TRAFFIC' : `${state}${u === null ? '' : ` · ${(u * 100).toFixed(1)}%`}`}`);
         });
+        if (width < 600) {
+          const obstacles = positions.flatMap((p, i) => [
+            { x: p.x - 58, y: p.y - 65, width: 116, height: 98 },
+            ...(resources[i].kind === 'internet' ? [] : [{ x: p.x - 16, y: p.y - 80, width: 32, height: 32 }]),
+          ]);
+          const labels = placeCaptions(positions, resources.map((_, i) => ({ width: this.captions[i].width, height: this.captions[i].height })), { width, height }, obstacles);
+          labels.forEach((label, i) => {
+            this.captions[i].setPosition(label.x + label.width / 2, label.y);
+            g.lineStyle(1, 0xc9e7ef, .65);
+            g.lineBetween(positions[i].x, positions[i].y + 30, label.x + label.width / 2, label.y + label.height / 2);
+          });
+          if (diagnosticsEnabled) host.dataset.labels = JSON.stringify(labels);
+        }
         if (diagnosticsEnabled) host.dataset.buildings = JSON.stringify(buildingStates);
         if (view.building && view.preview) {
           const point = snap(view.preview); const p = project(point, camera, width, height);
