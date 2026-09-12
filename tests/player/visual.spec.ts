@@ -17,6 +17,12 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 1920, height: 108
     await expect(page.locator('.world-service-badges img')).toHaveCount(4);
     const images = await page.locator('.world-service-badges img').all();
     for (const image of images) await expect.poll(async () => image.evaluate(e => (e as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
+    for (const image of images) {
+      const badge = (await image.boundingBox())!;
+      const board = (await surface.boundingBox())!;
+      expect(badge.y).toBeGreaterThanOrEqual(board.y);
+      expect(badge.y + badge.height).toBeLessThanOrEqual(board.y + board.height);
+    }
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     const canvas = (await page.locator('canvas').boundingBox())!;
     expect(canvas.width).toBeGreaterThan(250); expect(canvas.height).toBeGreaterThan(200);
