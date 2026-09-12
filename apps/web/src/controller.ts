@@ -5,6 +5,7 @@ import { advancePreparation, pauseRuntime, requestPreparationScale, resumeRuntim
 import type { Architecture, Kind } from '@stack-and-survive/schema';
 import { connectResources, disconnectResources, moveResource, placeResource, removeResource, type Camera, type Point } from './editor';
 import type { SaveRepository } from './persistence';
+import { updateEvents, type GameEvent } from './observations';
 
 export type View = Readonly<{
   state: ReturnType<typeof createSimulation>;
@@ -24,6 +25,7 @@ export type View = Readonly<{
   queuedActions: Action[];
   confirmationEpoch: number;
   saveMessage: string;
+  events: GameEvent[];
 }>;
 export interface Clock {
   start(callback: () => void): () => void;
@@ -38,7 +40,7 @@ export function createController(timer: Clock = clock, repository?: SaveReposito
     const architecture = baseline(instances);
     architecture.resources.forEach((r, i) => { r.x = (i - 1) * 260; r.y = (i - 1) * 100; });
     return { state: createSimulation(architecture, blackFriday), snapshot: null, result: null, previousResult: null, error: null,
-      selected: null, building: null, preview: null, camera: { x: 0, y: 0, zoom: 1 }, notice: '', connecting: false, connectionSource: null, rendererGeneration: 0, recoveringRenderer: false, queuedActions: [], confirmationEpoch: 0, saveMessage: repository ? 'No local save yet.' : 'Local persistence is not attached.' };
+      selected: null, building: null, preview: null, camera: { x: 0, y: 0, zoom: 1 }, notice: '', connecting: false, connectionSource: null, rendererGeneration: 0, recoveringRenderer: false, queuedActions: [], confirmationEpoch: 0, saveMessage: repository ? 'No local save yet.' : 'Local persistence is not attached.', events: [] };
   };
   let view: View = initial();
   let cancel: (() => void) | undefined;
@@ -48,7 +50,7 @@ export function createController(timer: Clock = clock, repository?: SaveReposito
   let savingBlocked = false;
   let savedSignature = JSON.stringify(view.state.runtime.architecture);
   const publish = (next: View) => {
-    view = next;
+    view = { ...next, events: updateEvents(view.events, view, next) };
     const signature = JSON.stringify(view.state.runtime.architecture);
     if (repository && !savingBlocked && signature !== savedSignature) {
       try { repository.save(view.state.runtime.architecture); savedSignature = signature; view = { ...view, saveMessage: 'Architecture saved locally.' }; }
