@@ -1,9 +1,10 @@
-import { integer, type Architecture, type Scenario } from '@stack-and-survive/schema';
-import { parseArchitecture, validateStart } from '@stack-and-survive/cloud-domain';
+import { integer, number, type Architecture, type Scenario } from '@stack-and-survive/schema';
+import { definitions, parseArchitecture, validateStart } from '@stack-and-survive/cloud-domain';
 import { processRequests, type RequestSnapshot } from './index';
 
 export type Action = Readonly<{ time: number; sequence: number } & (
   { type: 'SCALE_OUT' } | { type: 'RATE_LIMIT'; enabled: boolean } | { type: 'EMERGENCY_WAF' }
+  | { type: 'DEPLOY_RESOURCE'; kind: 'cache' | 'edge'; x: number; y: number }
 )>;
 export type ActionOutcome = { action: Action; accepted: boolean; reason: string | null };
 export type Runtime = {
@@ -21,6 +22,7 @@ export type Runtime = {
   emergencyUsed: boolean;
   lastSequence: number;
   actionLog: ActionOutcome[];
+  deployments: { id: string; due: number }[];
 };
 export type TickTransition = {
   nextState: Runtime;
@@ -37,7 +39,7 @@ export function createPreparation(architecture: Architecture): Runtime {
     status: 'PREPARATION', architecture: parseArchitecture(architecture), initialArchitecture: null,
     time: 0, preparationTime: 0, scaleDue: null, preparationScaleDue: null,
     rateLimit: false, rateTransition: null, lastRateToggle: null, emergency: null,
-    emergencyUsed: false, lastSequence: -1, actionLog: [],
+    emergencyUsed: false, lastSequence: -1, actionLog: [], deployments: [],
   };
 }
 function copy(state: Runtime): Runtime { return structuredClone(state); }
@@ -84,8 +86,12 @@ export function retryRuntime(state: Runtime): Runtime {
 
 function validAction(action: Action): void {
   integer(action.time, 'action time'); integer(action.sequence, 'action sequence');
-  if (!['SCALE_OUT', 'RATE_LIMIT', 'EMERGENCY_WAF'].includes(action.type)) throw new Error('Unsupported action type');
+  if (!['SCALE_OUT', 'RATE_LIMIT', 'EMERGENCY_WAF', 'DEPLOY_RESOURCE'].includes(action.type)) throw new Error('Unsupported action type');
   if (action.type === 'RATE_LIMIT' && typeof action.enabled !== 'boolean') throw new Error('Rate limit state must be boolean');
+  if (action.type === 'DEPLOY_RESOURCE') {
+    if (action.kind !== 'cache' && action.kind !== 'edge') throw new Error('Only Cache or Edge can be deployed live');
+    number(action.x, 'deployment x', -900, 900); number(action.y, 'deployment y', -600, 600);
+  }
 }
 export function validateActionSchedule(actions: readonly Action[], duration: number): void {
   for (const action of actions) {
@@ -107,6 +113,20 @@ export function advanceRuntime(state: Runtime, scenario: Scenario, actions: read
   const phase = scenario.traffic.find(p => p.start <= next.time && next.time < p.end);
   if (!phase) throw new Error('Running tick has no traffic phase');
   const app = next.architecture.resources.find(r => r.kind === 'compute')!;
+  for (const deployment of next.deployments) {
+    const resource = next.architecture.resources.find(r => r.id === deployment.id)!;
+    resource.remaining = Math.max(0, deployment.due - next.time);
+    if (resource.remaining === 0) {
+      const internet = next.architecture.resources.find(r => r.kind === 'internet')!;
+      const sql = next.architecture.resources.find(r => r.kind === 'database')!;
+      if (resource.kind === 'cache') next.architecture.connections.push({ from: app.id, to: resource.id }, { from: resource.id, to: sql.id });
+      else {
+        next.architecture.connections = next.architecture.connections.filter(c => !(c.from === internet.id && c.to === app.id));
+        next.architecture.connections.push({ from: internet.id, to: resource.id }, { from: resource.id, to: app.id });
+      }
+    }
+  }
+  next.deployments = next.deployments.filter(d => d.due > next.time);
   if (next.scaleDue !== null && next.scaleDue <= next.time) { app.instances++; next.scaleDue = null; }
   if (next.rateTransition && next.rateTransition.due <= next.time) {
     next.rateLimit = next.rateTransition.enabled; next.rateTransition = null;
@@ -123,6 +143,8 @@ export function advanceRuntime(state: Runtime, scenario: Scenario, actions: read
       if (next.rateTransition || next.rateLimit === action.enabled || (next.lastRateToggle !== null && next.time - next.lastRateToggle < 5)) {
         reason = 'Rate toggle unavailable: pending, no change, or cooldown';
       }
+    } else if (action.type === 'DEPLOY_RESOURCE') {
+      if (next.architecture.resources.some(r => r.kind === action.kind || r.id === action.kind)) reason = 'Resource already installed or provisioning';
     } else {
       const edge = next.architecture.resources.find(r => r.kind === 'edge');
       if (!edge || edge.remaining > 0 || !next.architecture.connections.some(c => c.from === edge.id) || next.emergencyUsed) {
@@ -134,6 +156,10 @@ export function advanceRuntime(state: Runtime, scenario: Scenario, actions: read
     if (action.type === 'SCALE_OUT') next.scaleDue = next.time + 8;
     else if (action.type === 'RATE_LIMIT') {
       next.rateTransition = { due: next.time + 2, enabled: action.enabled }; next.lastRateToggle = next.time;
+    } else if (action.type === 'DEPLOY_RESOURCE') {
+      const duration = definitions[action.kind].provisioning;
+      next.architecture.resources.push({ id: action.kind, kind: action.kind, x: action.x, y: action.y, remaining: duration, instances: 1 });
+      next.deployments.push({ id: action.kind, due: next.time + duration });
     } else {
       next.emergencyUsed = true; next.emergency = { start: next.time + 1, end: next.time + 31 }; emergencyCharges += 8;
     }

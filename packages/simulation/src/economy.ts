@@ -33,6 +33,7 @@ export function advanceEconomy(state: EconomicState, scenario: Scenario, actions
     if (action.type === 'SCALE_OUT' && compare(remaining, (activeCostPerMinute(runtime.architecture) + definitions.compute.cost) / 60) < 0) {
       return 'Insufficient budget for one post-scale infrastructure tick';
     }
+    if (action.type === 'DEPLOY_RESOURCE' && compare(remaining, (activeCostPerMinute(runtime.architecture) + definitions[action.kind].cost) / 60) < 0) return 'Insufficient budget for one post-deployment infrastructure tick';
     return null;
   });
   if (!transition.snapshot) return { nextState: { runtime: transition.nextState, economy: { ...previous } }, transition, budgetExhausted: compare(previous.remainingBudget, 0) <= 0 };
