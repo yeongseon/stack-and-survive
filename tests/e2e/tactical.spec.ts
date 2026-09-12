@@ -6,7 +6,8 @@ test('desktop world dominates the playable composition while controls remain rea
   const field = (await page.locator('.playfield').boundingBox())!;
   const world = (await page.getByTestId('world').boundingBox())!;
   const ratio = world.width * world.height / (field.width * field.height);
-  expect(ratio).toBeGreaterThanOrEqual(.65); expect(ratio).toBeLessThanOrEqual(.75);
+  expect(ratio).toBeGreaterThanOrEqual(.75); expect(ratio).toBeLessThanOrEqual(.9);
+  await expect(page.getByRole('complementary', { name: 'Operation analysis' })).not.toBeVisible();
   await expect(page.getByRole('region', { name: 'Build palette' })).toBeVisible();
   await expect(page.getByText('Phase 1 / 4', { exact: true })).toBeVisible();
   await page.getByLabel('Initial App instances').selectOption('3');

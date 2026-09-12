@@ -20,6 +20,7 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 1920, height: 108
     await page.getByRole('button', { name: 'Start operation', exact: true }).click();
     await page.locator('summary').filter({ hasText: 'Developer inspector' }).click();
     while (Number(await page.getByTestId('elapsed').textContent()) < 31) await page.getByRole('button', { name: 'Step one tick', exact: true }).click();
+    await page.getByRole('button', { name: 'Why', exact: true }).click();
     await expect(page.getByTestId('pressure-hint')).toContainText('compute capacity');
     await expect(page.getByTestId('app-pressure')).toContainText('! OVERLOADED');
     await page.getByRole('button', { name: 'Pause operation', exact: true }).click();

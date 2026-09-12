@@ -24,6 +24,7 @@ test('live scale confirmation buys capacity only after the provisioning delay', 
   await expect(page.getByRole('button', { name: 'Scale out App', exact: true })).toBeDisabled();
   await stepUntil(page, 43);
   await expect(page.getByTestId('scale-progress')).toHaveText('2 active instances');
+  await page.getByRole('button', { name: 'Why', exact: true }).click();
   await expect(page.getByTestId('app-pressure')).toContainText('73.3%');
   await page.getByRole('button', { name: 'Enable Rate Limit', exact: true }).click(); await stepUntil(page, 46);
   await expect(page.getByTestId('rate-progress')).toHaveText('Rate Limit ON');
