@@ -8,7 +8,7 @@ export function useViewportLayout(root: RefObject<HTMLElement | null>) {
       const children = Array.from(shell.children).filter((node): node is HTMLElement => node instanceof HTMLElement);
       const top = children.filter(node => {
         const style = getComputedStyle(node);
-        return style.display !== 'none' && style.position !== 'absolute' && Number(style.order) < 1;
+        return style.display !== 'none' && style.position !== 'absolute' && style.position !== 'fixed' && Number(style.order) < 1;
       });
       const bottom = children.filter(node => node.matches('.traffic-legend, .live-actions, .action-help-toggle'));
       const style = getComputedStyle(shell);
