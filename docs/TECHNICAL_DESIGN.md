@@ -2,6 +2,10 @@
 
 ## Technical Design
 
+## Gameplay conversion integration (#112–#120)
+
+Ordinary production renders `TycoonGame`; the compile-time QA/development build retains the existing editor and can select the tycoon surface with `?tycoon`. Production URL parameters cannot enable diagnostics or the editor. `tycoon-layout.ts` maps fixed world slots to a baseline Architecture and derives slot states. The player-mode controller disables persistence/manual edits and owns an inert title plus lifecycle-safe five-second start countdown. Runtime owns additive deployment action validation, due times and atomic supported routing; no renderer owns capacity or economy calculations. React world controls share `viewportCamera`/`project` with Phaser and are positioned over, not instead of, the interactive world. The old editor and its regression suite remain available in QA.
+
 **Version:** 0.3  
 **Status:** Hackathon Technical Architecture  
 **Related Documents:** `PRD.md`, `GAMEPLAY_SPEC.md`, `SIMULATION_SPEC.md`  

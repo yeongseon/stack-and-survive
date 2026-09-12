@@ -2,6 +2,14 @@
 
 ## Product Requirements Document
 
+## Current product authority — gameplay conversion
+
+**Stop making the player configure a simulator. Make the player operate a living cloud business by interacting directly with the data-center world.**
+
+The completed #80–#85 presentation work is a foundation, not acceptance of this interaction model. #112–#120 authorize fixed infrastructure slots, automatic valid routing, in-world expansion, live Cache/Edge provisioning, resource-local actions, Title→Start Game→countdown→living operation, truthful flow/business feedback, and one optional Learn surface. Earlier configuration-first and no-live-deployment statements apply only to the historical/QA editor where they conflict with this scope. Numerical request processing, pricing, scenario schedule and canonical fixed-architecture reference outcomes remain authoritative. See the current gameplay authority section in `GAMEPLAY_SPEC.md` and additive action contract in `SIMULATION_SPEC.md`.
+
+Actual unfamiliar-player comprehension and perceived game feel remain unverified until #25 after #120; do not equate automated presentation acceptance with that gate.
+
 **Version:** 0.6  
 **Status:** Hackathon MVP — Scope Locked  
 **Primary Platform:** Web  

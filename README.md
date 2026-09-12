@@ -6,11 +6,13 @@ Stack & Survive is a real-time cloud infrastructure management game where player
 
 ## Project status
 
-**Hackathon MVP — Core simulation locked · Tycoon presentation implemented · Human learning validation pending · PRD v0.6**
+**Hackathon MVP — Gameplay conversion in verification (#112–#120) · Human validation blocked until gameplay acceptance**
+
+Ordinary play now enters through **Start Game / How to Play / About**, then a five-second countdown into a living business. Use world-local **+** controls to expand App capacity or install Cache/Protected Edge during operation. Routing is automatic; no placement, wiring or initial-instance setup is required. Click intake for rate limiting or active Edge for filtering boost. Budget, demand and availability remain visible; **Learn** contains explanations and analysis. Revenue is not spendable budget. The existing architecture editor is retained in the QA/development build, while `?tycoon` there selects the new player flow. Production never exposes editor/diagnostic controls through URL parameters.
 
 The [data-center reframe](docs/TYCOON_REFRAME_IMPLEMENTATION_PLAN.md) now includes the indoor facility, original production building sprites, directional processing lanes, representative App/SQL pressure, a four-concept HUD, on-demand analysis and separate Build/Manage tools. The reference image guides composition, not purchase prices or queue semantics. Pressure markers do not represent real buffered requests; this is not a pixel-identical reproduction of the reference art.
 
-The browser MVP in `apps/web/` includes separate official Azure badges, state-driven processing effects, actual objectives/events, live interventions, pause/recovery, result analysis, redesign/comparison, local saves and contextual help. Ordinary player builds exclude developer diagnostics. Verification includes 172 unit/regression tests, 54 QA browser cases and six ordinary-player cases. Real first-time-player learning validation remains pending in #25. Hosting (including GitHub Pages) is deferred by the owner; no repository visibility or account-plan changes were made. There is no backend or outbound product telemetry.
+The browser MVP includes separate official Azure badges, snapshot-driven processing/pressure and served-business feedback, actual objectives/events, live provisioning, pause/recovery and results. The historical manual editor, redesign/comparison and local architecture saves remain QA tools, not the normal game loop. Existing54 QA editor cases are retained alongside new tycoon tests; production tests cover real-time entry, expansion and five viewport sizes. #25 now explicitly validates unassisted world-local expansion and perceived game feel after #120; no participant results exist. Hosting (including GitHub Pages) remains deferred. There is no backend or outbound product telemetry.
 
 ## MVP
 
@@ -62,7 +64,7 @@ packages/
   scenarios/             Versioned Black Friday content
 ```
 
-From the repository root with Node 22.22.0 and pnpm 10.32.1: `pnpm install --frozen-lockfile`, then `pnpm dev` for development. For ordinary play use `pnpm build` followed by `pnpm --filter @stack-and-survive/web exec vite preview --host 127.0.0.1`; open the printed URL. Inspect or edit the infrastructure, wait for provisioning, then Start operation. Redesign & Retry preserves your architecture and compares attempts. Reset restores the one-instance baseline; saves never resume runtime progress.
+From the repository root with Node 22.22.0 and pnpm 10.32.1: `pnpm install --frozen-lockfile`, then `pnpm dev` for the QA/editor experience (append `?tycoon` for the new game). For ordinary play use `pnpm build` followed by `pnpm --filter @stack-and-survive/web exec vite preview --host 127.0.0.1`; open the printed URL and select Start Game. Expand directly in the world. Play again returns to the title and starts a fresh baseline, not a saved runtime. Manual redesign/comparison and architecture persistence remain in QA.
 
 Verification: `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build`. Install Chromium with `pnpm exec playwright install chromium`, then `pnpm test:player` tests ordinary `dist` on port 43874 using real-time gameplay. Next run `pnpm build:qa` and `pnpm test:browser`; separate `dist-qa` on port 43872 enables the inspector for full regressions. CI runs both variants in this order. Player screenshots live under ignored `test-results-player/`; QA screenshots/traces use `test-results/`. Only development and compile-time `qa` contain JSON/manual-step/renderer diagnostics; URL parameters cannot enable them in production. Do not deploy `dist-qa`. Run `pnpm build:qa` before `pnpm test:performance` too. Software-WebGL tests verify behavior, not hardware FPS.
 
