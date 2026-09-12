@@ -35,6 +35,10 @@ export function completedResources(previous: View, current: View): Kind[] {
 export function effectMotion(view: View, reduced: boolean): boolean {
   return !reduced && !view.error && (view.state.runtime.status === 'RUNNING' || view.state.runtime.status === 'PREPARATION');
 }
+export function filterCheckpoint(time: number, animated: boolean, emergency: boolean) {
+  const phase = animated ? (time / 1600) % 1 : .5;
+  return { scanY: -58 + phase * 48, bars: emergency ? 5 : 3, color: emergency ? 0xffd882 : 0x90dcff };
+}
 export function drawEffect(g: Phaser.GameObjects.Graphics, effect: Effect, point: Point, time: number, animated: boolean) {
   const phase = animated ? (time / 1600) % 1 : .5;
   const pulse = animated ? .45 + .2 * Math.sin(time / 220) : .55;
@@ -46,15 +50,16 @@ export function drawEffect(g: Phaser.GameObjects.Graphics, effect: Effect, point
     g.fillStyle(0x73d0ff, .12); g.fillRect(-30, -62 + phase * 60, 60, 5);
   } else if (effect.type === 'overload') {
     g.lineStyle(2, 0xffa496, pulse); g.strokeEllipse(0, 12, 106 + phase * 12, 38 + phase * 8);
-    g.lineStyle(2, 0xffd1ac); g.lineBetween(-39, -35, -45 - phase * 8, -41); g.lineBetween(40, -20, 47 + phase * 8, -25);
+    g.fillStyle(0xffd1ac, pulse); for (let i = 0; i < 3; i++) g.fillRect(40, -32 + i * 7, 8, 3);
   } else if (effect.type === 'cache-hit') {
     g.lineStyle(2, 0x8effdc, 1 - phase * .6); g.strokeEllipse(0, -7, 45 + phase * 40, 18 + phase * 15);
-    g.lineStyle(2, 0xd9fff1); g.lineBetween(-5, -54, 5, -54); g.lineBetween(0, -59, 0, -49);
+    g.lineStyle(2, 0xd9fff1); g.lineBetween(-6, -54, -1, -49); g.lineBetween(-1, -49, 8, -60);
   } else {
-    const emergency = effect.type === 'emergency';
-    g.fillStyle(emergency ? 0xffd882 : 0x90dcff, pulse * .15); g.fillEllipse(0, -19, emergency ? 100 : 80, 67);
-    g.lineStyle(emergency ? 3 : 2, emergency ? 0xffd882 : 0x90dcff, .7); g.strokeEllipse(0, -19, emergency ? 100 : 80, 67);
-    g.lineStyle(2, 0xffedc4); g.lineBetween(-43, -12, -49 - phase * 7, -17); g.lineBetween(43, -14, 49 + phase * 7, -20);
+    const checkpoint = filterCheckpoint(time, animated, effect.type === 'emergency');
+    g.lineStyle(2, checkpoint.color, .7);
+    g.lineBetween(-28, -58, -28, -10); g.lineBetween(28, -58, 28, -10);
+    g.fillStyle(checkpoint.color, pulse); g.fillRect(-26, checkpoint.scanY, 52, 3);
+    for (let i = 0; i < checkpoint.bars; i++) g.fillRect(-22 + i * 10, 9, 6, 4);
   }
   g.restore();
 }
