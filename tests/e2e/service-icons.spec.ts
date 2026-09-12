@@ -32,7 +32,7 @@ test('served official assets match archive bytes and load as separate identity i
   await expect(page.getByRole('region', { name: 'Selected resource' }).locator('img')).toHaveAttribute('src', '/assets/azure-icons/app-service.svg');
   await page.getByTestId('world').scrollIntoViewIfNeeded();
   await page.screenshot({ path: info.outputPath('azure-identity.png') });
-  await page.getByRole('button', { name: 'Start traffic', exact: true }).click();
+  await page.getByRole('button', { name: 'Start operation', exact: true }).click();
   await page.locator('summary').filter({ hasText: 'Developer inspector' }).click();
   while (Number(await page.getByTestId('elapsed').textContent()) < 50) await page.getByRole('button', { name: 'Step one tick', exact: true }).click();
   await expect(page.getByTestId('result-score')).toHaveText('1,073');
@@ -48,6 +48,6 @@ test('missing icons show neutral fallbacks without disabling gameplay or labels'
   await expect(page.locator('.world-service-badges [data-fallback="true"]')).toHaveCount(2);
   await page.getByRole('button', { name: 'Inspect Azure SQL', exact: true }).click();
   await expect(page.getByRole('region', { name: 'Selected resource' })).toContainText('Azure SQL');
-  await page.getByRole('button', { name: 'Start traffic', exact: true }).click();
+  await page.getByRole('button', { name: 'Start operation', exact: true }).click();
   await expect.poll(async () => Number(await page.getByTestId('elapsed').textContent()), { timeout: 5000 }).toBeGreaterThanOrEqual(1);
 });

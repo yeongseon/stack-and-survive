@@ -29,8 +29,8 @@ it('records pause and resume separately even within the same simulation tick', (
   const controller = createController({ start: () => () => {} }); controller.start();
   controller.pause(); controller.resume(); controller.pause(); controller.resume();
   const events = controller.getSnapshot().events;
-  expect(events.filter(e => e.text === 'Traffic paused')).toHaveLength(2);
-  expect(events.filter(e => e.text === 'Traffic resumed')).toHaveLength(2);
+  expect(events.filter(e => e.text === 'Operation paused')).toHaveLength(2);
+  expect(events.filter(e => e.text === 'Operation resumed')).toHaveLength(2);
   expect(new Set(events.map(e => e.key)).size).toBe(events.length);
   expect(events.every(e => e.time === 0)).toBe(true); controller.destroy();
 });

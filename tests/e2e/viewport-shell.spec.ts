@@ -8,7 +8,7 @@ for (const size of [{ width: 1440, height: 900 }, { width: 1366, height: 768 }, 
     expect(world.height).toBeGreaterThan(250);
     expect(world.y).toBeGreaterThanOrEqual(0);
     expect(world.y + world.height).toBeLessThanOrEqual(size.height);
-    for (const name of ['Start traffic', 'Scale out App', 'Enable Rate Limit', 'Activate Emergency WAF']) {
+    for (const name of ['Start operation', 'Scale out App', 'Enable Rate Limit', 'Activate Emergency WAF']) {
       const box = (await page.getByRole('button', { name, exact: true }).boundingBox())!;
       expect(box.y).toBeGreaterThanOrEqual(0); expect(box.y + box.height).toBeLessThanOrEqual(size.height);
     }
@@ -27,9 +27,9 @@ for (const size of [{ width: 1440, height: 900 }, { width: 1366, height: 768 }, 
     }
     await page.getByRole('button', { name: 'Build & connections', exact: true }).click();
     await page.getByRole('button', { name: 'Build & connections', exact: true }).click();
-    await page.getByRole('button', { name: 'Start traffic', exact: true }).click();
+    await page.getByRole('button', { name: 'Start operation', exact: true }).click();
     await expect.poll(async () => Number(await page.getByTestId('elapsed').textContent()), { timeout: 5000 }).toBeGreaterThanOrEqual(1);
-    await page.getByRole('button', { name: 'Pause traffic', exact: true }).click();
+    await page.getByRole('button', { name: 'Pause operation', exact: true }).click();
     await expect(page.getByTestId('status')).toHaveText('PAUSED');
     await expect.poll(async () => {
       const box = (await page.getByRole('button', { name: 'Activate Emergency WAF', exact: true }).boundingBox())!;
@@ -41,12 +41,12 @@ for (const size of [{ width: 1440, height: 900 }, { width: 1366, height: 768 }, 
 test('critical pressure and queued actions do not push controls below the laptop screen', async ({ page }) => {
   await page.setViewportSize({ width: 1366, height: 768 }); await page.goto('/');
   await expect(page.locator('[data-renderer="ready"]')).toHaveCount(1, { timeout: 20000 });
-  await page.getByRole('button', { name: 'Start traffic', exact: true }).click();
+  await page.getByRole('button', { name: 'Start operation', exact: true }).click();
   await page.locator('summary').filter({ hasText: 'Developer inspector' }).click();
   while (Number(await page.getByTestId('elapsed').textContent()) < 31) await page.getByRole('button', { name: 'Step one tick', exact: true }).click();
   await page.evaluate(() => window.scrollTo(0, 0));
   await expect(page.getByTestId('app-pressure')).toContainText('OVERLOADED');
-  for (const name of ['Pause traffic', 'Scale out App', 'Enable Rate Limit', 'Activate Emergency WAF']) {
+  for (const name of ['Pause operation', 'Scale out App', 'Enable Rate Limit', 'Activate Emergency WAF']) {
     const box = (await page.getByRole('button', { name, exact: true }).boundingBox())!;
     expect(box.y).toBeGreaterThanOrEqual(0); expect(box.y + box.height).toBeLessThanOrEqual(768);
   }

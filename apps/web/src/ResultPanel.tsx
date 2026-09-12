@@ -14,7 +14,7 @@ export function ResultPanel({ result, onRedesign }: { result: Result; onRedesign
     ['Net business value', result.economy.netBusinessValue.toFixed(2)], ['Remaining budget', result.economy.remainingBudget.toFixed(2)],
   ];
   return <section className="result-panel" aria-label="Scenario result">
-    <p className="eyebrow">BLACK FRIDAY · {result.status === 'COMPLETED' ? 'TRAFFIC SURVIVED' : 'SCENARIO FAILED'}</p>
+    <p className="eyebrow">BLACK FRIDAY · {result.status === 'COMPLETED' ? 'OPERATION COMPLETED' : 'SCENARIO FAILED'}</p>
     <div className="result-heading"><div><h2>{result.primary}</h2><p>{result.insight}</p></div><div><span>Architecture score</span><strong data-testid="result-score">{result.score.toLocaleString('en-US')}</strong><span>/ 10,000</span></div></div>
     <p data-testid="result-duration">Elapsed: {result.elapsedTime} / 180 seconds · {result.status} · Balance {result.balanceVersion}</p>
     <p>Targets: {allTargets ? 'All met' : 'Not all met'} — availability {result.targetAttainment.availability ? 'met' : 'not met'}, latency {result.targetAttainment.latency ? 'met' : 'not met'}, business value {result.targetAttainment.businessValue ? 'met' : 'not met'}. Survival is not the same as meeting every target.</p>
@@ -29,7 +29,7 @@ export function ResultPanel({ result, onRedesign }: { result: Result; onRedesign
       <p>Bot-displaced value: {result.attribution.botDisplacement.toFixed(4)} · Bots filtered: {result.attribution.botsFiltered.toFixed(1)} / {result.attribution.botsOffered.toFixed(1)}</p>
       <p>Failure penalty: {result.failurePenalty} · Overprovisioning penalty: {result.overprovisioningPenalty}. Negative-value survival is capped at 3,000.</p>
       <h3>Score components (0–100)</h3><dl>{Object.entries(result.components).map(([name, score]) => <div key={name}><dt>{name}</dt><dd>{score.toFixed(2)}</dd></div>)}</dl>
-      <h3>Traffic phase evidence</h3><p>Later unplayed phases are absent. A phase can show resource pressure below the threshold for a primary business-loss cause.</p>
+      <h3>Demand phase evidence</h3><p>Later unplayed phases are absent. A phase can show resource pressure below the threshold for a primary business-loss cause.</p>
       {result.phases.map(phase => <article key={phase.start}><h4>{phase.start}–{phase.end}s · {phase.partial ? 'Partial' : 'Complete'} ({phase.data.ticks} ticks)</h4>
         <p>Primary cause: {phase.primary}</p><p>Offered: {phase.data.offered.toFixed(1)} · Successful: {phase.data.successful.toFixed(1)}</p>
         <p>Peak App {(phase.data.peaks.app * 100).toFixed(1)}% · SQL reads {(phase.data.peaks.sqlRead * 100).toFixed(1)}% · SQL writes {(phase.data.peaks.sqlWrite * 100).toFixed(1)}%</p>

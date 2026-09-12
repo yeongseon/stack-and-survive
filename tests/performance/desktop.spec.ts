@@ -14,11 +14,11 @@ test('measure a real peak workload and disclose actual graphics backend', async 
     const extension = gl.getExtension('WEBGL_debug_renderer_info');
     return { renderer: extension ? gl.getParameter(extension.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER), vendor: extension ? gl.getParameter(extension.UNMASKED_VENDOR_WEBGL) : gl.getParameter(gl.VENDOR) };
   });
-  await page.getByRole('button', { name: 'Start traffic', exact: true }).click();
+  await page.getByRole('button', { name: 'Start operation', exact: true }).click();
   await page.locator('summary').filter({ hasText: 'Developer inspector' }).click();
   while (Number(await page.getByTestId('elapsed').textContent()) < 121) await page.getByRole('button', { name: 'Step one tick', exact: true }).click();
-  await page.getByRole('button', { name: 'Pause traffic', exact: true }).click();
-  await page.getByRole('button', { name: 'Resume traffic', exact: true }).click();
+  await page.getByRole('button', { name: 'Pause operation', exact: true }).click();
+  await page.getByRole('button', { name: 'Resume operation', exact: true }).click();
   await surface.scrollIntoViewIfNeeded();
   const measured = await surface.evaluate(async element => {
     const start = performance.now(); let previous = start; const intervals: number[] = [];
@@ -42,7 +42,7 @@ test('measure a real peak workload and disclose actual graphics backend', async 
   });
   expect(measured.tickAfter - measured.tickBefore).toBeGreaterThanOrEqual(19);
   expect(measured.maxPackets).toBeLessThanOrEqual(200);
-  await page.getByRole('button', { name: 'Pause traffic', exact: true }).click();
+  await page.getByRole('button', { name: 'Pause operation', exact: true }).click();
   const evidence = { browser: browser.version(), graphics, viewport: { width: 1440, height: 900 }, fixture: 'Black Friday v0.2, App3 + Cache + WAF, peak500RPS/40%bots', mode: 'headless full Chromium with requested ANGLE Metal; inspect actual renderer before interpreting', measured };
   console.log(JSON.stringify(evidence));
   await info.attach('performance-evidence', { body: JSON.stringify(evidence, null, 2), contentType: 'application/json' });

@@ -11,7 +11,7 @@ export function transitionEvents(previous: View, next: View): GameEvent[] {
   const time = clock === 'prep' ? runtime.preparationTime : runtime.time;
   const add = (key: string, text: string) => events.push({ key: `${clock}:${time}:${key}`, time, clock, text });
   if (previous.state.runtime.status !== runtime.status) {
-    const text = { PREPARATION: 'Back to build mode', RUNNING: previous.state.runtime.status === 'PAUSED' ? 'Traffic resumed' : 'Black Friday started', PAUSED: 'Traffic paused', COMPLETED: 'All traffic phases survived', FAILED: 'Scenario failed' }[runtime.status];
+    const text = { PREPARATION: 'Back to build mode', RUNNING: previous.state.runtime.status === 'PAUSED' ? 'Operation resumed' : 'Black Friday started', PAUSED: 'Operation paused', COMPLETED: 'All demand phases completed', FAILED: 'Scenario failed' }[runtime.status];
     add('status', text);
   }
   for (const resource of runtime.architecture.resources) {
@@ -36,7 +36,7 @@ export function transitionEvents(previous: View, next: View): GameEvent[] {
     if (isEmergency(next) !== isEmergency(previous)) add('emergency', isEmergency(next) ? 'Emergency WAF filtering active' : 'Emergency WAF expired — normal filtering restored');
     const phase = blackFriday.traffic.findIndex(p => p.start <= next.snapshot!.time && next.snapshot!.time < p.end);
     const oldPhase = previous.snapshot ? blackFriday.traffic.findIndex(p => p.start <= previous.snapshot!.time && previous.snapshot!.time < p.end) : -1;
-    if (phase !== oldPhase && phase >= 0) add('phase', `Traffic phase ${phase + 1} / ${blackFriday.traffic.length}`);
+    if (phase !== oldPhase && phase >= 0) add('phase', `Demand phase ${phase + 1} / ${blackFriday.traffic.length}`);
   }
   return events;
 }
@@ -54,7 +54,7 @@ export function objectives(view: View): Objective[] {
   const current = (ok: boolean, met?: boolean): Objective['status'] => final ? met ? 'met' : 'missed' : !started ? 'pending' : ok ? 'on-track' : 'at-risk';
   const totals = view.state.totals;
   return [
-    { name: 'Survive Black Friday', status: final ? final.status === 'COMPLETED' ? 'met' : 'missed' : 'pending', value: `${view.state.runtime.time} / ${blackFriday.duration}s` },
+    { name: 'Complete Black Friday operation', status: final ? final.status === 'COMPLETED' ? 'met' : 'missed' : 'pending', value: `${view.state.runtime.time} / ${blackFriday.duration}s` },
     { name: `Availability ≥ ${blackFriday.targets.availability * 100}%`, status: current(compare(totals.availability, blackFriday.targets.availability) >= 0, final?.targetAttainment.availability), value: totals.noDemand ? 'No demand yet' : `${(totals.availability * 100).toFixed(2)}%` },
     { name: `Latency ≤ ${blackFriday.targets.latencyMs} ms`, status: current(totals.averageLatency !== null && compare(totals.averageLatency, blackFriday.targets.latencyMs) <= 0, final?.targetAttainment.latency), value: totals.averageLatency === null ? 'No successes yet' : `${totals.averageLatency.toFixed(0)} ms` },
     { name: 'Stay within budget', status: current(compare(view.state.economy.remainingBudget, 0) > 0, final ? compare(final.economy.remainingBudget, 0) > 0 : undefined), value: `${view.state.economy.remainingBudget.toFixed(1)} credits` },
