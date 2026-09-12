@@ -13,6 +13,7 @@ import { ServiceIcon } from './ServiceIcon';
 import { useViewportLayout } from './useViewportLayout';
 import { BuildPanel } from './BuildPanel';
 import { blackFriday } from '@stack-and-survive/scenarios';
+import { MissionPanel } from './MissionPanel';
 
 function World({ controller, generation, onInspect }: { controller: Controller; generation: number; onInspect: (open: boolean) => void }) {
   const host = useRef<HTMLDivElement>(null);
@@ -90,16 +91,17 @@ function App() {
       <BuildPanel view={view} controller={controller} open={buildOpen} setOpen={setBuildOpen} inspect={() => setShowInspector(true)} />
       <div className="board-area"><div className="board-tools"><span>AZURE OUTPOST <small>Phase {phase < 0 ? '—' : phase + 1} / {blackFriday.traffic.length}</small></span><div><button type="button" aria-expanded={showInspector} aria-controls="resource-inspector" onClick={() => setShowInspector(!showInspector)}>{showInspector ? 'Hide details' : 'Show details'}</button><button type="button" onClick={() => controller.setCamera({ x: 0, y: 0, zoom: 1 })}>Fit view</button></div></div><World controller={controller} generation={view.rendererGeneration} onInspect={setShowInspector} /></div><aside id="resource-inspector" hidden={!showInspector}>
       <button className="close-inspector" type="button" onClick={() => setShowInspector(false)}>Close details</button>
+      {!selected && <MissionPanel view={view} />}
       <p className="eyebrow">CURRENT PRESSURE</p>
       <h2><ServiceIcon kind="compute" decorative />App Service</h2><p className="reading" data-testid="app-pressure">{utilizationLabel(appU)} {appU === null ? '' : `${(appU * 100).toFixed(1)}%`}</p>
       <h2><ServiceIcon kind="database" decorative />Azure SQL</h2><p className="reading" data-testid="sql-pressure">{utilizationLabel(sqlU)} {sqlU === null ? '' : `${(sqlU * 100).toFixed(1)}%`}</p>
-      <dl><dt>Incoming requests/s</dt><dd data-testid="traffic">{r ? r.offered.browse + r.offered.order + r.offered.bot : '—'}</dd>
+      <details className="telemetry-details" open={!!selected}><summary>Detailed telemetry</summary><dl><dt>Incoming requests/s</dt><dd data-testid="traffic">{r ? r.offered.browse + r.offered.order + r.offered.bot : '—'}</dd>
         <dt>Tick availability</dt><dd>{view.snapshot ? `${(view.snapshot.metrics.availability * 100).toFixed(2)}%` : '—'}</dd>
         <dt>App dropped/s</dt><dd>{r ? (r.app.dropped.browse + r.app.dropped.order + r.app.dropped.bot).toFixed(1) : '—'}</dd>
         <dt>SQL dropped/s</dt><dd>{r ? (r.sql.readsDropped + r.sql.writesDropped).toFixed(1) : '—'}</dd></dl>
       <dl><dt>Bots reaching App/s</dt><dd data-testid="bots-at-app">{r ? r.rateLimit.passed.bot.toFixed(1) : '—'}</dd><dt>WAF-filtered bots/s</dt><dd data-testid="filtered-bots">{r ? r.edge.filtered.bot.toFixed(1) : '—'}</dd>
         <dt>Cache hit ratio</dt><dd data-testid="cache-hit">{r?.cache.hitRatio == null ? 'N/A' : `${(r.cache.hitRatio * 100).toFixed(1)}%`}</dd><dt>SQL reads avoided/s</dt><dd>{r?.cache.hits.toFixed(1) ?? '—'}</dd>
-        <dt>Running cost/min</dt><dd>{activeCostPerMinute(architecture)} credits</dd></dl>
+        <dt>Running cost/min</dt><dd>{activeCostPerMinute(architecture)} credits</dd></dl></details>
       <p className="hint" data-testid="pressure-hint">{view.result ? view.result.insight : pressureHint(r ?? null)}</p>
       {selected && <section aria-label="Selected resource" className="resource-details">
         <h2><ServiceIcon kind={selected.kind} decorative />{definitions[selected.kind].name}</h2>
