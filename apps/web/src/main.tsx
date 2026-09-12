@@ -13,6 +13,7 @@ import { ServiceIcon } from './ServiceIcon';
 import { useViewportLayout } from './useViewportLayout';
 import { BuildPanel } from './BuildPanel';
 import { blackFriday } from '@stack-and-survive/scenarios';
+import { pressureQueues } from './queue-visualization';
 import { MissionPanel } from './MissionPanel';
 import { diagnosticsEnabled } from './mode';
 
@@ -46,6 +47,7 @@ function App() {
   const instances = view.state.runtime.architecture.resources.find(n => n.kind === 'compute')?.instances ?? 1;
   const architecture = view.state.runtime.architecture;
   const selected = architecture.resources.find(r => r.id === view.selected);
+  const selectedPressure = pressureQueues(r ?? null).find(q => q.resource === selected?.kind);
   useEffect(() => { if (view.selected) setShowInspector(true); }, [view.selected]);
   const preparing = view.state.runtime.status === 'PREPARATION' && !view.error;
   const paused = view.state.runtime.status === 'PAUSED';
@@ -108,6 +110,7 @@ function App() {
         <h2><ServiceIcon kind={selected.kind} decorative />{definitions[selected.kind].name}</h2>
         {selected.kind === 'edge' && <p>Azure identity: Application Gateway with WAF. Protected Edge is a game abstraction, not a separate Azure product.</p>}
         <p data-testid="resource-status">{selected.remaining > 0 ? `Provisioning: ${selected.remaining}s` : 'Active'}</p>
+        {selectedPressure && <p>Pressure: {selectedPressure.utilization === null ? 'not measured yet' : selectedPressure.severity.toUpperCase()} {selectedPressure.signal === 'sql-write' ? '(writes)' : selectedPressure.signal === 'sql-read' ? '(reads)' : ''}. Representative markers are not a count of waiting requests; dropped requests are not buffered for later service.</p>}
         <p>{architecture.connections.some(c => c.from === selected.id || c.to === selected.id) ? 'Connected' : 'Disconnected — no traffic effect'}</p>
         <p>Runtime cost: {definitions[selected.kind].cost * selected.instances} credits/min when active. Build Mode is free.</p>
         <p>Base game capability (not live throughput or Azure specifications): {selected.kind === 'compute' ? `${selected.instances} configured instances · ${selected.instances * 150} req/s capacity when active` : selected.kind === 'database' ? 'Read capacity: 180/s · Write capacity: 70/s' : selected.kind === 'cache' ? 'Eligible read capacity: 500/s · Configured hit ratio: 80%' : selected.kind === 'edge' ? 'Normal mode: bot filter 70% · False positives 0.5%; emergency mode differs' : 'External workload source'}</p>
