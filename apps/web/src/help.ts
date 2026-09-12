@@ -2,6 +2,7 @@ import type { RequestSnapshot } from '@stack-and-survive/simulation';
 import { compare } from '@stack-and-survive/simulation/economy';
 
 export const glossary = [
+  ['Pressure markers', 'Representative load indicators, not real waiting requests. Busy markers can appear before overload, including at 70% where engine health is still healthy. This simulation does not buffer dropped requests for later service.'],
   ['RPS', 'Requests per second: offered traffic, not the number of animated markers.'],
   ['Availability', 'The share of offered legitimate requests successfully served. Bots are excluded; blocked customers still count as failed.'],
   ['Latency', 'Time to serve successful requests in the simplified model. Failed requests affect error rate instead.'],

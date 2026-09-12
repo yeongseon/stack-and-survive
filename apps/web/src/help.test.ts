@@ -10,5 +10,5 @@ it('gives short hints from actual layer pressure without recommending cache for 
   expect(pressureHint(processRequests(baseline(4), { browse: 100, order: 80, bot: 0 }))).toContain('does not remove Order writes');
 });
 it('explains all core terms without requiring hover or sound', () => {
-  expect(glossary.map(([term]) => term)).toEqual(['RPS', 'Availability', 'Latency', 'Utilization', 'Cache hit ratio', 'Scale out', 'WAF', 'Rate Limit', 'Net business value', 'Budget']);
+  expect(glossary.map(([term]) => term)).toEqual(['Pressure markers', 'RPS', 'Availability', 'Latency', 'Utilization', 'Cache hit ratio', 'Scale out', 'WAF', 'Rate Limit', 'Net business value', 'Budget']);
 });
