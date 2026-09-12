@@ -36,16 +36,23 @@ export function buildingPresentation(resource: Resource, connected: boolean, sel
   };
 }
 
-export function drawBuilding(g: Graphics, point: Point, resource: Resource, connected: boolean, selected: boolean, pendingScale: boolean, warning: boolean, overloaded: boolean) {
+export function drawBuilding(g: Graphics, point: Point, resource: Resource, connected: boolean, selected: boolean, pendingScale: boolean, warning: boolean, overloaded: boolean, spriteBody = false, overlay?: Graphics) {
   const state = buildingPresentation(resource, connected, selected, pendingScale);
   const accent = overloaded ? 0xff8e83 : warning ? 0xffd67e : state.accent;
+  const top = overlay ?? g;
   g.save(); g.translateCanvas(point.x, point.y);
+  if (overlay) { overlay.save(); overlay.translateCanvas(point.x, point.y); }
   g.fillStyle(0x06121f, .3); g.fillEllipse(7, 28, 128, 44);
   block(g, 0, -20, 58, 58, 8, 0x3c647a, 0x24485e, 0x17354b);
   polygon(g, [[0, -30], [56, -6], [0, 18], [-56, -6]], selected ? 0x567e90 : 0x42697e);
-  g.lineStyle(selected ? 3 : 1, selected ? 0xe7faff : 0x82a8b7, selected ? 1 : .65);
-  g.strokePoints([{ x: 0, y: -30 }, { x: 56, y: -6 }, { x: 0, y: 18 }, { x: -56, y: -6 }], true);
-  if (state.provisioning) {
+  top.lineStyle(selected ? 3 : 1, selected ? 0xe7faff : 0x82a8b7, selected ? 1 : .65);
+  top.strokePoints([{ x: 0, y: -30 }, { x: 56, y: -6 }, { x: 0, y: 18 }, { x: -56, y: -6 }], true);
+  if (spriteBody) {
+    if (state.provisioning) {
+      top.lineStyle(2, accent, .8); top.strokeRect(-30, -57, 60, 61);
+      for (let y = -45; y < 0; y += 12) top.lineBetween(-30, y, 30, y);
+    }
+  } else if (state.provisioning) {
     g.lineStyle(2, accent, .8);
     g.strokeRect(-27, -54, 54, 57);
     g.lineBetween(-27, -54, 0, -66); g.lineBetween(0, -66, 27, -54);
@@ -99,12 +106,13 @@ export function drawBuilding(g: Graphics, point: Point, resource: Resource, conn
     g.lineStyle(3, 0x58b6ff); g.lineBetween(0, -25, 0, -5); g.lineBetween(0, -5, -6, -12); g.lineBetween(0, -5, 6, -12);
   }
   if (!connected && resource.kind !== 'internet') {
-    g.lineStyle(2, 0xd5e5ed); g.strokeCircle(37, 10, 7); g.lineBetween(31, 16, 43, 4);
+    top.lineStyle(2, 0xd5e5ed); top.strokeCircle(37, 10, 7); top.lineBetween(31, 16, 43, 4);
   }
   if (overloaded || warning) {
-    g.fillStyle(accent); g.fillTriangle(37, -33, 47, -16, 27, -16);
-    g.lineStyle(2, 0x233744); g.lineBetween(37, -28, 37, -23); g.fillStyle(0x233744); g.fillCircle(37, -20, 1);
+    top.fillStyle(accent); top.fillTriangle(37, -33, 47, -16, 27, -16);
+    top.lineStyle(2, 0x233744); top.lineBetween(37, -28, 37, -23); top.fillStyle(0x233744); top.fillCircle(37, -20, 1);
   }
   g.restore();
+  overlay?.restore();
   return state;
 }
