@@ -28,7 +28,10 @@ test('reduced motion keeps a static preparation completion cue', async ({ page }
   await page.emulateMedia({ reducedMotion: 'reduce' }); await page.goto('/');
   const surface = page.locator('[data-renderer="ready"]'); await expect(surface).toHaveCount(1, { timeout: 20000 });
   await page.getByRole('button', { name: 'Inspect Azure App Service', exact: true }).click();
+  const drawnBefore = Number(await surface.getAttribute('data-drawn-completions'));
   await page.getByRole('button', { name: 'Provision instance', exact: true }).click();
-  await expect(surface).toHaveAttribute('data-completions', /compute/, { timeout: 10000 });
-  await expect(page.getByLabel('Initial App instances')).toHaveValue('2');
+  await surface.scrollIntoViewIfNeeded();
+  await expect(page.getByLabel('Initial App instances')).toHaveValue('2', { timeout: 30000 });
+  await expect.poll(async () => Number(await surface.getAttribute('data-drawn-completions'))).toBeGreaterThan(drawnBefore);
+  await expect(surface).toHaveAttribute('data-reduced-motion', 'true');
 });

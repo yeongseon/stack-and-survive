@@ -25,9 +25,14 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
   const badges = new Map<string, HTMLSpanElement>();
   let animationTime = 0;
   const completions = new Map<string, number>();
+  let drawnCompletions = 0;
+  const undrawnCompletions = new Set<string>();
   const unsubscribe = controller.subscribe(() => {
     const next = controller.getSnapshot();
-    for (const kind of completedResources(view, next)) completions.set(kind, animationTime + 1400);
+    for (const kind of completedResources(view, next)) {
+      completions.set(kind, animationTime + 1400);
+      undrawnCompletions.add(kind);
+    }
     view = next;
   });
   class World extends Phaser.Scene {
@@ -153,11 +158,13 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
           if (animationTime >= until) { completions.delete(kind); continue; }
           const p = positions[resources.findIndex(r => r.kind === kind)];
           if (p) {
+            if (undrawnCompletions.delete(kind)) drawnCompletions++;
             const progress = reducedMotion ? .5 : 1 - (until - animationTime) / 1400;
             fx.lineStyle(3, 0xd6ffe5, 1 - progress); fx.strokeEllipse(p.x, p.y + 8, 80 + progress * 60, 28 + progress * 22);
           }
         }
         host.dataset.completions = JSON.stringify([...completions.keys()]);
+        host.dataset.drawnCompletions = String(drawnCompletions);
         if (view.state.runtime.status === 'FAILED' || view.state.runtime.status === 'COMPLETED') {
           fx.lineStyle(4, view.state.runtime.status === 'FAILED' ? 0xffa49b : 0x90e9c4, .8);
           fx.strokeRoundedRect(4, 4, Math.max(1, width - 8), Math.max(1, height - 8), 12);
