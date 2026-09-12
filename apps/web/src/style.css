@@ -190,7 +190,7 @@ footer { order: 12; display: flex; justify-content: space-between; flex-wrap: wr
   .primary-pressure button { min-height: 40px; }
   .metrics-bar strong { font-size: 14px; }
   .metrics-bar span { font-size: 8px; letter-spacing: 0; }
-  .playfield { min-height: 300px; }
+  .playfield { min-height: 400px; }
   .board-tools > span { font-size: 9px; }
   .board-tools > span { max-width: 68px; letter-spacing: 0; }
   .board-tools button { padding: 3px 6px; }
