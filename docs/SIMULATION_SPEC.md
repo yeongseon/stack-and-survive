@@ -4,7 +4,7 @@
 
 ## Additive live deployment contract (#115)
 
-This extension supersedes earlier preparation-only Cache/Edge restrictions for the new tycoon player. It does not change v0.2 balance constants or fixed-architecture reference outputs.
+Live Cache/Edge deployment is a supported runtime action in the normal tycoon game. This action contract preserves v0.2 balance constants and fixed-architecture reference outputs; preparation editing remains a separate QA capability.
 
 `DEPLOY_RESOURCE(kind: cache | edge, x, y, time, sequence)` follows the existing RUNNING-only action ordering, timestamp and monotonic-sequence validation. Reject duplicate installed/pending kinds or IDs, nonfinite/out-of-build-area positions and insufficient budget for one current-plus-new-resource infrastructure tick. This affordability check reserves/charges nothing.
 
@@ -241,13 +241,13 @@ PREPARATION → RUNNING ↔ PAUSED
 
 ## PREPARATION
 
-Architecture may be modified.
+Architecture may be modified by headless/QA preparation tools. Normal play begins from a fixed validated baseline without preparation editing.
 
 No runtime cost accumulates.
 
 Preparation has a separate integer preparation clock. Explicit preparation steps advance deployment timers without advancing scenario time, traffic, revenue, or costs. Headless callers can advance those steps directly; wall-clock time never enters simulation calculations. Start requires a valid graph and readiness of every resource on an active path, and initializes scenario time to zero.
 
-Preparation timers freeze outside PREPARATION. A completely disconnected optional resource may still be provisioning when traffic starts; it remains pending, inert, and unbilled until preparation resumes and its remaining steps complete. Runtime provisioning applies only to App scale-out. No resource finishes because wall-clock time passed while a different clock was active.
+Preparation timers freeze outside PREPARATION. A completely disconnected optional resource placed by QA preparation tools may still be provisioning when traffic starts; without an accepted runtime deployment timer it remains pending, inert, and unbilled until preparation resumes. Runtime provisioning applies to accepted App scale-out and live Cache/Edge deployment actions. These clocks are distinct: no resource finishes merely because wall-clock time passed while a different clock was active.
 
 ## RUNNING
 
@@ -265,9 +265,9 @@ Final traffic phase finished without hard failure.
 
 A hard-failure condition was reached.
 
-Completed/failed attempts are immutable: timers, costs, and traffic stop. On Redesign & Retry, preserve layout, connections, and completed active instances. Cancel an unfinished runtime scale-out without granting its capacity; the player may request it again in preparation. Other unfinished preparation deployments retain their remaining preparation steps. Clear runtime counters, totals, pending runtime actions, rate limiting, and emergency usage. Previous results are retained separately for comparison, not fed back into simulation.
+Completed/failed attempts are immutable: timers, costs, and traffic stop. Headless `retryRuntime` and QA Redesign & Retry create fresh PREPARATION from the current architecture, preserving layout, connections, completed active instances and resource `remaining` values. Clear accepted scale-out/deployment timers without granting unfinished capacity; pending resources can finish on the preparation clock. Clear runtime counters, totals, pending runtime actions, rate limiting, and emergency usage. QA previous results remain separate. Ordinary Play again instead creates the fixed one-instance baseline through the title, not architecture-preserving retry.
 
-On browser reload, restore saved resources and completed instance counts into PREPARATION. An unfinished new-resource deployment restarts its full preparation delay; an unfinished scale-out is not saved. Never restore an active scenario or grant unfinished capacity for free.
+On QA browser reload, restore saved resources and completed instance counts into PREPARATION. An unfinished new-resource deployment restarts its full preparation delay; an unfinished scale-out is not saved. Never restore an active scenario or grant unfinished capacity for free. Ordinary player mode has no architecture persistence and reloads into a fresh title/baseline.
 
 ---
 
@@ -391,7 +391,7 @@ The engine automatically chooses the relevant path.
 - Require exactly one complete ingress path and the direct App → SQL edge. Do not allow both ingress routes to carry traffic simultaneously.
 - An optional resource is either completely disconnected (zero incident edges, inert but billable once active), or fully connected on its defined path. A partly connected Edge or Cache blocks Start with an explanation; do not silently bypass a malformed path.
 - When the complete cache path is present and active, Browse uses it; Order always uses the direct SQL edge. Cache diagrams elsewhere are shorthand and do not remove the required direct write connection.
-- During RUNNING and PAUSED, no placement, removal, connection, or instance reduction is allowed. Runtime instance increases only occur through accepted scale-out actions.
+- During RUNNING and PAUSED, no free-form placement, removal, manual connection, or instance reduction is allowed. RUNNING permits accepted scale-out and additive `DEPLOY_RESOURCE` actions for Cache/Edge; the latter wire supported routes atomically on activation as defined above. PAUSED permits no new live action. Runtime instance increases only occur through accepted scale-out.
 - Preparation allows instance reduction to a minimum of one completed instance, free of charge. Increasing instances uses the same sequential eight-step provisioning delay as runtime, without running cost.
 - Validate scenario numbers before use: all finite; capacities, latency bases, duration, and score targets positive; costs/revenues nonnegative; ratios in `[0,1]`; business ratios sum to 1 within `1e-9`. Normalize an accepted near-one business mix once at loading.
 - Phases must have integer boundaries, positive lengths, and contiguous coverage of `[0,duration)` with no gaps/overlap. RPS is nonnegative and at most 1,000 for this MVP contract. Reject malformed data rather than corrupting state.
