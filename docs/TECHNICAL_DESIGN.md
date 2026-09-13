@@ -1,6 +1,6 @@
 # Stack & Survive — Technical Design
 
-Version: 1.0. Implemented baseline PR #140 / `816a7a5`. Browser-local TypeScript/React/Phaser. Hosting and outbound product telemetry are deferred; public GitHub is not a deployed game service.
+Version: 1.1. Browser-local TypeScript/React/Phaser, with an owner-authorized static GitHub Pages demo. No game backend or outbound product telemetry. Public source and demo hosting do not imply general release rights approval.
 
 ## Architecture
 
@@ -67,7 +67,7 @@ Baseline toolchain: Node 22.22.0, pnpm 10.32.1, TypeScript 5.9, React 19, Vite 6
 
 PR #140 passed 192 unit / 61 QA / seven player cases. Preserve coverage, not merely counts. Hardware results around 60 FPS on one M1 Pro are not universal or SwiftShader performance claims. Distinct output folders prevent concurrent artifact deletion.
 
-CI checks templates/static/unit/build and both browser modes; it does not deploy Azure or Pages. PR-body checks run trusted base code, not privileged untrusted PR code. [Engineering Rules](ENGINEERING_RULES.md) defines change gates.
+Quality CI checks templates/static/unit/build, both browser modes and the project-path Pages build. A separate `pages.yml` workflow deploys only after successful Quality on the current main push; it checks main SHA and the exact owner-approved asset inventory, builds production `dist-pages` with `/stack-and-survive/`, then deploys via the Pages environment. PR code cannot deploy. No Azure resources are provisioned. PR-body checks run trusted base code, not privileged untrusted PR code. [Demo exception](PAGES_DEMO_EXCEPTION.md) and [Engineering Rules](ENGINEERING_RULES.md) define the boundaries.
 
 ## Security and deferred architecture
 

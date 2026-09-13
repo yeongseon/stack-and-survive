@@ -1,10 +1,11 @@
 import type { Kind } from '@stack-and-survive/schema';
+import { assetUrl } from './asset-url';
 
 export const serviceIcons: Partial<Record<Kind, { src: string; name: string; context: string; fallback: string }>> = {
-  compute: { src: '/assets/azure-icons/app-service.svg', name: 'Azure App Service', context: 'Azure App Service', fallback: 'APP' },
-  database: { src: '/assets/azure-icons/azure-sql.svg', name: 'Azure SQL Database', context: 'Azure SQL Database', fallback: 'SQL' },
-  cache: { src: '/assets/azure-icons/managed-redis.svg', name: 'Azure Managed Redis', context: 'Azure Managed Redis', fallback: 'CACHE' },
-  edge: { src: '/assets/azure-icons/application-gateway.svg', name: 'Azure Application Gateway', context: 'Protected Edge: game abstraction of Azure Application Gateway with WAF; not a separate Azure product.', fallback: 'EDGE' },
+  compute: { src: assetUrl('assets/azure-icons/app-service.svg'), name: 'Azure App Service', context: 'Azure App Service', fallback: 'APP' },
+  database: { src: assetUrl('assets/azure-icons/azure-sql.svg'), name: 'Azure SQL Database', context: 'Azure SQL Database', fallback: 'SQL' },
+  cache: { src: assetUrl('assets/azure-icons/managed-redis.svg'), name: 'Azure Managed Redis', context: 'Azure Managed Redis', fallback: 'CACHE' },
+  edge: { src: assetUrl('assets/azure-icons/application-gateway.svg'), name: 'Azure Application Gateway', context: 'Protected Edge: game abstraction of Azure Application Gateway with WAF; not a separate Azure product.', fallback: 'EDGE' },
 };
 
 export function createServiceBadge(kind: Kind): HTMLSpanElement | null {

@@ -4,6 +4,10 @@
 
 > **Same workload. Different architectures. Different outcomes.**
 
+**[Play the browser demo](https://yeongseon.dev/stack-and-survive/)** · GitHub Pages production build, no real Azure deployment.
+
+Pages is owner-directed under a [narrow existing-asset demo exception](docs/PAGES_DEMO_EXCEPTION.md). Asset rights remain pending; this is not a general license or release clearance. The project-path build is verified with `pnpm build:pages` and `pnpm test:pages`; deployment follows successful main-branch Quality CI.
+
 Stack & Survive is a real-time cloud infrastructure management game where players scale and optimize Azure architecture as demand grows, keeping requests flowing, customers served, and costs under control.
 
 ## Project status
@@ -18,7 +22,7 @@ Ordinary play now enters through **Start Game / How to Play / About**, then a fi
 
 The [visual-state contract](docs/RESOURCE_VISUAL_STATES.md) now distinguishes real active App servers, empty sockets and construction bays. The player world has a framed indoor production aisle, larger App/SQL facilities, pooled semantic packet textures, stronger representative pressure, floor expansion pads with cost confirmation, compact HUD/local actions and game-style results. A decorative title previews the data center without advancing gameplay. The reference image guides composition, not prices or queue semantics; this is not a pixel-identical reproduction or proof of human game feel.
 
-The browser MVP includes separate official Azure badges, snapshot-driven processing/pressure and served-business feedback, actual objectives/events, live provisioning, pause/recovery and results. The historical manual editor, redesign/comparison and local architecture saves remain QA tools, not the normal game loop. Existing54 QA editor cases are retained alongside new tycoon tests; production tests cover real-time entry, expansion and five viewport sizes. #25 now explicitly validates unassisted world-local expansion and perceived game feel after #120; no participant results exist. Hosting (including GitHub Pages) remains deferred. There is no backend or outbound product telemetry.
+The browser MVP includes separate official Azure badges, snapshot-driven processing/pressure and served-business feedback, actual objectives/events, live provisioning, pause/recovery and results. The historical manual editor, redesign/comparison and local architecture saves remain QA tools, not the normal game loop. Existing54 QA editor cases are retained alongside new tycoon tests; production tests cover real-time entry, expansion and five viewport sizes. #25 now explicitly validates unassisted world-local expansion and perceived game feel after #120; no participant results exist. GitHub Pages demo hosting is owner-authorized under the documented exception; other cloud hosting remains deferred. There is no backend or outbound product telemetry.
 
 ## MVP
 

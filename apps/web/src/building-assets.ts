@@ -1,12 +1,13 @@
 import type { Kind } from '@stack-and-survive/schema';
 import bounds from '../../../art/buildings/bounds.json' with { type: 'json' };
 import { facilityBays, facilityModuleScale } from './facility-bays';
+import { assetUrl } from './asset-url';
 
 export type BuildingAsset = { texture: string; src: string; width: number; height: number; originX: number; originY: number; footprintWidth: number; footprintDepth: number; visible: { x: number; y: number; width: number; height: number } };
 export const buildingLayers = Object.freeze({ ground: 0, body: 100, traffic: 1000, state: 2000, effects: 3000, labels: 4000 });
 const asset = (name: keyof typeof bounds, visibleHeight: number, base = 14): BuildingAsset => {
   const b = bounds[name]; const scale = visibleHeight / b.height;
-  return { texture: `building-${name}`, src: `/assets/buildings/${name}.png`,
+  return { texture: `building-${name}`, src: assetUrl(`assets/buildings/${name}.png`),
     width: b.sourceWidth * scale, height: b.sourceHeight * scale,
     originX: (b.left + b.width / 2) / b.sourceWidth,
     originY: (b.top + b.height) / b.sourceHeight - base / (b.sourceHeight * scale),

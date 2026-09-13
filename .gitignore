@@ -21,4 +21,6 @@ dist-qa/
 test-results/
 test-results-player/
 test-results-performance/
+test-results-pages/
+dist-pages/
 playwright-report/

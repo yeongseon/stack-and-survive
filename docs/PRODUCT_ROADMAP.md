@@ -7,7 +7,7 @@ Version: 1.0. Roadmap entries are planned work, **not implemented features or pe
 - Deterministic Black Friday simulation and QA editor, architecture saves and comparison.
 - Normal title/countdown/living operation, fixed slots, automatic topology, live Cache/Edge deployment and App scale-out (PR #122).
 - State-accurate bays, facility framing, pooled traffic/pressure, pads, HUD/results and inert title (PRs #130, #133–#135, #137, #138, #140).
-- Public source repository; no hosted deployment or project-wide license selected.
+- Public source repository and owner-authorized GitHub Pages demo with a narrow [existing-asset exception](PAGES_DEMO_EXCEPTION.md); no project-wide license selected or game backend deployed.
 
 Technical acceptance is not human acceptance. #25 is technically unblocked after PR #140 but needs an actual unfamiliar participant. Epic #123 waits for #25, not vice versa.
 
