@@ -8,7 +8,9 @@ Version: 1.1. Browser-local TypeScript/React/Phaser, with an owner-authorized st
 main.tsx — compile-time normal / QA boundary
  ├ TycoonGame
  │  ├ TitleWorld (decorative SVG/CSS)
- │  ├ GameHUD, BuildPad, local cards, Learn
+ │  ├ GameHUD
+ │  ├ GameFloor (Phaser mount, BuildPad, local cards, feedback)
+ │  ├ LearnDialog (help/metrics/concepts, explicit view and callbacks)
  │  ├ GameResult
  │  └ controller (external store, lifecycle, action intent)
  └ QA editor (BuildPanel, old HUD, comparison, persistence)
@@ -26,6 +28,8 @@ Four shared workspace packages exist: `schema`, `cloud-domain`, `simulation`, `s
 ## State ownership and lifecycle
 
 `createController` exposes subscribe/getSnapshot/commands. React uses `useSyncExternalStore`; dialogs and focus use local hooks. There is no Zustand store. Controller schedules preparation/runtime/countdown, queues intent, handles pause/reset/recovery and mode boundaries. Pure engine transitions own accepted actions, actual request processing, budget, losses and scores.
+
+`TycoonGame` owns one controller instance and top-level entry/restart/dialog focus. `GameFloor` owns the asynchronous Phaser mount, observer cleanup, viewport-aligned input and selected-resource focus; changes to Learn do not remount it. `LearnDialog` receives a view, dialog ref and close/restart callbacks; it does not own game scheduling. These are app-local boundaries for subsequent quality work, not a new generic application framework. `player-boundaries.spec.ts` checks repeated inspection preserves the same canvas, Learn restart restores title focus, and a new run has exactly one fresh world.
 
 `createSimulation`, `advanceSimulation`, `simulateScenario` run without browser APIs. Runtime validates monotonic action sequence and absolute activation ticks, including Cache/Edge deployment and atomic routing. Economy/outcomes/attribution/results own their calculations. [Simulation](SIMULATION_SPEC.md) specifies ordering and numeric comparison.
 
@@ -71,6 +75,6 @@ Quality CI checks templates/static/unit/build, both browser modes and the projec
 
 ## Security and deferred architecture
 
-No secrets, customer telemetry or private platform information belongs in client code. The public repo has licensing/security review tracked in #164; public visibility is not policy clearance. There is no backend, outbound product analytics or chosen hosted production service.
+No secrets, customer telemetry or private platform information belongs in client code. The public repo has licensing/security review tracked in #164; public visibility is not policy clearance. GitHub Pages serves the approved static demo; there is no game backend, outbound product analytics or broader hosted production service beyond that exception.
 
 Protocol/observability packages, Azure Static Web Apps/Functions/Container Apps/Redis/Cosmos and online features are future options requiring concrete need and approval. Do not provision services to make a cloud-themed game appear more cloud-native.
