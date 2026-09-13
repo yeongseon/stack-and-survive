@@ -12,7 +12,7 @@ PR #140 is merged (`816a7a5`), including final visual acceptance and artifact is
 
 ## 1. Production Quality Epic #142
 
-Policy preparation #143 may proceed after docs without waiting for a participant. Actual player-facing quality implementation follows the baseline:
+Policy preparation #143 was completed after docs. The original plan gated player-facing quality changes on #25; the owner subsequently reviewed the game, supplied new visual references and explicitly requested implementation to continue. Technical quality work therefore proceeds, but this feedback is not a substitute for an unfamiliar-participant baseline. #25/#151 remain open and any eventual comparison must disclose the missing pre-change independent baseline rather than fabricate it:
 
 ```text
 #143 free-asset manifest / rights / reproducibility

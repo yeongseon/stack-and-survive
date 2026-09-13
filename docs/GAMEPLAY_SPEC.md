@@ -49,7 +49,7 @@ Primary HUD: remaining budget, offered demand, current availability, one dominan
 
 Resource cards prioritize state/action while retaining cost and false-positive tradeoffs. Learn contains actual objectives/events, pressure explanation, capacities, accounting and glossary. Production has no persistent Build/Manage, initial-instance form, save/reset architecture controls, standalone command console or developer inspector.
 
-Business feedback uses actual served orders/tick revenue, never spendable budget or duplicate per-render rewards. Optional original synthesized sound and feature-detected vibration are controlled in Learn/help, default off and gesture-enabled; [audio lifecycle and pending listening acceptance](AUDIO_FEEDBACK.md) are separate from simulation. Contextual first-run tutorial remains planned.
+Business feedback uses actual served orders/tick revenue, never spendable budget or duplicate per-render rewards. Optional original synthesized sound and feature-detected vibration are controlled in Learn/help, default off and gesture-enabled; [audio lifecycle and pending listening acceptance](AUDIO_FEEDBACK.md) are separate from simulation. The [optional world guide](WORLD_GUIDE.md) offers three explicit Observe/Decide/Compare tips based on real pressure, with Skip/Finish and replay in Learn. It never pauses or acts for the player; finishing tips is not a comprehension score.
 
 ## 6. Pause, errors and results
 

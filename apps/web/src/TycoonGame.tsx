@@ -7,11 +7,15 @@ import { GameHUD } from './GameHUD';
 import { GameResult } from './GameResult';
 import { TitleWorld } from './TitleWorld';
 import { useGameSound } from './useGameSound';
+import { useWorldGuide } from './useWorldGuide';
+import { WorldGuide } from './WorldGuide';
+import { guideHint } from './world-guide';
 
 export function TycoonGame() {
   const [controller] = useState(() => createController(undefined, undefined, true));
   const view = useSyncExternalStore(controller.subscribe, controller.getSnapshot);
   const sound = useGameSound(controller);
+  const guide = useWorldGuide();
   const [entered, setEntered] = useState(false);
   const [page, setPage] = useState<LearnPage>('how');
   const dialog = useRef<HTMLDialogElement>(null);
@@ -22,7 +26,7 @@ export function TycoonGame() {
   useEffect(() => () => controller.destroy(), [controller]);
   const open = (next: typeof page) => { dialogOpener.current = document.activeElement instanceof HTMLElement ? document.activeElement : null; setPage(next); dialog.current?.showModal(); };
   const runtime = view.state.runtime;
-  const start = () => { sound.unlock(); setEntered(true); controller.beginGame(); };
+  const start = () => { guide.newAttempt(); sound.unlock(); setEntered(true); controller.beginGame(); };
   const restart = () => { controller.reset(); setEntered(false); };
   return <main className="tycoon-game" onClick={event => { if (event.target instanceof Element && event.target.closest('button')) sound.click(); }}>
     {!entered ? <section className="title-screen" aria-label="Game introduction" data-time={diagnosticsEnabled ? runtime.time : undefined} data-budget={diagnosticsEnabled ? view.state.economy.remainingBudget : undefined}>
@@ -39,13 +43,14 @@ export function TycoonGame() {
     </section> : <>
       <header className="tycoon-header"><h1>STACK <em>&amp;</em> SURVIVE</h1><nav aria-label="Game controls"><button ref={learnButton} type="button" onClick={() => open('learn')}>ⓘ Learn</button><button type="button" disabled={runtime.status !== 'RUNNING' && runtime.status !== 'PAUSED'} onClick={() => runtime.status === 'PAUSED' ? controller.resume() : controller.pause()}>{runtime.status === 'PAUSED' ? '▶ Resume' : 'Ⅱ Pause'}</button></nav></header>
       <GameHUD view={view} />
-      <GameFloor controller={controller} view={view} />
+      <WorldGuide view={view} guide={guide} returnFocus={() => learnButton.current?.focus()} />
+      <GameFloor controller={controller} view={view} guideTarget={guide.visible ? guideHint(view, guide.stage).target : null} />
       {view.countdown !== null && <div className="welcome-countdown" role="status">Black Friday begins in <strong>{view.countdown}</strong></div>}
       {view.notice && diagnosticsEnabled && <p className="tycoon-notice">{view.notice}</p>}
       {view.result && <GameResult result={view.result} restart={restart} review={() => open('learn')} />}
       {view.error && <section role="alert" className="tycoon-result"><p>{view.error}</p><button type="button" onClick={() => controller.recoverRenderer()}>Rebuild graphics</button><button type="button" onClick={restart}>Return to title</button></section>}
       {diagnosticsEnabled && <details className="tycoon-qa"><summary>Tycoon QA</summary><button onClick={() => controller.inspectNextTick()}>Step one tick</button><output data-testid="elapsed">{runtime.time}</output><pre data-testid="diagnostics">{JSON.stringify(view)}</pre></details>}
     </>}
-    <LearnDialog sound={sound} dialogRef={dialog} page={page} view={view} restart={restart} onClose={() => { if (dialogOpener.current?.isConnected) dialogOpener.current.focus(); else startButton.current?.focus(); }} />
+    <LearnDialog guide={guide} sound={sound} dialogRef={dialog} page={page} view={view} restart={restart} onClose={() => { if (dialogOpener.current?.isConnected) dialogOpener.current.focus(); else startButton.current?.focus(); }} />
   </main>;
 }
