@@ -2,11 +2,15 @@
 
 > **Build. Scale. Keep the business flowing.**
 
+> **Same workload. Different architectures. Different outcomes.**
+
 Stack & Survive is a real-time cloud infrastructure management game where players scale and optimize Azure architecture as demand grows, keeping requests flowing, customers served, and costs under control.
 
 ## Project status
 
-**Hackathon MVP — Living-operation gameplay implemented · Visual overhaul in final technical acceptance (#129) · Human evaluation still required (#25)**
+**Living-operation gameplay and visual technical acceptance delivered through PR #140 · Human baseline pending (#25) · Production Quality and Replayability planned, not implemented**
+
+Start with the [documentation authority index](docs/README.md). Current normal behavior is in [Gameplay](docs/GAMEPLAY_SPEC.md); future work is in [Product Roadmap](docs/PRODUCT_ROADMAP.md). `docs/archive/` preserves history and must not guide new implementation. The repository is public source; no project-wide open-source license has been selected. #164 tracks license, third-party rights and security decisions.
 
 Ordinary play now enters through **Start Game / How to Play / About**, then a five-second countdown into a living business. Use world-local **+** controls to expand App capacity or install Cache/Protected Edge during operation. Routing is automatic; no placement, wiring or initial-instance setup is required. Click intake for rate limiting or active Edge for filtering boost. Budget, demand and availability remain visible; **Learn** contains explanations and analysis. Revenue is not spendable budget. The existing architecture editor is retained in the QA/development build, while `?tycoon` there selects the new player flow. Production never exposes editor/diagnostic controls through URL parameters.
 
@@ -47,13 +51,15 @@ Better Architecture
 
 ```text
 docs/
-  PRD.md                 Product requirements v0.6
-  GAMEPLAY_SPEC.md       Gameplay specification v0.4
+  README.md              Current authority index
+  PRD.md                 Product requirements v1.0
+  GAMEPLAY_SPEC.md       Current gameplay v1.0 and QA appendix
   SIMULATION_SPEC.md     Simulation specification v0.2
-  TECHNICAL_DESIGN.md    Technical design v0.3 (implemented structure)
-  VISUAL_DIRECTION.md    Visual direction v0.3: data-center flow tycoon
-  TYCOON_REFRAME_IMPLEMENTATION_PLAN.md  Reference image and sequential reframe plan
-  IMPLEMENTATION_PLAN.md Delivery phases and pre-implementation gates
+  TECHNICAL_DESIGN.md    Implemented architecture v1.0
+  VISUAL_DIRECTION.md    Visual direction v0.4
+  PRODUCT_ROADMAP.md     Future work, not implementation evidence
+  IMPLEMENTATION_PLAN.md Current ordered execution and human gates
+  archive/               Historical proposals (not authority)
   adr/
     ADR-002-GAME-ENGINE.md Engine experiment evidence (Accepted: Phaser 3.90.0)
 apps/
@@ -84,21 +90,23 @@ Use Node 22.22.0 and pnpm 10.32.1. Verification commands and limits are document
 
 ## Documents
 
-- [Product Requirements Document](docs/PRD.md) — Product scope, flow-management principles, and acceptance criteria (v0.6).
-- [Gameplay Specification](docs/GAMEPLAY_SPEC.md) — Player-facing flow-management experience (v0.4).
+- [Product Requirements Document](docs/PRD.md) — Current scope versus planned diversity (v1.0).
+- [Gameplay Specification](docs/GAMEPLAY_SPEC.md) — Current player flow and separate QA editor appendix (v1.0).
 - [Simulation Specification](docs/SIMULATION_SPEC.md) — Corrected simulation rules, authoritative values, and arithmetic reference matrix (v0.2).
-- [Technical Design](docs/TECHNICAL_DESIGN.md) — Actual four-package structure, app-local controller/renderer/UI, and planned hosting (v0.3).
-- [Visual Direction](docs/VISUAL_DIRECTION.md) — Data-center flow tycoon direction with separate official Azure identity (v0.3).
-- [Tycoon Reframe Plan](docs/TYCOON_REFRAME_IMPLEMENTATION_PLAN.md) — Reference interpretation, delivery evidence and human-playtest handoff (v0.3). Original production PNGs and editable SVG sources are integrated; environment and effects remain procedural.
+- [Technical Design](docs/TECHNICAL_DESIGN.md) — Actual controller/renderer/UI and browser-local deployment boundary (v1.0).
+- [Visual Direction](docs/VISUAL_DIRECTION.md) — State-accurate art and Production Quality policy (v0.4).
+- [Historical Tycoon Reframe](docs/archive/TYCOON_REFRAME_IMPLEMENTATION_PLAN.md) — Archived presentation plan, not current authority.
 - [Asset provenance](apps/web/public/assets/ATTRIBUTION.md) — Original V24 Azure SVG sources, checksums, bundled terms and remaining usage-review limitations.
-- [Implementation Plan](docs/IMPLEMENTATION_PLAN.md) — Current reframe sequence and human-validation/deferred-hosting gates (v0.8); issues and labels, not milestones or a Project board.
+- [Implementation Plan](docs/IMPLEMENTATION_PLAN.md) — Current quality/replayability sequence and real-human gates (v1.0).
+- [Replayability Design](docs/REPLAYABILITY_DESIGN.md), [Challenge System](docs/CHALLENGE_SYSTEM.md), [Strategy Balance](docs/ARCHITECTURE_STRATEGY_BALANCE.md) — Future contracts, not shipped levels/profiles/history.
+- [Asset Strategy](docs/ASSET_STRATEGY.md), [Engineering Rules](docs/ENGINEERING_RULES.md), [Design References](docs/GAME_DESIGN_REFERENCES.md) — Sourcing/change discipline and text-only independent design commentary.
 
 The [ordered MVP backlog (#7)](https://github.com/yeongseon/stack-and-survive/issues/7) links all currently planned work. Prepare the backlog first, then execute one issue at a time in dependency order; individual issues are the source of status and completion evidence.
 - [ADR-002: Game Engine Selection](docs/adr/ADR-002-GAME-ENGINE.md) — Executed comparison and accepted Phaser 3.90.0 decision.
 
 `SIMULATION_SPEC.md` is the source of truth for numerical simulation behavior. `TECHNICAL_DESIGN.md` documents the architecture. The implemented local loop still requires human learning validation before demo-readiness claims; hosting requires separate authorization.
 
-The owner explicitly added Visual Direction to the original six-document set. Further document expansion remains deferred unless requested. The headless engine passes the independent nine-configuration reference matrix and intervention/replay checks; browser tests exercise editing, pause/graphics recovery, live actions, local save recovery, results and Cache/WAF redesign. Automated checks do not establish that a first-time human understands the lessons. Phaser is accepted; human playtesting, Azure deployment and external telemetry retain separate approval/evidence gates.
+The owner requested the current documentation reset and explicit future design documents in #141. The headless engine retains the independent reference matrix and intervention/replay checks; browser tests exercise both normal play and QA editing/recovery. Automated checks do not establish human learning or voluntary replay. Phaser is accepted; human playtesting, hosting and external telemetry retain separate evidence/approval gates.
 
 ## Important boundaries
 
