@@ -13,8 +13,11 @@ test('living operation expands real capacity and activates Cache and Edge only a
   const state = async () => JSON.parse((await page.getByTestId('diagnostics').textContent())!);
   await step.click();
   await page.getByRole('button', { name: /Add Cache/ }).click();
+  await page.getByRole('button', { name: 'Confirm expansion', exact: true }).click();
   await page.getByRole('button', { name: /Add Protected Edge/ }).click();
+  await page.getByRole('button', { name: 'Confirm expansion', exact: true }).click();
   await page.getByRole('button', { name: /App capacity/ }).click();
+  await page.getByRole('button', { name: 'Confirm expansion', exact: true }).click();
   await step.click();
   const accepted = await state();
   expect(accepted.snapshot.requests.cache.active).toBe(false);
@@ -58,6 +61,7 @@ test('observed App pressure falls only after a world-local expansion activates',
   const pressure = async () => JSON.parse((await surface.getAttribute('data-pressure-queues'))!)[0].count;
   const before = await pressure(); expect(before).toBeGreaterThan(8);
   await page.getByRole('button', { name: /App capacity/ }).click();
+  await page.getByRole('button', { name: 'Confirm expansion', exact: true }).click();
   while (Number(await page.getByTestId('elapsed').textContent()) < 39) await step.click();
   await expect(surface).toHaveAttribute('data-tick', '39'); expect(await pressure()).toBe(before);
   await step.click(); await expect(surface).toHaveAttribute('data-tick', '40'); expect(await pressure()).toBeLessThan(before);
@@ -71,7 +75,7 @@ test('world-local controls stay separate and keyboard accessible on a narrow flo
   await expect(page.getByRole('button', { name: 'About', exact: true })).toBeFocused();
   await page.getByRole('button', { name: 'Start Game' }).click();
   await expect(page.getByRole('button', { name: 'Ⅱ Pause', exact: true })).toBeEnabled({ timeout: 10000 });
-  const controls = page.locator('.world-controls > .world-slot button, .world-controls > .intake-control');
+  const controls = page.locator('.world-controls .pad-trigger, .world-controls > .intake-control');
   const boxes = await controls.evaluateAll(elements => elements.map(e => { const r = e.getBoundingClientRect(); return { x:r.x,y:r.y,w:r.width,h:r.height }; }));
   for (let i=0;i<boxes.length;i++) for (let j=i+1;j<boxes.length;j++) {
     const a=boxes[i], b=boxes[j]; expect(a.x < b.x+b.w && a.x+a.w>b.x && a.y<b.y+b.h && a.y+a.h>b.y, `controls ${i}/${j}: ${JSON.stringify([a,b])}`).toBe(false);

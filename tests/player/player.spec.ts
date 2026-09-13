@@ -40,8 +40,11 @@ test('ordinary player builds live infrastructure through world controls without 
   await expect(page.locator('[data-renderer="ready"]')).toHaveCount(1, { timeout: 20000 });
   await expect(page.getByRole('button', { name: 'Ⅱ Pause', exact: true })).toBeEnabled({ timeout: 20000 });
   await page.getByRole('button', { name: /Add Cache/ }).click();
+  await page.getByRole('button', { name: 'Confirm expansion', exact: true }).click();
   await page.getByRole('button', { name: /Add Protected Edge/ }).click();
+  await page.getByRole('button', { name: 'Confirm expansion', exact: true }).click();
   await page.getByRole('button', { name: /App capacity/ }).click();
+  await page.getByRole('button', { name: 'Confirm expansion', exact: true }).click();
   await expect(page.getByTestId('slot-cache')).toContainText('Provisioning', { timeout: 5000 });
   await expect(page.getByTestId('slot-cache')).toContainText('Active', { timeout: 10000 });
   await expect(page.getByTestId('slot-edge')).toContainText('Active');

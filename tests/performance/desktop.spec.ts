@@ -23,10 +23,14 @@ for (const tycoon of [false, true]) test(`measure a real peak workload and discl
     await page.getByText('Tycoon QA', { exact: true }).click();
     await page.getByRole('button', { name: 'Step one tick', exact: true }).click();
     await page.getByRole('button', { name: /Add Cache/ }).click();
+    await page.getByRole('button', { name: 'Confirm expansion', exact: true }).click();
     await page.getByRole('button', { name: /Add Protected Edge/ }).click();
+    await page.getByRole('button', { name: 'Confirm expansion', exact: true }).click();
     await page.getByRole('button', { name: /App capacity/ }).click();
+    await page.getByRole('button', { name: 'Confirm expansion', exact: true }).click();
     for (let i=0;i<9;i++) await page.getByRole('button', { name: 'Step one tick', exact: true }).click();
     await page.getByRole('button', { name: /App capacity/ }).click();
+    await page.getByRole('button', { name: 'Confirm expansion', exact: true }).click();
   } else {
     await page.getByRole('button', { name: 'Start operation', exact: true }).click();
     await page.locator('summary').filter({ hasText: 'Developer inspector' }).click();

@@ -1,6 +1,15 @@
 import { expect, it } from 'vitest';
 import { createController } from './controller';
 
+it('rejects duplicate expansion requests synchronously before a render or timer tick', () => {
+  const c = createController({ start: () => () => {} }); c.start();
+  c.queueAction({ type: 'DEPLOY_RESOURCE', kind: 'cache', x: 0, y: 100 });
+  c.queueAction({ type: 'DEPLOY_RESOURCE', kind: 'cache', x: 0, y: 100 });
+  c.queueAction({ type: 'SCALE_OUT' }); c.queueAction({ type: 'SCALE_OUT' });
+  expect(c.getSnapshot().queuedActions.map(action => action.type)).toEqual(['DEPLOY_RESOURCE', 'SCALE_OUT']);
+  c.destroy();
+});
+
 it('title is inert and countdown starts exactly once without manual setup', () => {
   let callback: (() => void) | undefined; let starts = 0;
   const c = createController({ start(fn) { callback = fn; starts++; return () => {}; } }, undefined, true);
