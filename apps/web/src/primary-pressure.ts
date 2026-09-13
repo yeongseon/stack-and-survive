@@ -4,7 +4,7 @@ import { compare } from '@stack-and-survive/simulation/economy';
 
 export function primaryPressure(view: View): { label: string; why: string; urgent: boolean } {
   const budget = view.state.economy.remainingBudget;
-  if (compare(budget / blackFriday.budget, .2) < 0) return {
+  if (compare(budget / (view.challenge?.workload.budget ?? blackFriday.budget), .2) < 0) return {
     label: compare(budget, 0) <= 0 ? 'Budget exhausted' : 'Budget running low', urgent: true,
     why: 'Less than 20% of the operational budget remains. Check running costs before expanding. Revenue does not refill this budget.',
   };

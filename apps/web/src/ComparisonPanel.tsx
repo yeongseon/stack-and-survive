@@ -8,7 +8,7 @@ export function ComparisonPanel({ previous, current }: { previous: Result; curre
     <p className="eyebrow">PREVIOUS → CURRENT</p><h2>What changed after redesign?</h2>
     <p>Previous: {previous.status} · {previous.elapsedTime}s · {previous.primary}</p>
     <p>Current: {current.status} · {current.elapsedTime}s · {current.primary}</p>
-    {!comparison.sameScenario && <p role="alert">Different scenario or balance versions — deltas are unavailable.</p>}
+    {!comparison.sameScenario && <p role="alert">Different or incomplete challenge conditions, scenario or balance versions — deltas are unavailable.</p>}
     {!comparison.sameDuration && <p className="critical">Different run lengths. Total cost and business value cover different amounts of traffic; lower cost alone does not mean better efficiency.</p>}
     <div className="table-scroll"><table><caption>Observed attempt totals — delta is current minus previous, not an efficiency rating</caption><thead><tr><th scope="col">Metric</th><th scope="col">Previous</th><th scope="col">Current</th><th scope="col">Delta</th></tr></thead>
       <tbody>{comparison.rows.map(row => <tr key={row.label}><th scope="row">{row.label}</th><td>{format(row.before)}</td><td>{format(row.after)}</td><td>{format(row.delta)}</td></tr>)}</tbody></table></div>

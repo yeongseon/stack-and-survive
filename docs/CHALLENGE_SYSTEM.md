@@ -1,8 +1,8 @@
 # Challenge system
 
-Version: 0.1 design proposal for #153–#163. Current code has one validated Black Friday scenario, not the entities or progression below. This document is not approval of example numeric modifiers.
+Version: 0.2. #153 implements the initial challenge/identity/objective contract. The ordinary game still exposes one Black Friday challenge; ladder, history, profiles, modifiers and daily progression remain future #154–#163 work. This document is not approval of example numeric modifiers.
 
-## Proposed responsibilities
+## Responsibilities (current versus planned)
 
 | Concept | Responsibility |
 |---|---|
@@ -17,7 +17,15 @@ Version: 0.1 design proposal for #153–#163. Current code has one validated Bla
 
 ## Identity before comparison
 
-#153 must define canonical serialization and ID/hash inputs: challenge/content version, balance/rules version, workload definition, seed and seed-algorithm version, objective identity, modifier list/order and duration. Same complete identity plus initial architecture and action schedule must reproduce results. A seed alone is insufficient when content changes.
+`@stack-and-survive/scenarios/challenge` defines `parseChallenge`, `blackFridayChallenge`, `sameChallenge` and `evaluateObjective`. Schema version 1 requires a short id, positive content version, rulesVersion `0.2`, seedAlgorithm `fixed-v1`, uint32 seed, validated workload and versioned objective. The fixed algorithm does not generate random traffic: the complete schedule is supplied. A seed is an identity coordinate reserved for future deterministic generation, not evidence that randomness exists now.
+
+The parser reconstructs properties in a fixed order and calculates a UTF-8 FNV-1a 64-bit fingerprint prefixed `fnv1a64:`. This is a compact non-cryptographic fingerprint, NOT an authenticity/security hash. Comparisons reparse inputs and compare complete canonical conditions, not just the fingerprint. Caller-supplied canonical/hash fields are ignored and regenerated. Unknown fields, unsupported rule/seed versions or modifiers are rejected rather than silently enabled. A future algorithm/rules version must add explicit version handling and tests.
+
+Current objective kinds: survive (complete full duration) and availability (complete full duration plus validated target, with the existing numerical tolerance). Workload and its original scoring targets remain unchanged by objective evaluation. The public default remains Black Friday v0.2, budget140, duration180; test-only injected workloads are not new released levels.
+
+Workload/objective/traffic records are frozen on parse. Application controller captures the actual initial architecture at Start/countdown entry, records ordered runtime action outcomes and attaches challenge/initialArchitecture/objectiveMet/actionLog to its terminal result. The pure engine result remains unchanged. Normal/QA resets retain the selected challenge; QA manual editor UI remains the default Black Friday shell, not a new challenge selector. Switching a TycoonGame challenge requires a new keyed component/controller rather than changing props mid-run.
+
+No result-history persistence or architecture-profile classification is introduced here. Existing phase/attribution metrics provide actual served/lost/peak evidence; do not synthesize extra metrics before their contracts exist. Same complete identity plus initial architecture and action schedule must reproduce results. A seed alone is insufficient when content changes.
 
 Compare like conditions, label differences explicitly and retain termination/duration. A failed partial run is not an eligible cheapest full completion. Do not compare bests across changed prices, objectives or seed/rules without a clearly non-equivalent label. Never replay an old action schedule against the already-upgraded final architecture.
 
@@ -41,4 +49,4 @@ Candidate objective families: survival, availability, budget/cost efficiency, NB
 
 #156/#163 must define schema versions, bounds/retention, migrations, duplicate save handling and reset/failure behavior. Store only necessary local game data. Challenge identity, initial architecture and ordered actions are required for reproducible comparison, not merely a final resource list.
 
-No new code or simulation constants are delivered by this proposal. Tests must precede materialization/evaluation/storage implementation, preserve legacy reference outcomes and prove same inputs repeat exactly under the existing comparison convention. #159 human replayability gates P1, independently of green tests.
+The initial identity/injection contract is delivered by #153; subsequent designs above remain unimplemented. Tests precede materialization/evaluation/storage changes and preserve legacy outputs. New result comparison requires both complete challenge records; mixed legacy/new metadata is explicitly not equivalent. Existing all-legacy session comparison remains compatible. #159 human replayability gates P1, independently of green tests.

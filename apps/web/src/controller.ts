@@ -1,5 +1,5 @@
 import { baseline, validateStart } from '@stack-and-survive/cloud-domain';
-import { blackFriday } from '@stack-and-survive/scenarios';
+import { blackFridayChallenge, parseChallenge, evaluateObjective, type Challenge } from '@stack-and-survive/scenarios/challenge';
 import { advanceSimulation, createSimulation, simulationResult } from '@stack-and-survive/simulation/results';
 import { advancePreparation, pauseRuntime, requestPreparationScale, resumeRuntime, startRuntime, type Action } from '@stack-and-survive/simulation/runtime';
 import type { Architecture, Kind } from '@stack-and-survive/schema';
@@ -9,11 +9,16 @@ import { updateEvents, type GameEvent } from './observations';
 import { diagnosticsEnabled } from './mode';
 import { tycoonArchitecture } from './tycoon-layout';
 
+export type ChallengeResult = ReturnType<typeof simulationResult> & {
+  challenge: Challenge; initialArchitecture: Architecture; objectiveMet: boolean;
+  actionLog: ReturnType<typeof createSimulation>['runtime']['actionLog'];
+};
 export type View = Readonly<{
   state: ReturnType<typeof createSimulation>;
   snapshot: ReturnType<typeof advanceSimulation>['snapshot'];
-  result: ReturnType<typeof simulationResult> | null;
-  previousResult: ReturnType<typeof simulationResult> | null;
+  result: (ReturnType<typeof simulationResult> & Partial<Pick<ChallengeResult, 'challenge' | 'initialArchitecture' | 'objectiveMet' | 'actionLog'>>) | null;
+  previousResult: (ReturnType<typeof simulationResult> & Partial<Pick<ChallengeResult, 'challenge' | 'initialArchitecture' | 'objectiveMet' | 'actionLog'>>) | null;
+  challenge?: Challenge;
   error: string | null;
   selected: string | null;
   building: Kind | null;
@@ -39,12 +44,16 @@ const clock: Clock = {
   start(callback) { const id = globalThis.setInterval(callback, 1000); return () => globalThis.clearInterval(id); },
 };
 
-export function createController(timer: Clock = clock, repository?: SaveRepository, playerMode = false) {
+export function createController(timer: Clock = clock, repository?: SaveRepository, playerMode = false, challengeInput: unknown = blackFridayChallenge) {
+  const challenge = parseChallenge(challengeInput);
+  const scenario = challenge.workload;
+  let initialArchitecture: Architecture;
   if (playerMode) repository = undefined;
   const initial = (instances = 1): View => {
     const architecture = playerMode ? tycoonArchitecture() : baseline(instances);
     if (!playerMode) architecture.resources.forEach((r, i) => { r.x = (i - 1) * 260; r.y = (i - 1) * 100; });
-    return { state: createSimulation(architecture, blackFriday), snapshot: null, result: null, previousResult: null, error: null,
+    initialArchitecture = structuredClone(architecture);
+    return { challenge, state: createSimulation(architecture, scenario), snapshot: null, result: null, previousResult: null, error: null,
       selected: null, building: null, preview: null, camera: { x: 0, y: 0, zoom: 1 }, notice: '', connecting: false, connectionSource: null, rendererGeneration: 0, recoveringRenderer: false, queuedActions: [], confirmationEpoch: 0, saveMessage: repository ? 'No local save yet.' : 'Local persistence is not attached.', events: [], playerMode, countdown: null };
   };
   let view: View = initial();
@@ -72,11 +81,12 @@ export function createController(timer: Clock = clock, repository?: SaveReposito
   const advance = () => {
     if (destroyed || view.error || view.state.runtime.status !== 'RUNNING') return;
     try {
-      const transition = advanceSimulation(view.state, blackFriday, view.queuedActions);
+      const transition = advanceSimulation(view.state, scenario, view.queuedActions);
       const terminal = transition.nextState.runtime.status !== 'RUNNING';
       if (terminal) stop();
+      const result = terminal ? simulationResult(transition.nextState, scenario) : null;
       publish({ ...view, queuedActions: [], notice: transition.outcomes.length ? transition.outcomes.map(o => o.accepted ? `${o.action.type} accepted at ${o.action.time}s.` : o.reason).join(' ') : view.notice, state: transition.nextState, snapshot: transition.snapshot,
-        result: terminal ? simulationResult(transition.nextState, blackFriday) : null, error: null });
+        result: result ? { ...result, challenge, initialArchitecture: structuredClone(initialArchitecture), actionLog: structuredClone(transition.nextState.runtime.actionLog), objectiveMet: evaluateObjective(challenge, result) } : null, error: null });
     } catch (error) {
       stop(); publish({ ...view, error: error instanceof Error ? error.message : 'Simulation could not advance' });
     }
@@ -109,7 +119,7 @@ export function createController(timer: Clock = clock, repository?: SaveReposito
     if (view.state.runtime.status !== 'RUNNING') return 'Live actions require running traffic; resume first if paused.';
     try {
       const next = candidate(request);
-      const preview = advanceSimulation(view.state, blackFriday, [...view.queuedActions, next]);
+      const preview = advanceSimulation(view.state, scenario, [...view.queuedActions, next]);
       return preview.outcomes.find(o => o.action.sequence === next.sequence)?.reason ?? null;
     } catch (error) { return error instanceof Error ? error.message : 'Action is unavailable.'; }
   };
@@ -117,7 +127,7 @@ export function createController(timer: Clock = clock, repository?: SaveReposito
     try {
       const architecture = repository.load();
       if (architecture) {
-        view = { ...view, state: createSimulation(architecture, blackFriday), saveMessage: 'Loaded local architecture. Runtime starts fresh.' };
+        view = { ...view, state: createSimulation(architecture, scenario), saveMessage: 'Loaded local architecture. Runtime starts fresh.' };
         savedSignature = JSON.stringify(architecture);
         if (architecture.resources.some(r => r.remaining > 0)) schedule(prepare);
       }
@@ -129,6 +139,7 @@ export function createController(timer: Clock = clock, repository?: SaveReposito
   return {
     beginGame() {
       if (!playerMode || destroyed || view.error || view.countdown !== null || view.state.runtime.status !== 'PREPARATION') return;
+      initialArchitecture = structuredClone(view.state.runtime.architecture);
       publish({ ...view, countdown: 5 });
       schedule(countDown);
     },
@@ -159,6 +170,7 @@ export function createController(timer: Clock = clock, repository?: SaveReposito
       const errors = validateStart(view.state.runtime.architecture);
       if (view.state.runtime.preparationScaleDue !== null) errors.push('Scale-out is provisioning');
       if (errors.length) { publish({ ...view, notice: errors.join('; ') }); return; }
+      initialArchitecture = structuredClone(view.state.runtime.architecture);
       stop(); publish({ ...view, notice: '', building: null, preview: null, connecting: false, connectionSource: null, state: { ...view.state, runtime: startRuntime(view.state.runtime) } });
       schedule(advance);
     },
@@ -170,7 +182,7 @@ export function createController(timer: Clock = clock, repository?: SaveReposito
     redesign() {
       if (destroyed || !view.result) return;
       stop();
-      publish({ ...view, previousResult: structuredClone(view.result), state: createSimulation(view.state.runtime.architecture, blackFriday), snapshot: null, result: null,
+      publish({ ...view, previousResult: structuredClone(view.result), state: createSimulation(view.state.runtime.architecture, scenario), snapshot: null, result: null,
         queuedActions: [], notice: '', building: null, preview: null, connecting: false, connectionSource: null,
         rendererGeneration: view.rendererGeneration + 1, confirmationEpoch: view.confirmationEpoch + 1 });
       if (view.state.runtime.architecture.resources.some(r => r.remaining > 0)) schedule(prepare);

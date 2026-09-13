@@ -1,7 +1,9 @@
 import type { Result } from './ResultPanel';
+import { sameChallenge } from '@stack-and-survive/scenarios/challenge';
 
 export function compareAttempts(previous: Result, current: Result) {
-  const sameScenario = previous.scenarioId === current.scenarioId && previous.balanceVersion === current.balanceVersion && previous.schemaVersion === current.schemaVersion;
+  const sameScenario = previous.scenarioId === current.scenarioId && previous.balanceVersion === current.balanceVersion && previous.schemaVersion === current.schemaVersion
+    && (previous.challenge || current.challenge ? !!previous.challenge && !!current.challenge && sameChallenge(previous.challenge, current.challenge) : true);
   const sameDuration = previous.elapsedTime === current.elapsedTime;
   const rows = [
     { label: 'Availability (%)', before: previous.metrics.noDemand ? null : previous.metrics.availability * 100, after: current.metrics.noDemand ? null : current.metrics.availability * 100 },
