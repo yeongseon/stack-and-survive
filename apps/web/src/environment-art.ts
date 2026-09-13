@@ -1,4 +1,5 @@
 import type Phaser from 'phaser';
+import { tycoonPoint } from './tycoon-layout';
 
 type Graphics = Phaser.GameObjects.Graphics;
 type EquipmentKind = 'rack' | 'cooling' | 'cabinet';
@@ -48,7 +49,7 @@ function equipment(g: Graphics, e: Equipment, index: number) {
     g.fillStyle(0xb9a26b); g.fillRect(x + 2, y - 20, 3, 6);
   }
 }
-export function drawEnvironment(g: Graphics, width: number, height: number) {
+export function drawEnvironment(g: Graphics, width: number, height: number, player = false) {
   g.fillGradientStyle(0x5a6b7b, 0x657989, 0x819199, 0x687f8c); g.fillRect(0, 0, width, height);
   const tile = width < 600 ? 38 : 56;
   for (let row = -1; row < Math.ceil(height / (tile * .55)) + 1; row++) {
@@ -76,6 +77,30 @@ export function drawEnvironment(g: Graphics, width: number, height: number) {
     g.fillStyle(0xf0d5a4, .85); g.fillRoundedRect(x + 39, 25, 17, 5, 2);
   }
   const objects = facilityLayout(width, height);
+  if (player && width >= 900) {
+    const count = Math.min(18, Math.floor(width / 80));
+    for (let i = 0; i < count; i++) {
+      const x = 65 + i * (width - 130) / Math.max(1, count - 1);
+      objects.push({ kind: i % 6 === 0 ? 'cooling' : 'rack', x, y: 154, width: 30, height: 44 });
+      objects.push({ kind: i % 5 === 0 ? 'cabinet' : 'rack', x, y: height - 52, width: 30, height: 36 });
+    }
+    g.fillStyle(0x1d3747, .25); g.fillRoundedRect(30, height * .28, width - 60, height * .49, 15);
+    g.lineStyle(2, 0x879f9c, .4); g.strokeRoundedRect(30, height * .28, width - 60, height * .49, 15);
+    g.lineStyle(6, 0x253d4d, .6); g.lineBetween(35, 171, width - 35, 171);
+    g.lineStyle(2, 0xabb895, .4); g.lineBetween(35, 173, width - 35, 173);
+  }
+  if (player) {
+    for (const kind of ['internet', 'edge', 'compute', 'cache', 'database'] as const) {
+      const p = tycoonPoint(kind, width, height);
+      g.fillStyle(0x182f41, .18); g.fillEllipse(p.x, p.y + 10, 140, 62);
+      g.lineStyle(1, kind === 'compute' ? 0xc3b88f : 0x9bafa8, .55); g.strokeEllipse(p.x, p.y + 10, 140, 62);
+    }
+    g.fillStyle(0x1c3445, .8); g.fillRect(22, height - 15, width - 44, 8);
+    for (let x = 32; x < width - 25; x += 120) {
+      g.lineStyle(3, 0x4a6270); g.lineBetween(x, height - 32, x, height - 11);
+      g.fillStyle(0xc2b181, .65); g.fillRect(x - 4, height - 34, 8, 3);
+    }
+  }
   objects.forEach((object, i) => equipment(g, object, i));
   g.lineStyle(3, 0x314857); g.lineBetween(25, height - 19, width - 25, height - 19);
   g.lineStyle(1, 0xb9a77b, .85); g.lineBetween(25, height - 23, width - 25, height - 23);
