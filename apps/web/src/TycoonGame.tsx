@@ -12,6 +12,7 @@ import { BuildPad } from './BuildPad';
 import { resourceVisualState } from './resource-visual-state';
 import { GameHUD } from './GameHUD';
 import { GameResult } from './GameResult';
+import { TitleWorld } from './TitleWorld';
 
 function LocalAction({ controller, action, children }: { controller: Controller; action: ActionRequest; children: React.ReactNode }) {
   const reason = controller.actionReason(action);
@@ -50,6 +51,7 @@ function Floor({ controller, view }: { controller: Controller; view: View }) {
   const runtime = view.state.runtime;
   const app = runtime.architecture.resources.find(r => r.kind === 'compute')!;
   const visual = resourceVisualState(view);
+  const feedback = businessFeedback(view);
   const selected = runtime.architecture.resources.find(r => r.id === view.selected);
   return <div className="tycoon-floor world" ref={host} data-testid="world" aria-label="Living cloud business">
     <div className="world-controls">
@@ -76,6 +78,7 @@ function Floor({ controller, view }: { controller: Controller; view: View }) {
         {selected.kind === 'database' && <><p className="resource-state">Reads: {visual.sql.readPressure}<br/>Writes: {visual.sql.writePressure}</p><small>Capacity and routing explained in Learn</small></>}
       </section>}
     </div>
+    {feedback && <div key={feedback.tick} className="business-feedback" data-testid="business-feedback">✓ Orders served · {feedback.orders.toFixed(1)}/s <span>+{feedback.revenue.toFixed(2)} cr revenue this tick · not spendable budget</span></div>}
   </div>;
 }
 
@@ -96,12 +99,12 @@ export function TycoonGame() {
   const pressure = primaryPressure(view);
   const start = () => { setEntered(true); controller.beginGame(); };
   const restart = () => { controller.reset(); setEntered(false); };
-  const feedback = businessFeedback(view);
   return <main className="tycoon-game">
-    {!entered ? <section className="title-screen" aria-label="Game introduction">
+    {!entered ? <section className="title-screen" aria-label="Game introduction" data-time={diagnosticsEnabled ? runtime.time : undefined} data-budget={diagnosticsEnabled ? view.state.economy.remainingBudget : undefined}>
       <div className="title-mark" aria-hidden="true">S<span>+</span></div><p className="title-eyebrow">A CLOUD BUSINESS UNDER PRESSURE</p>
       <h1>STACK <em>&amp;</em><br/>SURVIVE</h1><p className="title-tagline">Build. Scale. Keep the business flowing.</p>
       <p className="title-description">Your customers are arriving. Grow your data center where the pressure builds.</p>
+      <TitleWorld />
       <button ref={startButton} type="button" className="start-game" onClick={start}>Start Game <span aria-hidden="true">→</span></button>
       <nav aria-label="Introduction"><button type="button" onClick={() => open('how')}>How to Play</button><button type="button" onClick={() => open('about')}>About</button></nav>
       <p className="title-footnote">One business. Three minutes. Your infrastructure decisions.</p>
@@ -110,7 +113,6 @@ export function TycoonGame() {
       <GameHUD view={view} />
       <Floor controller={controller} view={view} />
       {view.countdown !== null && <div className="welcome-countdown" role="status">Black Friday begins in <strong>{view.countdown}</strong></div>}
-      {feedback && <div key={feedback.tick} className="business-feedback" data-testid="business-feedback">✓ Orders served · {feedback.orders.toFixed(1)}/s <span>+{feedback.revenue.toFixed(2)} cr revenue this tick · not spendable budget</span></div>}
       {view.notice && diagnosticsEnabled && <p className="tycoon-notice">{view.notice}</p>}
       {view.result && <GameResult result={view.result} restart={restart} review={() => open('learn')} />}
       {view.error && <section role="alert" className="tycoon-result"><p>{view.error}</p><button type="button" onClick={() => controller.recoverRenderer()}>Rebuild graphics</button><button type="button" onClick={restart}>Return to title</button></section>}
