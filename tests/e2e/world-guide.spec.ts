@@ -1,0 +1,52 @@
+import { expect, test } from '@playwright/test';
+
+test('guide responds to actual pressure without acting and persists only explicit skip or finish', async ({ page }, info) => {
+  await page.goto('/?tycoon'); await page.getByRole('button', { name: 'Start Game', exact: true }).click();
+  await expect(page.locator('[data-renderer="ready"]')).toHaveCount(1);
+  await expect(page.getByRole('button', { name: 'Ⅱ Pause', exact: true })).toBeEnabled({ timeout: 20000 });
+  await page.getByText('Tycoon QA', { exact: true }).click();
+  const step = page.getByRole('button', { name: 'Step one tick', exact: true }); await step.click();
+  const guide = page.getByRole('region', { name: 'World guide', exact: true });
+  await expect(guide).toContainText('Follow the traffic');
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await expect(guide).toBeInViewport();
+  expect((await guide.boundingBox())!.y + (await guide.boundingBox())!.height).toBeLessThanOrEqual((await page.getByTestId('world').boundingBox())!.y);
+  await page.screenshot({ path: info.outputPath('first-run-guide.png') });
+  const before = JSON.parse((await page.getByTestId('diagnostics').textContent())!).state;
+  await guide.getByRole('button', { name: 'Next guide tip', exact: true }).click();
+  await expect(guide).toContainText('You do not have to build yet');
+  expect(JSON.parse((await page.getByTestId('diagnostics').textContent())!).state).toEqual(before);
+  while (Number(await page.getByTestId('elapsed').textContent()) < 31) await step.click();
+  await expect(guide).toContainText('Consider more App capacity');
+  await expect(page.getByTestId('world')).toHaveAttribute('data-guide-target', 'compute');
+  await page.getByRole('button', { name: '+ App capacity', exact: true }).click();
+  await page.getByRole('button', { name: 'Confirm expansion', exact: true }).click(); await step.click();
+  await expect(guide).toContainText('Construction is not capacity yet');
+  await guide.getByRole('button', { name: 'Skip guide', exact: true }).click();
+  await expect(guide).toHaveCount(0); await expect(page.getByRole('button', { name: 'ⓘ Learn', exact: true })).toBeFocused();
+  await page.reload(); await page.getByRole('button', { name: 'Start Game', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Ⅱ Pause', exact: true })).toBeEnabled({ timeout: 20000 });
+  await expect(guide).toHaveCount(0);
+  await page.getByRole('button', { name: 'ⓘ Learn', exact: true }).click();
+  await page.getByRole('button', { name: 'Replay world guide', exact: true }).click(); await page.keyboard.press('Escape');
+  await expect(guide).toBeVisible();
+  await guide.getByRole('button', { name: 'Next guide tip', exact: true }).click();
+  await guide.getByRole('button', { name: 'Next guide tip', exact: true }).click();
+  await guide.getByRole('button', { name: 'Finish guide', exact: true }).click();
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem('stack-and-survive.guide.v1')!).status)).toBe('completed');
+  await page.reload(); await page.getByRole('button', { name: 'Start Game', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Ⅱ Pause', exact: true })).toBeEnabled({ timeout: 20000 });
+  await expect(guide).toHaveCount(0);
+});
+
+test('guide can be opted out before play and storage failure does not block local dismissal', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 740 });
+  await page.addInitScript(() => { Storage.prototype.setItem = () => { throw new Error('storage blocked'); }; });
+  await page.goto('/?tycoon'); await page.getByRole('button', { name: 'How to Play', exact: true }).click();
+  await page.getByRole('button', { name: 'Skip world guide', exact: true }).click();
+  await expect(page.getByRole('region', { name: 'World guide settings' })).toContainText('could not be saved');
+  await page.keyboard.press('Escape'); await page.getByRole('button', { name: 'Start Game', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Ⅱ Pause', exact: true })).toBeEnabled({ timeout: 20000 });
+  await expect(page.getByRole('region', { name: 'World guide', exact: true })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Add Cache', exact: true })).toBeVisible();
+});

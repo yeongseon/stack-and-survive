@@ -295,3 +295,14 @@ footer { order: 12; display: flex; justify-content: space-between; flex-wrap: wr
 .sound-settings label { display: flex; align-items: center; gap: 12px; margin-top: 10px; font-size: 13px; }
 .sound-settings input[type="range"] { flex: 1; min-width: 70px; }
 .sound-settings p, .sound-settings small { font-size: 11px; color: #aac7d4; }
+.world-guide { display: flex; align-items: center; gap: 20px; margin: 10px auto; max-width: 850px; padding: 14px 18px; border: 1px solid #577c91; border-left: 3px solid #82d8cf; background: #122f3b; border-radius: 6px; }
+.tycoon-game:has(> .world-guide) > .tycoon-floor { height: min(720px,calc(100dvh - 310px)); }
+.world-guide h2 { font-size: 16px; margin: 4px 0; color: #f1dbad; }.world-guide p { font-size: 12px; color: #b8cfd7; margin: 0; }.world-guide small { font-size: 10px; color: #85c9cf; }
+.guide-actions { display: flex; flex-direction: column; gap: 6px; min-width: 110px; }
+.world-guide button { min-height: 40px; }
+.tycoon-floor[data-guide-target="compute"] .app-expansion .pad-trigger,
+.tycoon-floor[data-guide-target="cache"] [data-testid="slot-cache"] .pad-trigger,
+.tycoon-floor[data-guide-target="edge"] [data-testid="slot-edge"] .pad-trigger,
+.tycoon-floor[data-guide-target="internet"] > .world-controls > .intake-control:first-of-type,
+.tycoon-floor[data-guide-target="database"] > .world-controls > .intake-control:last-of-type { outline: 3px solid #f2d794; outline-offset: 5px; box-shadow: 0 0 20px #5bd2d955; }
+@media(max-width:600px) { .world-guide { flex-direction: column; align-items: stretch; margin-inline: 0; padding: 12px; }.guide-actions { flex-direction: row; }.guide-actions button { flex: 1; min-height: 44px; } }

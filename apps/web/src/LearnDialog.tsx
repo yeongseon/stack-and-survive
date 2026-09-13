@@ -4,17 +4,23 @@ import { primaryPressure } from './primary-pressure';
 import { MissionPanel } from './MissionPanel';
 import { glossary } from './help';
 import type { GameSoundControls } from './useGameSound';
+import type { WorldGuideControls } from './useWorldGuide';
 
 export type LearnPage = 'how' | 'about' | 'learn';
-export function LearnDialog({ dialogRef, page, view, onClose, restart, sound }: {
+export function LearnDialog({ dialogRef, page, view, onClose, restart, sound, guide }: {
   dialogRef: RefObject<HTMLDialogElement | null>; page: LearnPage; view: View; onClose: () => void; restart: () => void;
   sound: GameSoundControls;
+  guide: WorldGuideControls;
 }) {
   const r = view.snapshot?.requests;
   const pressure = primaryPressure(view);
   return <dialog ref={dialogRef} className="learn-dialog" aria-labelledby="learn-title" onClose={onClose}>
     <form method="dialog"><button autoFocus>Close</button></form>
     <h2 id="learn-title">{page === 'how' ? 'How to Play' : page === 'about' ? 'About Stack & Survive' : 'Learn'}</h2>
+    <section aria-label="World guide settings"><h3>World guide</h3><p>A short, optional guide follows your actual traffic. It does not pause the operation or choose actions for you.</p>
+      <button type="button" onClick={guide.replay}>Replay world guide</button>{guide.visible && <button type="button" onClick={guide.skip}>Skip world guide</button>}
+      {guide.message && <p role="status">{guide.message}</p>}
+    </section>
     <section className="sound-settings" aria-label="Sound and feedback settings">
       <h3>Sound &amp; feedback</h3>
       <button type="button" aria-pressed={!sound.settings.muted} onClick={sound.toggle}>{sound.settings.muted ? 'Enable sound' : 'Mute sound'}</button>

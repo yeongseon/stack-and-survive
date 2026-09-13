@@ -12,7 +12,7 @@ function LocalAction({ controller, action, children }: { controller: Controller;
   return <button type="button" disabled={reason !== null} title={reason ?? undefined} onClick={() => controller.queueAction(action)}>{children}</button>;
 }
 
-export function GameFloor({ controller, view }: { controller: Controller; view: View }) {
+export function GameFloor({ controller, view, guideTarget = null }: { controller: Controller; view: View; guideTarget?: string | null }) {
   const host = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState({ width: 1, height: 1 });
   const cardClose = useRef<HTMLButtonElement>(null);
@@ -46,7 +46,7 @@ export function GameFloor({ controller, view }: { controller: Controller; view: 
   const visual = resourceVisualState(view);
   const feedback = businessFeedback(view);
   const selected = runtime.architecture.resources.find(r => r.id === view.selected);
-  return <div className="tycoon-floor world" ref={host} data-testid="world" aria-label="Living cloud business">
+  return <div className="tycoon-floor world" ref={host} data-testid="world" data-guide-target={guideTarget ?? undefined} aria-label="Living cloud business">
     <div className="world-controls">
       {(['edge', 'cache'] as const).map(kind => {
         const resource = runtime.architecture.resources.find(r => r.kind === kind);
