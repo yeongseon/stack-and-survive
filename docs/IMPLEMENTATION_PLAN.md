@@ -48,7 +48,7 @@ Do not publish ladder difficulty or strategy-success claims before measurement. 
 
 ## 4. Platform only when justified
 
-Application boundary improvements do not authorize new workspace protocol/observability packages, servers or deployment. Future shared contracts need test-first versioning; telemetry needs consent/privacy design. Hosting remains deliberately deferred despite the public repository.
+Application boundary improvements do not authorize new workspace protocol/observability packages, servers or deployment. Future shared contracts need test-first versioning; telemetry needs consent/privacy design. GitHub Pages is now separately owner-authorized under the [exact-inventory demo exception](PAGES_DEMO_EXCEPTION.md); Azure/backend hosting remains deferred.
 
 ## Delivery protocol
 

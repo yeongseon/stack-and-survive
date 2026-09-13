@@ -47,7 +47,7 @@ Implemented commands:
 - `pnpm check:assets`: complete runtime asset-file inventory plus declared output/source hash checks; pending-rights warnings are expected for retained assets. CI runs this check.
 - `pnpm check:assets:release`: same integrity checks plus rejection of every unresolved rights record. This is a separate explicit gate, not the ordinary CI command and not an automatic release/deployment step.
 
-There is currently no release/deployment workflow. Before adding one, it must run `check:assets:release` as a required pre-publication gate and enforce the human rights decision in #164. Ordinary quality CI must not be mislabeled as release approval.
+General release/deployment must run `check:assets:release` as a required pre-publication gate and enforce the human rights decision in #164. The owner separately approved one [GitHub Pages demo exception](PAGES_DEMO_EXCEPTION.md) for the exact existing manifest; that workflow instead requires `check:assets:demo`, which pins the approved inventory and validates every source/output. It does not approve rights or future assets, and general release checks remain failing. Ordinary quality CI must not be mislabeled as release approval.
 
 PNG checks validate header dimensions and metadata consistency, not complete decoding, actual alpha measurement or legal safety of arbitrary content. Existing browser sprite tests own rendered alpha/bounds and corrupted-file fallback. SHA-256 makes changes detectable, not trustworthy: review both changed files and manifest. Local evidence paths must remain regular, nonsymlink files inside the repository. Runtime inventory allows only its explicit manifest entries plus `ATTRIBUTION.md`.
 
