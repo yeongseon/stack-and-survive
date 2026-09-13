@@ -2,13 +2,22 @@ import { expect, test } from '@playwright/test';
 
 test('App bays show only real active servers before during and after expansion', async ({ page }, info) => {
   await page.goto('/?tycoon'); await page.getByRole('button', { name: 'Start Game' }).click();
-  await expect(page.getByRole('button', { name: 'Ⅱ Pause', exact: true })).toBeEnabled({ timeout: 10000 });
+  await expect(page.locator('[data-renderer="ready"]')).toHaveCount(1);
+  await expect(page.getByRole('button', { name: 'Ⅱ Pause', exact: true })).toBeEnabled({ timeout: 20000 });
   await page.getByText('Tycoon QA', { exact: true }).click();
   const step = page.getByRole('button', { name: 'Step one tick', exact: true }); await step.click();
   const surface = page.locator('[data-renderer="ready"]');
   const app = async () => JSON.parse((await surface.getAttribute('data-sprite-views'))!).find((s: { id: string }) => s.id === 'compute');
   await expect.poll(async () => (await app()).bays).toEqual(['active', 'available', 'locked', 'locked']);
   expect((await app()).modules).toHaveLength(1);
+  expect((await app()).bodyVisible).toBe(false);
+  expect((await app()).modules[0].height).toBeGreaterThan(150);
+  const node = JSON.parse((await surface.getAttribute('data-nodes'))!).find((n: { id: string }) => n.id === 'compute');
+  const body = await app();
+  const box = (await surface.boundingBox())!;
+  await page.mouse.click(box.x + node.x + body.modules[0].x * body.scale, box.y + node.y + (body.modules[0].y - 30) * body.scale);
+  await expect(page.getByRole('region', { name: 'Resource actions' })).toContainText('Azure App Service');
+  await page.getByRole('button', { name: 'Close resource', exact: true }).click();
   await page.getByRole('button', { name: /App capacity/ }).click();
   await page.getByRole('button', { name: 'Confirm expansion', exact: true }).click();
   await expect.poll(async () => (await app()).bays).toEqual(['active', 'queued', 'locked', 'locked']);

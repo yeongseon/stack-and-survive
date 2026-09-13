@@ -133,7 +133,7 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
             badge = created; badges.set(resource.id, badge); badgeLayer.append(badge);
           }
           const p = positions[i];
-          const badgeY = p.y + resourceArtBounds(resource.kind, view.playerMode ? playerBuildingScale(resource.kind, width) : 1).y - 36;
+          const badgeY = p.y + resourceArtBounds(resource.kind, view.playerMode ? playerBuildingScale(resource.kind, width) : 1, view.playerMode).y - 36;
           badge.hidden = p.x < 16 || p.x > width - 16 || badgeY < 0 || badgeY > height - 32;
           badge.style.left = `${p.x - 16}px`; badge.style.top = `${badgeY}px`;
         });
@@ -343,7 +343,7 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
       const resource = view.state.runtime.architecture.resources
         .map(r => ({ resource: r, center: view.playerMode ? tycoonPoint(r.kind, canvas.clientWidth, canvas.clientHeight) : project(r, camera(), canvas.clientWidth, canvas.clientHeight) }))
         .filter(item => {
-          const bounds = resourceArtBounds(item.resource.kind, view.playerMode ? playerBuildingScale(item.resource.kind, canvas.clientWidth) : 1);
+          const bounds = resourceArtBounds(item.resource.kind, view.playerMode ? playerBuildingScale(item.resource.kind, canvas.clientWidth) : 1, view.playerMode);
           return insideBuilding(p, item.center) || (p.x >= item.center.x + bounds.x && p.x <= item.center.x + bounds.x + bounds.width
             && p.y >= item.center.y + bounds.y && p.y <= item.center.y + bounds.y + bounds.height);
         })
