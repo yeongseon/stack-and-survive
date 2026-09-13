@@ -101,13 +101,16 @@ export function TycoonGame() {
   const restart = () => { controller.reset(); setEntered(false); };
   return <main className="tycoon-game">
     {!entered ? <section className="title-screen" aria-label="Game introduction" data-time={diagnosticsEnabled ? runtime.time : undefined} data-budget={diagnosticsEnabled ? view.state.economy.remainingBudget : undefined}>
-      <div className="title-mark" aria-hidden="true">S<span>+</span></div><p className="title-eyebrow">A CLOUD BUSINESS UNDER PRESSURE</p>
-      <h1>STACK <em>&amp;</em><br/>SURVIVE</h1><p className="title-tagline">Build. Scale. Keep the business flowing.</p>
-      <p className="title-description">Your customers are arriving. Grow your data center where the pressure builds.</p>
       <TitleWorld />
-      <button ref={startButton} type="button" className="start-game" onClick={start}>Start Game <span aria-hidden="true">→</span></button>
-      <nav aria-label="Introduction"><button type="button" onClick={() => open('how')}>How to Play</button><button type="button" onClick={() => open('about')}>About</button></nav>
-      <p className="title-footnote">One business. Three minutes. Your infrastructure decisions.</p>
+      <div className="title-heading"><p className="title-eyebrow">A REAL-TIME CLOUD INFRASTRUCTURE GAME</p>
+        <h1><span className="title-stack">STACK</span> <em>&amp;</em> SURVIVE</h1><p className="title-tagline">Build. Scale. Keep the business flowing.</p>
+        <p className="title-description">Your customers are arriving. Make every infrastructure decision count.</p>
+      </div>
+      <div className="title-bottom"><nav className="title-actions" aria-label="Introduction">
+        <button type="button" aria-label="How to Play" onClick={() => open('how')}>How to Play<small>Learn the basics</small></button>
+        <button ref={startButton} type="button" aria-label="Start Game" className="start-game" onClick={start}>▶ Start Game<small>One business. Three minutes.</small></button>
+        <button type="button" aria-label="About" onClick={() => open('about')}>About<small>The idea &amp; the technology</small></button>
+      </nav><p className="title-footnote">SAME WORKLOAD. DIFFERENT ARCHITECTURES. DIFFERENT OUTCOMES.</p></div>
     </section> : <>
       <header className="tycoon-header"><h1>STACK <em>&amp;</em> SURVIVE</h1><nav aria-label="Game controls"><button ref={learnButton} type="button" onClick={() => open('learn')}>ⓘ Learn</button><button type="button" disabled={runtime.status !== 'RUNNING' && runtime.status !== 'PAUSED'} onClick={() => runtime.status === 'PAUSED' ? controller.resume() : controller.pause()}>{runtime.status === 'PAUSED' ? '▶ Resume' : 'Ⅱ Pause'}</button></nav></header>
       <GameHUD view={view} />
