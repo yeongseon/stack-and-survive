@@ -3,16 +3,25 @@ import type { View } from './controller';
 import { primaryPressure } from './primary-pressure';
 import { MissionPanel } from './MissionPanel';
 import { glossary } from './help';
+import type { GameSoundControls } from './useGameSound';
 
 export type LearnPage = 'how' | 'about' | 'learn';
-export function LearnDialog({ dialogRef, page, view, onClose, restart }: {
+export function LearnDialog({ dialogRef, page, view, onClose, restart, sound }: {
   dialogRef: RefObject<HTMLDialogElement | null>; page: LearnPage; view: View; onClose: () => void; restart: () => void;
+  sound: GameSoundControls;
 }) {
   const r = view.snapshot?.requests;
   const pressure = primaryPressure(view);
   return <dialog ref={dialogRef} className="learn-dialog" aria-labelledby="learn-title" onClose={onClose}>
     <form method="dialog"><button autoFocus>Close</button></form>
     <h2 id="learn-title">{page === 'how' ? 'How to Play' : page === 'about' ? 'About Stack & Survive' : 'Learn'}</h2>
+    <section className="sound-settings" aria-label="Sound and feedback settings">
+      <h3>Sound &amp; feedback</h3>
+      <button type="button" aria-pressed={!sound.settings.muted} onClick={sound.toggle}>{sound.settings.muted ? 'Enable sound' : 'Mute sound'}</button>
+      <label>Volume<input type="range" min="0" max="1" step="0.05" value={sound.settings.volume} onChange={e => sound.volume(Number(e.currentTarget.value))} /></label>
+      <label><input type="checkbox" checked={sound.settings.haptics} disabled={!sound.hapticsAvailable} onChange={e => sound.haptics(e.currentTarget.checked)} />Optional vibration{!sound.hapticsAvailable ? ' (unavailable on this browser)' : ''}</label>
+      <p role="status">{sound.message}</p><small>All gameplay information remains visible when sound is muted.</small>
+    </section>
     {page === 'learn' && <section aria-label="Resource capacities"><h3>Resource capacities</h3><p>App: 150 requests/s per active instance, up to four. SQL: Read capacity 180/s · Write capacity 70/s. Cache handles eligible reads; Order writes remain direct to SQL. Fixed SQL has no upgrade action. New App capacity costs +5 cr/min after 8s; Cache +8 cr/min after 5s; Edge +3 cr/min after 4s.</p></section>}
     {page === 'how' ? <>
       <p>Watch traffic reach your App and SQL. When pressure builds, click the + controls on the data-center floor.</p>

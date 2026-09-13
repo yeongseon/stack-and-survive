@@ -1,5 +1,9 @@
 # Asset provenance
 
+## Procedural audio (no imported audio files)
+
+Optional sound recipes are original project-authored Web Audio oscillator/envelope code in `apps/web/src/synth-sound.ts`, with event control in `game-sound.ts`. No external recordings, samples, music or downloaded audio are included. They are not declared CC0 or separately licensed by this note. See `docs/AUDIO_FEEDBACK.md` for source, opt-in controls, bounded synthesis and pending manual listening/haptics acceptance. The runtime-file manifest remains unchanged; general project rights review remains #164.
+
 ## Machine-readable inventory and current review status
 
 `art/asset-manifest.json` pins all ten existing runtime files and editable building source hashes. `pnpm check:assets` validates inventory/integrity and warns about unresolved rights; it does not approve use. `pnpm check:assets:release` intentionally fails while the current assets remain `rights-pending`. See `docs/ASSET_STRATEGY.md` and issue #164. No new external art pack was imported for this inventory.

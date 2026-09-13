@@ -6,10 +6,12 @@ import { LearnDialog, type LearnPage } from './LearnDialog';
 import { GameHUD } from './GameHUD';
 import { GameResult } from './GameResult';
 import { TitleWorld } from './TitleWorld';
+import { useGameSound } from './useGameSound';
 
 export function TycoonGame() {
   const [controller] = useState(() => createController(undefined, undefined, true));
   const view = useSyncExternalStore(controller.subscribe, controller.getSnapshot);
+  const sound = useGameSound(controller);
   const [entered, setEntered] = useState(false);
   const [page, setPage] = useState<LearnPage>('how');
   const dialog = useRef<HTMLDialogElement>(null);
@@ -20,9 +22,9 @@ export function TycoonGame() {
   useEffect(() => () => controller.destroy(), [controller]);
   const open = (next: typeof page) => { dialogOpener.current = document.activeElement instanceof HTMLElement ? document.activeElement : null; setPage(next); dialog.current?.showModal(); };
   const runtime = view.state.runtime;
-  const start = () => { setEntered(true); controller.beginGame(); };
+  const start = () => { sound.unlock(); setEntered(true); controller.beginGame(); };
   const restart = () => { controller.reset(); setEntered(false); };
-  return <main className="tycoon-game">
+  return <main className="tycoon-game" onClick={event => { if (event.target instanceof Element && event.target.closest('button')) sound.click(); }}>
     {!entered ? <section className="title-screen" aria-label="Game introduction" data-time={diagnosticsEnabled ? runtime.time : undefined} data-budget={diagnosticsEnabled ? view.state.economy.remainingBudget : undefined}>
       <TitleWorld />
       <div className="title-heading"><p className="title-eyebrow">A REAL-TIME CLOUD INFRASTRUCTURE GAME</p>
@@ -44,6 +46,6 @@ export function TycoonGame() {
       {view.error && <section role="alert" className="tycoon-result"><p>{view.error}</p><button type="button" onClick={() => controller.recoverRenderer()}>Rebuild graphics</button><button type="button" onClick={restart}>Return to title</button></section>}
       {diagnosticsEnabled && <details className="tycoon-qa"><summary>Tycoon QA</summary><button onClick={() => controller.inspectNextTick()}>Step one tick</button><output data-testid="elapsed">{runtime.time}</output><pre data-testid="diagnostics">{JSON.stringify(view)}</pre></details>}
     </>}
-    <LearnDialog dialogRef={dialog} page={page} view={view} restart={restart} onClose={() => { if (dialogOpener.current?.isConnected) dialogOpener.current.focus(); else startButton.current?.focus(); }} />
+    <LearnDialog sound={sound} dialogRef={dialog} page={page} view={view} restart={restart} onClose={() => { if (dialogOpener.current?.isConnected) dialogOpener.current.focus(); else startButton.current?.focus(); }} />
   </main>;
 }

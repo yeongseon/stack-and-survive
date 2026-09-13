@@ -291,3 +291,7 @@ footer { order: 12; display: flex; justify-content: space-between; flex-wrap: wr
 @media(prefers-reduced-motion:reduce) { .title-flow,.title-flow-orders { animation: none; } }
 @media(max-width:600px) { .title-world { margin-block: 0 16px; }.title-screen .title-description { padding-inline: 14px; }.title-screen h1 { font-size: 54px; } }
 .tycoon-floor > .business-feedback { position: absolute; bottom: 12px; left: 12px; z-index: 3; padding: 6px 10px; max-width: calc(100% - 24px); }
+.sound-settings { padding: 12px; margin-bottom: 16px; border: 1px solid #476778; border-radius: 6px; }
+.sound-settings label { display: flex; align-items: center; gap: 12px; margin-top: 10px; font-size: 13px; }
+.sound-settings input[type="range"] { flex: 1; min-width: 70px; }
+.sound-settings p, .sound-settings small { font-size: 11px; color: #aac7d4; }
