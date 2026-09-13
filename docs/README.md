@@ -19,6 +19,7 @@ Each document owns its subject. An art mockup cannot override numerical rules. I
 - [Implementation plan](IMPLEMENTATION_PLAN.md): execution order and issue dependencies.
 - [Engineering rules](ENGINEERING_RULES.md): test-first truth/contracts, evidence-first visuals.
 - [Asset strategy](ASSET_STRATEGY.md): free-only sourcing and provenance gates.
+- [Audio feedback](AUDIO_FEEDBACK.md): original optional synthesis, lifecycle and remaining human listening checks.
 - [Game design references](GAME_DESIGN_REFERENCES.md): text-only pattern discussion.
 - [Replayability design](REPLAYABILITY_DESIGN.md): proposed micro/run/meta loops.
 - [Challenge system](CHALLENGE_SYSTEM.md): proposed identity and deterministic composition.
