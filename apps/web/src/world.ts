@@ -14,6 +14,7 @@ import { activeEffects, completedResources, drawEffect, effectMotion } from './e
 import { diagnosticsEnabled } from './mode';
 import { placeCaptions } from './annotations';
 import { tycoonPoint } from './tycoon-layout';
+import { resourceVisualState } from './resource-visual-state';
 
 export function utilizationLabel(u: number | null): string {
   return u === null ? 'READY' : compare(u, 1) > 0 ? '! OVERLOADED' : compare(u, .7) > 0 ? 'WARNING' : 'HEALTHY';
@@ -96,6 +97,7 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
           this.structureSignature = ''; this.backgroundSize = ''; this.wasVisible = renderVisible;
         }
         const requests = view.snapshot?.requests;
+        const visualState = resourceVisualState(view, reducedMotion);
         const appU = requests?.app.utilization ?? null;
         const sqlU = requests ? Math.max(requests.sql.readUtilization, requests.sql.writeUtilization) : null;
         const flows = view.state.runtime.status === 'RUNNING' && !view.error && requests ? visualFlows(requests) : [];
@@ -107,6 +109,7 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
           host.dataset.nodes = JSON.stringify(resources.map((r, i) => ({ id: r.id, ...positions[i] })));
           host.dataset.flows = JSON.stringify(flows);
           host.dataset.pressureQueues = JSON.stringify(queues);
+          host.dataset.resourceStates = JSON.stringify(visualState);
           host.dataset.pressureLosses = JSON.stringify(pressureLosses(requests ?? null));
           host.dataset.packets = String(flows.reduce((sum, flow) => sum + representativeCount(flow.volume), 0));
           host.dataset.buildings = JSON.stringify(resources.map(resource => ({ id: resource.id,
@@ -136,7 +139,7 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
           if (diagnosticsEnabled) host.dataset.environment = JSON.stringify(environment);
         }
         const lanes = processingLanes(architecture, requests ?? null);
-        const signature = JSON.stringify([width, height, architecture, camera, view.selected, view.connectionSource, view.preview, view.building, appU, sqlU, requests?.cache.utilization, view.state.runtime.scaleDue, view.state.runtime.preparationScaleDue, lanes]);
+        const signature = JSON.stringify([width, height, architecture, camera, view.selected, view.connectionSource, view.preview, view.building, appU, sqlU, requests?.cache.utilization, view.state.runtime.scaleDue, view.state.runtime.preparationScaleDue, lanes, view.playerMode ? visualState.app.bays : null]);
         if (signature !== this.structureSignature) {
         this.structureSignature = signature; g.clear(); this.stateGraphics.clear();
         if (diagnosticsEnabled) host.dataset.structureDraws = String(++this.structureDraws);
@@ -157,7 +160,7 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
           const connected = architecture.connections.some(c => c.from === resource.id || c.to === resource.id);
           const state = resource.remaining > 0 ? `PROVISIONING ${resource.remaining}s` : !connected ? 'DISCONNECTED' : utilizationLabel(u);
           const pending = resource.kind === 'compute' && (view.state.runtime.scaleDue !== null || view.state.runtime.preparationScaleDue !== null);
-          const spriteBody = this.sprites.update(resource, p, pending, rank);
+          const spriteBody = this.sprites.update(resource, p, pending, rank, view.playerMode && resource.kind === 'compute' ? visualState.app.bays : undefined);
           const building = drawBuilding(g, p, resource, connected, view.selected === resource.id,
             pending, state === 'WARNING', state === '! OVERLOADED', spriteBody, this.stateGraphics);
           buildingStates.push({ id: resource.id, ...building });
