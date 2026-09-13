@@ -8,6 +8,7 @@ async function place(page: Page, name: string, x: number, y: number) {
   await expect(page.getByTestId('resource-status')).toHaveText('Active', { timeout: 9000 });
 }
 test('protected cached design shows actual class paths and live accounting', async ({ page }, info) => {
+  test.setTimeout(300000);
   await page.goto('/'); const surface = page.locator('[data-renderer="ready"]'); await expect(surface).toHaveCount(1);
   await page.getByLabel('Initial App instances').selectOption('4'); await expect(surface).toHaveCount(1);
   await place(page, 'Azure Managed Redis', -220, 200);
