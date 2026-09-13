@@ -16,6 +16,7 @@ import { blackFriday } from '@stack-and-survive/scenarios';
 import { pressureQueues } from './queue-visualization';
 import { MissionPanel } from './MissionPanel';
 import { diagnosticsEnabled } from './mode';
+import { TycoonGame } from './TycoonGame';
 
 function World({ controller, generation, onInspect }: { controller: Controller; generation: number; onInspect: (open: boolean) => void }) {
   const host = useRef<HTMLDivElement>(null);
@@ -147,4 +148,4 @@ function App() {
     <footer>BUILD. SCALE. KEEP THE BUSINESS FLOWING.<span>Simplified game values, not Azure performance or pricing. Human playtesting and hosted deployment are still pending.</span></footer>
   </main>;
 }
-createRoot(document.getElementById('root')!).render(<App />);
+createRoot(document.getElementById('root')!).render(diagnosticsEnabled && !new URLSearchParams(location.search).has('tycoon') ? <App /> : <TycoonGame />);

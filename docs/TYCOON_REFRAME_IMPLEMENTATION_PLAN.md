@@ -1,5 +1,7 @@
 # Stack & Survive — Data-Center Tycoon Reframe
 
+> Historical Phase1 presentation plan. Phase2 gameplay conversion #112–#120 now supersedes its prohibitions on automatic topology and live Cache/Edge deployment in ordinary play. Current requirements are in the opening authority sections of PRD/GAMEPLAY_SPEC/SIMULATION_SPEC/TECHNICAL_DESIGN and index #7. #25 is blocked on #120, not merely the completed presentation gate #85. Title/Start Game/How to Play/About are explicit #117 deliverables; submission Media Gallery art is not an implementation issue.
+
 **Version:** 0.3
 
 **Status:** P0 presentation implemented; technical acceptance #85; human validation #25 pending

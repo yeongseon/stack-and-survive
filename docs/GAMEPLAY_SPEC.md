@@ -2,6 +2,16 @@
 
 ## Gameplay Specification
 
+## Current gameplay authority — living-operation conversion (#112–#120)
+
+This section supersedes the earlier configuration-first ordinary-player flow and preparation-only Cache/Edge restrictions below. Those sections describe the preserved Advanced/QA editor, not the default game.
+
+Normal play: Title (Start Game / How to Play / About) → five-second countdown → fixed Internet/App1/SQL business → rising demand → world-local expansion → actual provisioning → changed flow and business outcomes. No architecture configuration precedes Start Game. Title/help consume no budget or simulation time. Internal four-phase scheduling remains unchanged but is not primary player chrome.
+
+Fixed empty Edge/Cache slots and App2–4 capacity indicators replace placement and manual connections. Cache takes five seconds and adds eight running credits/minute; Edge takes four seconds and adds three; App scale takes eight seconds and adds five. There is no purchase charge. Pending services are disconnected/inert; activation installs their supported paths atomically. Direct App→SQL writes always remain. Rate limit belongs to traffic intake; emergency filtering belongs to active Edge. No runtime delete/move/disconnect.
+
+The normal shell exposes budget, demand, availability, pressure, pause and one Learn surface. Learn contains objectives/events/explanations/metrics/concepts; the existing architecture editor remains QA-only. Success feedback must use actual served traffic/revenue, never spendable income or invented recovery. Pressure remains representative, not a persistent queue. Human acceptance #25 follows #120 and asks whether players naturally use world-local controls and can explain demand→pressure→expansion→improved flow without opening metrics. Submission gallery artwork is outside implementation scope.
+
 **Version:** 0.4  
 **Status:** Hackathon MVP Gameplay Definition  
 **Related Documents:** `PRD.md`, `SIMULATION_SPEC.md`, `TECHNICAL_DESIGN.md`  

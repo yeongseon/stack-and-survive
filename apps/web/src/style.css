@@ -206,3 +206,53 @@ footer { order: 12; display: flex; justify-content: space-between; flex-wrap: wr
 }
 @media(prefers-reduced-motion:reduce) { * { scroll-behavior: auto !important; } }
 .mission-panel h2{font-size:14px;letter-spacing:.5px}.objective-note{font-size:10px;color:var(--muted)}.mission-panel ul,.mission-panel ol{list-style:none;padding:0;margin:10px 0}.mission-panel ul li{display:flex;gap:8px;align-items:start;padding:7px 0;border-bottom:1px solid #395b70}.mission-panel ul li>span{color:var(--gold);font-size:16px}.mission-panel strong{font-size:11px;display:block;font-weight:600}.mission-panel small{display:block;font-size:10px;color:#b3cfdd;margin-top:3px}.mission-panel [data-objective-state=met]>span{color:#91ecc5}.mission-panel [data-objective-state=at-risk]>span,.mission-panel [data-objective-state=missed]>span{color:#ffb19e}.mission-panel ol{max-height:190px;overflow-y:auto}.mission-panel ol li{display:grid;grid-template-columns:50px 1fr;gap:7px;font-size:10px;padding:7px 0}.mission-panel time{color:#83c2db;font-variant-numeric:tabular-nums}.telemetry-details summary{font-size:11px;color:var(--muted);margin-top:10px}
+.tycoon-game { min-height: 100dvh; position: relative; background: #102a37; padding: 18px; color: #edf5ed; }
+.title-screen { min-height: calc(100dvh - 36px); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; background: radial-gradient(ellipse at 50% 90%,#35777b55,transparent 65%),repeating-linear-gradient(45deg,transparent 0 79px,#7cabb009 80px 81px); }
+.title-mark { font-size: 42px; color: #f1d395; border: 2px solid #bfa771; padding: 6px 18px; transform: rotate(-5deg); }
+.title-mark span { font-size: 20px; vertical-align: top; }
+.title-eyebrow { letter-spacing: .24em; font-size: 10px; color: #9bbebb; margin-top: 28px; }
+.title-screen h1 { font-size: clamp(55px,9vw,112px); line-height: .95; letter-spacing: -.045em; margin: 16px 0 24px; text-shadow: 0 8px 0 #071c2644; }
+.tycoon-game em { font-style: normal; color: #efd08d; }
+.title-tagline { font-size: clamp(16px,2vw,24px); color: #efd9ac; }
+.title-description { max-width: 390px; font-size: 14px; color: #aac5cb; margin: 8px 0 25px; }
+.start-game { min-width: 260px; padding: 18px 25px; background: #efd08d; color: #17323a; font-size: 20px; font-weight: bold; box-shadow: 0 5px 0 #967a45; border: 0; }
+.start-game span { margin-left: 35px; }
+.title-screen nav { display: flex; gap: 14px; margin: 24px 0; }
+.title-footnote { color: #83a3aa; font-size: 11px; }
+.tycoon-header { display: flex; align-items: center; justify-content: space-between; border: 0; padding: 0 0 12px; }
+.tycoon-header h1 { font-size: 22px; }
+.tycoon-header nav { display: flex; gap: 8px; }
+.tycoon-metrics { display: flex; align-items: center; gap: 32px; padding: 10px 18px; background: #1e404f; border-radius: 9px; margin-bottom: 12px; font-size: 11px; }
+.tycoon-metrics strong { display: block; font-size: 22px; color: #f1dbad; font-variant-numeric: tabular-nums; }
+.tycoon-metrics small { font-size: 11px; }
+.tycoon-metrics p { margin-left: auto; color: #f1dbad; }
+.tycoon-floor { height: calc(100dvh - 178px); min-height: 580px; position: relative; }
+.world-controls { position: absolute; inset: 0; pointer-events: none; z-index: 4; }
+.world-controls button, .resource-action-card { pointer-events: auto; }
+.world-slot, .intake-control { position: absolute; transform: translate(-50%,0); text-align: center; }
+.world-slot button { min-width: 112px; min-height: 44px; border: 1px solid #b5caa0; background: #183e40ed; box-shadow: 0 4px 12px #061d28aa; }
+.world-slot.empty button { border: 1px dashed #e1c88e; background: #2c4e43ee; }
+.world-slot small { display: block; font-size: 10px; color: #c1d1bc; margin-top: 4px; }
+.slot-plus { display: block; font-size: 26px; color: #f2d699; line-height: 1; }
+.instance-slots { display: flex; justify-content: center; gap: 6px; font-size: 16px; background: #12313cdd; }
+.instance-slots [data-state="active"] { color: #8bdabc; }.instance-slots [data-state="provisioning"] { color: #f6d58d; }
+.slot-progress { display: block; background: #284e58; padding: 10px; }
+.intake-control { background: #193b49e8; font-size: 11px; }
+.resource-action-card { position: absolute; right: 14px; bottom: 14px; width: min(310px,calc(100% - 28px)); background: #153644f5; border: 1px solid #9fb9ab; border-radius: 8px; padding: 14px; box-shadow: 0 8px 32px #07171faa; }
+.resource-action-card h2 { font-size: 16px; }.resource-action-card p { font-size: 12px; }.card-close { float: right; font-size: 10px; }
+.business-feedback { position: absolute; bottom: 42px; left: 35px; padding: 6px 10px; border-radius: 5px; background: #102f3bdd; pointer-events: none; color: #b7f1cd; font-size: 13px; text-shadow: 0 2px 3px #061f2a; animation: served-value .6s ease-out; }
+@keyframes served-value { from { opacity: .5; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+@media (prefers-reduced-motion: reduce) { .business-feedback { animation: none; } }
+.business-feedback span { display: block; font-size: 10px; color: #bad0ce; }
+.welcome-countdown, .tycoon-result { position: fixed; z-index: 8; top: 50%; left: 50%; transform: translate(-50%,-50%); padding: 26px; text-align: center; background: #102c3af5; border: 1px solid #e3c789; border-radius: 12px; max-width: calc(100% - 24px); }
+.welcome-countdown { pointer-events: none; }.welcome-countdown strong { display: block; font-size: 64px; color: #efd08d; }
+.tycoon-result { width: 420px; }.tycoon-result h2 { font-size: 24px; }.tycoon-result button { margin: 4px; }
+.learn-dialog { margin: auto; width: min(620px,calc(100% - 24px)); max-height: calc(100dvh - 32px); overflow: auto; background: #193c4c; color: #e5f1ee; border: 1px solid #b3c5b8; border-radius: 12px; padding: 24px; }
+.learn-dialog::backdrop { background: #061c2bd4; }.learn-dialog form { float: right; }.learn-dialog p,.learn-dialog li { font-size: 14px; }.learn-dialog h2 { font-size: 24px; }
+.tycoon-notice { font-size: 11px; margin: 4px; color: #bdd2d6; }.tycoon-qa { margin-top: 24px; }
+@media (max-width: 600px) {
+  .tycoon-game { padding: 8px; }.tycoon-header h1 { font-size: 14px; }.tycoon-header button { font-size: 11px; padding: 8px; min-height: 42px; }
+  .tycoon-metrics { gap: 12px; flex-wrap: wrap; padding: 10px; }.tycoon-metrics strong { font-size: 17px; }.tycoon-metrics p { margin: 0; width: 100%; }
+  .tycoon-floor { min-height: 640px; }.world-slot button { min-width: 94px; font-size: 11px; padding: 6px; }.world-slot small { font-size: 9px; }
+  .business-feedback { position: relative; bottom: auto; left: auto; padding: 8px; }
+}

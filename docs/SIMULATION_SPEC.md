@@ -2,6 +2,14 @@
 
 ## Simulation Specification
 
+## Additive live deployment contract (#115)
+
+This extension supersedes earlier preparation-only Cache/Edge restrictions for the new tycoon player. It does not change v0.2 balance constants or fixed-architecture reference outputs.
+
+`DEPLOY_RESOURCE(kind: cache | edge, x, y, time, sequence)` follows the existing RUNNING-only action ordering, timestamp and monotonic-sequence validation. Reject duplicate installed/pending kinds or IDs, nonfinite/out-of-build-area positions and insufficient budget for one current-plus-new-resource infrastructure tick. This affordability check reserves/charges nothing.
+
+At accepted tick `t`, insert a disconnected resource with existing provisioning duration (Cache5 seconds; Edge4). Its remaining value is derived from absolute `due=t+duration`. Through ticks before `due`, old ingress/read/write paths remain valid, the new resource processes no requests and incurs no running cost. At the start of tick `due`, before traffic and economy processing, set remaining to zero and connect Cache as App→Cache→SQL, or replace direct Internet→App with Internet→Edge→App. Direct App→SQL writes are retained. Running costs begin in that activation tick with no retroactive charge. Pause freezes runtime time and deployment; terminal states reject actions. Concurrent distinct expansions are allowed, duplicate ones are rejected. Existing rate, emergency, scale, revenue, latency, failure and scoring rules remain unchanged. No queued-request storage is introduced.
+
 **Version:** 0.2  
 **Status:** Hackathon MVP Simulation Definition  
 **Related Documents:** `PRD.md`, `GAMEPLAY_SPEC.md`, `TECHNICAL_DESIGN.md`  

@@ -7,6 +7,7 @@ import { connectResources, disconnectResources, moveResource, placeResource, rem
 import type { SaveRepository } from './persistence';
 import { updateEvents, type GameEvent } from './observations';
 import { diagnosticsEnabled } from './mode';
+import { tycoonArchitecture } from './tycoon-layout';
 
 export type View = Readonly<{
   state: ReturnType<typeof createSimulation>;
@@ -27,21 +28,24 @@ export type View = Readonly<{
   confirmationEpoch: number;
   saveMessage: string;
   events: GameEvent[];
+  playerMode?: boolean;
+  countdown?: number | null;
 }>;
 export interface Clock {
   start(callback: () => void): () => void;
 }
-export type ActionRequest = { type: 'SCALE_OUT' } | { type: 'RATE_LIMIT'; enabled: boolean } | { type: 'EMERGENCY_WAF' };
+export type ActionRequest = Action extends infer A ? A extends Action ? Omit<A, 'time' | 'sequence'> : never : never;
 const clock: Clock = {
   start(callback) { const id = globalThis.setInterval(callback, 1000); return () => globalThis.clearInterval(id); },
 };
 
-export function createController(timer: Clock = clock, repository?: SaveRepository) {
+export function createController(timer: Clock = clock, repository?: SaveRepository, playerMode = false) {
+  if (playerMode) repository = undefined;
   const initial = (instances = 1): View => {
-    const architecture = baseline(instances);
-    architecture.resources.forEach((r, i) => { r.x = (i - 1) * 260; r.y = (i - 1) * 100; });
+    const architecture = playerMode ? tycoonArchitecture() : baseline(instances);
+    if (!playerMode) architecture.resources.forEach((r, i) => { r.x = (i - 1) * 260; r.y = (i - 1) * 100; });
     return { state: createSimulation(architecture, blackFriday), snapshot: null, result: null, previousResult: null, error: null,
-      selected: null, building: null, preview: null, camera: { x: 0, y: 0, zoom: 1 }, notice: '', connecting: false, connectionSource: null, rendererGeneration: 0, recoveringRenderer: false, queuedActions: [], confirmationEpoch: 0, saveMessage: repository ? 'No local save yet.' : 'Local persistence is not attached.', events: [] };
+      selected: null, building: null, preview: null, camera: { x: 0, y: 0, zoom: 1 }, notice: '', connecting: false, connectionSource: null, rendererGeneration: 0, recoveringRenderer: false, queuedActions: [], confirmationEpoch: 0, saveMessage: repository ? 'No local save yet.' : 'Local persistence is not attached.', events: [], playerMode, countdown: null };
   };
   let view: View = initial();
   let cancel: (() => void) | undefined;
@@ -83,8 +87,14 @@ export function createController(timer: Clock = clock, repository?: SaveReposito
     publish({ ...view, state: { ...view.state, runtime } });
     if (!runtime.architecture.resources.some(r => r.remaining > 0) && runtime.preparationScaleDue === null) stop();
   };
+  const countDown = () => {
+    if (view.error || view.countdown == null) return;
+    const countdown = view.countdown - 1;
+    if (countdown > 0) publish({ ...view, countdown });
+    else { publish({ ...view, countdown: null, state: { ...view.state, runtime: startRuntime(view.state.runtime) } }); schedule(advance); }
+  };
   const edit = (operation: (a: Architecture) => Architecture): boolean => {
-    if (destroyed || view.error || view.state.runtime.status !== 'PREPARATION') return false;
+    if (playerMode || destroyed || view.error || view.state.runtime.status !== 'PREPARATION') return false;
     try {
       const architecture = operation(view.state.runtime.architecture);
       publish({ ...view, state: { ...view.state, runtime: { ...view.state.runtime, architecture } }, notice: '' });
@@ -117,6 +127,11 @@ export function createController(timer: Clock = clock, repository?: SaveReposito
     }
   }
   return {
+    beginGame() {
+      if (!playerMode || destroyed || view.error || view.countdown !== null || view.state.runtime.status !== 'PREPARATION') return;
+      publish({ ...view, countdown: 5 });
+      schedule(countDown);
+    },
     getSnapshot: () => view,
     subscribe(listener: () => void) { listeners.add(listener); return () => { listeners.delete(listener); }; },
     saveArchitecture() {
@@ -148,7 +163,7 @@ export function createController(timer: Clock = clock, repository?: SaveReposito
       schedule(advance);
     },
     reset(instances = 1) {
-      if (destroyed || view.error || view.state.runtime.status === 'PAUSED') return;
+      if (destroyed || !playerMode && (view.error || view.state.runtime.status === 'PAUSED')) return;
       if (!Number.isInteger(instances) || instances < 1 || instances > 4) throw new Error('Invalid instance configuration');
       stop(); publish({ ...initial(instances), rendererGeneration: view.rendererGeneration + 1 });
     },
@@ -175,12 +190,13 @@ export function createController(timer: Clock = clock, repository?: SaveReposito
     rendererReady(generation: number) {
       if (destroyed || generation !== view.rendererGeneration || !view.recoveringRenderer) return;
       publish({ ...view, error: null, recoveringRenderer: false });
+      if (playerMode && view.countdown !== null && view.state.runtime.status === 'PREPARATION') schedule(countDown);
       if (view.state.runtime.status === 'PREPARATION' && (view.state.runtime.preparationScaleDue !== null || view.state.runtime.architecture.resources.some(r => r.remaining > 0))) schedule(prepare);
     },
     select(id: string | null) { if (!destroyed) publish({ ...view, selected: id }); },
-    build(kind: Kind | null) { if (!destroyed && view.state.runtime.status === 'PREPARATION') publish({ ...view, building: kind, preview: null, notice: '', connecting: false, connectionSource: null }); },
+    build(kind: Kind | null) { if (!playerMode && !destroyed && view.state.runtime.status === 'PREPARATION') publish({ ...view, building: kind, preview: null, notice: '', connecting: false, connectionSource: null }); },
     connectMode(enabled: boolean) {
-      if (!destroyed && view.state.runtime.status === 'PREPARATION') publish({ ...view, connecting: enabled, connectionSource: null, building: null, preview: null, notice: '' });
+      if (!playerMode && !destroyed && view.state.runtime.status === 'PREPARATION') publish({ ...view, connecting: enabled, connectionSource: null, building: null, preview: null, notice: '' });
     },
     connectNode(id: string) {
       if (destroyed || !view.connecting || view.state.runtime.status !== 'PREPARATION') return;
@@ -210,7 +226,7 @@ export function createController(timer: Clock = clock, repository?: SaveReposito
       }
     },
     scalePreparation() {
-      if (destroyed || view.error || view.state.runtime.status !== 'PREPARATION') return;
+      if (playerMode || destroyed || view.error || view.state.runtime.status !== 'PREPARATION') return;
       try {
         publish({ ...view, state: { ...view.state, runtime: requestPreparationScale(view.state.runtime) }, notice: '' });
         if (!cancel) schedule(prepare);

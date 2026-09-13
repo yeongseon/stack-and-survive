@@ -163,12 +163,12 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
           if (targets.includes(resource.id)) { this.stateGraphics.lineStyle(2, 0xefc27b); this.stateGraphics.strokeCircle(p.x, p.y, 48); }
           const name = width < 600 ? { internet: 'Internet', compute: 'App', database: 'SQL', cache: 'Cache', edge: 'WAF' }[resource.kind] : definitions[resource.kind].name;
           this.captions[i].setFontSize(width < 600 ? 11 : 13).setWordWrapWidth(width < 600 ? 82 : 260, true)
-            .setVisible(true).setPosition(Math.max(58, Math.min(width - 58, p.x)), p.y + 48)
+            .setVisible(!view.playerMode).setPosition(Math.max(58, Math.min(width - 58, p.x)), p.y + 48)
             .setText(width < 600
               ? `${state === '! OVERLOADED' ? '! ' : resource.remaining > 0 ? '◷ ' : ''}${name}${resource.kind === 'compute' ? ` ×${resource.instances}` : ''}`
               : `${name}${resource.kind === 'compute' ? ` ×${resource.instances}` : ''}\n${resource.kind === 'internet' ? 'TRAFFIC' : `${state}${u === null ? '' : ` · ${(u * 100).toFixed(1)}%`}`}`);
         });
-        if (width < 600) {
+        if (width < 600 && !view.playerMode) {
           const obstacles = positions.flatMap((p, i) => {
             const bounds = resourceArtBounds(resources[i].kind);
             return [{ ...bounds, x: p.x + bounds.x, y: p.y + bounds.y },
@@ -321,6 +321,7 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
       if (view.connecting) { if (resource) controller.connectNode(resource.id); return; }
       controller.select(resource?.id ?? null);
       if (resource) onInspect();
+      if (view.playerMode) return;
       const local = logical(p);
       drag = { pointer: e.pointerId, id: resource?.id ?? null, last: p, offset: { x: local.x - (resource?.x ?? 0), y: local.y - (resource?.y ?? 0) } };
       canvas.setPointerCapture(e.pointerId);
@@ -333,7 +334,7 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
       drag.last = p;
     };
     const up = (e: PointerEvent) => { if (drag?.pointer === e.pointerId) { if (canvas.hasPointerCapture(e.pointerId)) canvas.releasePointerCapture(e.pointerId); drag = null; } };
-    const wheel = (e: WheelEvent) => { e.preventDefault(); controller.setCamera({ ...view.camera, zoom: view.camera.zoom * Math.exp(-e.deltaY * .001) }); };
+    const wheel = (e: WheelEvent) => { if (view.playerMode) return; e.preventDefault(); controller.setCamera({ ...view.camera, zoom: view.camera.zoom * Math.exp(-e.deltaY * .001) }); };
     canvas.addEventListener('pointerdown', down); canvas.addEventListener('pointermove', move); canvas.addEventListener('pointerup', up); canvas.addEventListener('pointercancel', up); canvas.addEventListener('wheel', wheel, { passive: false });
     removeInput = () => { canvas.removeEventListener('pointerdown', down); canvas.removeEventListener('pointermove', move); canvas.removeEventListener('pointerup', up); canvas.removeEventListener('pointercancel', up); canvas.removeEventListener('wheel', wheel); };
     resize = new ResizeObserver(() => { if (host.clientWidth > 0 && host.clientHeight > 0) game?.scale.resize(host.clientWidth, host.clientHeight); });
