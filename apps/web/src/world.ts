@@ -16,6 +16,7 @@ import { placeCaptions } from './annotations';
 import { tycoonPoint } from './tycoon-layout';
 import { resourceVisualState } from './resource-visual-state';
 import { drawFacilityBanks, facilityStateKey } from './resource-banks';
+import { FacilityLighting } from './facility-lighting';
 import { drawIntake, packetPalette } from './workload-art';
 import { PacketSprites } from './packet-sprites';
 
@@ -63,6 +64,7 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
     captions: Phaser.GameObjects.Text[] = [];
     sprites!: BuildingSprites;
     packets!: PacketSprites;
+    lighting!: FacilityLighting;
     preload() {
       for (const asset of [...Object.values(buildingAssets), moduleAsset]) {
         this.load.image(asset.texture, asset.src);
@@ -76,8 +78,9 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
       this.effectsGraphics = this.add.graphics();
       this.sprites = new BuildingSprites(this);
       this.packets = new PacketSprites(this);
+      this.lighting = new FacilityLighting(this);
       this.trafficGraphics.setDepth(buildingLayers.traffic); this.effectsGraphics.setDepth(buildingLayers.effects);
-      this.events.once('shutdown', () => { this.sprites.destroy(); this.packets.destroy(); });
+      this.events.once('shutdown', () => { this.sprites.destroy(); this.packets.destroy(); this.lighting.destroy(); });
       this.captions = Array.from({ length: 5 }, () => this.add.text(0, 0, '', {
         fontFamily: 'Trebuchet MS, sans-serif', fontSize: '13px', fontStyle: 'bold', color: '#f2faff', align: 'center', backgroundColor: '#234253', padding: { x: 8, y: 5 },
       }).setOrigin(.5, 0).setDepth(buildingLayers.labels));
@@ -124,6 +127,8 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
           host.dataset.placement = view.building && view.preview ? positionError(architecture, snap(view.preview)) ? 'invalid' : 'valid' : 'none';
         }
         if (!renderVisible) return;
+        this.lighting.update(resources, positions, visualState, width, !!view.playerMode);
+        if (diagnosticsEnabled) host.dataset.facilityLights = JSON.stringify(this.lighting.diagnostics());
         for (const [id, badge] of badges) {
           if (!resources.some(r => r.id === id)) { badge.remove(); badges.delete(id); }
         }
