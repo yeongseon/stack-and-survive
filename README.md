@@ -6,28 +6,30 @@ Stack & Survive is a real-time cloud infrastructure management game where player
 
 ## Project status
 
-**Hackathon MVP — Gameplay conversion in verification (#112–#120) · Human validation blocked until gameplay acceptance**
+**Hackathon MVP — Living-operation gameplay implemented · Visual overhaul in final technical acceptance (#129) · Human evaluation still required (#25)**
 
 Ordinary play now enters through **Start Game / How to Play / About**, then a five-second countdown into a living business. Use world-local **+** controls to expand App capacity or install Cache/Protected Edge during operation. Routing is automatic; no placement, wiring or initial-instance setup is required. Click intake for rate limiting or active Edge for filtering boost. Budget, demand and availability remain visible; **Learn** contains explanations and analysis. Revenue is not spendable budget. The existing architecture editor is retained in the QA/development build, while `?tycoon` there selects the new player flow. Production never exposes editor/diagnostic controls through URL parameters.
 
-The [data-center reframe](docs/TYCOON_REFRAME_IMPLEMENTATION_PLAN.md) now includes the indoor facility, original production building sprites, directional processing lanes, representative App/SQL pressure, a four-concept HUD, on-demand analysis and separate Build/Manage tools. The reference image guides composition, not purchase prices or queue semantics. Pressure markers do not represent real buffered requests; this is not a pixel-identical reproduction of the reference art.
+The [visual-state contract](docs/RESOURCE_VISUAL_STATES.md) now distinguishes real active App servers, empty sockets and construction bays. The player world has a framed indoor production aisle, larger App/SQL facilities, pooled semantic packet textures, stronger representative pressure, floor expansion pads with cost confirmation, compact HUD/local actions and game-style results. A decorative title previews the data center without advancing gameplay. The reference image guides composition, not prices or queue semantics; this is not a pixel-identical reproduction or proof of human game feel.
 
 The browser MVP includes separate official Azure badges, snapshot-driven processing/pressure and served-business feedback, actual objectives/events, live provisioning, pause/recovery and results. The historical manual editor, redesign/comparison and local architecture saves remain QA tools, not the normal game loop. Existing54 QA editor cases are retained alongside new tycoon tests; production tests cover real-time entry, expansion and five viewport sizes. #25 now explicitly validates unassisted world-local expansion and perceived game feel after #120; no participant results exist. Hosting (including GitHub Pages) remains deferred. There is no backend or outbound product telemetry.
 
 ## MVP
 
-- One Black Friday scenario, targeting 3–4 minutes.
-- Four deployable resources: App Service, Azure SQL, Cache, and WAF.
-- Placement, directional connections, scale-out, and provisioning delays.
+- One 180-second Black Friday scenario, plus title/countdown and result review.
+- Fixed Internet/App1/SQL baseline; live App scale-out and Cache/Protected Edge deployment.
+- Automatic supported routing, actual provisioning delays and resource-local interventions.
 - Deterministic, renderer-independent simulation with data-driven scenarios.
 - Live intervention, revenue, infrastructure cost, failure detection, and scoring.
-- Explainable results, architecture redesign, replay, and browser-local persistence.
+- Explainable results and fresh player retries; manual architecture editing, comparison and local saves in QA only.
 
 The MVP simulates Azure architecture concepts. It does **not** deploy real Azure resources, use real Azure performance data, or require a backend.
 
 ## Core loop
 
 The primary player experience is demand → flow → pressure → expansion/optimization → observed business outcome. Results and redesign/replay support that loop. Better decisions can improve outcomes; more capacity alone does not guarantee more profit.
+
+Current technical checks contain 192 unit cases, 61 QA browser cases and seven ordinary-player cases. Actual human observation remains #25 after #129. Epic #123 stays open until its human criteria are met. Future runtime scale-in (#132) is design evaluation only, not an implemented or approved gameplay action.
 
 ```text
 Architecture Decision
@@ -67,6 +69,8 @@ packages/
 From the repository root with Node 22.22.0 and pnpm 10.32.1: `pnpm install --frozen-lockfile`, then `pnpm dev` for the QA/editor experience (append `?tycoon` for the new game). For ordinary play use `pnpm build` followed by `pnpm --filter @stack-and-survive/web exec vite preview --host 127.0.0.1`; open the printed URL and select Start Game. Expand directly in the world. Play again returns to the title and starts a fresh baseline, not a saved runtime. Manual redesign/comparison and architecture persistence remain in QA.
 
 Verification: `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build`. Install Chromium with `pnpm exec playwright install chromium`, then `pnpm test:player` tests ordinary `dist` on port 43874 using real-time gameplay. Next run `pnpm build:qa` and `pnpm test:browser`; separate `dist-qa` on port 43872 enables the inspector for full regressions. CI runs both variants in this order. Player screenshots live under ignored `test-results-player/`; QA screenshots/traces use `test-results/`. Only development and compile-time `qa` contain JSON/manual-step/renderer diagnostics; URL parameters cannot enable them in production. Do not deploy `dist-qa`. Run `pnpm build:qa` before `pnpm test:performance` too. Software-WebGL tests verify behavior, not hardware FPS.
+
+Performance artifacts are isolated under ignored `test-results-performance/` so running hardware measurements cannot delete QA traces. Final visual-overhaul measurement on the same M1 Pro/Chromium153/1440×900/DPR1 ANGLE Metal backend: player 60.0335 FPS, p95 16.7ms, 1201 frames over 20.0055s; editor 60.0188 FPS. Each advanced 20 authoritative ticks and peaked at 62 representative packets. These results include pooled packet rendering and the final game HUD/pads; they are single-machine observations, not a universal performance guarantee.
 
 For a separate local GPU measurement on macOS, run `pnpm build:qa` then `pnpm test:performance`. It uses full Chromium with ANGLE Metal on port 43873, prints the actual WebGL renderer, and samples 20 seconds of peak traffic. The configuration is not a portable CI FPS gate. Reframe measurements on an M1 Pro MacBook Pro with 32 GB RAM, Chromium 153.0.8010.12, 1440×900 at DPR 1 used `ANGLE Metal Renderer: Apple M1 Pro`: two runs at 60.0194 and 60.0212 FPS, p95 frame interval 16.8 ms, at most 62 representative packets and 20 simulation ticks per sample. Each rendered 1,201 frames over approximately 20.010 seconds. These include production sprites, processing effects and the new HUD/drawers. They are single-machine measurements, not guarantees for other hardware or mobile devices.
 

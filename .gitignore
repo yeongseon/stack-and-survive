@@ -20,4 +20,5 @@ dist-qa/
 .work-item-backups/
 test-results/
 test-results-player/
+test-results-performance/
 playwright-report/

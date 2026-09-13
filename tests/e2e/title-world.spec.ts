@@ -1,0 +1,20 @@
+import { expect, test } from '@playwright/test';
+test('title preview is decorative and motion preferences do not start a business', async ({ page }, info) => {
+  await page.goto('/?tycoon');
+  const title = page.getByRole('region', { name: 'Game introduction' });
+  await expect(title).toHaveAttribute('data-time', '0'); await expect(title).toHaveAttribute('data-budget', '140');
+  await expect(page.locator('.title-world image')).toHaveCount(5);
+  await expect(page.locator('.title-flow').first()).toHaveCSS('animation-name', 'title-packet-flow');
+  await page.waitForTimeout(1600);
+  await expect(title).toHaveAttribute('data-time', '0'); await expect(title).toHaveAttribute('data-budget', '140');
+  await expect(page.locator('canvas')).toHaveCount(0);
+  await page.getByRole('button', { name: 'How to Play', exact: true }).click();
+  await expect(page.getByRole('dialog')).toBeVisible(); await page.keyboard.press('Escape');
+  await expect(title).toHaveAttribute('data-time', '0');
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await expect(page.locator('.title-flow').first()).toHaveCSS('animation-name', 'none');
+  await page.screenshot({ path: info.outputPath('decorative-title.png') });
+  await page.getByRole('button', { name: 'Start Game' }).click();
+  await expect(page.getByTestId('title-world')).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Ⅱ Pause', exact: true })).toBeEnabled({ timeout: 20000 });
+});
