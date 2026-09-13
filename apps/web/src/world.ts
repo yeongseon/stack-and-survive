@@ -15,6 +15,7 @@ import { diagnosticsEnabled } from './mode';
 import { placeCaptions } from './annotations';
 import { tycoonPoint } from './tycoon-layout';
 import { resourceVisualState } from './resource-visual-state';
+import { drawFacilityBanks, facilityStateKey } from './resource-banks';
 import { drawIntake, packetPalette } from './workload-art';
 import { PacketSprites } from './packet-sprites';
 
@@ -58,6 +59,7 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
     wasVisible = true;
     diagnosticView: View | null = null;
     diagnosticSize = '';
+    diagnosticMotion: boolean | null = null;
     captions: Phaser.GameObjects.Text[] = [];
     sprites!: BuildingSprites;
     packets!: PacketSprites;
@@ -106,8 +108,8 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
         const sqlU = requests ? Math.max(requests.sql.readUtilization, requests.sql.writeUtilization) : null;
         const flows = view.state.runtime.status === 'RUNNING' && !view.error && requests ? visualFlows(requests) : [];
         const queues = pressureQueues(requests ?? null);
-        if (diagnosticsEnabled && (this.diagnosticView !== view || this.diagnosticSize !== `${width}:${height}`)) {
-          this.diagnosticView = view; this.diagnosticSize = `${width}:${height}`;
+        if (diagnosticsEnabled && (this.diagnosticView !== view || this.diagnosticSize !== `${width}:${height}` || this.diagnosticMotion !== reducedMotion)) {
+          this.diagnosticView = view; this.diagnosticSize = `${width}:${height}`; this.diagnosticMotion = reducedMotion;
           host.dataset.appState = utilizationLabel(appU); host.dataset.sqlState = utilizationLabel(sqlU);
           host.dataset.tick = String(view.state.runtime.time);
           host.dataset.nodes = JSON.stringify(resources.map((r, i) => ({ id: r.id, ...positions[i] })));
@@ -143,7 +145,7 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
           if (diagnosticsEnabled) host.dataset.environment = JSON.stringify(environment);
         }
         const lanes = processingLanes(architecture, requests ?? null);
-        const signature = JSON.stringify([width, height, architecture, camera, view.selected, view.connectionSource, view.preview, view.building, appU, sqlU, requests?.cache.utilization, view.state.runtime.scaleDue, view.state.runtime.preparationScaleDue, lanes, view.playerMode ? visualState.app.bays : null]);
+        const signature = JSON.stringify([width, height, architecture, camera, view.selected, view.connectionSource, view.preview, view.building, appU, sqlU, requests?.cache.utilization, view.state.runtime.scaleDue, view.state.runtime.preparationScaleDue, lanes, view.playerMode ? facilityStateKey(visualState) : null]);
         if (signature !== this.structureSignature) {
         this.structureSignature = signature; g.clear(); this.stateGraphics.clear();
         if (diagnosticsEnabled) host.dataset.structureDraws = String(++this.structureDraws);
@@ -158,6 +160,7 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
         this.captions.forEach(c => c.setVisible(false));
         const targets = view.connecting && view.connectionSource ? validTargets(architecture, view.connectionSource) : [];
         const buildingStates: { id: string; silhouette: string; completedModules: number; pendingModule: boolean; provisioning: boolean }[] = [];
+        const renderedBanks: ({ id: string } & ReturnType<typeof drawFacilityBanks>)[] = [];
         const sorted = resources.map((resource, i) => ({ resource, i, p: positions[i] })).sort((a, b) => a.p.y - b.p.y);
         sorted.forEach(({ p, i, resource }, rank) => {
           const u = resource.kind === 'compute' ? appU : resource.kind === 'database' ? sqlU : resource.kind === 'cache' ? requests?.cache.utilization ?? null : null;
@@ -182,6 +185,7 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
             }
           }
           buildingStates.push({ id: resource.id, ...building });
+          if (view.playerMode) renderedBanks.push({ id: resource.id, ...drawFacilityBanks(this.stateGraphics, resource.kind, p, artScale, visualState) });
           if (targets.includes(resource.id)) { this.stateGraphics.lineStyle(2, 0xefc27b); this.stateGraphics.strokeCircle(p.x, p.y, 48); }
           const name = width < 600 ? { internet: 'Internet', compute: 'App', database: 'SQL', cache: 'Cache', edge: 'WAF' }[resource.kind] : definitions[resource.kind].name;
           this.captions[i].setFontSize(width < 600 ? 11 : 13).setWordWrapWidth(width < 600 ? 82 : 260, true)
@@ -207,6 +211,7 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
         if (diagnosticsEnabled) {
           host.dataset.buildings = JSON.stringify(buildingStates);
           host.dataset.spriteViews = JSON.stringify(this.sprites.diagnostics());
+          host.dataset.facilityBanks = JSON.stringify(renderedBanks);
           host.dataset.spriteLayers = JSON.stringify({ state: this.stateGraphics.depth, traffic: this.trafficGraphics.depth, effects: this.effectsGraphics.depth, labels: this.captions[0].depth });
         }
         if (view.building && view.preview) {
