@@ -17,6 +17,7 @@ import { tycoonPoint } from './tycoon-layout';
 import { resourceVisualState } from './resource-visual-state';
 import { drawFacilityBanks, facilityStateKey } from './resource-banks';
 import { FacilityLighting } from './facility-lighting';
+import { resourceActivity, drawResourceActivity } from './resource-activity';
 import { drawIntake, packetPalette } from './workload-art';
 import { PacketSprites } from './packet-sprites';
 
@@ -229,6 +230,11 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
         g = this.trafficGraphics.clear();
         const effects = activeEffects(view);
         const fx = this.effectsGraphics.clear();
+        if (view.playerMode) {
+          const activity = resourceActivity(view);
+          const pose = drawResourceActivity(fx, activity, resources, positions, animationTime, effectMotion(view, reducedMotion), width);
+          if (diagnosticsEnabled) host.dataset.resourceActivity = JSON.stringify({ items: activity, pose });
+        }
         for (const queue of queues) {
           const target = resources.findIndex(r => r.kind === queue.resource);
           const sourceKind = queue.resource === 'compute' ? requests?.edge.active ? 'edge' : 'internet'
