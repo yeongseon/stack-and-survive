@@ -137,11 +137,6 @@ export function drawEnvironment(g: Graphics, width: number, height: number, play
     for (let x = 40; x < width - 40; x += 55) { g.lineStyle(2, 0x334d61); g.lineBetween(x, 157, x, 170); }
   }
   if (player) {
-    for (const kind of ['internet', 'edge', 'compute', 'cache', 'database'] as const) {
-      const p = tycoonPoint(kind, width, height);
-      for (let light = 4; light > 0; light--) { g.fillStyle(kind === 'cache' ? 0x3be9bd : 0x30c5ff, .022); g.fillEllipse(p.x, p.y + 4, 135 + light * 24, 42 + light * 14); }
-      g.fillStyle(0x06172c, .6); g.fillEllipse(p.x + 8, p.y + 18, 140, 50);
-    }
     g.fillStyle(0x1c3445, .8); g.fillRect(22, height - 15, width - 44, 8);
     for (let x = 32; x < width - 25; x += 120) {
       g.lineStyle(3, 0x4a6270); g.lineBetween(x, height - 32, x, height - 11);
