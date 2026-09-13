@@ -40,10 +40,15 @@ test('protected cached design shows actual class paths and live accounting', asy
   expect(flows.some(f => f.from === 'compute' && f.to === 'database' && f.kind === 'order')).toBe(true);
   expect(flows.some(f => f.to === 'database' && f.kind === 'bot')).toBe(false);
   expect(Number(await surface.getAttribute('data-packets'))).toBeLessThanOrEqual(200);
+  const pool = JSON.parse((await surface.getAttribute('data-packet-pool'))!);
+  expect(pool.visible).toBe(Number(await surface.getAttribute('data-packets')));
+  expect(pool.allocated).toBeLessThanOrEqual(200);
   const state = JSON.parse((await page.getByTestId('diagnostics').textContent())!);
   await page.getByRole('button', { name: 'Why & metrics', exact: true }).click();
   await expect(page.getByTestId('cloud-cost')).toBeVisible();
   expect(Number(await page.getByTestId('cloud-cost').textContent())).toBeCloseTo(state.snapshot.economy.infrastructureCost, 2);
   await page.getByRole('button', { name: 'Close metrics', exact: true }).click();
   await surface.scrollIntoViewIfNeeded(); await page.screenshot({ path: info.outputPath('protected-traffic.png') });
+  await page.getByRole('button', { name: 'Pause operation', exact: true }).click();
+  await expect.poll(async () => JSON.parse((await surface.getAttribute('data-packet-pool'))!).visible).toBe(0);
 });

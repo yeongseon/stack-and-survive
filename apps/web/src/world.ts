@@ -15,7 +15,8 @@ import { diagnosticsEnabled } from './mode';
 import { placeCaptions } from './annotations';
 import { tycoonPoint } from './tycoon-layout';
 import { resourceVisualState } from './resource-visual-state';
-import { drawIntake, drawPacket } from './workload-art';
+import { drawIntake, packetPalette } from './workload-art';
+import { PacketSprites } from './packet-sprites';
 
 export function utilizationLabel(u: number | null): string {
   return u === null ? 'READY' : compare(u, 1) > 0 ? '! OVERLOADED' : compare(u, .7) > 0 ? 'WARNING' : 'HEALTHY';
@@ -59,6 +60,7 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
     diagnosticSize = '';
     captions: Phaser.GameObjects.Text[] = [];
     sprites!: BuildingSprites;
+    packets!: PacketSprites;
     preload() {
       for (const asset of [...Object.values(buildingAssets), moduleAsset]) {
         this.load.image(asset.texture, asset.src);
@@ -71,8 +73,9 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
       this.trafficGraphics = this.add.graphics();
       this.effectsGraphics = this.add.graphics();
       this.sprites = new BuildingSprites(this);
+      this.packets = new PacketSprites(this);
       this.trafficGraphics.setDepth(buildingLayers.traffic); this.effectsGraphics.setDepth(buildingLayers.effects);
-      this.events.once('shutdown', () => this.sprites.destroy());
+      this.events.once('shutdown', () => { this.sprites.destroy(); this.packets.destroy(); });
       this.captions = Array.from({ length: 5 }, () => this.add.text(0, 0, '', {
         fontFamily: 'Trebuchet MS, sans-serif', fontSize: '13px', fontStyle: 'bold', color: '#f2faff', align: 'center', backgroundColor: '#234253', padding: { x: 8, y: 5 },
       }).setOrigin(.5, 0).setDepth(buildingLayers.labels));
@@ -275,6 +278,7 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
         }
         if (diagnosticsEnabled) host.dataset.effects = JSON.stringify(effects);
         let packetCount = 0;
+        this.packets.begin();
         if (view.playerMode) {
           const intake = positions[resources.findIndex(r => r.kind === 'internet')];
           if (intake) drawIntake(fx, intake, visualState.internet);
@@ -293,12 +297,16 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
               const length = Math.hypot(b.x - a.x, b.y - a.y) || 1;
               const offset = (lane % 3 - 1) * 4;
               const x = point.x - (b.y - a.y) / length * offset; const y = point.y + (b.x - a.x) / length * offset;
-              drawPacket(g, { x, y }, { x: (b.x - a.x) / length, y: (b.y - a.y) / length }, flow, p);
+              g.lineStyle(flow.kind === 'order' ? 4 : 3, packetPalette[flow.kind], .22);
+              g.lineBetween(x - (b.x - a.x) / length * 17, y - (b.y - a.y) / length * 17, x, y);
+              this.packets.draw({ x, y }, flow, p);
             }
           });
           if (diagnosticsEnabled) host.dataset.flows = JSON.stringify(flows);
         } else if (diagnosticsEnabled) host.dataset.flows = '[]';
+        this.packets.end();
         if (diagnosticsEnabled) {
+          host.dataset.packetPool = JSON.stringify(this.packets.diagnostics());
           host.dataset.frames = String(++frames); host.dataset.packets = String(packetCount);
           host.dataset.appState = utilizationLabel(appU); host.dataset.sqlState = utilizationLabel(sqlU);
           host.dataset.tick = String(view.state.runtime.time);
