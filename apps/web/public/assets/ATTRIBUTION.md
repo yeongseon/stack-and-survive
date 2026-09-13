@@ -1,5 +1,11 @@
 # Asset provenance
 
+## Machine-readable inventory and current review status
+
+`art/asset-manifest.json` pins all ten existing runtime files and editable building source hashes. `pnpm check:assets` validates inventory/integrity and warns about unresolved rights; it does not approve use. `pnpm check:assets:release` intentionally fails while the current assets remain `rights-pending`. See `docs/ASSET_STRATEGY.md` and issue #164. No new external art pack was imported for this inventory.
+
+The repository is now public by explicit owner request. Historical internal-prototype usage notes below describe original integration context, not a claim that public distribution was cleared. No project-wide code/art license has been chosen; original buildings are not automatically CC0. Official files retain Microsoft terms.
+
 ## Microsoft Azure service icons
 
 - Source: [Azure Architecture Center icons](https://learn.microsoft.com/en-us/azure/architecture/icons/).

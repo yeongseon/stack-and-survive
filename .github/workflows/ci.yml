@@ -19,6 +19,8 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: node --test scripts/work-item-format.test.mjs
+      - run: pnpm test:assets
+      - run: pnpm check:assets
       - run: pnpm lint
       - run: pnpm typecheck
       - run: pnpm test
