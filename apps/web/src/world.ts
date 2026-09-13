@@ -13,6 +13,7 @@ import { pressureLosses, pressurePositions, pressureQueues } from './queue-visua
 import { activeEffects, completedResources, drawEffect, effectMotion } from './effects';
 import { diagnosticsEnabled } from './mode';
 import { placeCaptions } from './annotations';
+import { tycoonPoint } from './tycoon-layout';
 
 export function utilizationLabel(u: number | null): string {
   return u === null ? 'READY' : compare(u, 1) > 0 ? '! OVERLOADED' : compare(u, .7) > 0 ? 'WARNING' : 'HEALTHY';
@@ -84,7 +85,7 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
         const architecture = view.state.runtime.architecture;
         const resources = architecture.resources;
         const camera = viewportCamera(view.camera, width, height);
-        const positions = resources.map(r => project(r, camera, width, height));
+        const positions = resources.map(r => view.playerMode ? tycoonPoint(r.kind, width, height) : project(r, camera, width, height));
         this.scene.setVisible(renderVisible);
         if (diagnosticsEnabled) {
           host.dataset.renderVisible = String(renderVisible);
@@ -131,7 +132,7 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
         });
         let g = this.graphics;
         if (this.backgroundSize !== `${width}:${height}`) {
-          const environment = drawEnvironment(this.environment.clear(), width, height); this.backgroundSize = `${width}:${height}`;
+          const environment = drawEnvironment(this.environment.clear(), width, height, view.playerMode); this.backgroundSize = `${width}:${height}`;
           if (diagnosticsEnabled) host.dataset.environment = JSON.stringify(environment);
         }
         const lanes = processingLanes(architecture, requests ?? null);
@@ -311,7 +312,7 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
       const p = point(e);
       if (view.building) { controller.place(logical(p)); return; }
       const resource = view.state.runtime.architecture.resources
-        .map(r => ({ resource: r, center: project(r, camera(), canvas.clientWidth, canvas.clientHeight) }))
+        .map(r => ({ resource: r, center: view.playerMode ? tycoonPoint(r.kind, canvas.clientWidth, canvas.clientHeight) : project(r, camera(), canvas.clientWidth, canvas.clientHeight) }))
         .filter(item => {
           const bounds = resourceArtBounds(item.resource.kind);
           return insideBuilding(p, item.center) || (p.x >= item.center.x + bounds.x && p.x <= item.center.x + bounds.x + bounds.width

@@ -1,8 +1,7 @@
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { createController, type ActionRequest, type Controller, type View } from './controller';
 import { mountWorld } from './world';
-import { project, viewportCamera } from './editor';
-import { tycoonPositions } from './tycoon-layout';
+import { tycoonPositions, tycoonPoint } from './tycoon-layout';
 import { definitions } from '@stack-and-survive/cloud-domain';
 import { primaryPressure } from './primary-pressure';
 import { MissionPanel } from './MissionPanel';
@@ -40,12 +39,9 @@ function Floor({ controller, view }: { controller: Controller; view: View }) {
     const observer = new ResizeObserver(() => setSize({ width: root.clientWidth, height: root.clientHeight })); observer.observe(root);
     return () => { disposed = true; observer.disconnect(); cleanup?.(); surface.remove(); };
   }, [controller, view.rendererGeneration, inspect]);
-  const camera = viewportCamera(view.camera, size.width, size.height);
   const at = (kind: keyof typeof tycoonPositions) => {
-    const point = project(tycoonPositions[kind], camera, size.width, size.height);
-    const emptyEdge = kind === 'edge' && !view.state.runtime.architecture.resources.some(r => r.kind === 'edge');
-    const offset = emptyEdge ? -62 : size.width >= 600 ? 42 : kind === 'edge' ? -62 : kind === 'cache' || kind === 'database' ? 86 : 42;
-    return { left: point.x, top: point.y + offset };
+    const point = tycoonPoint(kind, size.width, size.height);
+    return { left: point.x, top: point.y + 42 };
   };
   const runtime = view.state.runtime;
   const app = runtime.architecture.resources.find(r => r.kind === 'compute')!;

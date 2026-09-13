@@ -226,7 +226,7 @@ footer { order: 12; display: flex; justify-content: space-between; flex-wrap: wr
 .tycoon-metrics strong { display: block; font-size: 22px; color: #f1dbad; font-variant-numeric: tabular-nums; }
 .tycoon-metrics small { font-size: 11px; }
 .tycoon-metrics p { margin-left: auto; color: #f1dbad; }
-.tycoon-floor { height: calc(100dvh - 178px); min-height: 580px; position: relative; }
+.tycoon-floor { height: min(720px,calc(100dvh - 178px)); min-height: 580px; max-width: 1600px; margin-inline: auto; position: relative; }
 .world-controls { position: absolute; inset: 0; pointer-events: none; z-index: 4; }
 .world-controls button, .resource-action-card { pointer-events: auto; }
 .world-slot, .intake-control { position: absolute; transform: translate(-50%,0); text-align: center; }
