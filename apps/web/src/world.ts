@@ -15,6 +15,8 @@ import { diagnosticsEnabled } from './mode';
 import { placeCaptions } from './annotations';
 import { tycoonPoint } from './tycoon-layout';
 import { resourceVisualState } from './resource-visual-state';
+import { drawIntake, packetPalette } from './workload-art';
+import { PacketSprites } from './packet-sprites';
 
 export function utilizationLabel(u: number | null): string {
   return u === null ? 'READY' : compare(u, 1) > 0 ? '! OVERLOADED' : compare(u, .7) > 0 ? 'WARNING' : 'HEALTHY';
@@ -58,6 +60,7 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
     diagnosticSize = '';
     captions: Phaser.GameObjects.Text[] = [];
     sprites!: BuildingSprites;
+    packets!: PacketSprites;
     preload() {
       for (const asset of [...Object.values(buildingAssets), moduleAsset]) {
         this.load.image(asset.texture, asset.src);
@@ -70,8 +73,9 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
       this.trafficGraphics = this.add.graphics();
       this.effectsGraphics = this.add.graphics();
       this.sprites = new BuildingSprites(this);
+      this.packets = new PacketSprites(this);
       this.trafficGraphics.setDepth(buildingLayers.traffic); this.effectsGraphics.setDepth(buildingLayers.effects);
-      this.events.once('shutdown', () => this.sprites.destroy());
+      this.events.once('shutdown', () => { this.sprites.destroy(); this.packets.destroy(); });
       this.captions = Array.from({ length: 5 }, () => this.add.text(0, 0, '', {
         fontFamily: 'Trebuchet MS, sans-serif', fontSize: '13px', fontStyle: 'bold', color: '#f2faff', align: 'center', backgroundColor: '#234253', padding: { x: 8, y: 5 },
       }).setOrigin(.5, 0).setDepth(buildingLayers.labels));
@@ -222,12 +226,18 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
           const source = resources.findIndex(r => r.kind === sourceKind);
           if (target < 0 || source < 0) continue;
           const markers = pressurePositions(positions[source], positions[target], queue.count);
-          const color = queue.severity === 'critical' ? 0xf8af87 : queue.severity === 'warning' ? 0xf2d49a : 0xafd8e8;
+          const color = queue.severity === 'critical' ? 0xff846f : queue.severity === 'warning' ? 0xffc35f : 0xafd8e8;
+          if (view.playerMode && queue.count > 0) {
+            const p = positions[target];
+            fx.lineStyle(queue.severity === 'critical' ? 5 : 2, color, .65);
+            fx.strokeEllipse(p.x, p.y + 6, queue.resource === 'database' ? 160 : 145, 62);
+          }
           markers.forEach((point, i) => {
             const pulse = effectMotion(view, reducedMotion) ? Math.sin(time / 350 + i) * .8 : 0;
             fx.fillStyle(0x173647, .7); fx.fillEllipse(point.x + 2, point.y + 5, 11, 5);
-            fx.fillStyle(color, .85); fx.fillRoundedRect(point.x - 4, point.y - 4 + pulse, 8, 8, 1);
-            fx.lineStyle(1, 0xeff7f4, .8); fx.strokeRect(point.x - 4, point.y - 4 + pulse, 8, 8);
+            fx.fillStyle(color, .18); fx.fillCircle(point.x, point.y, 10);
+            fx.fillStyle(color, .95); fx.fillRoundedRect(point.x - 5, point.y - 5 + pulse, 10, 10, 1);
+            fx.lineStyle(1, 0xeff7f4, .8); fx.strokeRect(point.x - 5, point.y - 5 + pulse, 10, 10);
           });
         }
         for (const loss of pressureLosses(requests ?? null)) {
@@ -268,6 +278,11 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
         }
         if (diagnosticsEnabled) host.dataset.effects = JSON.stringify(effects);
         let packetCount = 0;
+        this.packets.begin();
+        if (view.playerMode) {
+          const intake = positions[resources.findIndex(r => r.kind === 'internet')];
+          if (intake) drawIntake(fx, intake, visualState.internet);
+        }
         if (view.state.runtime.status === 'RUNNING' && !view.error && requests) {
           const at = (kind: string) => positions[resources.findIndex(r => r.kind === kind)];
           flows.forEach((flow, lane) => {
@@ -282,19 +297,16 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
               const length = Math.hypot(b.x - a.x, b.y - a.y) || 1;
               const offset = (lane % 3 - 1) * 4;
               const x = point.x - (b.y - a.y) / length * offset; const y = point.y + (b.x - a.x) / length * offset;
-              const color = flow.kind === 'bot' ? 0xf58a78 : flow.kind === 'order' ? 0xefc27b : 0x9bdac7;
-              g.fillStyle(color); g.lineStyle(2, color);
-              if (p > .85 && (flow.end === 'failed' || flow.end === 'filtered')) {
-                g.lineBetween(x - 4, y - 4, x + 4, y + 4); g.lineBetween(x - 4, y + 4, x + 4, y - 4);
-              } else if (p > .85 && flow.end === 'success' && flow.to === 'cache') g.strokeCircle(x, y, 7);
-              else if (flow.kind === 'order') g.fillRect(x - 3, y - 3, 6, 6);
-              else if (flow.kind === 'bot') g.fillTriangle(x - 4, y + 4, x, y - 4, x + 4, y + 4);
-              else g.fillCircle(x, y, 3);
+              g.lineStyle(flow.kind === 'order' ? 4 : 3, packetPalette[flow.kind], .22);
+              g.lineBetween(x - (b.x - a.x) / length * 17, y - (b.y - a.y) / length * 17, x, y);
+              this.packets.draw({ x, y }, flow, p);
             }
           });
           if (diagnosticsEnabled) host.dataset.flows = JSON.stringify(flows);
         } else if (diagnosticsEnabled) host.dataset.flows = '[]';
+        this.packets.end();
         if (diagnosticsEnabled) {
+          host.dataset.packetPool = JSON.stringify(this.packets.diagnostics());
           host.dataset.frames = String(++frames); host.dataset.packets = String(packetCount);
           host.dataset.appState = utilizationLabel(appU); host.dataset.sqlState = utilizationLabel(sqlU);
           host.dataset.tick = String(view.state.runtime.time);
