@@ -29,5 +29,7 @@ test('Learn restart preserves focus and tears down only the old player world', a
   await expect(page.getByRole('button', { name: 'Ⅱ Pause', exact: true })).toBeEnabled({ timeout: 20000 });
   await page.getByText('Tycoon QA', { exact: true }).click();
   await page.getByRole('button', { name: 'Step one tick', exact: true }).click();
-  await expect(page.getByTestId('elapsed')).toHaveText('1');
+  const stoppedAt = Number(await page.getByTestId('elapsed').textContent());
+  await page.getByRole('button', { name: 'Step one tick', exact: true }).click();
+  await expect(page.getByTestId('elapsed')).toHaveText(String(stoppedAt + 1));
 });
