@@ -1,9 +1,47 @@
 import type Phaser from 'phaser';
 import { tycoonPoint } from './tycoon-layout';
+import { playerBuildingScale, resourceArtBounds } from './building-assets';
 
 type Graphics = Phaser.GameObjects.Graphics;
 type EquipmentKind = 'rack' | 'cooling' | 'cabinet';
 export type Equipment = { kind: EquipmentKind; x: number; y: number; width: number; height: number };
+export function equipmentBounds(e: Equipment) {
+  const left = Math.floor(e.x - e.width / 2 - 1);
+  const right = Math.ceil(Math.max(e.x + e.width / 2 + 11, e.x + e.width * 1.45));
+  const top = Math.floor(e.y - e.height - 7);
+  return { x: left, y: top, width: right - left, height: Math.ceil(e.y + 13) - top };
+}
+export function playerProtectedAreas(width: number, height: number) {
+  return (['internet', 'edge', 'compute', 'cache', 'database'] as const).flatMap(kind => {
+    const p = tycoonPoint(kind, width, height);
+    const art = resourceArtBounds(kind, playerBuildingScale(kind, width), true);
+    return [
+      { x: p.x + art.x - 12, y: p.y + art.y - 44, width: art.width + 24, height: art.height + 56 },
+      { x: p.x - 85, y: p.y + 16, width: 170, height: 135 },
+    ];
+  });
+}
+export function playerFacilityLayout(width: number, height: number): Equipment[] {
+  if (!Number.isFinite(width) || !Number.isFinite(height) || width < 250 || height < 300) return [];
+  const wide = width >= 900;
+  const count = Math.min(15, Math.max(3, Math.floor(width / (wide ? 95 : 70))));
+  const candidates: Equipment[] = [];
+  for (let i = 0; i < count; i++) {
+    const x = 45 + i * (width - 104) / Math.max(1, count - 1);
+    candidates.push({ kind: i % 5 === 3 ? 'cooling' : i % 7 === 6 ? 'cabinet' : 'rack', x,
+      y: wide ? 132 + (i % 3) * 7 : 34, width: wide ? 52 : 32, height: wide ? 96 + (i % 2) * 12 : 20 });
+    if (wide && i < Math.ceil(count * .3)) candidates.push({ kind: i % 3 === 0 ? 'cabinet' : 'rack', x,
+      y: height - 42, width: 57, height: 88 + (i % 2) * 18 });
+  }
+  for (let i = 0; i < 4; i++) candidates.push({ kind: i % 2 ? 'cabinet' : 'cooling', x: width - 38,
+    y: 205 + i * 90, width: 24, height: 52 });
+  const protectedAreas = playerProtectedAreas(width, height);
+  return candidates.filter(e => {
+    const b = equipmentBounds(e);
+    return b.x >= 20 && b.y >= 6 && b.x + b.width <= width - 16 && b.y + b.height <= height - 28
+      && !protectedAreas.some(p => b.x < p.x + p.width && b.x + b.width > p.x && b.y < p.y + p.height && b.y + b.height > p.y);
+  });
+}
 export function facilityLayout(width: number, height: number): Equipment[] {
   if (!Number.isFinite(width) || !Number.isFinite(height) || width < 160 || height < 160) return [];
   const unit = width < 600 ? 23 : 34;
@@ -37,6 +75,13 @@ function equipment(g: Graphics, e: Equipment, index: number) {
       g.lineStyle(1, 0x577082); g.lineBetween(x - w / 2 + 6, yy, x + w / 2 - 6, yy + 3);
       g.fillStyle(j % 3 === index % 3 ? 0x6fafd1 : 0x497786); g.fillRect(x + w / 2 - 8, yy + 1, 2, 2);
     }
+    if (w >= 40) {
+      g.lineStyle(1, 0x829eb1, .65); g.strokeRect(x - w / 2 + 3, y - h + 7, w - 6, h - 15);
+      g.lineStyle(2, 0x45b1d6, .8); g.lineBetween(x - w / 2 + 5, y - h + 5, x + w / 2 - 5, y - h + 10);
+      g.fillStyle(0xc3b58a, .65); g.fillRect(x - w / 2 + 6, y - 13, 9, 3);
+      if (index % 3 === 0) { g.lineStyle(1, 0x43637b); g.lineBetween(x, y-h+13, x, y-14); }
+      for (let vent = 0; vent < 4; vent++) { g.lineStyle(1, 0x50667a); g.lineBetween(x+w/2+3, y-h+17+vent*12, x+w/2+8, y-h+14+vent*12); }
+    }
   } else if (e.kind === 'cooling') {
     for (let j = 0; j < 2; j++) {
       const yy = y - h + 15 + j * (h - 22) / 2;
@@ -47,6 +92,11 @@ function equipment(g: Graphics, e: Equipment, index: number) {
   } else {
     g.lineStyle(1, 0x9aa8ae); g.strokeRect(x - w / 2 + 3, y - h + 8, w - 6, h - 15);
     g.fillStyle(0xb9a26b); g.fillRect(x + 2, y - 20, 3, 6);
+    if (w >= 40) {
+      g.fillStyle(0x223b50); g.fillRect(x-w/2+7, y-h+14, w-14, 18);
+      g.lineStyle(2, 0xbcb083); g.lineBetween(x-w/2+11, y-h+23, x+w/2-11, y-h+23);
+      g.lineStyle(1, 0x4d6170); for (let j=0;j<4;j++) g.lineBetween(x-w/2+8, y-32-j*5, x+w/2-8, y-32-j*5);
+    }
   }
 }
 export function drawEnvironment(g: Graphics, width: number, height: number, player = false) {
@@ -78,17 +128,13 @@ export function drawEnvironment(g: Graphics, width: number, height: number, play
     g.fillStyle(0xffd89a, .06); g.fillEllipse(x + 48, wallHeight + 25, 85, 60);
     g.fillStyle(0xf0d5a4, .85); g.fillRoundedRect(x + 39, 25, 17, 5, 2);
   }
-  const objects = facilityLayout(width, height);
+  const objects = player ? playerFacilityLayout(width, height) : facilityLayout(width, height);
   if (player && width >= 900) {
-    const count = Math.min(16, Math.floor(width / 88));
-    for (let i = 0; i < count; i++) {
-      const x = 65 + i * (width - 130) / Math.max(1, count - 1);
-      objects.push({ kind: i % 6 === 0 ? 'cooling' : 'rack', x, y: 170, width: 45, height: 84 });
-      if (i < Math.floor(count * .34)) objects.push({ kind: i % 5 === 0 ? 'cabinet' : 'rack', x, y: height - 32, width: 48, height: 95 });
-    }
     g.lineStyle(2, 0x698fa1, .3); g.lineBetween(35, height * .84, width - 35, height * .84);
-    g.lineStyle(6, 0x253d4d, .6); g.lineBetween(35, 171, width - 35, 171);
-    g.lineStyle(2, 0xabb895, .4); g.lineBetween(35, 173, width - 35, 173);
+    g.lineStyle(9, 0x152b40, .9); g.lineBetween(35, 163, width - 35, 163);
+    g.lineStyle(2, 0x65a5bd, .6); g.lineBetween(35, 159, width - 35, 159);
+    g.lineStyle(2, 0xabb895, .6); g.lineBetween(35, 167, width - 35, 167);
+    for (let x = 40; x < width - 40; x += 55) { g.lineStyle(2, 0x334d61); g.lineBetween(x, 157, x, 170); }
   }
   if (player) {
     for (const kind of ['internet', 'edge', 'compute', 'cache', 'database'] as const) {
@@ -108,5 +154,5 @@ export function drawEnvironment(g: Graphics, width: number, height: number, play
   for (let x = 27; x < width - 25; x += 44) {
     g.lineStyle(2, 0xc1ae7c, .6); g.lineBetween(x, height - 20, x + 7, height - 26);
   }
-  return { equipmentCount: objects.length, style: 'indoor-data-center' };
+  return { equipmentCount: objects.length, style: 'indoor-data-center', layout: player ? 'protected-player-aisle' : 'editor-perimeter' };
 }

@@ -57,6 +57,8 @@ Export maintenance: regenerate original SVG/PNG with the existing script, inspec
 
 No external pack is selected, downloaded or approved by #143. The current shortlist is original building-source reuse (consistent perspective, existing measured bounds and five reused 512×512 textures) and procedural indoor-prop variants (no additional texture download or rights dependency). #145/#146 may propose external alternatives only when they improve a specific silhouette/material/prop need after #25 baseline findings. Each proposal must record expected file/texture budget and why the existing originals cannot serve that need. A source website being popular or advertising free assets is not an approval.
 
+Owner-directed gameplay visual continuation used the original/procedural option for #146 rather than importing another pack. `playerFacilityLayout` deterministically selects rack, cooling and electrical-cabinet variants around the aisle and excludes their complete body/roof/shadow envelopes from all potential facility, badge and control zones. Small viewports use compact wall equipment. The environment adds no downloaded textures or runtime asset files and remains cached by viewport; the existing manifest and Pages demo exception are unchanged. This is an implementation choice, not a claim of external asset licensing or completion of human baseline #25.
+
 Capture reachable normal/pending/active/pressure fixtures at five supported widths. Scale-out must show exact active server count; absent Cache/Edge cannot coexist with active art. Record memory/texture footprint and actual GPU behavior; use pooled textures rather than per-frame complex geometry.
 
 ## Audio / accessibility
