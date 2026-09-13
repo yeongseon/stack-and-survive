@@ -1,6 +1,6 @@
 # Architecture strategy balance
 
-Version: 0.1. Existing reference evidence is distinguished from #154 future calibration. [Simulation Specification](SIMULATION_SPEC.md) and executable `packages/simulation/src/reference.test.ts` own exact values.
+Version: 0.2. Existing fixed-architecture references and measured live-action evidence are distinguished below. [Simulation Specification](SIMULATION_SPEC.md) and executable `packages/simulation/src/reference.test.ts` own canonical values; `strategy-evidence.test.ts` pins the additional live schedules. No balance constants were changed.
 
 ## Existing Black Friday evidence
 
@@ -38,3 +38,44 @@ SQL-upgrade and async/Queue/Functions examples are not supported current strateg
 5. Predeclare ranges/objectives and test deterministic boundaries before merging changes. Preserve legacy fixtures, or explicitly approve a versioned change with a documented reason.
 
 No claim that every family must win every workload. Publish actual measured tables rather than illustrative stars, arbitrary low costs or invented NBV values. Human #159 must still show that players perceive alternatives and want to experiment.
+
+## Live-action measurement (#154)
+
+All plans begin with `baseline()` (Internet/App1/SQL), no Cache/Edge, the unchanged `blackFridayChallenge` v1, rules0.2, fixed-v1 seed0 and survive objective. Times below are **request ticks**, not activation ticks. App takes8s, Cache5s, Edge4s; normal gameplay and direct SQL writes remain unchanged. Each plan is repeated and checked for exact deterministic result equality. Actions are sequenced in listed order and all must be accepted.
+
+Notation: `A(t)` scale-out, `C(t)` Cache deployment, `E(t)` Edge deployment, `B(t)` emergency filtering boost.
+
+| Plan | Ordered action requests |
+|---|---|
+| no-action | none |
+| scale-only | A20, A60, A110 |
+| cache-scale | A20, C65, A66, A110 |
+| edge-scale | A20, E65, A110 |
+| balanced | A20, C65, E66, A110 |
+| just-in-time-balanced | A22, C70, E71, A112 |
+| emergency-bridge | A22, C70, E71, B120, A142 |
+
+| Plan | Status/time | Availability | Infrastructure + emergency cost | NBV | Score | Bots passed rate limit / processed at App |
+|---|---|---:|---:|---:|---:|---:|
+| no-action | failed50s | 81.0811% | 14.1667 + 0 | 51.3733 | 1073 | 0 / 0 |
+| scale-only | failed140s | 94.1414% | 56.8333 + 0 | 283.3367 | 5296 | 6700 / 6700 |
+| cache-scale | completed180s | 100% | 92.3333 + 0 | 391.3867 | 8500 | 14700 / 14700 |
+| edge-scale | failed140s | 94.0626% | 54.3833 + 0 | 284.6410 | 6339 | 2010 / 2010 |
+| balanced | completed180s | 99.6415% | 89 + 0 | 392.5523 | 9478 | 4410 / 4410 |
+| just-in-time-balanced | completed180s | 99.6547% | 87.75 + 0 | 393.8820 | 9481 | 4410 / 4410 |
+| emergency-bridge | completed180s | 98.2825% | 85.25 + 8 | 380.0852 | 9329 | 3210 / 3179.6947 |
+
+Values are rounded for the table; executable expectations use six-decimal tolerance plus exact repeated results. Failed runs terminate on availability. Their smaller totals cover less demand and are **not** eligible low-cost full-run records. All live Cache plans have approximately80% cache hit ratio over eligible reads; no-Cache ratio is null. These numbers are observations from the existing engine, not independent mathematical reference derivations like the older canonical matrix.
+
+| Successful plan | App peak | SQL read peak | SQL write peak | Bot-displacement business opportunity lost |
+|---|---:|---:|---:|---:|
+| cache-scale | 83.3333% | 97.7778% | 85.7143% | 0 |
+| balanced | 85.6000% | 97.7778% | 85.2857% | 0 |
+| just-in-time-balanced | 85.6000% | 97.7778% | 85.2857% | 0 |
+| emergency-bridge | 119.5000% | 97.7778% | 85.2857% | 4.0275 credits |
+
+The first bot column sums `requests.rateLimit.passed.bot` (after filtering/limiting, before App capacity rejection); the second sums `requests.app.accepted.bot`. Both come from per-tick snapshots, not estimates from final architecture. Bot displacement is the existing attribution counterfactual, not infrastructure cost. App, Cache and SQL peaks come directly from result attribution and are pinned by numerical assertions.
+
+Within these seven schedules, four complete the unchanged challenge. Compare only those completions across higher availability/NBV, lower total running+emergency cost, lower processed bot waste and lower App/SQL peaks. The nondominated subset is **cache-scale, just-in-time-balanced, emergency-bridge**. Balanced is dominated by the measured just-in-time variant. Cache-scale trades higher availability for more cost/bot waste; emergency-bridge reduces processed bots but costs more in total and loses more customers. Score is reported, not used to manufacture Pareto diversity.
+
+This establishes at least three viable schedules without changing the existing default introductory challenge. It does not establish all named strategy families as viable, optimal human timing, or global balance. In particular App-only/Edge-only still fail SQL, and the timed schedules are test fixtures, not instructions the UI should force. Further beginner levels require separately defined/verified content in #155; write-heavy scenarios and new resources remain future scope.
