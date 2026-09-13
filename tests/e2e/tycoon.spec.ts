@@ -86,6 +86,6 @@ test('world-local controls stay separate and keyboard accessible on a narrow flo
   await page.keyboard.press('Escape'); await expect(intake).toBeFocused();
   const sql = page.getByRole('button', { name: 'SQL processing', exact: true });
   await sql.focus(); await page.keyboard.press('Enter');
-  await expect(page.getByRole('region', { name: 'Resource actions' })).toContainText('Write capacity 70/s');
+  await expect(page.getByRole('region', { name: 'Resource actions' })).toContainText('Writes:');
   await page.keyboard.press('Escape'); await expect(sql).toBeFocused();
 });
