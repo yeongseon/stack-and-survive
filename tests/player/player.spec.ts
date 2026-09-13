@@ -37,7 +37,8 @@ test('ordinary production game cannot expose debug controls and follows real tim
 test('ordinary player builds live infrastructure through world controls without diagnostics', async ({ page }) => {
   await page.goto('/?tycoon&debug=true');
   await page.getByRole('button', { name: 'Start Game' }).click();
-  await expect(page.getByRole('button', { name: 'Ⅱ Pause', exact: true })).toBeEnabled({ timeout: 10000 });
+  await expect(page.locator('[data-renderer="ready"]')).toHaveCount(1, { timeout: 20000 });
+  await expect(page.getByRole('button', { name: 'Ⅱ Pause', exact: true })).toBeEnabled({ timeout: 20000 });
   await page.getByRole('button', { name: /Add Cache/ }).click();
   await page.getByRole('button', { name: /Add Protected Edge/ }).click();
   await page.getByRole('button', { name: /App capacity/ }).click();
