@@ -35,8 +35,8 @@ it('independently reports accepted SQL reads and writes, never invented work or 
     expect(resourceActivity(view).filter(a => a.resource === 'database').map(a => a.type)).toEqual(expected);
   }
   view.snapshot!.requests = processRequests(baseline(), { browse: 100, order: 20, bot: 0 });
-  view.error = 'Renderer unavailable'; expect(resourceActivity(view)).toEqual([]);
-  view.error = null; view.state.runtime.status = 'FAILED'; expect(resourceActivity(view)).toEqual([]);
+  expect(resourceActivity({ ...view, error: 'Renderer unavailable' })).toEqual([]);
+  expect(resourceActivity({ ...view, state: { ...view.state, runtime: { ...view.state.runtime, status: 'FAILED' } } })).toEqual([]);
   c.destroy();
 });
 it('keeps a static equivalent for reduced motion and a bounded slow activity loop', () => {
