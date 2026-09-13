@@ -8,6 +8,8 @@ import { MissionPanel } from './MissionPanel';
 import { glossary } from './help';
 import { diagnosticsEnabled } from './mode';
 import { businessFeedback } from './business-feedback';
+import { BuildPad } from './BuildPad';
+import { resourceVisualState } from './resource-visual-state';
 
 function LocalAction({ controller, action, children }: { controller: Controller; action: ActionRequest; children: React.ReactNode }) {
   const reason = controller.actionReason(action);
@@ -45,19 +47,20 @@ function Floor({ controller, view }: { controller: Controller; view: View }) {
   };
   const runtime = view.state.runtime;
   const app = runtime.architecture.resources.find(r => r.kind === 'compute')!;
+  const visual = resourceVisualState(view);
   const selected = runtime.architecture.resources.find(r => r.id === view.selected);
   return <div className="tycoon-floor world" ref={host} data-testid="world" aria-label="Living cloud business">
     <div className="world-controls">
       {(['edge', 'cache'] as const).map(kind => {
         const resource = runtime.architecture.resources.find(r => r.kind === kind);
         return <div className={`world-slot ${resource ? 'installed' : 'empty'}`} key={kind} style={at(kind)} data-testid={`slot-${kind}`}>
-          {!resource ? <LocalAction controller={controller} action={{ type: 'DEPLOY_RESOURCE', kind, ...tycoonPositions[kind] }}><span className="slot-plus">+</span>{kind === 'cache' ? 'Add Cache' : 'Add Protected Edge'}<small>+{definitions[kind].cost} cr/min · {definitions[kind].provisioning}s</small></LocalAction>
+          {!resource ? <BuildPad controller={controller} action={{ type: 'DEPLOY_RESOURCE', kind, ...tycoonPositions[kind] }} label={kind === 'cache' ? 'Add Cache' : 'Add Protected Edge'} role={kind === 'cache' ? 'CACHE' : 'EDGE'} detail={`${definitions[kind].name} · ${definitions[kind].provisioning}s · +${definitions[kind].cost} cr/min`} />
             : <button type="button" onClick={() => select(resource.id)}>{kind === 'cache' ? 'Cache' : 'Protected Edge'}<small>{resource.remaining > 0 ? `Provisioning ${resource.remaining}s` : 'Active'}</small></button>}
         </div>;
       })}
       <div className="world-slot app-expansion" style={at('compute')}>
-        <div className="instance-slots" aria-label="App instance slots">{[1, 2, 3, 4].map(n => <span key={n} data-state={n <= app.instances ? 'active' : n === app.instances + 1 && runtime.scaleDue !== null ? 'provisioning' : 'empty'}>{n <= app.instances ? '■' : '□'}</span>)}</div>
-        {runtime.scaleDue !== null ? <span className="slot-progress">Expanding · {Math.max(0, runtime.scaleDue - runtime.time)}s</span> : <LocalAction controller={controller} action={{ type: 'SCALE_OUT' }}>+ App capacity<small>{app.instances}/4 active · +5 cr/min · 8s</small></LocalAction>}
+        <div className="instance-slots" aria-label="App instance slots">{visual.app.bays.map((bay, i) => <span key={i} data-state={bay} aria-label={`Bay ${i+1}: ${bay}`}>{bay === 'active' ? '■' : bay === 'construction' ? '▧' : '□'}</span>)}</div>
+        {runtime.scaleDue !== null ? <span className="slot-progress">Expanding · {visual.app.scaleRemaining}s</span> : <BuildPad controller={controller} action={{ type: 'SCALE_OUT' }} label="+ App capacity" role="APP" detail={`${app.instances}/4 active · 8s · +5 cr/min`} />}
       </div>
       <button type="button" className="intake-control" style={at('internet')} onClick={() => select('internet')}>Traffic intake</button>
       <button type="button" className="intake-control" style={at('database')} onClick={() => select('database')}>SQL processing</button>

@@ -10,6 +10,7 @@ test('App bays show only real active servers before during and after expansion',
   await expect.poll(async () => (await app()).bays).toEqual(['active', 'available', 'locked', 'locked']);
   expect((await app()).modules).toHaveLength(1);
   await page.getByRole('button', { name: /App capacity/ }).click();
+  await page.getByRole('button', { name: 'Confirm expansion', exact: true }).click();
   await expect.poll(async () => (await app()).bays).toEqual(['active', 'queued', 'locked', 'locked']);
   expect((await app()).modules).toHaveLength(1);
   await step.click();
