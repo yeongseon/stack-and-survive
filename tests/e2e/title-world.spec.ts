@@ -3,7 +3,8 @@ test('title preview is decorative and motion preferences do not start a business
   await page.goto('/?tycoon');
   const title = page.getByRole('region', { name: 'Game introduction' });
   await expect(title).toHaveAttribute('data-time', '0'); await expect(title).toHaveAttribute('data-budget', '140');
-  await expect(page.locator('.title-world image')).toHaveCount(5);
+  await expect(page.locator('.title-world use[href="#scene-rack"]')).toHaveCount(25);
+  await expect(page.locator('.title-world image')).toHaveCount(0);
   await expect(page.locator('.title-flow').first()).toHaveCSS('animation-name', 'title-packet-flow');
   await page.waitForTimeout(1600);
   await expect(title).toHaveAttribute('data-time', '0'); await expect(title).toHaveAttribute('data-budget', '140');
