@@ -11,6 +11,7 @@ export function GameResult({ result, restart, review }: { result: NonNullable<Vi
     <h3>{result.primary}</h3>
     <div className="result-score"><small>Score </small><strong>{result.score}</strong></div>
     <dl><dt>Business value</dt><dd>{result.economy.netBusinessValue.toFixed(1)} cr</dd><dt>Availability</dt><dd>{(result.metrics.availability * 100).toFixed(2)}%</dd><dt>Operation</dt><dd>{result.elapsedTime}s</dd></dl>
+    {result.challenge && <p data-testid="challenge-outcome">{result.challenge.id} · {result.challenge.objective.kind === 'survive' ? 'Complete the operation' : `Availability ≥ ${result.challenge.objective.target * 100}%`} — {result.objectiveMet ? 'met' : 'not met'}</p>}
     <p className="result-advice"><strong>{completed ? 'Your next decision' : 'Recommended move'}</strong>{result.insight}</p>
     <button ref={retry} type="button" className="result-primary" aria-describedby="game-result-heading" onClick={restart}>Play again</button>
     <button type="button" className="result-review" onClick={review}>Review business</button>

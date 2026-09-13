@@ -21,9 +21,12 @@ it('advances only from the orchestration clock, not snapshot reads', () => {
   f.tick(); expect(f.controller.getSnapshot().state.runtime.time).toBe(1);
 });
 it('matches headless results and stops timer on baseline failure', () => {
-  const f = fixture(); f.controller.start();
+  const f = fixture(); const initial = structuredClone(f.controller.getSnapshot().state.runtime.architecture); f.controller.start();
   for (let i = 0; i < 50; i++) f.tick();
-  expect(f.controller.getSnapshot().result).toEqual(simulateScenario(baseline(), blackFriday));
+  const { challenge, initialArchitecture, objectiveMet, actionLog, ...engineResult } = f.controller.getSnapshot().result!;
+  expect(engineResult).toEqual(simulateScenario(baseline(), blackFriday));
+  expect(challenge?.workload).toEqual(blackFriday); expect(initialArchitecture).toEqual(initial);
+  expect(objectiveMet).toBe(false); expect(actionLog).toEqual([]);
   expect(f.active()).toBe(0);
   f.tick(); expect(f.controller.getSnapshot().state.runtime.time).toBe(50);
 });

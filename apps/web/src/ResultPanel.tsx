@@ -1,7 +1,8 @@
 import type { simulationResult } from '@stack-and-survive/simulation/results';
 import { ServiceIcon } from './ServiceIcon';
+import type { Challenge } from '@stack-and-survive/scenarios/challenge';
 
-export type Result = ReturnType<typeof simulationResult>;
+export type Result = ReturnType<typeof simulationResult> & { challenge?: Challenge };
 export function displayLatency(value: number | null): string { return value === null ? 'N/A — no successful requests' : `${value.toFixed(1)} ms`; }
 export function ResultPanel({ result, onRedesign }: { result: Result; onRedesign: () => void }) {
   const allTargets = Object.values(result.targetAttainment).every(Boolean);
@@ -14,9 +15,9 @@ export function ResultPanel({ result, onRedesign }: { result: Result; onRedesign
     ['Net business value', result.economy.netBusinessValue.toFixed(2)], ['Remaining budget', result.economy.remainingBudget.toFixed(2)],
   ];
   return <section className="result-panel" aria-label="Scenario result">
-    <p className="eyebrow">BLACK FRIDAY · {result.status === 'COMPLETED' ? 'OPERATION COMPLETED' : 'SCENARIO FAILED'}</p>
+    <p className="eyebrow">{result.scenarioId === 'black-friday' ? 'BLACK FRIDAY' : result.scenarioId} · {result.status === 'COMPLETED' ? 'OPERATION COMPLETED' : 'SCENARIO FAILED'}</p>
     <div className="result-heading"><div><h2>{result.primary}</h2><p>{result.insight}</p></div><div><span>Architecture score</span><strong data-testid="result-score">{result.score.toLocaleString('en-US')}</strong><span>/ 10,000</span></div></div>
-    <p data-testid="result-duration">Elapsed: {result.elapsedTime} / 180 seconds · {result.status} · Balance {result.balanceVersion}</p>
+    <p data-testid="result-duration">Elapsed: {result.elapsedTime} / {result.challenge?.workload.duration ?? result.phases.at(-1)?.end ?? 180} seconds · {result.status} · Balance {result.balanceVersion}</p>
     <p>Targets: {allTargets ? 'All met' : 'Not all met'} — availability {result.targetAttainment.availability ? 'met' : 'not met'}, latency {result.targetAttainment.latency ? 'met' : 'not met'}, business value {result.targetAttainment.businessValue ? 'met' : 'not met'}. Survival is not the same as meeting every target.</p>
     <dl className="result-metrics">{entries.map(([label, content]) => <div key={label}><dt>{label}</dt><dd>{content}</dd></div>)}</dl>
     <p>Physical bottleneck: {result.bottleneck ?? 'None — this outcome is not attributed to a saturated resource.'}</p>

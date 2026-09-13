@@ -10,9 +10,10 @@ import { useGameSound } from './useGameSound';
 import { useWorldGuide } from './useWorldGuide';
 import { WorldGuide } from './WorldGuide';
 import { guideHint } from './world-guide';
+import { blackFridayChallenge, type Challenge } from '@stack-and-survive/scenarios/challenge';
 
-export function TycoonGame() {
-  const [controller] = useState(() => createController(undefined, undefined, true));
+export function TycoonGame({ challenge = blackFridayChallenge }: { challenge?: Challenge }) {
+  const [controller] = useState(() => createController(undefined, undefined, true, challenge));
   const view = useSyncExternalStore(controller.subscribe, controller.getSnapshot);
   const sound = useGameSound(controller);
   const guide = useWorldGuide();
@@ -26,6 +27,8 @@ export function TycoonGame() {
   useEffect(() => () => controller.destroy(), [controller]);
   const open = (next: typeof page) => { dialogOpener.current = document.activeElement instanceof HTMLElement ? document.activeElement : null; setPage(next); dialog.current?.showModal(); };
   const runtime = view.state.runtime;
+  const currentChallenge = view.challenge ?? blackFridayChallenge;
+  const scenarioName = currentChallenge.workload.id === 'black-friday' ? 'Black Friday' : currentChallenge.workload.id;
   const start = () => { guide.newAttempt(); sound.unlock(); setEntered(true); controller.beginGame(); };
   const restart = () => { controller.reset(); setEntered(false); };
   return <main className="tycoon-game" onClick={event => { if (event.target instanceof Element && event.target.closest('button')) sound.click(); }}>
@@ -37,7 +40,7 @@ export function TycoonGame() {
       </div>
       <div className="title-bottom"><nav className="title-actions" aria-label="Introduction">
         <button type="button" aria-label="How to Play" onClick={() => open('how')}>How to Play<small>Learn the basics</small></button>
-        <button ref={startButton} type="button" aria-label="Start Game" className="start-game" onClick={start}>▶ Start Game<small>One business. Three minutes.</small></button>
+        <button ref={startButton} type="button" aria-label="Start Game" className="start-game" onClick={start}>▶ Start Game<small>One business. {currentChallenge.workload.duration === 180 ? 'Three minutes.' : `${currentChallenge.workload.duration} seconds.`}</small></button>
         <button type="button" aria-label="About" onClick={() => open('about')}>About<small>The idea &amp; the technology</small></button>
       </nav><p className="title-footnote">SAME WORKLOAD. DIFFERENT ARCHITECTURES. DIFFERENT OUTCOMES.</p></div>
     </section> : <>
@@ -45,7 +48,7 @@ export function TycoonGame() {
       <GameHUD view={view} />
       <WorldGuide view={view} guide={guide} returnFocus={() => learnButton.current?.focus()} />
       <GameFloor controller={controller} view={view} guideTarget={guide.visible ? guideHint(view, guide.stage).target : null} />
-      {view.countdown !== null && <div className="welcome-countdown" role="status">Black Friday begins in <strong>{view.countdown}</strong></div>}
+      {view.countdown !== null && <div className="welcome-countdown" role="status">{scenarioName} begins in <strong>{view.countdown}</strong></div>}
       {view.notice && diagnosticsEnabled && <p className="tycoon-notice">{view.notice}</p>}
       {view.result && <GameResult result={view.result} restart={restart} review={() => open('learn')} />}
       {view.error && <section role="alert" className="tycoon-result"><p>{view.error}</p><button type="button" onClick={() => controller.recoverRenderer()}>Rebuild graphics</button><button type="button" onClick={restart}>Return to title</button></section>}
