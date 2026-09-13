@@ -3,6 +3,7 @@ import type { Resource } from '@stack-and-survive/schema';
 import { buildingAssets, buildingLayers, moduleAsset } from './building-assets';
 import type { Point } from './editor';
 import type { BayState } from './resource-visual-state';
+import { facilityBays, facilityModuleScale } from './facility-bays';
 
 export function spriteModules(resource: Resource, pending: boolean) {
   const active = resource.kind === 'compute' && resource.remaining === 0 ? resource.instances : 0;
@@ -40,21 +41,23 @@ export class BuildingSprites {
     }
     entry.group.setPosition(point.x, point.y).setScale(scale).setDepth(buildingLayers.body + rank).setVisible(true);
     entry.body.setAlpha(resource.remaining > 0 ? .25 : 1);
+    entry.body.setVisible(!bayStates);
     const state = spriteModules(resource, pending);
     entry.bays.clear(); entry.bayStates = bayStates ?? [];
     if (bayStates) bayStates.forEach((bay, i) => {
-      const x = -45 + i * 30;
+      const { x, y } = facilityBays[i];
       const color = bay === 'construction' || bay === 'queued' ? 0xf2cb79 : bay === 'available' ? 0x9fe3cd : 0x647887;
-      entry!.bays.fillStyle(0x102837, .9); entry!.bays.fillRect(x - 13, 7, 26, 12);
-      entry!.bays.lineStyle(1, color, 1); entry!.bays.strokeRect(x - 13, 7, 26, 12);
-      if (bay === 'available' || bay === 'queued') { entry!.bays.lineBetween(x - 4, 13, x + 4, 13); entry!.bays.lineBetween(x, 9, x, 17); }
+      entry!.bays.fillStyle(0x0c2138, .95); entry!.bays.fillPoints([{x:x-31,y}, {x,y:y-16}, {x:x+31,y}, {x,y:y+16}], true);
+      entry!.bays.lineStyle(bay === 'active' ? 2 : 1, color, 1); entry!.bays.strokePoints([{x:x-31,y}, {x,y:y-16}, {x:x+31,y}, {x,y:y+16}], true);
+      if (bay === 'available' || bay === 'queued') { entry!.bays.lineBetween(x - 7, y, x + 7, y); entry!.bays.lineBetween(x, y-5, x, y+5); }
       if (bay === 'construction') {
-        entry!.bays.strokeRect(x - 10, -18, 20, 25);
-        for (let y = -14; y < 7; y += 6) entry!.bays.lineBetween(x - 10, y, x + 10, y);
+        for (const offset of [0, -18, -36, -54]) entry!.bays.strokePoints([{x:x-25,y:y+offset}, {x,y:y-13+offset}, {x:x+25,y:y+offset}, {x,y:y+13+offset}], true);
+        for (const side of [-25,25]) entry!.bays.lineBetween(x+side,y,x+side,y-54);
       }
     });
     entry.modules.forEach((module, i) => {
-      module.setPosition(bayStates ? -45 + i * 30 : -30 + i * 20, 8);
+      module.setPosition(bayStates ? facilityBays[i].x : -30 + i * 20, bayStates ? facilityBays[i].y : 8);
+      module.setDisplaySize(moduleAsset.width * (bayStates ? facilityModuleScale : 1), moduleAsset.height * (bayStates ? facilityModuleScale : 1));
       module.setVisible(bayStates ? bayStates[i] === 'active' : i < state.active || (state.ghost && i === state.active));
       module.setAlpha(i < state.active ? 1 : .28);
     });
@@ -64,8 +67,8 @@ export class BuildingSprites {
   diagnostics() {
     return [...this.entries].map(([id, entry]) => ({ id, texture: entry.body.texture.key, visible: entry.group.visible,
       depth: entry.group.depth, bodyAlpha: entry.body.alpha, bays: entry.bayStates, scale: entry.group.scaleX,
-      bodyWidth: entry.body.displayWidth, bodyHeight: entry.body.displayHeight, originX: entry.body.originX, originY: entry.body.originY,
-      modules: entry.modules.filter(module => module.visible).map(module => ({ alpha: module.alpha, texture: module.texture.key })) }));
+      bodyVisible: entry.body.visible, bodyWidth: entry.body.displayWidth, bodyHeight: entry.body.displayHeight, originX: entry.body.originX, originY: entry.body.originY,
+      modules: entry.modules.filter(module => module.visible).map(module => ({ alpha: module.alpha, texture: module.texture.key, x: module.x, y: module.y, width: module.displayWidth, height: module.displayHeight })) }));
   }
 
   retain(ids: readonly string[]) {

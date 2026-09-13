@@ -50,13 +50,15 @@ function equipment(g: Graphics, e: Equipment, index: number) {
   }
 }
 export function drawEnvironment(g: Graphics, width: number, height: number, player = false) {
-  g.fillGradientStyle(0x5a6b7b, 0x657989, 0x819199, 0x687f8c); g.fillRect(0, 0, width, height);
+  if (player) g.fillGradientStyle(0x152a43, 0x243d57, 0x344b60, 0x172c43);
+  else g.fillGradientStyle(0x5a6b7b, 0x657989, 0x819199, 0x687f8c);
+  g.fillRect(0, 0, width, height);
   const tile = width < 600 ? 38 : 56;
   for (let row = -1; row < Math.ceil(height / (tile * .55)) + 1; row++) {
     for (let col = -1; col < Math.ceil(width / tile) + 1; col++) {
       const x = col * tile + (row % 2 ? tile / 2 : 0); const y = row * tile * .55;
-      polygon(g, [[x, y], [x + tile / 2, y + tile * .275], [x, y + tile * .55], [x - tile / 2, y + tile * .275]], (row + col) % 3 ? 0x8a9aa3 : 0xa3afb4, .16);
-      g.lineStyle(1, 0x344d60, .3); g.lineBetween(x, y, x + tile / 2, y + tile * .275); g.lineBetween(x + tile / 2, y + tile * .275, x, y + tile * .55);
+      polygon(g, [[x, y], [x + tile / 2, y + tile * .275], [x, y + tile * .55], [x - tile / 2, y + tile * .275]], (row + col) % 3 ? 0x8a9aa3 : 0xa3afb4, player ? .025 : .16);
+      g.lineStyle(1, player ? 0x6b87a0 : 0x344d60, player ? .12 : .3); g.lineBetween(x, y, x + tile / 2, y + tile * .275); g.lineBetween(x + tile / 2, y + tile * .275, x, y + tile * .55);
       if (row > 2 && row % 6 === 0 && col % 5 === 0) {
         g.lineStyle(1, 0x40586a, .55);
         for (let j = 0; j < 6; j++) g.lineBetween(x - 11 + j * 4, y + 5 + j, x - 21 + j * 4, y + 11 + j);
@@ -78,22 +80,21 @@ export function drawEnvironment(g: Graphics, width: number, height: number, play
   }
   const objects = facilityLayout(width, height);
   if (player && width >= 900) {
-    const count = Math.min(18, Math.floor(width / 80));
+    const count = Math.min(16, Math.floor(width / 88));
     for (let i = 0; i < count; i++) {
       const x = 65 + i * (width - 130) / Math.max(1, count - 1);
-      objects.push({ kind: i % 6 === 0 ? 'cooling' : 'rack', x, y: 154, width: 30, height: 44 });
-      objects.push({ kind: i % 5 === 0 ? 'cabinet' : 'rack', x, y: height - 52, width: 30, height: 36 });
+      objects.push({ kind: i % 6 === 0 ? 'cooling' : 'rack', x, y: 170, width: 45, height: 84 });
+      if (i < Math.floor(count * .34)) objects.push({ kind: i % 5 === 0 ? 'cabinet' : 'rack', x, y: height - 32, width: 48, height: 95 });
     }
-    g.fillStyle(0x1d3747, .25); g.fillRoundedRect(30, height * .28, width - 60, height * .49, 15);
-    g.lineStyle(2, 0x879f9c, .4); g.strokeRoundedRect(30, height * .28, width - 60, height * .49, 15);
+    g.lineStyle(2, 0x698fa1, .3); g.lineBetween(35, height * .84, width - 35, height * .84);
     g.lineStyle(6, 0x253d4d, .6); g.lineBetween(35, 171, width - 35, 171);
     g.lineStyle(2, 0xabb895, .4); g.lineBetween(35, 173, width - 35, 173);
   }
   if (player) {
     for (const kind of ['internet', 'edge', 'compute', 'cache', 'database'] as const) {
       const p = tycoonPoint(kind, width, height);
-      g.fillStyle(0x182f41, .18); g.fillEllipse(p.x, p.y + 10, 140, 62);
-      g.lineStyle(1, kind === 'compute' ? 0xc3b88f : 0x9bafa8, .55); g.strokeEllipse(p.x, p.y + 10, 140, 62);
+      for (let light = 4; light > 0; light--) { g.fillStyle(kind === 'cache' ? 0x3be9bd : 0x30c5ff, .022); g.fillEllipse(p.x, p.y + 4, 135 + light * 24, 42 + light * 14); }
+      g.fillStyle(0x06172c, .6); g.fillEllipse(p.x + 8, p.y + 18, 140, 50);
     }
     g.fillStyle(0x1c3445, .8); g.fillRect(22, height - 15, width - 44, 8);
     for (let x = 32; x < width - 25; x += 120) {

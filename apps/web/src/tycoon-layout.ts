@@ -9,7 +9,7 @@ export const tycoonPositions: Record<Kind, { x: number; y: number }> = {
 // Canvas, hit testing and DOM controls share these visual-only viewport anchors.
 export function tycoonPoint(kind: Kind, width: number, height: number) {
   const anchors: Record<Kind, [number, number]> = width >= 900 ? {
-    internet: [.10, .58], edge: [.28, .58], compute: [.48, .58], cache: [.68, .40], database: [.88, .58],
+    internet: [.10, .49], edge: [.27, .58], compute: [.48, .65], cache: [.69, .44], database: [.87, .70],
   } : {
     internet: [.24, .23], edge: [.73, .33], compute: [.43, .52], cache: [.24, .76], database: [.76, .79],
   };
