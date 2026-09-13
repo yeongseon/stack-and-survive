@@ -11,7 +11,7 @@ const paths = [
 
 export function TitleWorld() {
   return <div className="title-world title-world-scene" aria-hidden="true" data-testid="title-world">
-    <svg viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" focusable="false">
+    <svg className="title-scene-static" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" focusable="false">
       <defs>
         <linearGradient id="scene-floor" x2="0" y2="1"><stop stopColor="#3e526e"/><stop offset="1" stopColor="#152a43"/></linearGradient>
         <linearGradient id="scene-front" x2="1" y2=".3"><stop stopColor="#365273"/><stop offset=".5" stopColor="#172d48"/><stop offset="1" stopColor="#0c1d34"/></linearGradient>
@@ -59,7 +59,7 @@ export function TitleWorld() {
       <g stroke="#2f6a8d" fill="none"><path d="M-20 285 332 103 842 367 1320 120" strokeWidth="12"/><path d="M-20 281 332 99 842 363 1320 116" stroke="#3685ad" strokeWidth="3"/><path d="M-20 305 332 123 842 387 1320 140" stroke="#c89645" strokeWidth="4"/></g>
       {[ [340,565], [640,260], [1000,550], [875,674], [1235,390] ].map(([x,y]) => <g key={x} transform={`translate(${x} ${y})`}><path d="m0 0 67-34 66 34-67 35Z" fill="#557086" stroke="#8b9eae"/><path d="m7 0 60-29 57 29-59 29Z" fill="url(#scene-vent)"/></g>)}
 
-      {paths.map(lane => <g key={lane.id} fill="none" strokeLinejoin="round"><path d={lane.d} stroke={lane.color} strokeWidth="30" opacity=".2" filter="url(#scene-glow)"/><path d={lane.d} stroke="#06172d" strokeWidth="35"/><path d={lane.d} stroke="#416181" strokeWidth="27"/><path d={lane.d} stroke={lane.color} strokeWidth="15" opacity=".2"/><path d={lane.d} stroke={lane.color} strokeWidth="3" opacity=".8"/><path d={lane.d} className={`title-flow title-flow-${lane.id}`} stroke={lane.color} strokeWidth="10" strokeDasharray={lane.dash}/><path d={lane.d} className={`title-flow title-flow-${lane.id}`} stroke="#f3ffff" strokeWidth="2" strokeDasharray={lane.dash}/></g>)}
+      {paths.map(lane => <g key={lane.id} fill="none" strokeLinejoin="round"><path d={lane.d} stroke={lane.color} strokeWidth="30" opacity=".2" filter="url(#scene-glow)"/><path d={lane.d} stroke="#06172d" strokeWidth="35"/><path d={lane.d} stroke="#416181" strokeWidth="27"/><path d={lane.d} stroke={lane.color} strokeWidth="15" opacity=".2"/><path d={lane.d} stroke={lane.color} strokeWidth="3" opacity=".8"/></g>)}
 
       <ellipse cx="156" cy="375" rx="94" ry="43" fill="url(#scene-blue)"/>
       <g transform="translate(156 330)"><ellipse cy="40" rx="47" ry="23" fill="#102e48" stroke="#39c9ef" strokeWidth="3"/><circle r="39" fill="#0a3760" stroke="#67efff" strokeWidth="4"/><ellipse rx="18" ry="39" fill="none" stroke="#4dddff" strokeWidth="3"/><path d="M-37-12H37M-37 12H37M0-39V39" stroke="#4dddff" strokeWidth="2"/></g>
@@ -109,6 +109,10 @@ export function TitleWorld() {
       <path d="M-25 668 457 913M-25 690 435 926" stroke="#225676" strokeWidth="9"/>
       <path d="M-25 650 457 895" stroke="#d0a95c" strokeWidth="4"/>
       <path d="M90 732v-44m121 106v-44m121 106v-44" stroke="#46677e" strokeWidth="5"/>
+    </svg>
+    <svg className="title-scene-motion" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" focusable="false">
+      <defs><mask id="title-packet-mask"><rect width="1440" height="900" fill="white"/><path d="M290 290H440V489H290ZM570 280H804V540H570ZM916 304H1105V432H916ZM1120 487H1315V699H1120Z" fill="black"/></mask></defs>
+      <g mask="url(#title-packet-mask)">{paths.map(lane => <g key={lane.id} fill="none"><path d={lane.d} className={`title-flow title-flow-${lane.id}`} stroke={lane.color} strokeWidth="10" strokeDasharray={lane.dash}/><path d={lane.d} className={`title-flow title-flow-${lane.id}`} stroke="#f3ffff" strokeWidth="2" strokeDasharray={lane.dash}/></g>)}</g>
     </svg>
   </div>;
 }
