@@ -25,15 +25,15 @@ export function drawProcessingLane(g: Phaser.GameObjects.Graphics, from: Point, 
   if (!Number.isFinite(length) || length === 0) return;
   const normal = { x: -(to.y - from.y) / length, y: (to.x - from.x) / length };
   const angle = Math.atan2(to.y - from.y, to.x - from.x);
-  g.lineStyle(23, 0x112636, .5); g.lineBetween(from.x + 3, from.y + 7, to.x + 3, to.y + 7);
-  g.lineStyle(18, 0x314c61); g.lineBetween(from.x, from.y, to.x, to.y);
-  g.lineStyle(13, 0x162f43); g.lineBetween(from.x, from.y, to.x, to.y);
+  g.lineStyle(31, 0x112636, .55); g.lineBetween(from.x + 3, from.y + 7, to.x + 3, to.y + 7);
+  g.lineStyle(25, 0x314c61); g.lineBetween(from.x, from.y, to.x, to.y);
+  g.lineStyle(19, 0x162f43); g.lineBetween(from.x, from.y, to.x, to.y);
   const color = lane.state === 'idle' ? 0x7693a3 : lane.state === 'dropping' ? 0xe0b37d : 0x76d8ff;
-  for (const offset of [-7, 7]) {
+  for (const offset of [-10, 10]) {
     g.lineStyle(1, 0x91b8c9, .85); g.lineBetween(from.x + normal.x * offset, from.y + normal.y * offset, to.x + normal.x * offset, to.y + normal.y * offset);
   }
-  g.lineStyle(5, color, lane.state === 'idle' ? .12 : .22); g.lineBetween(from.x, from.y, to.x, to.y);
-  g.lineStyle(1, color, .8); g.lineBetween(from.x, from.y, to.x, to.y);
+  g.lineStyle(10, color, lane.state === 'idle' ? .08 : .25); g.lineBetween(from.x, from.y, to.x, to.y);
+  g.lineStyle(2, color, lane.state === 'idle' ? .3 : .9); g.lineBetween(from.x, from.y, to.x, to.y);
   const marks = Math.max(1, Math.min(30, Math.floor(length / 65)));
   for (let i = 1; i <= marks; i++) {
     const p = lanePoint(from, to, i / (marks + 1));
