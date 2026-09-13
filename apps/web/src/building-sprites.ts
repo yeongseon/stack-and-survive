@@ -13,7 +13,7 @@ export class BuildingSprites {
   private entries = new Map<string, { kind: Resource['kind']; group: Phaser.GameObjects.Container; body: Phaser.GameObjects.Image; modules: Phaser.GameObjects.Image[]; bays: Phaser.GameObjects.Graphics; bayStates: readonly BayState[] }>();
   constructor(private scene: Phaser.Scene) {}
 
-  update(resource: Resource, point: Point, pending: boolean, rank: number, bayStates?: readonly BayState[]): boolean {
+  update(resource: Resource, point: Point, pending: boolean, rank: number, bayStates?: readonly BayState[], scale = 1): boolean {
     const asset = buildingAssets[resource.kind];
     if (!asset || !this.scene.textures.exists(asset.texture)
       || (resource.kind === 'compute' && !this.scene.textures.exists(moduleAsset.texture))) {
@@ -38,7 +38,7 @@ export class BuildingSprites {
       }
       entry = { kind: resource.kind, group, body, modules, bays, bayStates: [] }; this.entries.set(resource.id, entry);
     }
-    entry.group.setPosition(point.x, point.y).setDepth(buildingLayers.body + rank).setVisible(true);
+    entry.group.setPosition(point.x, point.y).setScale(scale).setDepth(buildingLayers.body + rank).setVisible(true);
     entry.body.setAlpha(resource.remaining > 0 ? .25 : 1);
     const state = spriteModules(resource, pending);
     entry.bays.clear(); entry.bayStates = bayStates ?? [];
@@ -63,7 +63,7 @@ export class BuildingSprites {
 
   diagnostics() {
     return [...this.entries].map(([id, entry]) => ({ id, texture: entry.body.texture.key, visible: entry.group.visible,
-      depth: entry.group.depth, bodyAlpha: entry.body.alpha, bays: entry.bayStates,
+      depth: entry.group.depth, bodyAlpha: entry.body.alpha, bays: entry.bayStates, scale: entry.group.scaleX,
       bodyWidth: entry.body.displayWidth, bodyHeight: entry.body.displayHeight, originX: entry.body.originX, originY: entry.body.originY,
       modules: entry.modules.filter(module => module.visible).map(module => ({ alpha: module.alpha, texture: module.texture.key })) }));
   }

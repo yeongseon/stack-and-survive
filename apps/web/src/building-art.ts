@@ -36,12 +36,14 @@ export function buildingPresentation(resource: Resource, connected: boolean, sel
   };
 }
 
-export function drawBuilding(g: Graphics, point: Point, resource: Resource, connected: boolean, selected: boolean, pendingScale: boolean, warning: boolean, overloaded: boolean, spriteBody = false, overlay?: Graphics) {
+export function drawBuilding(g: Graphics, point: Point, resource: Resource, connected: boolean, selected: boolean, pendingScale: boolean, warning: boolean, overloaded: boolean, spriteBody = false, overlay?: Graphics, scale = 1) {
   const state = buildingPresentation(resource, connected, selected, pendingScale);
   const accent = overloaded ? 0xff8e83 : warning ? 0xffd67e : state.accent;
   const top = overlay ?? g;
   g.save(); g.translateCanvas(point.x, point.y);
+  g.scaleCanvas(scale, scale);
   if (overlay) { overlay.save(); overlay.translateCanvas(point.x, point.y); }
+  if (overlay) overlay.scaleCanvas(scale, scale);
   g.fillStyle(0x06121f, .3); g.fillEllipse(7, 28, 128, 44);
   block(g, 0, -20, 58, 58, 8, 0x3c647a, 0x24485e, 0x17354b);
   polygon(g, [[0, -30], [56, -6], [0, 18], [-56, -6]], selected ? 0x567e90 : 0x42697e);

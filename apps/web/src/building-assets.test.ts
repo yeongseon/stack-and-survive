@@ -1,6 +1,6 @@
 import { expect, it } from 'vitest';
 import { baseline } from '@stack-and-survive/cloud-domain';
-import { buildingAssets, moduleAsset } from './building-assets';
+import { buildingAssets, moduleAsset, playerBuildingScale, resourceArtBounds } from './building-assets';
 import { spriteModules } from './building-sprites';
 
 it('maps four original building textures and one reusable module separately from Azure identity', () => {
@@ -11,6 +11,13 @@ it('maps four original building textures and one reusable module separately from
     expect(asset.originY).toBeGreaterThan(0); expect(asset.originY).toBeLessThan(1);
     expect(asset.footprintWidth).toBe(116); expect(asset.width).toBeGreaterThan(0);
   }
+});
+it('makes SQL dominant while scaling player hit and badge bounds with its artwork', () => {
+  expect(playerBuildingScale('database', 1440)).toBeGreaterThan(playerBuildingScale('compute', 1440));
+  const original = resourceArtBounds('database'); const scaled = resourceArtBounds('database', 1.65);
+  expect(scaled.width).toBeCloseTo(original.width * 1.65);
+  expect(scaled.y).toBeCloseTo(original.y * 1.65);
+  expect(playerBuildingScale('database', 320)).toBeLessThan(playerBuildingScale('database', 1440));
 });
 it('uses measured visible art height rather than transparent source canvas for display sizing', () => {
   expect(buildingAssets.compute!.visible.height).toBe(108);

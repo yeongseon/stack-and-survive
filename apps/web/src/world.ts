@@ -6,7 +6,7 @@ import { representativeCount, visualFlows } from './traffic';
 import { createServiceBadge } from './service-icons';
 import { buildingPresentation, drawBuilding, insideBuilding } from './building-art';
 import { drawEnvironment } from './environment-art';
-import { buildingAssets, buildingLayers, moduleAsset, resourceArtBounds } from './building-assets';
+import { buildingAssets, buildingLayers, moduleAsset, resourceArtBounds, playerBuildingScale } from './building-assets';
 import { BuildingSprites } from './building-sprites';
 import { drawProcessingLane, lanePoint, processingLanes } from './processing-lanes';
 import { pressureLosses, pressurePositions, pressureQueues } from './queue-visualization';
@@ -129,7 +129,7 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
             badge = created; badges.set(resource.id, badge); badgeLayer.append(badge);
           }
           const p = positions[i];
-          const badgeY = p.y + resourceArtBounds(resource.kind).y - 36;
+          const badgeY = p.y + resourceArtBounds(resource.kind, view.playerMode ? playerBuildingScale(resource.kind, width) : 1).y - 36;
           badge.hidden = p.x < 16 || p.x > width - 16 || badgeY < 0 || badgeY > height - 32;
           badge.style.left = `${p.x - 16}px`; badge.style.top = `${badgeY}px`;
         });
@@ -160,9 +160,23 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
           const connected = architecture.connections.some(c => c.from === resource.id || c.to === resource.id);
           const state = resource.remaining > 0 ? `PROVISIONING ${resource.remaining}s` : !connected ? 'DISCONNECTED' : utilizationLabel(u);
           const pending = resource.kind === 'compute' && (view.state.runtime.scaleDue !== null || view.state.runtime.preparationScaleDue !== null);
-          const spriteBody = this.sprites.update(resource, p, pending, rank, view.playerMode && resource.kind === 'compute' ? visualState.app.bays : undefined);
+          const artScale = view.playerMode ? playerBuildingScale(resource.kind, width) : 1;
+          const spriteBody = this.sprites.update(resource, p, pending, rank, view.playerMode && resource.kind === 'compute' ? visualState.app.bays : undefined, artScale);
           const building = drawBuilding(g, p, resource, connected, view.selected === resource.id,
-            pending, state === 'WARNING', state === '! OVERLOADED', spriteBody, this.stateGraphics);
+            pending, state === 'WARNING', state === '! OVERLOADED', spriteBody, this.stateGraphics, artScale);
+          if (view.playerMode && resource.remaining === 0 && (resource.kind === 'compute' || resource.kind === 'database')) {
+            const color = state === '! OVERLOADED' ? 0xff685d : state === 'WARNING' ? 0xffb64f : 0x67dded;
+            this.stateGraphics.lineStyle(state === '! OVERLOADED' ? 4 : 2, color, .75);
+            this.stateGraphics.strokeEllipse(p.x, p.y + 12, 116 * artScale, 40 * artScale);
+            if (resource.kind === 'database') {
+              this.stateGraphics.fillStyle(color, .12); this.stateGraphics.fillEllipse(p.x, p.y - 45 * artScale, 72 * artScale, 90 * artScale);
+              for (const [side, pressure] of [[-1, visualState.sql.readPressure], [1, visualState.sql.writePressure]] as const) {
+                const warning = pressure === 'overcapacity' || pressure === 'warning';
+                this.stateGraphics.fillStyle(pressure === 'overcapacity' ? 0xff685d : warning ? 0xffb64f : 0x67dded);
+                this.stateGraphics.fillRect(p.x + side * 35 * artScale, p.y - 82 * artScale, 6, warning ? 20 : 7);
+              }
+            }
+          }
           buildingStates.push({ id: resource.id, ...building });
           if (targets.includes(resource.id)) { this.stateGraphics.lineStyle(2, 0xefc27b); this.stateGraphics.strokeCircle(p.x, p.y, 48); }
           const name = width < 600 ? { internet: 'Internet', compute: 'App', database: 'SQL', cache: 'Cache', edge: 'WAF' }[resource.kind] : definitions[resource.kind].name;
@@ -317,7 +331,7 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
       const resource = view.state.runtime.architecture.resources
         .map(r => ({ resource: r, center: view.playerMode ? tycoonPoint(r.kind, canvas.clientWidth, canvas.clientHeight) : project(r, camera(), canvas.clientWidth, canvas.clientHeight) }))
         .filter(item => {
-          const bounds = resourceArtBounds(item.resource.kind);
+          const bounds = resourceArtBounds(item.resource.kind, view.playerMode ? playerBuildingScale(item.resource.kind, canvas.clientWidth) : 1);
           return insideBuilding(p, item.center) || (p.x >= item.center.x + bounds.x && p.x <= item.center.x + bounds.x + bounds.width
             && p.y >= item.center.y + bounds.y && p.y <= item.center.y + bounds.y + bounds.height);
         })
