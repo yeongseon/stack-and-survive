@@ -12,7 +12,7 @@ Stack & Survive is a real-time cloud infrastructure management game where player
 
 ## Project status
 
-**Living-operation gameplay and visual technical acceptance delivered through PR #140 · Human baseline pending (#25) · Production Quality and Replayability planned, not implemented**
+**Living-operation game with stateful facilities, optional sound/guide and an approved three-objective challenge ladder · Human learning/replay validation and audio listening remain pending**
 
 Start with the [documentation authority index](docs/README.md). Current normal behavior is in [Gameplay](docs/GAMEPLAY_SPEC.md); future work is in [Product Roadmap](docs/PRODUCT_ROADMAP.md). `docs/archive/` preserves history and must not guide new implementation. The repository is public source; no project-wide open-source license has been selected. #164 tracks license, third-party rights and security decisions.
 
@@ -27,6 +27,7 @@ The browser MVP includes separate official Azure badges, snapshot-driven process
 ## MVP
 
 - One 180-second Black Friday scenario, plus title/countdown and result review.
+- Three sequential objectives on that same workload: finish the operation, finish with ≥99% availability, then finish with ≥99.9%. Unlocked levels are saved locally; every attempt starts with fresh infrastructure.
 - Fixed Internet/App1/SQL baseline; live App scale-out and Cache/Protected Edge deployment.
 - Automatic supported routing, actual provisioning delays and resource-local interventions.
 - Deterministic, renderer-independent simulation with data-driven scenarios.
@@ -39,7 +40,7 @@ The MVP simulates Azure architecture concepts. It does **not** deploy real Azure
 
 The primary player experience is demand → flow → pressure → expansion/optimization → observed business outcome. Results and redesign/replay support that loop. Better decisions can improve outcomes; more capacity alone does not guarantee more profit.
 
-Current technical checks contain 192 unit cases, 61 QA browser cases and seven ordinary-player cases. Actual human observation remains #25 after #129. Epic #123 stays open until its human criteria are met. Future runtime scale-in (#132) is design evaluation only, not an implemented or approved gameplay action.
+The approved ladder verification includes 240 unit cases, 72 QA browser cases, seven ordinary-player cases and a Pages project-path smoke test. Actual human observation remains #25/#151/#159; these are not replaced by automated checks. Future runtime scale-in (#132) is design evaluation only, not an implemented or approved gameplay action.
 
 ```text
 Architecture Decision
@@ -104,7 +105,7 @@ Use Node 22.22.0 and pnpm 10.32.1. Verification commands and limits are document
 - [Historical Tycoon Reframe](docs/archive/TYCOON_REFRAME_IMPLEMENTATION_PLAN.md) — Archived presentation plan, not current authority.
 - [Asset provenance](apps/web/public/assets/ATTRIBUTION.md) — Original V24 Azure SVG sources, checksums, bundled terms and remaining usage-review limitations.
 - [Implementation Plan](docs/IMPLEMENTATION_PLAN.md) — Current quality/replayability sequence and real-human gates (v1.0).
-- [Replayability Design](docs/REPLAYABILITY_DESIGN.md), [Challenge System](docs/CHALLENGE_SYSTEM.md), [Strategy Balance](docs/ARCHITECTURE_STRATEGY_BALANCE.md) — Future contracts, not shipped levels/profiles/history.
+- [Replayability Design](docs/REPLAYABILITY_DESIGN.md), [Challenge System](docs/CHALLENGE_SYSTEM.md), [Strategy Balance](docs/ARCHITECTURE_STRATEGY_BALANCE.md) — Implemented challenge identity/ladder and measured strategies, with future profiles/history clearly distinguished.
 - [Asset Strategy](docs/ASSET_STRATEGY.md), [Engineering Rules](docs/ENGINEERING_RULES.md), [Design References](docs/GAME_DESIGN_REFERENCES.md) — Sourcing/change discipline and text-only independent design commentary.
 
 The [ordered MVP backlog (#7)](https://github.com/yeongseon/stack-and-survive/issues/7) links all currently planned work. Prepare the backlog first, then execute one issue at a time in dependency order; individual issues are the source of status and completion evidence.

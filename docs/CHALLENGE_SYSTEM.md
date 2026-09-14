@@ -1,6 +1,6 @@
 # Challenge system
 
-Version: 0.2. #153 implements the initial challenge/identity/objective contract. The ordinary game still exposes one Black Friday challenge; ladder, history, profiles, modifiers and daily progression remain future #154–#163 work. This document is not approval of example numeric modifiers.
+Version: 0.3. #153 implements challenge identity; #154 measures live strategies; #155 adds the owner-approved three-objective ladder. History, profiles, modifiers and daily challenges remain separate work. This document is not approval of example numeric modifiers.
 
 ## Responsibilities (current versus planned)
 
@@ -31,7 +31,19 @@ Compare like conditions, label differences explicitly and retain termination/dur
 
 ## Ladder and objectives
 
-#154 calibrates strategies before #155 publishes a small level set. No assumed infinite +RPS progression, permanent power or pre-approved level count. Each level has an explicit objective/unlock condition, reachable strategies and a real next-level target or end state.
+The owner approved exactly three levels after #154 measurements. Every level uses unchanged Black Friday v0.2 workload, prices, capacity, duration and provisioning:
+
+| Level | Objective | Unlock |
+|---|---|---|
+| Survive | Complete 180 seconds | Initially available |
+| Reliable Business | Complete 180 seconds with cumulative availability ≥ 99% | Complete Survive |
+| Customer First | Complete 180 seconds with cumulative availability ≥ 99.9% | Complete Reliable Business |
+
+`scenarios/ladder` stores immutable definitions. `ChallengeApplication` owns level selection; a changed level remounts a fresh `TycoonGame` controller. No upgraded infrastructure or permanent bonuses carry over. Only an objective-valid result with matching full canonical challenge identity unlocks the immediately next level. `objectiveMet` from a record is recomputed rather than trusted. Completing the last level exposes no nonexistent fourth level.
+
+`stack-and-survive.progress.v1` stores at most three sequential completed canonical identities. Holes, mismatched identities, malformed JSON and unsupported versions reset safely to no completion. This local convenience is not anti-cheat or verified remote achievement evidence. Writes may fail without preventing in-session progress; title shows a save error. Continue selects the highest unlocked level; replaying an earlier level is allowed. Reset challenge progress resets only this key, not audio/guide preferences or QA architecture saves.
+
+Three full successful browser runs verify sequential unlocking, fresh-world teardown, persistence/reset and final-level behavior. Difficulty appeal and voluntary replay still require #159; success feasibility is not proof of fun.
 
 Candidate objective families: survival, availability, budget/cost efficiency, NBV, minimal customer loss and reduced bot waste. Numerical thresholds must be calibrated; examples from planning are not current contracts. Objective evaluation cannot silently mutate workload.
 
@@ -49,4 +61,4 @@ Candidate objective families: survival, availability, budget/cost efficiency, NB
 
 #156/#163 must define schema versions, bounds/retention, migrations, duplicate save handling and reset/failure behavior. Store only necessary local game data. Challenge identity, initial architecture and ordered actions are required for reproducible comparison, not merely a final resource list.
 
-The initial identity/injection contract is delivered by #153; subsequent designs above remain unimplemented. Tests precede materialization/evaluation/storage changes and preserve legacy outputs. New result comparison requires both complete challenge records; mixed legacy/new metadata is explicitly not equivalent. Existing all-legacy session comparison remains compatible. #159 human replayability gates P1, independently of green tests.
+Identity/injection and the approved objective ladder are implemented; history/profile/modifier/daily designs above remain separate. Tests precede materialization/evaluation/storage changes and preserve legacy outputs. New result comparison requires both complete challenge records; mixed legacy/new metadata is explicitly not equivalent. Existing all-legacy session comparison remains compatible. #159 human replayability gates P1, independently of green tests.
