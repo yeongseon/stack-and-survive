@@ -22,6 +22,8 @@ Resize preserves normalized center within the old/new Fit bounds and the user's 
 
 ## Verification
 
+Navigation integration shipped in #199: GameFloor owns one `createPlayerNavigation` store shared with Phaser and React. Native camera transforms Fit geometry; screenToFit resolves hits, fitToScreen anchors independent badges/plaques. Pointer release arbitrates taps versus drag/pinch/cancel. Keyboard/buttons provide pan/Fit/focus/zoom; camera state is not persisted. The original foundation paragraphs above describe #187 historically, not current absence of navigation. All response is immediate, including reduced motion.
+
 Roundtrip numerical tolerance: 1e-9 for representative viewport and resource points. Tests cover five widths, relative/effective zoom, identity Fit compatibility, bounds, invalid input, pointer anchor, screen-space pan delta, portrait resize and focus. A controller isolation test verifies 100 camera calculations produce no publication or runtime/identity mutation. Existing editor and tycoon-layout tests stay unchanged. Browser foundation coverage checks actual Fit resource clicks and alignment; min/max rendered hits, touch/gesture cancellation, retry/pause and full identical-action replay tests belong to #188/#195.
 
 No camera state is added to simulation, challenge, persisted architecture or history. No navigation UI or visual quality completion is claimed by this foundation.

@@ -1,6 +1,6 @@
 # Stack & Survive — Gameplay Specification
 
-Version: 1.0. Current ordinary behavior through PR #140. [Simulation](SIMULATION_SPEC.md) owns calculations; [Roadmap](PRODUCT_ROADMAP.md) marks future features.
+Version: 1.2. Current ordinary behavior includes the game-first camera/direct-world slice (#199) and matching physical/outcome polish. [Simulation](SIMULATION_SPEC.md) owns calculations; [Roadmap](PRODUCT_ROADMAP.md) marks future features.
 
 ## 1. Normal-player journey
 
@@ -25,15 +25,19 @@ Browse reads may terminate successfully at Cache; misses/overflow reach SQL. Ord
 
 | Control | Runtime action | Existing effect |
 |---|---|---|
-| App pad/local capacity action | `SCALE_OUT` | +1 instance after 8s, max four; +5 credits/min active cost |
-| Cache pad | `DEPLOY_RESOURCE` cache | One-time deployment after 5s; +8 credits/min active cost |
-| Edge pad | `DEPLOY_RESOURCE` edge | One-time deployment after 4s; +3 credits/min active cost |
+| Next physical App bay/local capacity action | `SCALE_OUT` | +1 instance after 8s, max four; +5 credits/min active cost |
+| Cache world footprint | `DEPLOY_RESOURCE` cache | One-time deployment after 5s; +8 credits/min active cost |
+| Edge world footprint | `DEPLOY_RESOURCE` edge | One-time deployment after 4s; +3 credits/min active cost |
 | Intake Limit/Restore | `RATE_LIMIT` | 5% broad rejection after 2s; existing toggle interval applies |
 | Active Edge Boost | `EMERGENCY_WAF` | Once per run; 8 credits, 1s delay, 30s effect, higher bot filtering and 3% customer false positives |
 
 These summaries do not redefine [numerical rules](SIMULATION_SPEC.md). Acceptance, ordering, affordability and exact activation ticks remain in that contract. Live actions require RUNNING; duplicates/pending conflicts are rejected. No runtime scale-in, SQL/Cache scaling, uninstall, move or disconnect exists.
 
-Pads display `+` and role. Hover/focus reveals identity/duration/running cost. Click/tap opens confirmation; Confirm queues the action, Cancel/Escape returns focus. Unavailable pads may still explain why, but confirm is disabled. The App local card also exposes the existing guarded capacity action with cost/delay; this is not a purchase economy.
+Click physical facilities to inspect; click the next empty App bay or absent Cache/Edge footprint for projected cost/delay confirmation. Confirm queues the existing action; Cancel/Escape returns focus to the opener or Fit. Keyboard equivalents reveal as an outlined group on focus and use the same controller contracts. Unavailable actions explain why and cannot be confirmed. SQL has no scaling control.
+
+### Camera navigation
+
+Wheel/trackpad zoom anchors at the pointer; touch pinch zooms and drag pans after a six-pixel threshold. Drag/pinch/cancel release never activates infrastructure. Buttons offer 75/90/100/125/150/180% relative Fit; Fit restores overview. Move exposes pan buttons and Focus selected. Arrow/+/-/0 shortcuts apply while camera controls are focused. Camera is presentation-only: no simulation tick, action, economy, score or replay changes. New runs start Fit; pause/recovery preserves the store; resize preserves normalized center/zoom and clamps. Response is immediate, including reduced motion. Outside-world page scrolling remains normal.
 
 ## 4. Before / during / after
 
@@ -45,7 +49,7 @@ Cache/Edge lifecycle is exclusive: absent pad, provisioning construction, or ins
 
 ## 5. HUD, cards and Learn
 
-Primary HUD: remaining budget, offered demand, current availability, one dominant pressure reading; Learn and Pause/Resume. Meters are readings, not forecasts. Frozen readings differ from live processing.
+The world fills the player viewport with a small overlay HUD: remaining budget, offered demand, current availability, short pressure, Learn/Pause and camera controls. Facility plaques display actual identity/active instances/construction/pressure. Detailed meters are not permanent chrome; frozen readings remain distinct from live processing.
 
 Resource cards prioritize state/action while retaining cost and false-positive tradeoffs. Learn contains actual objectives/events, pressure explanation, capacities, accounting and glossary. Production has no persistent Build/Manage, initial-instance form, save/reset architecture controls, standalone command console or developer inspector.
 
@@ -55,7 +59,7 @@ Business feedback uses actual served orders/tick revenue, never spendable budget
 
 Pause freezes authoritative time, accepted countdowns and costs; inspection remains available, new live actions do not. Errors stop advancement; renderer rebuild reconstructs from existing state. Countdown recovery resumes its remaining time safely. Normal restart from pause/error returns to clean title/baseline and invalidates stale callbacks.
 
-At completion/failure preserve the stopped world. The [operation report](OPERATION_REPORT.md) shows engine cause, score, NBV, availability, elapsed time, descriptive architecture profile, compatible history comparisons and a suggested next experiment. Survival is distinct from target attainment. A real eligible Next level is primary and receives focus; otherwise Play again is primary. Review opens Learn and returns focus on close. The report body scrolls while action buttons stay visible.
+At completion/failure preserve the stopped world. First show actual outcome/cause/score, availability, challenge and architecture. Details preserves all [operation report](OPERATION_REPORT.md) NBV/cost/profile/evidence/comparisons/records. Survival and objective attainment remain distinct. Eligible Next level receives focus; otherwise Try another architecture (accessible name Play again) is primary. Actions stay visible as Details scrolls; background guide/camera/resource controls are hidden. Review opens Learn with focus return.
 
 Normal retry resets architecture, runtime, budget and temporary actions. It does **not** preserve upgraded infrastructure. Refresh starts at the title with validated local completion progress and [run records/personal bests](RUN_HISTORY.md), but no running scenario or architecture restoration.
 
@@ -75,6 +79,6 @@ QA retains preparation free placement/move/remove, validated manual connections,
 
 The QA shell is a full alternate application path, not merely a debug overlay. When its storage repository is available it loads the saved architecture at startup and automatically saves architecture changes, in addition to explicit Save/Clear controls. The versioned save stores architecture, not runtime progress. Redesign preserves completed resources/instances and clears scenario counters; unfinished scale-out grants no capacity. Existing session comparison labels different duration/status rather than calling an early failure more efficient. These QA tools are distinct from normal-player challenge progression and history; profiles remain planned.
 
-## Appendix B — Future replay loop
+## Appendix B — Remaining replay scope
 
-[Replayability Design](REPLAYABILITY_DESIGN.md) proposes challenge → result → comparison → alternative architecture/next level. Do not display Next Level, profiles, stars or personal-best claims before their data, eligibility and persistence contracts are implemented and verified.
+[Replayability Design](REPLAYABILITY_DESIGN.md) separates implemented identity/ladder/history/profiles/results from gated P1 content. No unreviewed stars/modifiers/permanent capacity bonuses. Actual unfamiliar-person game-feel and voluntary replay remain #195/#159, not automated-test conclusions.

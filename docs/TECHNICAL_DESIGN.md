@@ -10,7 +10,7 @@ main.tsx — compile-time normal / QA boundary
  │ └ TycoonGame
  │  ├ TitleWorld (decorative SVG/CSS)
  │  ├ GameHUD
- │  ├ GameFloor (Phaser mount, BuildPad, local cards, feedback)
+ │  ├ GameFloor (Phaser mount, navigation store, projected local actions and keyboard equivalents)
  │  ├ LearnDialog (help/metrics/concepts, explicit view and callbacks)
  │  ├ GameResult
  │  └ controller (external store, lifecycle, action intent)
@@ -48,7 +48,9 @@ Normal player disables architecture persistence/manual edits. The QA shell is a 
 
 ## Renderer and coordinates
 
-`world.ts` asynchronously mounts Phaser, subscribes to views, forwards permitted input and returns cleanup. Player canvas/hit testing/DOM pads share `tycoonPoint` responsive anchors. QA retains `viewportCamera` and paired `project/unproject`. Distances do not change latency/throughput.
+`world.ts` asynchronously mounts Phaser, subscribes to views, forwards permitted input and returns cleanup. **Camera is presentation state, not runtime state.** GameFloor owns one player-navigation external store shared with Phaser. Native camera transforms existing Fit-plane geometry exactly once; plaques/badges use the same fitToScreen transform and hits use screenToFit. World-target derivation reads actual resources/bays, and release-only taps resolve through existing controller contracts. Pan/pinch/cancel cannot create actions. QA retains its original viewportCamera/project/unproject input path. No distance changes latency/throughput.
+
+Navigation-only state is excluded from geometry/texture regeneration signatures. Frame effects are separate from transformed world effects; input listeners/captures are disposed with the world. `construction-art` projects accepted remaining/due ticks into scaffold/boot/progress marks without owning timers or active capacity. Environment plinths add decorative depth only. GameResult's first layer shows outcome and replay; native Details retains prior analytical evidence and record semantics.
 
 Environment redraws on viewport change; structures/lanes use a meaningful signature cache. Original building PNGs have measured alpha anchors/bounds and procedural fallback. `resourceVisualState` separates installation/pressure/activity. Active servers, empty sockets and construction are distinct, never extra capacity.
 
