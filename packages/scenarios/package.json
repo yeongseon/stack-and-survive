@@ -1,1 +1,1 @@
-{"name":"@stack-and-survive/scenarios","version":"0.0.0","private":true,"type":"module","exports":{".":"./src/index.ts","./challenge":"./src/challenge.ts"},"dependencies":{"@stack-and-survive/schema":"workspace:*"}}
+{"name":"@stack-and-survive/scenarios","version":"0.0.0","private":true,"type":"module","exports":{".":"./src/index.ts","./challenge":"./src/challenge.ts","./ladder":"./src/ladder.ts"},"dependencies":{"@stack-and-survive/schema":"workspace:*"}}
