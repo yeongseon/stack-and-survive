@@ -1,6 +1,6 @@
 # Stack & Survive — Visual Direction
 
-Version: 0.5. **Direction and implementation guardrails, not a claim that the new interaction model is shipped.** Production-quality software #144–#150 and replayability foundation #153–#158 are merged through PR #185; #149 listening/haptics and #151/#159 human evidence remain outstanding. [Gameplay](GAMEPLAY_SPEC.md) owns current controls; [camera/world interaction](PLAYER_CAMERA_AND_WORLD_INTERACTION.md) owns the prospective cross-layer contract for Epic #186. [Resource Visual States](RESOURCE_VISUAL_STATES.md) and [Simulation](SIMULATION_SPEC.md) own truthful states and outcomes.
+Version: 0.6. Reviewed main: `aa2f826` (PR #201). **Game-first interaction is shipped** through #199/#200: camera navigation, direct facilities/bays/footprints, minimal HUD, physical construction and outcome-first results. Production Art V3 #202 is the next quality target, not another gameplay redesign. [Gameplay](GAMEPLAY_SPEC.md) owns supported controls; [camera/world interaction](PLAYER_CAMERA_AND_WORLD_INTERACTION.md) remains the cross-layer guardrail. [Resource Visual States](RESOURCE_VISUAL_STATES.md) and [Simulation](SIMULATION_SPEC.md) own truthful states and outcomes.
 
 > The world is the primary interface.
 >
@@ -17,7 +17,17 @@ Version: 0.5. **Direction and implementation guardrails, not a claim that the ne
 7. **Physical construction over abstract controls.** Immediate input acknowledgement, real inactive construction, then activation and changed work on the actual tick.
 8. **Outcome first, analysis second.** First show challenge result, score, availability, architecture and next action; preserve rich #185 evidence under Details.
 
-These principles guide #197 → #187–#195. Current merged play still has DOM pads/cards and the expanded operation report. Do not document the target as already available or delete accessibility/evidence to make a screenshot cleaner.
+These principles are implemented by the completed #197/#187–#194 sequence. Pointer play uses world targets, DOM equivalents reveal on keyboard focus, and analytical results remain under Details. #195 is actual unfamiliar-player acceptance, not missing interaction code. Keep those foundations while improving production art.
+
+## Current P0: Production Art V3
+
+Target: **stylized-realistic 2.5D isometric industrial data-center game art**. Not flat SaaS/vector-diagram styling, pixel art, cinematic3D, photorealism or unrelated sci-fi packs. #203 redesigns Intake/Edge/App facility/App module/Cache/SQL; #204 supplies one cohesive indoor kit; #205 integrates lightweight lighting, luminous semantic traffic and plaque/action/HUD micro-art. Deliver 2–3 grouped art PRs.
+
+Prioritize distinguishable silhouettes, coherent materials, bright hero facilities against subordinate surroundings and truthful moving state. App retains four physical bays; SQL retains separate read/write regions; Edge is a checkpoint, Cache compact memory and Intake ingress machinery. Actual labels-hidden identification at1440x900 requires human evidence; no invented commercial-quality score.
+
+Editable source → >=512px raster master → optimized runtime PNG → Phaser plus small state overlays is encouraged, not limited to procedural SVG. Produce original/custom art first; use CC0 or verified CC-BY only when genuinely useful. Record provenance/manifest before runtime import. The old exact-inventory Pages exception does not silently extend to new bytes; review the new inventory scope alongside #164 before public runtime distribution.
+
+Fast loop: affected tests + build + inspect1440x900 + adjust, then390/1920. Run final five-width/full regression/asset checks before grouped merge; measure hardware performance after major integration, not every art tweak. No new simulation systems or unrelated refactors.
 
 ## World and facilities
 
@@ -51,7 +61,7 @@ Use reusable textures, bounded pooled effects and lightweight shadow/light-pool/
 
 Budget/demand/availability/short pressure plus Learn/Pause and camera controls remain accessible with minimal chrome. No permanent meter dashboard, construction sidebar, historical analysis or long advice panel. The world should communicate the bottleneck before detailed analysis explains it.
 
-The target result first communicates actual success/failure and objective attainment, score, availability, architecture and real next/fresh-retry action. NBV/cost/profile/evidence/tradeoffs/experiment/comparison/bests/history remain available in Details, not discarded. Survival is not synonymous with satisfying every objective; no unreviewed stars or efficiency labels.
+The implemented result first communicates actual success/failure and objective attainment, score, availability, architecture and real next/fresh-retry action. NBV/cost/profile/evidence/tradeoffs/experiment/comparison/bests/history remain available in Details, not discarded. Survival is not synonymous with satisfying every objective; no unreviewed stars or efficiency labels.
 
 Decorative TitleWorld previews the theme without running a scenario; Start Game remains strongest. Preserve the improved title while bringing actual interactions to the same quality standard. The reference is a game-world experience, not a copied competitor interface.
 
@@ -59,12 +69,12 @@ Decorative TitleWorld previews the theme without running a scenario; Start Game 
 
 [Asset Strategy](ASSET_STRATEGY.md): free-only, CC0 preferred, justified verified CC-BY when useful, no paid dependency. Core buildings remain original/custom; provenance precedes runtime import. The existing exact-inventory Pages demo exception is not general rights clearance.
 
-Building/environment updates, lighting, resource activity, opt-in audio/haptics software and contextual guidance are implemented (#145–#150). Audio remains default-muted/gesture-unlocked with bounded cadence, cleanup and visual equivalents; manual listening and physical haptic validation remain #149. Production quality Epic #142 also retains human comparison #151; it is neither wholly future nor fully accepted.
+Building/environment updates, lighting, resource activity, opt-in audio/haptics software and contextual guidance are implemented (#145–#150). Audio remains default-muted/gesture-unlocked with bounded cadence, cleanup and visual equivalents; manual listening and physical haptic validation remain #149. Historical software epics #123/#142 are completed. #151 is not planned because its independent pre-change baseline was never collected; do not reconstruct obsolete builds for it. Current-build human review lives in #25/#195/#159.
 
 Azure badges remain separate, original and unchanged: no recolor/crop/distortion, texture baking or product-logo use. Do not copy competitor art, UI, characters or sounds. [Design References](GAME_DESIGN_REFERENCES.md) is text-only pattern commentary, not reuse permission.
 
 ## Evidence
 
-Inspect real title/normal/provisioning/pressure/Cache-Edge activity/outcome scenes at 320/390/1024/1440/1920, including Fit/min/max zoom once implemented, keyboard/touch, reduced motion and asset fallback. Verify exact activation, pointer hit alignment, camera invariance and representative object bounds. Record actual renderer/workload/frame measurements; software CI is not hardware FPS evidence.
+Inspect real title/normal/provisioning/pressure/Cache-Edge activity/outcome scenes at 320/390/1024/1440/1920, including implemented Fit/min/max zoom, keyboard/touch, reduced motion and asset fallback. Verify exact activation, pointer hit alignment, camera invariance and representative object bounds. Record actual renderer/workload/frame measurements; software CI is not hardware FPS evidence.
 
-#195 asks an unfamiliar participant whether this looks and feels like a game before reading text, plus traffic/pressure/action/navigation/growth questions. Record answers verbatim; coordinate #25/#151/#159 and disclose the absent historical independent baseline. Neither screenshot review nor automated surface-area tests close human gates or authorize P1.
+#195 asks an unfamiliar participant whether this looks and feels like a game before reading text, plus traffic/pressure/action/navigation/growth questions. After V3, run one session for #25 current comprehension, #195 game-first acceptance and #159 voluntary replay; retain distinct criteria and verbatim answers. Do not ask them to replay: observe the choice and record a failed criterion if they decline. Neither screenshots nor automation close human gates. #132/#160–#163 remain frozen pending evidence and explicit applicable approvals.

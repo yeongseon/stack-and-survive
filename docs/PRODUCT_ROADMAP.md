@@ -1,52 +1,53 @@
 # Product roadmap
 
-Version: 1.1. Status baseline: merged PR #185 (`abdd412`). Delivered foundations and future work are distinguished below; plans are **not implementation evidence or permission to choose new balance constants**. [Gameplay](GAMEPLAY_SPEC.md) owns current behavior; [#7](https://github.com/yeongseon/stack-and-survive/issues/7) indexes live issue status.
+Version: 1.2. Reviewed main `aa2f826`, including test-only review fixes in #201. [Gameplay](GAMEPLAY_SPEC.md) owns current behavior; [#7](https://github.com/yeongseon/stack-and-survive/issues/7) is the live execution tracker. Plans do not approve new balance rules or establish human acceptance.
 
-## Delivered foundations
+## Delivered and retired
 
-- Deterministic Black Friday engine, QA editor, architecture saves and comparison; ordinary title/countdown/live operation, fixed slots and automatic topology (through PR #122).
-- State-accurate active/empty/provisioning bays, original facility art, pooled traffic/pressure and visual foundation (through PR #140).
-- Authority reset #141 and asset manifest/integrity #143. Public source, secret safeguards and owner-authorized Pages demo under the [existing-asset exception](PAGES_DEMO_EXCEPTION.md); no general project license/third-party clearance or game backend.
-- Production-quality **software** #144–#150: separated boundaries, facility anatomy, environment, light/shadow states, activity, opt-in audio/haptics and guide. #149 manual listening/haptics and #151 human quality comparison remain open; Epic #142 is not fully accepted.
-- Replayability #153–#158: full challenge identity, measured live strategies, approved three-objective ladder on the same workload, bounded local records/bests, descriptive profiles and replay-focused report. #159 voluntary replay remains unverified; Epic #152 is not complete.
+- Deterministic living-operation engine, live deployments/scale-out, automatic routing and separate QA editor.
+- Production-quality software #143–#150; challenge/provenance/strategy/ladder/history/profile/results #153–#158.
+- Game-first camera/world/direct-action/HUD slice #199, physical construction/depth/outcome-first slice #200, strengthened test-only camera lifecycle #201.
+- #123 and #142 closed completed as historical software epics; no further implementation belongs there. Manual audio remains #149.
+- #151 closed not planned: independent pre-change baseline was never gathered. Do not fabricate or reconstruct it through an obsolete-build experiment.
+- Public Pages demo and technical security safeguards delivered; public source is not licensed OSS or blanket third-party rights clearance.
 
-The owner repeatedly directed technical improvements before an unfamiliar-participant baseline. This does not create that missing baseline retrospectively. #25/#151 findings must disclose it; Epic #123 remains subject to human evidence. PR #185 improved report readability but the owner still found the overall console-like interaction unsatisfactory.
+## Current P0: Production Art V3 #202
 
-## Current priority: Game-first Visual Reframe
+The interaction architecture is sufficient. The next quality gain is cohesive production art, not more systems. **Make the already-game-like interaction look like a polished management game.**
 
-[Epic #186](https://github.com/yeongseon/stack-and-survive/issues/186) changes presentation/interaction, not simulation. **The world is the primary interface**: a playable indoor diorama, direct facilities/bays/footprints, shared camera projection, minimal HUD and outcome-first results with analysis on demand.
-
-| Order | Issue | Scope / gate |
+| Group | Issue | Deliverable |
 |---|---|---|
-| First | #197 | Documentation guardrails and cross-layer [camera/world interaction contract](PLAYER_CAMERA_AND_WORLD_INTERACTION.md); merge before camera foundation |
-| 1 | #187 | Unified presentation camera/coordinates; PR #196 is tested but unmerged at this roadmap revision, not supported navigation |
-| 2 | #188 | Zoom/pan/Fit/focus, gestures and invariant/performance proofs |
-| 3 | #189 | World-dominant player layout |
-| 4 | #190 | Direct facility/empty-bay/footprint interaction with accessible equivalents |
-| 5 | #191 | Physical construction/activation from real state |
-| 6 | #192 | Minimal HUD and projected local actions |
-| 7 | #193 | Indoor diorama hierarchy and depth |
-| 8 | #194 | Game outcome first; existing rich evidence in Details |
-| 9 | #195 | Five-width/input/reduced-motion/performance and real-human game-feel acceptance |
+| ART PR A | #203 | Distinct Intake/Edge/App facility/App module/Cache/SQL silhouettes and materials; four real App bays and SQL read/write regions |
+| ART PR B | #204 | Cohesive racks/cooling/electrical/walls/doors/floors/grates/vents/trays/conduits/rails/decals/lights/pipes |
+| ART PR C | #205 | Lighting/semantic traffic/plaques/local actions/HUD micro-art integration; B/C may combine for two total PRs |
 
-Sequence: production-quality foundation → replayability foundation → game-first reframe → human game-feel/replay evidence → gated variety. This owner-directed insertion before #159 reduces confusion between a weak interaction presentation and the underlying strategy loop. It does not guarantee replay motivation or replace actual observation.
+Stylized-realistic indoor2.5D industrial art, not SaaS illustration, pixel art, cinematic3D or unrelated packs. No outdoors/plants/logistics clutter. Original/custom first, CC0 second, verified CC-BY only when useful, no paid dependencies. Raster sprites encouraged; source/master/runtime/state overlays stay reproducible and attributable. Record manifest/provenance before runtime import. The previous Pages exception pins old asset bytes: review new inventory/public-distribution scope with #164 instead of silently changing approval.
 
-Use Visual Direction v0.5 and the new contract prospectively. Update current-behavior Gameplay/Technical/Resource States and root README only as corresponding functionality merges. Do not advertise planned zoom or remove documented current pads prematurely. One primary issue active; preserve/reconcile existing PR #196 after #197 rather than discarding its tested work.
+Iterate at1440x900 with affected unit/renderer smoke and actual screenshot inspection; then390/1920. Full lint/types/unit/player/QA/Pages/assets once per complete grouped PR; allfive widths and relevant hardware performance at final integration. Do not rewrite unrelated docs or refactor unaffected systems.
 
-## Remaining gates and later work
+## Parallel manual and release gates
 
-| Work | Issues | Boundary |
-|---|---|---|
-| Human comprehension/quality/replay | #25, #151, #159, #195 | Actual verbatim unfamiliar-participant evidence; missing historical baseline explicitly disclosed |
-| Manual audio/haptics | #149 | Software shipped; actual listening and device verification pending |
-| Rights/license | #164 | Technical safeguards shipped; owner/employer/third-party decisions remain |
-| Replayability P1 | #160–#163 | After #159 or explicit owner rescope: objective/modifier system → calibrated workloads/bosses → UTC daily → discoveries |
-| Scale-in decision | #132 | P1 design/approval only; no implemented action or implicit reframe prerequisite |
+- **#164:** code/original-art licenses; Azure asset treatment and applicable terms; employer/IP/Hackathon/public-distribution and attribution/redistribution decisions. Never blanket-license Microsoft materials. Art production can proceed while distribution conditions are unresolved; unreviewed runtime imports cannot.
+- **#149:** one focused manual cue/volume/mute/spam/pause/resume and actual supported-device haptic check. Software complete; redesign only if a real defect is heard. Report unsupported devices honestly.
 
-Additional workloads/modifiers, extra levels or scoring rubrics need measured contracts. Existing approved ladder and four reachable descriptive profiles are not speculative features; they also do not prove global optimality. SQL upgrades, queues/functions, asynchronous processing, replication and new providers need separate semantics/approval. Never reinterpret the current no-FIFO model through visual queues.
+## One human session after finished V3
 
-## Exclusions and completion
+Keep #25, #195 and #159 open with distinct criteria. Show title without explaining controls; observe traffic/pressure/navigation/actions and physical expansion; then record answers verbatim about App/Cache/Edge, budget/no-FIFO, game-vs-dashboard and next strategy. **Do not prompt another run.** Observe whether retry is voluntary, whether decisions change and what tradeoff they explain. A declined/prompted replay does not pass #159.
 
-No full3D/rotation, arbitrary placement/manual routing in ordinary play, backend/accounts/multiplayer, paid assets, permanent stat bonuses, gacha or real Azure provisioning. Future platform/telemetry/hosting extensions require demonstrated need, privacy/security and cost approval. Current Pages is an explicit narrow exception, not an authorization for Azure infrastructure or general asset release.
+#186 remains open only for #195; V3 is not new scope inside #186. #152 remains open for #159, with P0 software checked complete. No AI participant/quality scores or fabricated prior baseline.
 
-Planning is complete when scope, evidence and gates are explicit. Implementation completes only after tests, applicable visual evidence, review, actual CI and merge. Human/rights issues stay open without their evidence. Never fabricate participant answers, legal clearance, benchmark results or aesthetic quality scores.
+## Frozen future, not active development
+
+| Issues | Gate |
+|---|---|
+| #160 objectives/modifiers | FUTURE / BLOCKED BY #159; no implementation now |
+| #161 workload families/bosses | FUTURE / BLOCKED BY #159; Flash Sale/Bot Attack/Read Storm/Order Rush are candidates only |
+| #162 daily challenges | FUTURE / BLOCKED; no daily seeds/UTC/local-daily work now |
+| #163 discoveries | FUTURE / BLOCKED; no collection before proven replay motivation |
+| #132 runtime scale-in | Design evaluation only, NOT AUTHORIZED; after V3 + human tests + observed need + explicitly approved exact semantics |
+
+No fake draining FIFO, arbitrary cooldown/cost, SQL scaling, routing/score/capacity changes or permanent bonuses. Strict test-first contract discipline remains for any separately approved simulation change. Owner must explicitly revise a gate to reprioritize frozen work.
+
+## Submission polish
+
+After art and observed human blockers: fix only observed issues, collect title/gameplay/overload/construction/success evidence, rehearse an honest2minute demo, refine README/Hackathon pitch and architecture explanation, disclose limitations and recovery fallback. Avoid major new gameplay during submission preparation. Preserve historical issues; close completed or explicitly retired work without deleting implementation history.
