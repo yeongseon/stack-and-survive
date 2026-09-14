@@ -27,6 +27,7 @@ Each document owns its subject. An art mockup cannot override numerical rules. I
 - [Run history](RUN_HISTORY.md): bounded records, full provenance validation and eligible personal bests.
 - [Architecture profiles](ARCHITECTURE_PROFILES.md): descriptive accepted-action patterns and measured evidence.
 - [Operation report](OPERATION_REPORT.md): player UI, exact comparisons and fresh-run actions.
+- [Player camera](PLAYER_CAMERA.md): game-first reframe coordinate foundation and integration boundaries.
 - [Strategy balance](ARCHITECTURE_STRATEGY_BALANCE.md): observed results versus hypotheses.
 - [Scale-in evaluation](SCALE_IN_EVALUATION.md): proposal awaiting approval.
 - [Asset attribution](../apps/web/public/assets/ATTRIBUTION.md): actual provenance.
