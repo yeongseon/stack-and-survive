@@ -1,0 +1,88 @@
+import { expect, test } from '@playwright/test';
+
+for (const width of [1440, 390, 1920, 320, 1024]) test(`player navigation keeps facilities aligned at ${width}px`, async ({ page }, info) => {
+  await page.setViewportSize({ width, height: 900 });
+  await page.goto('/?tycoon');
+  await page.getByRole('button', { name: 'Start Game', exact: true }).click();
+  await page.getByRole('button', { name: 'Ⅱ Pause', exact: true }).click();
+  const surface = page.locator('[data-renderer="ready"]');
+  const canvas = page.locator('canvas');
+  const zoom = page.getByRole('status', { name: 'Camera zoom' });
+  await expect(zoom).toHaveText('100%');
+  await page.getByRole('button', { name: 'Zoom in', exact: true }).click();
+  await expect(zoom).toHaveText('125%');
+  await expect(surface).toHaveAttribute('data-player-camera', /"userZoom":1.25/);
+  const bounds = (await canvas.boundingBox())!;
+  let nodes: { id: string; x: number; y: number }[] = JSON.parse((await surface.getAttribute('data-nodes'))!);
+  const app = nodes.find(n => n.id === 'compute')!;
+  await canvas.click({ position: { x: app.x, y: app.y - 35 } });
+  await expect(page.getByRole('region', { name: 'Resource actions' })).toContainText('active instances');
+  await expect(surface).toHaveAttribute('data-rendered-selection', 'compute');
+  await page.getByRole('button', { name: 'Close resource', exact: true }).click();
+  await expect(surface).toHaveAttribute('data-rendered-selection', '');
+  const tick = await surface.getAttribute('data-tick');
+  const draws = await surface.getAttribute('data-structure-draws');
+  const textures = await surface.getAttribute('data-texture-status');
+  await page.mouse.move(bounds.x + bounds.width / 2, bounds.y + bounds.height / 2);
+  await page.mouse.wheel(0, -80);
+  await expect(zoom).not.toHaveText('125%');
+  await page.mouse.down(); await page.mouse.move(bounds.x + bounds.width / 2 + 65, bounds.y + bounds.height / 2 + 35, { steps: 5 }); await page.mouse.up();
+  await expect(page.getByRole('region', { name: 'Resource actions' })).toHaveCount(0);
+  await expect(surface).toHaveAttribute('data-tick', tick!);
+  await expect(surface).toHaveAttribute('data-structure-draws', draws!);
+  await expect(surface).toHaveAttribute('data-texture-status', textures!);
+  await page.screenshot({ path: info.outputPath(`camera-close-${width}.png`) });
+  await page.getByRole('button', { name: 'Fit architecture', exact: true }).click();
+  await expect(zoom).toHaveText('100%');
+  await expect(surface).toHaveAttribute('data-player-camera', /"userZoom":1\}/);
+  nodes = JSON.parse((await surface.getAttribute('data-nodes'))!);
+  const sql = nodes.find(n => n.id === 'database')!;
+  await canvas.click({ position: { x: sql.x, y: sql.y - 32 } });
+  await expect(page.getByRole('region', { name: 'Resource actions' })).toContainText('Reads:');
+  await page.getByRole('button', { name: 'Close resource', exact: true }).click();
+  await page.getByRole('button', { name: 'Zoom out', exact: true }).click();
+  await expect(zoom).toHaveText('90%');
+  await page.getByRole('button', { name: 'Zoom out', exact: true }).press('0');
+  await expect(zoom).toHaveText('100%');
+  for (const [button, count, value] of [['Zoom out', 2, .75], ['Zoom in', 5, 1.8]] as const) {
+    for (let i = 0; i < count; i++) await page.getByRole('button', { name: button, exact: true }).click();
+    await expect(zoom).toHaveText(`${value * 100}%`);
+    await expect.poll(async () => JSON.parse((await surface.getAttribute('data-player-camera'))!).userZoom).toBe(value);
+    nodes = JSON.parse((await surface.getAttribute('data-nodes'))!);
+    const compute = nodes.find(n => n.id === 'compute')!;
+    await canvas.click({ position: { x: compute.x, y: compute.y - 45 * value } });
+    await expect(page.getByRole('region', { name: 'Resource actions' })).toContainText('active instances');
+    await page.getByRole('button', { name: 'Close resource', exact: true }).click();
+  }
+  await page.getByRole('button', { name: 'Fit architecture', exact: true }).click();
+  await page.screenshot({ path: info.outputPath(`camera-fit-${width}.png`) });
+});
+
+test('touch navigation cancels taps and 100 camera inputs preserve held simulation', async ({ page, context }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/?tycoon');
+  await page.getByRole('button', { name: 'Start Game', exact: true }).click();
+  await page.getByRole('button', { name: 'Ⅱ Pause', exact: true }).click();
+  if (await page.getByRole('button', { name: 'Skip guide', exact: true }).isVisible()) await page.getByRole('button', { name: 'Skip guide', exact: true }).click();
+  const surface = page.locator('[data-renderer="ready"]');
+  const before = JSON.parse((await page.getByTestId('diagnostics').textContent())!);
+  const frozen = JSON.stringify({ state: before.state, actions: before.queuedActions, challenge: before.challenge });
+  const cdp = await context.newCDPSession(page);
+  const touch = (type: string, touchPoints: { x: number; y: number; id: number }[]) => cdp.send('Input.dispatchTouchEvent', { type, touchPoints });
+  await touch('touchStart', [{ x: 600, y: 430, id: 1 }, { x: 800, y: 430, id: 2 }]);
+  await touch('touchMove', [{ x: 550, y: 430, id: 1 }, { x: 850, y: 430, id: 2 }]);
+  await touch('touchEnd', []);
+  await expect(page.getByRole('status', { name: 'Camera zoom' })).not.toHaveText('100%');
+  await expect(page.getByRole('region', { name: 'Resource actions' })).toHaveCount(0);
+  await touch('touchStart', [{ x: 700, y: 500, id: 1 }]); await touch('touchCancel', []);
+  await expect(page.getByRole('region', { name: 'Resource actions' })).toHaveCount(0);
+  await page.locator('canvas').evaluate(canvas => {
+    const r = canvas.getBoundingClientRect();
+    for (let i = 0; i < 100; i++) canvas.dispatchEvent(new WheelEvent('wheel', { deltaY: i % 2 ? 70 : -70, clientX:r.x+r.width/2, clientY:r.y+r.height/2, bubbles:true, cancelable:true }));
+  });
+  const after = JSON.parse((await page.getByTestId('diagnostics').textContent())!);
+  expect(JSON.stringify({ state: after.state, actions: after.queuedActions, challenge: after.challenge })).toBe(frozen);
+  await page.getByRole('button', { name: 'Fit architecture', exact: true }).click();
+  await expect(surface).toHaveAttribute('data-player-camera', /"userZoom":1\}/);
+  await cdp.detach();
+});

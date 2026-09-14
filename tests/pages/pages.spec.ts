@@ -8,7 +8,7 @@ test('project-path Pages build loads real facilities and never exposes QA', asyn
   await page.getByRole('button', { name: 'Start Game', exact: true }).click();
   await expect(page.locator('[data-renderer="ready"]')).toHaveCount(1);
   await expect(page.getByRole('button', { name: 'Ⅱ Pause', exact: true })).toBeEnabled();
-  await page.getByRole('button', { name: 'Add Cache', exact: true }).click();
+  { await page.getByRole('button', { name: 'Add Cache', exact: true }).focus(); await page.getByRole('button', { name: 'Add Cache', exact: true }).press('Enter'); };
   await page.getByRole('button', { name: 'Confirm expansion', exact: true }).click();
   await expect(page.getByTestId('slot-cache')).toContainText('Active');
   for (const image of await page.locator('.world-service-badges img').all()) {

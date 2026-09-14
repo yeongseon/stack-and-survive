@@ -108,6 +108,69 @@
 .tycoon-game .run-history-panel button { min-height: 44px; box-shadow: none; }
 .tycoon-game .run-history-list { max-height: none; }
 .tycoon-game .title-records .run-history-list { max-height: 230px; }
+.player-camera-controls { position: absolute; right: 14px; bottom: 14px; z-index: 10; display: flex; align-items: center; gap: 3px; padding: 4px; border: 1px solid #557580; border-radius: 8px; background: #102835ee; }
+.tycoon-game .player-camera-controls button, .player-camera-controls summary { min-width: 44px; min-height: 44px; padding: 8px; border: 0; border-radius: 4px; background: transparent; color: #e8f3f2; box-shadow: none; font-size: 14px; cursor: pointer; }
+.player-camera-controls output { width: 48px; text-align: center; font-size: 12px; font-variant-numeric: tabular-nums; }
+.player-camera-controls details { position: relative; }
+.tycoon-game .player-camera-controls { max-width: calc(100% - 24px); }
+.player-camera-controls summary { display: grid; place-items: center; list-style: none; }
+.camera-pan-controls { position: absolute; bottom: 54px; right: 0; width: 200px; display: flex; flex-wrap: wrap; gap: 4px; padding: 8px; background: #102835; border: 1px solid #557580; border-radius: 8px; }
+.camera-pan-controls button:last-child { flex-basis: 100%; }
+.tycoon-game:has(.player-camera-controls) .business-feedback { bottom: 76px; }
+.tycoon-game.diorama-game { position: relative; padding: 0; min-height: 100dvh; }
+.tycoon-game.diorama-game > .tycoon-floor, .tycoon-game.diorama-game:has(> .world-guide) > .tycoon-floor { height: 100dvh; min-height: 560px; max-width: none; width: 100%; margin: 0; border: 0; border-radius: 0; }
+.diorama-game .tycoon-header { position: absolute; z-index: 12; inset: 0 0 auto; max-width: none; padding: 12px 20px; min-height: 0; pointer-events: none; }
+.diorama-game .tycoon-header nav { pointer-events: auto; }
+.diorama-game .tycoon-header h1 { font-size: 13px; letter-spacing: .09em; text-shadow: 0 2px 8px #000; }
+.diorama-game .tycoon-header button { background: #0c2434d9; min-height: 40px; border: 1px solid #4f7581; }
+.diorama-game .game-hud { position: absolute; z-index: 11; left: 20px; top: 62px; margin: 0; width: auto; max-width: calc(100% - 40px); border: 0; border-radius: 6px; padding: 10px 16px; gap: 25px; background: #0c2534d9; box-shadow: none; pointer-events: none; }
+.diorama-game .hud-reading { flex: 0 0 auto; gap: 8px; }
+.diorama-game .hud-reading strong { font-size: 21px; margin: 0; }
+.diorama-game .hud-reading small { font-size: 10px; }
+.diorama-game .hud-reading > span { font-size: 17px; width: 20px; }
+.diorama-game .hud-reading meter { display: none; }
+.diorama-game .hud-pressure { font-size: 11px; max-width: 230px; }
+.diorama-game .world-guide { position: fixed; z-index: 12; left: 20px; bottom: 20px; margin: 0; width: min(420px, calc(100% - 40px)); padding: 10px 14px; background: #0e2937ef; border: 1px solid #507886; border-radius: 6px; gap: 8px; }
+.diorama-game .world-guide h2 { font-size: 13px; margin: 3px 0; }
+.diorama-game .world-guide p { font-size: 11px; line-height: 1.45; }
+.diorama-game .world-guide small { font-size: 10px; }
+.diorama-game .world-guide button { font-size: 11px; padding: 6px 9px; }
+.diorama-game .world-guide { pointer-events: none; }
+.diorama-game .world-guide button { pointer-events: auto; }
+.diorama-game .guide-actions { flex-direction: column; }
+.tycoon-game.diorama-game .tycoon-floor > .business-feedback { left: 20px; top: 135px; bottom: auto; height: auto; width: max-content; max-width: calc(100% - 40px); font-size: 11px; background: #102835c9; pointer-events: none; }
+.diorama-game .business-feedback span { font-size: 10px; }
+.diorama-game .world-keyboard-controls { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+.diorama-game .world-keyboard-controls:focus-within { position: absolute; left: 16px; bottom: 170px; width: min(400px, calc(100% - 32px)); height: auto; overflow: visible; clip-path: none; display: flex; flex-wrap: wrap; gap: 8px; padding: 12px; background: #102b3a; border: 2px solid #f2d194; border-radius: 8px; }
+.diorama-game .world-keyboard-controls:focus-within .world-slot, .diorama-game .world-keyboard-controls:focus-within .intake-control { position: static; transform: none; }
+.diorama-game .world-keyboard-controls .instance-slots { display: none; }
+.diorama-game .resource-action-card { position: absolute; right: auto; bottom: auto; width: 280px; max-width: calc(100% - 24px); padding: 16px; border-radius: 8px; max-height: calc(100% - 120px); overflow: auto; }
+.diorama-game .resource-action-card h2 { font-size: 17px; }
+.diorama-game .resource-action-card p { font-size: 13px; }
+.diorama-game .world-build-confirmation { z-index: 16; }
+.diorama-game .world-build-confirmation button { width: 100%; margin-top: 8px; }
+.diorama-game .world-build-confirmation button:first-of-type { background: #dfbb80; color: #122934; }
+.diorama-game .tycoon-qa { position: relative; margin: 0; }
+.diorama-game .player-camera-controls { z-index: 20; }
+.facility-plaques { position: absolute; inset: 0; pointer-events: none; z-index: 3; overflow: hidden; }
+.facility-plaque { position: absolute; transform: translateX(-50%); min-width: 80px; text-align: center; padding: 5px 9px; background: #0a2232d9; border-bottom: 1px solid #72abae; border-radius: 3px; }
+.facility-plaque strong { display: block; font-size: 10px; letter-spacing: .11em; color: #dbeef0; }
+.facility-plaque span { display: block; margin-top: 3px; font-size: 10px; color: #a2c5ce; white-space: nowrap; }
+.facility-plaque.pressure { border-color: #f1b67f; background: #432c25e6; }
+.facility-plaque.pressure span { color: #ffd2a4; }
+@media (max-width: 700px) {
+  .tycoon-game.diorama-game { padding: 0; }
+  .diorama-game .tycoon-header { padding: 8px 12px; }
+  .diorama-game .tycoon-header h1 { font-size: 11px; }
+  .diorama-game .game-hud { top: 57px; left: 10px; max-width: calc(100% - 20px); width: calc(100% - 20px); padding: 8px 12px; gap: 8px; }
+  .diorama-game .hud-reading { flex: 1; }
+  .diorama-game .hud-reading strong { font-size: 18px; }
+  .diorama-game .hud-pressure { flex-basis: 100%; max-width: none; margin: 0; padding-top: 4px; font-size: 10px; }
+  .diorama-game .world-guide { bottom: 74px; left: 10px; width: calc(100% - 20px); max-height: 150px; overflow: auto; }
+  .diorama-game .guide-actions { flex-direction: row; }
+  .diorama-game .business-feedback { top: 158px; left: 12px; }
+  .diorama-game .player-camera-controls { bottom: 12px; right: 12px; }
+}
 @media (max-width: 700px) {
   .tycoon-game:not(:has(.title-screen)) { padding: 10px; }
   .tycoon-game .tycoon-header { gap: 8px; padding-bottom: 10px; }

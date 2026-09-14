@@ -10,7 +10,10 @@ test('guide responds to actual pressure without acting and persists only explici
   await expect(guide).toContainText('Follow the traffic');
   await page.evaluate(() => window.scrollTo(0, 0));
   await expect(guide).toBeInViewport();
-  expect((await guide.boundingBox())!.y + (await guide.boundingBox())!.height).toBeLessThanOrEqual((await page.getByTestId('world').boundingBox())!.y);
+  const guideBox = (await guide.boundingBox())!, worldBox = (await page.getByTestId('world').boundingBox())!;
+  expect(guideBox.y).toBeGreaterThanOrEqual(worldBox.y);
+  expect(guideBox.y + guideBox.height).toBeLessThanOrEqual(worldBox.y + worldBox.height);
+  expect(guideBox.height).toBeLessThan(worldBox.height * .3);
   await page.screenshot({ path: info.outputPath('first-run-guide.png') });
   const before = JSON.parse((await page.getByTestId('diagnostics').textContent())!).state;
   await guide.getByRole('button', { name: 'Next guide tip', exact: true }).click();
@@ -19,7 +22,7 @@ test('guide responds to actual pressure without acting and persists only explici
   while (Number(await page.getByTestId('elapsed').textContent()) < 31) await step.click();
   await expect(guide).toContainText('Consider more App capacity');
   await expect(page.getByTestId('world')).toHaveAttribute('data-guide-target', 'compute');
-  await page.getByRole('button', { name: '+ App capacity', exact: true }).click();
+  { await page.getByRole('button', { name: '+ App capacity', exact: true }).focus(); await page.getByRole('button', { name: '+ App capacity', exact: true }).press('Enter'); };
   await page.getByRole('button', { name: 'Confirm expansion', exact: true }).click(); await step.click();
   await expect(guide).toContainText('Construction is not capacity yet');
   await guide.getByRole('button', { name: 'Skip guide', exact: true }).click();

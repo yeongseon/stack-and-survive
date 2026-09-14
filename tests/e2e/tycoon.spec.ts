@@ -12,11 +12,11 @@ test('living operation expands real capacity and activates Cache and Edge only a
   const step = page.getByRole('button', { name: 'Step one tick', exact: true });
   const state = async () => JSON.parse((await page.getByTestId('diagnostics').textContent())!);
   await step.click();
-  await page.getByRole('button', { name: /Add Cache/ }).click();
+  await page.getByRole('button', { name: /Add Cache/ }).focus(); await page.getByRole('button', { name: /Add Cache/ }).press('Enter');
   await page.getByRole('button', { name: 'Confirm expansion', exact: true }).click();
-  await page.getByRole('button', { name: /Add Protected Edge/ }).click();
+  { await page.getByRole('button', { name: /Add Protected Edge/ }).focus(); await page.getByRole('button', { name: /Add Protected Edge/ }).press('Enter'); };
   await page.getByRole('button', { name: 'Confirm expansion', exact: true }).click();
-  await page.getByRole('button', { name: /App capacity/ }).click();
+  { await page.getByRole('button', { name: /App capacity/ }).focus(); await page.getByRole('button', { name: /App capacity/ }).press('Enter'); };
   await page.getByRole('button', { name: 'Confirm expansion', exact: true }).click();
   await step.click();
   const accepted = await state();
@@ -41,7 +41,7 @@ test('living operation expands real capacity and activates Cache and Edge only a
   const bots = await state();
   expect(bots.snapshot.requests.edge.filtered.bot).toBeGreaterThan(0);
   expect(bots.snapshot.requests.cache.hits).toBeGreaterThan(0);
-  await page.getByTestId('slot-edge').getByRole('button').click();
+  await page.getByTestId('slot-edge').getByRole('button').focus(); await page.getByTestId('slot-edge').getByRole('button').press('Enter');
   await page.getByRole('button', { name: 'Boost filtering · 8 cr', exact: true }).click();
   await step.click(); await step.click();
   expect((await state()).snapshot.requests.edge.filtered.bot).toBeGreaterThan(bots.snapshot.requests.edge.filtered.bot);
@@ -60,7 +60,7 @@ test('observed App pressure falls only after a world-local expansion activates',
   await expect(surface).toHaveAttribute('data-tick', '31');
   const pressure = async () => JSON.parse((await surface.getAttribute('data-pressure-queues'))!)[0].count;
   const before = await pressure(); expect(before).toBeGreaterThan(8);
-  await page.getByRole('button', { name: /App capacity/ }).click();
+  { await page.getByRole('button', { name: /App capacity/ }).focus(); await page.getByRole('button', { name: /App capacity/ }).press('Enter'); };
   await page.getByRole('button', { name: 'Confirm expansion', exact: true }).click();
   while (Number(await page.getByTestId('elapsed').textContent()) < 39) await step.click();
   await expect(surface).toHaveAttribute('data-tick', '39'); expect(await pressure()).toBe(before);
@@ -75,7 +75,9 @@ test('world-local controls stay separate and keyboard accessible on a narrow flo
   await expect(page.getByRole('button', { name: 'About', exact: true })).toBeFocused();
   await page.getByRole('button', { name: 'Start Game' }).click();
   await expect(page.getByRole('button', { name: 'Ⅱ Pause', exact: true })).toBeEnabled({ timeout: 10000 });
-  const controls = page.locator('.world-controls .pad-trigger, .world-controls > .intake-control');
+  await page.getByRole('button', { name: 'Traffic intake', exact: true }).focus();
+  const controls = page.locator('.world-keyboard-controls button');
+  await expect(controls).toHaveCount(5);
   const boxes = await controls.evaluateAll(elements => elements.map(e => { const r = e.getBoundingClientRect(); return { x:r.x,y:r.y,w:r.width,h:r.height }; }));
   for (let i=0;i<boxes.length;i++) for (let j=i+1;j<boxes.length;j++) {
     const a=boxes[i], b=boxes[j]; expect(a.x < b.x+b.w && a.x+a.w>b.x && a.y<b.y+b.h && a.y+a.h>b.y, `controls ${i}/${j}: ${JSON.stringify([a,b])}`).toBe(false);

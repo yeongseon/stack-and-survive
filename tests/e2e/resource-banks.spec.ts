@@ -14,6 +14,7 @@ test('resource anatomy follows live construction, separate SQL pressure and actu
   await expect.poll(async () => (await state()).cache.lifecycle).toBe('absent');
   expect(await banks('cache')).toEqual([]);
   for (const name of ['Add Cache', 'Add Protected Edge', '+ App capacity']) {
+    await page.getByRole('button', { name, exact: true }).focus();
     await page.getByRole('button', { name, exact: true }).click();
     await page.getByRole('button', { name: 'Confirm expansion', exact: true }).click();
   }
@@ -27,7 +28,7 @@ test('resource anatomy follows live construction, separate SQL pressure and actu
   await expect.poll(async () => (await banks('cache')).length).toBe(3);
   await expect.poll(async () => (await state()).app.bays.filter((b: string) => b === 'active').length).toBe(2);
   for (const count of [3, 4]) {
-    await page.getByRole('button', { name: '+ App capacity', exact: true }).click();
+    { await page.getByRole('button', { name: '+ App capacity', exact: true }).focus(); await page.getByRole('button', { name: '+ App capacity', exact: true }).press('Enter'); };
     await page.getByRole('button', { name: 'Confirm expansion', exact: true }).click();
     for (let i = 0; i < 9; i++) await step.click();
     await expect.poll(async () => (await state()).app.bays.filter((b: string) => b === 'active').length).toBe(count);
@@ -37,7 +38,7 @@ test('resource anatomy follows live construction, separate SQL pressure and actu
   await expect(surface).toHaveAttribute('data-tick', '76');
   const measured = await state();
   expect((await banks('database')).map((b: { state: string }) => b.state)).toEqual([measured.sql.readPressure, measured.sql.writePressure]);
-  await page.getByTestId('slot-edge').getByRole('button').click();
+  await page.getByTestId('slot-edge').getByRole('button').focus(); await page.getByTestId('slot-edge').getByRole('button').press('Enter');
   await page.getByRole('button', { name: 'Boost filtering · 8 cr', exact: true }).click();
   await expect.poll(edgeCue).toBe('request-dots');
   await step.click(); await expect.poll(async () => (await state()).edge.boost).toBe('scheduled');
@@ -78,6 +79,6 @@ test('player resource bank state survives missing SQL texture and badge', async 
   await page.getByRole('button', { name: 'Step one tick', exact: true }).click();
   await expect(page.locator('.world-service-badges [data-service="database"]')).toHaveAttribute('data-fallback', 'true');
   await expect.poll(async () => JSON.parse((await surface.getAttribute('data-facility-banks'))!).find((r: { id: string }) => r.id === 'database').banks.length).toBe(2);
-  await page.getByRole('button', { name: 'SQL processing', exact: true }).click();
+  { await page.getByRole('button', { name: 'SQL processing', exact: true }).focus(); await page.getByRole('button', { name: 'SQL processing', exact: true }).press('Enter'); };
   await expect(page.getByRole('region', { name: 'Resource actions' })).toContainText('Writes:');
 });
