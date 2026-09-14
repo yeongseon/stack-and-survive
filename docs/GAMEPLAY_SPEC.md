@@ -57,7 +57,7 @@ Pause freezes authoritative time, accepted countdowns and costs; inspection rema
 
 At completion/failure preserve the stopped world. Result shows engine cause, score, NBV, availability, elapsed time and insight. Survival is distinct from target attainment. Play again is primary and receives focus; Review opens Learn and returns focus on close.
 
-Normal retry resets architecture, runtime, budget and temporary actions. It does **not** preserve upgraded infrastructure. Refresh starts a fresh player experience. There is no current normal-player personal best, history, level progression or architecture persistence.
+Normal retry resets architecture, runtime, budget and temporary actions. It does **not** preserve upgraded infrastructure. Refresh starts at the title with validated local completion progress but no running scenario. There is no current normal-player personal best, history or architecture persistence.
 
 ## 7. Accessibility and validation
 

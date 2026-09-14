@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
-import { createController } from './controller';
+import { useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
+import { createController, type View } from './controller';
 import { diagnosticsEnabled } from './mode';
 import { GameFloor } from './GameFloor';
 import { LearnDialog, type LearnPage } from './LearnDialog';
@@ -12,7 +12,9 @@ import { WorldGuide } from './WorldGuide';
 import { guideHint } from './world-guide';
 import { blackFridayChallenge, type Challenge } from '@stack-and-survive/scenarios/challenge';
 
-export function TycoonGame({ challenge = blackFridayChallenge }: { challenge?: Challenge }) {
+export function TycoonGame({ challenge = blackFridayChallenge, titleContent, onResult, nextLevel }: {
+  challenge?: Challenge; titleContent?: ReactNode; onResult?: (result: NonNullable<View['result']>) => void; nextLevel?: () => void;
+}) {
   const [controller] = useState(() => createController(undefined, undefined, true, challenge));
   const view = useSyncExternalStore(controller.subscribe, controller.getSnapshot);
   const sound = useGameSound(controller);
@@ -31,6 +33,11 @@ export function TycoonGame({ challenge = blackFridayChallenge }: { challenge?: C
   const scenarioName = currentChallenge.workload.id === 'black-friday' ? 'Black Friday' : currentChallenge.workload.id;
   const start = () => { guide.newAttempt(); sound.unlock(); setEntered(true); controller.beginGame(); };
   const restart = () => { controller.reset(); setEntered(false); };
+  const reportedResult = useRef<View['result']>(null);
+  useEffect(() => {
+    if (view.result && reportedResult.current !== view.result) { reportedResult.current = view.result; onResult?.(view.result); }
+    if (!view.result) reportedResult.current = null;
+  }, [view.result, onResult]);
   return <main className="tycoon-game" onClick={event => { if (event.target instanceof Element && event.target.closest('button')) sound.click(); }}>
     {!entered ? <section className="title-screen" aria-label="Game introduction" data-time={diagnosticsEnabled ? runtime.time : undefined} data-budget={diagnosticsEnabled ? view.state.economy.remainingBudget : undefined}>
       <TitleWorld />
@@ -38,7 +45,7 @@ export function TycoonGame({ challenge = blackFridayChallenge }: { challenge?: C
         <h1><span className="title-stack">STACK</span> <em>&amp;</em> SURVIVE</h1><p className="title-tagline">Build. Scale. Keep the business flowing.</p>
         <p className="title-description">Your customers are arriving. Make every infrastructure decision count.</p>
       </div>
-      <div className="title-bottom"><nav className="title-actions" aria-label="Introduction">
+      <div className="title-bottom">{titleContent}<nav className="title-actions" aria-label="Introduction">
         <button type="button" aria-label="How to Play" onClick={() => open('how')}>How to Play<small>Learn the basics</small></button>
         <button ref={startButton} type="button" aria-label="Start Game" className="start-game" onClick={start}>▶ Start Game<small>One business. {currentChallenge.workload.duration === 180 ? 'Three minutes.' : `${currentChallenge.workload.duration} seconds.`}</small></button>
         <button type="button" aria-label="About" onClick={() => open('about')}>About<small>The idea &amp; the technology</small></button>
@@ -50,7 +57,7 @@ export function TycoonGame({ challenge = blackFridayChallenge }: { challenge?: C
       <GameFloor controller={controller} view={view} guideTarget={guide.visible ? guideHint(view, guide.stage).target : null} />
       {view.countdown !== null && <div className="welcome-countdown" role="status">{scenarioName} begins in <strong>{view.countdown}</strong></div>}
       {view.notice && diagnosticsEnabled && <p className="tycoon-notice">{view.notice}</p>}
-      {view.result && <GameResult result={view.result} restart={restart} review={() => open('learn')} />}
+      {view.result && <GameResult result={view.result} restart={restart} review={() => open('learn')} nextLevel={view.result.objectiveMet ? nextLevel : undefined} />}
       {view.error && <section role="alert" className="tycoon-result"><p>{view.error}</p><button type="button" onClick={() => controller.recoverRenderer()}>Rebuild graphics</button><button type="button" onClick={restart}>Return to title</button></section>}
       {diagnosticsEnabled && <details className="tycoon-qa"><summary>Tycoon QA</summary><button onClick={() => controller.inspectNextTick()}>Step one tick</button><output data-testid="elapsed">{runtime.time}</output><pre data-testid="diagnostics">{JSON.stringify(view)}</pre></details>}
     </>}
