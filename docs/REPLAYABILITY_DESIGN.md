@@ -1,6 +1,6 @@
 # Replayability design
 
-Version: 0.1 proposal. Epic #152. **Not implemented**, except the current micro/run fundamentals described below. Concrete challenge schemas belong to [Challenge System](CHALLENGE_SYSTEM.md); measured strategies to [Strategy Balance](ARCHITECTURE_STRATEGY_BALANCE.md).
+Version: 0.2. Epic #152. Micro/run fundamentals, the approved objective ladder and local records are implemented; profiles, richer replay results and P1 systems remain planned. Concrete challenge schemas belong to [Challenge System](CHALLENGE_SYSTEM.md); measured strategies to [Strategy Balance](ARCHITECTURE_STRATEGY_BALANCE.md).
 
 > Can I build a better architecture for the same workload?
 
@@ -9,8 +9,8 @@ Version: 0.1 proposal. Epic #152. **Not implemented**, except the current micro/
 | Loop | Desired cycle | Current state |
 |---|---|---|
 | Micro | Traffic → pressure → decision → accepted delay → visible consequence | Implemented; improvement depends on actual workload, not guaranteed |
-| Run | Start → growth → survive/fail → result → compare → retry/next | Start/result/fresh retry implemented; normal comparison/next-level planned |
-| Meta | Challenge → clear → personal best → new constraint → new strategy | Not implemented |
+| Run | Start → growth → survive/fail → result → compare → retry/next | Start/result/fresh retry, eligible next level and records implemented; richer comparisons planned |
+| Meta | Challenge → clear → personal best → new constraint → new strategy | Three-objective ladder and local bests implemented; profiles and P1 modifiers planned |
 
 An illustrative 10–20s decision cadence is a playtest hypothesis, not a timer to force decisions or fabricate incidents. Current simulation duration is 180s. Progression should change constraints, not grant permanent capacity/cache/stat bonuses.
 
@@ -24,7 +24,7 @@ Profiles describe, not rank, behavior. Scale-oriented, cache-oriented, protected
 
 Show actual completion/objective result, architecture evidence, compatible previous/best differences and one useful next experiment. Next Level only points to an existing eligible level; Try Another Architecture keeps challenge conditions but resets to a fresh baseline. Learn remains secondary. Failed short runs are labeled separately and cannot win lowest-cost records against successful full runs.
 
-History must be bounded/versioned, validate inputs, handle quota/corruption/disabled storage, record challenge/rules identity and prevent duplicate terminal saves. Best eligibility and tie rules are explicit. Local records are not online rankings or cheat-resistant evidence. No personal identifiers/backend upload is required.
+[Run history](RUN_HISTORY.md) implements bounded/versioned records, input validation, quota/corruption/disabled-storage fallback, complete challenge identity and duplicate terminal-save protection. Best eligibility and first-tie rules are explicit. Local records are not online rankings or cheat-resistant evidence. No personal identifiers/backend upload is required.
 
 ## P1 after actual replay evidence
 

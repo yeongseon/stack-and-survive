@@ -6,7 +6,8 @@ Version: 1.1. Browser-local TypeScript/React/Phaser, with an owner-authorized st
 
 ```text
 main.tsx — compile-time normal / QA boundary
- ├ TycoonGame
+ ├ ChallengeApplication (level selection, local progress/records)
+ │ └ TycoonGame
  │  ├ TitleWorld (decorative SVG/CSS)
  │  ├ GameHUD
  │  ├ GameFloor (Phaser mount, BuildPad, local cards, feedback)
@@ -37,11 +38,13 @@ Player initialization uses fixed `tycoon-layout`. Title schedules no simulation;
 
 ## Mode and persistence
 
-`mode.ts` enables diagnostics only for development or explicit compile-time `qa`. Normal `dist` renders TycoonGame; URL parameters cannot enable editor/JSON/manual steps. `dist-qa` defaults to editor with `?tycoon` available. Never deploy QA output as the ordinary game.
+`mode.ts` enables diagnostics only for development or explicit compile-time `qa`. Normal `dist` renders ChallengeApplication with a keyed TycoonGame; URL parameters cannot enable editor/JSON/manual steps. `dist-qa` defaults to editor with `?tycoon` available. Never deploy QA output as the ordinary game.
 
 Normal player disables architecture persistence/manual edits. The QA shell is a full alternate application including redesign/comparison, not just diagnostics. QA `persistence.ts` implements a synchronous injected localStorage repository; controller startup automatically loads it and architecture changes automatically save when attached, alongside explicit Save/Clear controls. It validates the versioned architecture payload and surfaces corrupt/unavailable storage. It does not persist runtime/history/personal best. `comparison.ts` checks scenario/schema/balance identity and duration, with actual phase data for qualified comparisons; cheap short failures are not equivalent efficiency evidence.
 
-`scenarios/challenge` (#153) now owns immutable validated conditions, deterministic canonical identity and survive/availability objective evaluation. `createController` accepts an optional fourth challenge input (default Black Friday); its View and terminal result retain that challenge. Controller simulation calls, player HUD/pressure/guide, events and result labels use the injected workload. Terminal results additionally retain the actual initial architecture and ordered action outcomes, so replay does not start from the upgraded final architecture. Comparisons reject unlike complete challenge conditions and mixed legacy/new identity. Run history, profiles and level selection remain future #154–#158 work; no normal-player challenge picker is released by this contract.
+`scenarios/challenge` (#153) owns immutable validated conditions, deterministic canonical identity and survive/availability objective evaluation. `createController` accepts an optional fourth challenge input (default Black Friday); its View and terminal result retain that challenge. Controller simulation calls, player HUD/pressure/guide, events and result labels use the injected workload. Terminal results additionally retain the actual initial architecture and ordered action outcomes, so replay does not start from the upgraded final architecture. Comparisons reject unlike complete challenge conditions and mixed legacy/new identity.
+
+`ChallengeApplication` offers the approved three-objective ladder with separate validated local completion progress. `useRunHistory` records terminal results once and handles storage failures without interrupting gameplay. `run-history.ts` retains 20 recent attempts plus independent eligible bests, validates full provenance by engine replay at load/write boundaries, and compares only exact challenge conditions. Resetting records does not reset progression or other settings. See [Run history](RUN_HISTORY.md); profiles and richer replay results remain #157/#158.
 
 ## Renderer and coordinates
 

@@ -57,7 +57,9 @@ Pause freezes authoritative time, accepted countdowns and costs; inspection rema
 
 At completion/failure preserve the stopped world. Result shows engine cause, score, NBV, availability, elapsed time and insight. Survival is distinct from target attainment. Play again is primary and receives focus; Review opens Learn and returns focus on close.
 
-Normal retry resets architecture, runtime, budget and temporary actions. It does **not** preserve upgraded infrastructure. Refresh starts at the title with validated local completion progress but no running scenario. There is no current normal-player personal best, history or architecture persistence.
+Normal retry resets architecture, runtime, budget and temporary actions. It does **not** preserve upgraded infrastructure. Refresh starts at the title with validated local completion progress and [run records/personal bests](RUN_HISTORY.md), but no running scenario or architecture restoration.
+
+The approved ladder is Survive (180s) → Reliable Business (180s and ≥99% cumulative availability) → Customer First (180s and ≥99.9%). Workload and resource rules remain the same. Only objective-valid completion opens the next level. Level selection creates fresh infrastructure. Progress settings reset ladder completion; Run history clears only history/bests. Storage failure preserves session play with feedback.
 
 ## 7. Accessibility and validation
 
@@ -71,7 +73,7 @@ Explicit QA/development defaults to the manual editor; `?tycoon` selects player 
 
 QA retains preparation free placement/move/remove, validated manual connections, initial instance choice, delayed preparation scaling, start validation, Build/Manage, manual steps, architecture save/reset, redesign/retry and session comparison. Required resources complete preparation before editor Start. Active disconnected optional resources cost money but do not process traffic; partial optional paths are invalid.
 
-The QA shell is a full alternate application path, not merely a debug overlay. When its storage repository is available it loads the saved architecture at startup and automatically saves architecture changes, in addition to explicit Save/Clear controls. The versioned save stores architecture, not runtime progress. Redesign preserves completed resources/instances and clears scenario counters; unfinished scale-out grants no capacity. Existing session comparison labels different duration/status rather than calling an early failure more efficient. These implemented QA tools are distinct from future normal-player challenge/history/profile progression.
+The QA shell is a full alternate application path, not merely a debug overlay. When its storage repository is available it loads the saved architecture at startup and automatically saves architecture changes, in addition to explicit Save/Clear controls. The versioned save stores architecture, not runtime progress. Redesign preserves completed resources/instances and clears scenario counters; unfinished scale-out grants no capacity. Existing session comparison labels different duration/status rather than calling an early failure more efficient. These QA tools are distinct from normal-player challenge progression and history; profiles remain planned.
 
 ## Appendix B — Future replay loop
 
