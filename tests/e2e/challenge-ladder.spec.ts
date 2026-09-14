@@ -27,7 +27,7 @@ test('approved ladder unlocks sequentially from real successful runs and ends wi
       for (let i = 0; i < 9; i++) await step.click();
     }
     while (Number(await page.getByTestId('elapsed').textContent()) < 180) await step.click();
-    await expect(page.getByRole('region', { name: 'Business result' })).toContainText('Business kept flowing');
+    await expect(page.getByRole('region', { name: 'Business result' })).toContainText('CHALLENGE CLEAR');
     await expect(page.getByTestId('challenge-outcome')).toContainText('— met');
   };
   for (let level = 0; level < 3; level++) {

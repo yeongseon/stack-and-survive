@@ -15,6 +15,7 @@ test('real failed and successful attempts persist separately and only success se
   await start(); while (Number(await page.getByTestId('elapsed').textContent()) < 50) await step.click();
   await expect.poll(async () => (await data())?.runs.length).toBe(1);
   expect((await data()).bests).toHaveLength(0);
+  await page.getByText('Details · decisions, tradeoffs & records', { exact: true }).click();
   await page.getByRole('region', { name: 'Business result' }).getByText('Run records & personal best', { exact: true }).click();
   await expect(page.getByRole('region', { name: 'Local run records' })).toContainText('No objective-valid completion yet');
   await page.getByRole('button', { name: 'Play again', exact: true }).click();
@@ -32,6 +33,7 @@ test('real failed and successful attempts persist separately and only success se
   await expect.poll(async () => (await data())?.runs.length).toBe(2);
   const saved = await data(); expect(saved.bests).toHaveLength(1);
   expect(saved.bests[0].lowestCost.id).toBe(saved.runs[1].id);
+  await page.getByText('Details · decisions, tradeoffs & records', { exact: true }).click();
   await expect(page.getByRole('region', { name: 'Architecture profile' })).toContainText('Cache-led expansion');
   await expect(page.getByRole('region', { name: 'Run comparison' })).toContainText('Different duration or outcome — no efficiency comparison');
   await expect(page.getByRole('region', { name: 'Run comparison' })).toContainText('New personal best');
@@ -69,6 +71,7 @@ test('corrupt history and failed writes preserve current results and support ret
   await expect(page.getByRole('button', { name: 'Ⅱ Pause', exact: true })).toBeEnabled();
   await page.getByText('Tycoon QA', { exact: true }).click(); const step = page.getByRole('button', { name: 'Step one tick', exact: true });
   while (Number(await page.getByTestId('elapsed').textContent()) < 50) await step.click();
+  await page.getByText('Details · decisions, tradeoffs & records', { exact: true }).click();
   await page.getByRole('region', { name: 'Business result' }).getByText('Run records & personal best', { exact: true }).click();
   await expect(page.getByRole('region', { name: 'Local run records' })).toContainText('could not be saved');
   await page.evaluate(() => { const restore = Reflect.get(window, '__restoreHistoryStorage'); if (typeof restore === 'function') restore(); });
