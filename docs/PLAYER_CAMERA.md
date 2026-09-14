@@ -1,6 +1,6 @@
 # Player camera coordinate contract
 
-Issue #187, first child of [Game-first Visual Reframe #186](https://github.com/yeongseon/stack-and-survive/issues/186). This foundation preserves the existing Fit view. User-facing navigation and nonidentity renderer transforms follow in #188; direct bay/footprint dispatch follows in #190.
+Issue #187, first code child of [Game-first Visual Reframe #186](https://github.com/yeongseon/stack-and-survive/issues/186), after documentation prerequisite #197 (merged in #198). This is a subordinate implementation note for [Player Camera and World Interaction](PLAYER_CAMERA_AND_WORLD_INTERACTION.md), which owns cross-layer behavior and state boundaries. This foundation preserves the existing Fit view. User-facing navigation and nonidentity renderer transforms follow in #188; direct bay/footprint dispatch follows in #190. It does not establish a second camera authority.
 
 ## Three spaces, one transform
 
