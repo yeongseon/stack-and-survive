@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Production Art V3 — source review</title>
+<style>
+body{margin:0;background:#0d1e2a;color:#d0e1e8;font:14px 'Avenir Next',sans-serif}header{padding:28px 40px;border-bottom:1px solid #355362}h1{font-size:25px;margin:8px 0}p{color:#9cb6c4;line-height:1.6}button{background:#294a5a;color:#e3edef;padding:10px 16px;border:1px solid #567885;border-radius:5px;cursor:pointer}main{padding:24px;display:grid;grid-template-columns:repeat(3,1fr);gap:18px}figure{margin:0;background:radial-gradient(ellipse at 50% 65%,#254154,#132936 65%);border:1px solid #2a4655;position:relative}svg{display:block;width:100%;height:auto}figcaption{position:absolute;left:20px;top:20px;font-size:12px;letter-spacing:.12em;text-transform:uppercase}.hidden figcaption{display:none}section{padding:0 24px 30px}.bays{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.note{color:#d0ad7c}@media(max-width:700px){main{grid-template-columns:1fr 1fr}.bays{grid-template-columns:1fr 1fr}header{padding:20px}}
+</style>
+<header><span>ORIGINAL SOURCE STUDY · NOT RUNTIME ASSETS</span><h1>Production Art V3 / Facility vocabulary</h1><p>Steel housings, recessed server bays, memory fins, inspection gate and ingress conduits. Labels-hidden review is not a substitute for actual participant identification.</p><button id="labels">Hide labels</button><p class="note">Source preview only. No Azure assets embedded. License unselected; runtime manifest and public-distribution review pending.</p></header>
+<main id="facilities"></main><section><h2>Physical App population · 1 → 4</h2><p>Only actual modules appear. Empty bays remain empty; this sheet is not a gameplay simulation.</p><div class="bays" id="bays"></div></section>
+<script type="module">
+import {facilityNames,facilitySvg} from './core-facilities.mjs';
+const figure=(name,art)=>{const f=document.createElement('figure');f.innerHTML=art;const c=document.createElement('figcaption');c.textContent=name;f.append(c);return f;};
+for(const name of facilityNames)document.querySelector('#facilities').append(figure(name,facilitySvg(name)));
+for(let i=1;i<=4;i++)document.querySelector('#bays').append(figure(`${i}/4 active`,facilitySvg('app-service',i)));
+document.querySelector('#labels').onclick=e=>{document.body.classList.toggle('hidden');e.currentTarget.textContent=document.body.classList.contains('hidden')?'Show labels':'Hide labels';};
+</script></html>
