@@ -1,7 +1,8 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { ActionRequest, Controller, View } from './controller';
 import { mountWorld } from './world';
-import { tycoonPositions, tycoonPoint } from './tycoon-layout';
+import { tycoonPositions } from './tycoon-layout';
+import { createPlayerProjection, fitPlayerCamera } from './player-camera';
 import { definitions } from '@stack-and-survive/cloud-domain';
 import { businessFeedback } from './business-feedback';
 import { BuildPad } from './BuildPad';
@@ -15,6 +16,7 @@ function LocalAction({ controller, action, children }: { controller: Controller;
 export function GameFloor({ controller, view, guideTarget = null }: { controller: Controller; view: View; guideTarget?: string | null }) {
   const host = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState({ width: 1, height: 1 });
+  const projection = useMemo(() => createPlayerProjection(fitPlayerCamera(size), size), [size]);
   const cardClose = useRef<HTMLButtonElement>(null);
   const opener = useRef<HTMLElement | null>(null);
   const select = useCallback((id: string) => {
@@ -38,7 +40,7 @@ export function GameFloor({ controller, view, guideTarget = null }: { controller
     return () => { disposed = true; observer.disconnect(); cleanup?.(); surface.remove(); };
   }, [controller, view.rendererGeneration, inspect]);
   const at = (kind: keyof typeof tycoonPositions) => {
-    const point = tycoonPoint(kind, size.width, size.height);
+    const point = projection.resourceScreen(kind);
     return { left: point.x, top: point.y + 42 };
   };
   const runtime = view.state.runtime;

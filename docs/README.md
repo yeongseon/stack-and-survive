@@ -32,6 +32,7 @@ Update current gameplay/technical/state documentation and root README only after
 - [Run history](RUN_HISTORY.md): bounded records, full provenance validation and eligible personal bests.
 - [Architecture profiles](ARCHITECTURE_PROFILES.md): descriptive accepted-action patterns and measured evidence.
 - [Operation report](OPERATION_REPORT.md): player UI, exact comparisons and fresh-run actions.
+- [Player camera math](PLAYER_CAMERA.md): subordinate #187 Fit-preserving implementation note; the cross-layer contract above owns target navigation and interaction behavior.
 - [Strategy balance](ARCHITECTURE_STRATEGY_BALANCE.md): observed results versus hypotheses.
 - [Scale-in evaluation](SCALE_IN_EVALUATION.md): proposal awaiting approval.
 - [Asset attribution](../apps/web/public/assets/ATTRIBUTION.md): actual provenance.

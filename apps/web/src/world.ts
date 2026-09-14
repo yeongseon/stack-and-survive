@@ -13,7 +13,7 @@ import { pressureLosses, pressurePositions, pressureQueues } from './queue-visua
 import { activeEffects, completedResources, drawEffect, effectMotion } from './effects';
 import { diagnosticsEnabled } from './mode';
 import { placeCaptions } from './annotations';
-import { tycoonPoint } from './tycoon-layout';
+import { createPlayerProjection, fitPlayerCamera } from './player-camera';
 import { resourceVisualState } from './resource-visual-state';
 import { drawFacilityBanks, facilityStateKey } from './resource-banks';
 import { FacilityLighting } from './facility-lighting';
@@ -41,6 +41,16 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
   const completions = new Map<string, number>();
   let drawnCompletions = 0;
   const undrawnCompletions = new Set<string>();
+  let fitProjection: ReturnType<typeof createPlayerProjection> | null = null;
+  let fitSize = '';
+  const playerProjection = (width: number, height: number) => {
+    const key = `${width}:${height}`;
+    if (!fitProjection || fitSize !== key) {
+      const viewport = { width, height };
+      fitProjection = createPlayerProjection(fitPlayerCamera(viewport), viewport); fitSize = key;
+    }
+    return fitProjection;
+  };
   const unsubscribe = controller.subscribe(() => {
     const next = controller.getSnapshot();
     for (const kind of completedResources(view, next)) {
@@ -96,7 +106,7 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
         const architecture = view.state.runtime.architecture;
         const resources = architecture.resources;
         const camera = viewportCamera(view.camera, width, height);
-        const positions = resources.map(r => view.playerMode ? tycoonPoint(r.kind, width, height) : project(r, camera, width, height));
+        const positions = resources.map(r => view.playerMode ? playerProjection(width, height).resourceScreen(r.kind) : project(r, camera, width, height));
         this.scene.setVisible(renderVisible);
         if (diagnosticsEnabled) {
           host.dataset.renderVisible = String(renderVisible);
@@ -357,7 +367,7 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
       const p = point(e);
       if (view.building) { controller.place(logical(p)); return; }
       const resource = view.state.runtime.architecture.resources
-        .map(r => ({ resource: r, center: view.playerMode ? tycoonPoint(r.kind, canvas.clientWidth, canvas.clientHeight) : project(r, camera(), canvas.clientWidth, canvas.clientHeight) }))
+        .map(r => ({ resource: r, center: view.playerMode ? playerProjection(canvas.clientWidth, canvas.clientHeight).resourceScreen(r.kind) : project(r, camera(), canvas.clientWidth, canvas.clientHeight) }))
         .filter(item => {
           const bounds = resourceArtBounds(item.resource.kind, view.playerMode ? playerBuildingScale(item.resource.kind, canvas.clientWidth) : 1, view.playerMode);
           return insideBuilding(p, item.center) || (p.x >= item.center.x + bounds.x && p.x <= item.center.x + bounds.x + bounds.width
