@@ -16,12 +16,13 @@ test('approved ladder unlocks sequentially from real successful runs and ends wi
     const step = page.getByRole('button', { name: 'Step one tick', exact: true });
     await step.click();
     for (const name of ['Add Cache', '+ App capacity']) {
+      await page.getByRole('button', { name, exact: true }).focus();
       await page.getByRole('button', { name, exact: true }).click();
       await page.getByRole('button', { name: 'Confirm expansion', exact: true }).click();
     }
     for (let i = 0; i < 9; i++) await step.click();
     for (let expansion = 0; expansion < 2; expansion++) {
-      await page.getByRole('button', { name: '+ App capacity', exact: true }).click();
+      { await page.getByRole('button', { name: '+ App capacity', exact: true }).focus(); await page.getByRole('button', { name: '+ App capacity', exact: true }).press('Enter'); };
       await page.getByRole('button', { name: 'Confirm expansion', exact: true }).click();
       for (let i = 0; i < 9; i++) await step.click();
     }

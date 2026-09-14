@@ -5,7 +5,7 @@ test('floor pads disclose real costs before committing and retain keyboard cance
   await page.getByRole('button', { name: 'Start Game' }).click();
   await expect(page.getByRole('button', { name: 'Ⅱ Pause', exact: true })).toBeEnabled({ timeout: 20000 });
   const cache = page.getByRole('button', { name: 'Add Cache', exact: true });
-  await cache.tap(); const details = page.getByRole('region', { name: 'CACHE expansion' });
+  await cache.focus(); await cache.press('Enter'); const details = page.getByRole('region', { name: 'CACHE expansion' });
   await expect(details).toContainText('5s · +8 cr/min');
   await expect(page.getByTestId('slot-cache')).not.toContainText('Provisioning');
   const rect = (await details.boundingBox())!; expect(rect.x).toBeGreaterThanOrEqual(0); expect(rect.x + rect.width).toBeLessThanOrEqual(320);

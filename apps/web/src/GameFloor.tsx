@@ -1,12 +1,13 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import type { ActionRequest, Controller, View } from './controller';
 import { mountWorld } from './world';
 import { tycoonPositions } from './tycoon-layout';
-import { createPlayerProjection, fitPlayerCamera } from './player-camera';
+import { createPlayerNavigation } from './player-navigation';
 import { definitions } from '@stack-and-survive/cloud-domain';
 import { businessFeedback } from './business-feedback';
-import { BuildPad } from './BuildPad';
+import type { WorldTarget } from './world-interaction';
 import { resourceVisualState } from './resource-visual-state';
+import { playerBuildingScale, resourceArtBounds } from './building-assets';
 
 function LocalAction({ controller, action, children }: { controller: Controller; action: ActionRequest; children: React.ReactNode }) {
   const reason = controller.actionReason(action);
@@ -15,15 +16,24 @@ function LocalAction({ controller, action, children }: { controller: Controller;
 
 export function GameFloor({ controller, view, guideTarget = null }: { controller: Controller; view: View; guideTarget?: string | null }) {
   const host = useRef<HTMLDivElement>(null);
-  const [size, setSize] = useState({ width: 1, height: 1 });
-  const projection = useMemo(() => createPlayerProjection(fitPlayerCamera(size), size), [size]);
+  const [navigation] = useState(createPlayerNavigation);
+  const projection = useSyncExternalStore(navigation.subscribe, navigation.getSnapshot);
   const cardClose = useRef<HTMLButtonElement>(null);
   const opener = useRef<HTMLElement | null>(null);
+  const [buildKind, setBuildKind] = useState<'compute' | 'cache' | 'edge' | null>(null);
+  const buildCancel = useRef<HTMLButtonElement>(null);
+  const beginBuild = useCallback((kind: 'compute' | 'cache' | 'edge') => {
+    opener.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    controller.select(null); setBuildKind(kind);
+  }, [controller]);
+  const worldBuild = useCallback((target: WorldTarget) => { if (target.kind === 'compute' || target.kind === 'cache' || target.kind === 'edge') beginBuild(target.kind); }, [beginBuild]);
+  useEffect(() => { if (buildKind) buildCancel.current?.focus({ preventScroll: true }); }, [buildKind]);
   const select = useCallback((id: string) => {
+    setBuildKind(null);
     opener.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     controller.select(id);
   }, [controller]);
-  const inspect = useCallback(() => { opener.current = null; }, []);
+  const inspect = useCallback(() => { opener.current = null; setBuildKind(null); }, []);
   useEffect(() => { if (view.selected) cardClose.current?.focus({ preventScroll: true }); }, [view.selected]);
   const closeCard = () => {
     controller.select(null);
@@ -34,36 +44,98 @@ export function GameFloor({ controller, view, guideTarget = null }: { controller
     const root = host.current!;
     const surface = document.createElement('div'); surface.className = 'surface'; root.prepend(surface);
     let disposed = false; let cleanup: (() => void) | undefined;
-    mountWorld(surface, controller, view.rendererGeneration, inspect).then(destroy => { if (disposed) destroy(); else cleanup = destroy; })
+    navigation.resize({ width: root.clientWidth, height: root.clientHeight });
+    mountWorld(surface, controller, view.rendererGeneration, inspect, navigation, worldBuild).then(destroy => { if (disposed) destroy(); else cleanup = destroy; })
       .catch(error => { if (!disposed) controller.presentationFailed(String(error)); });
-    const observer = new ResizeObserver(() => setSize({ width: root.clientWidth, height: root.clientHeight })); observer.observe(root);
+    const observer = new ResizeObserver(() => navigation.resize({ width: root.clientWidth, height: root.clientHeight })); observer.observe(root);
     return () => { disposed = true; observer.disconnect(); cleanup?.(); surface.remove(); };
-  }, [controller, view.rendererGeneration, inspect]);
+  }, [controller, view.rendererGeneration, inspect, navigation, worldBuild]);
   const at = (kind: keyof typeof tycoonPositions) => {
     const point = projection.resourceScreen(kind);
-    return { left: point.x, top: point.y + 42 };
+    return { left: point.x, top: point.y + 42 * projection.state.userZoom };
   };
   const runtime = view.state.runtime;
   const app = runtime.architecture.resources.find(r => r.kind === 'compute')!;
   const visual = resourceVisualState(view);
   const feedback = businessFeedback(view);
   const selected = runtime.architecture.resources.find(r => r.id === view.selected);
+  const localPosition = (kind: keyof typeof tycoonPositions) => {
+    const p = projection.resourceScreen(kind);
+    const width = host.current?.clientWidth ?? 320, height = host.current?.clientHeight ?? 568;
+    return { left: Math.max(12, Math.min(width - 292, p.x + 32)), top: Math.max(100, Math.min(height - 330, p.y - 180)) };
+  };
+  const buildAction: ActionRequest | null = buildKind === 'compute' ? { type: 'SCALE_OUT' } : buildKind ? { type: 'DEPLOY_RESOURCE', kind: buildKind, ...tycoonPositions[buildKind] } : null;
+  const buildReason = buildAction ? controller.actionReason(buildAction) : null;
+  const closeBuild = () => {
+    setBuildKind(null);
+    if (opener.current?.isConnected && opener.current.matches('button, summary, [tabindex]')) opener.current.focus({ preventScroll: true });
+    else host.current?.querySelector<HTMLButtonElement>('[aria-label="Fit architecture"]')?.focus({ preventScroll: true });
+  };
   return <div className="tycoon-floor world" ref={host} data-testid="world" data-guide-target={guideTarget ?? undefined} aria-label="Living cloud business">
+    <div className="facility-plaques" aria-hidden="true">
+      {(['internet', 'edge', 'compute', 'cache', 'database'] as const).map(kind => {
+        const resource = runtime.architecture.resources.find(r => r.kind === kind);
+        const p = projection.resourceScreen(kind);
+        const width = host.current?.clientWidth ?? 320, height = host.current?.clientHeight ?? 568;
+        const art = resourceArtBounds(kind, playerBuildingScale(kind, width), true);
+        const top = p.y + (resource ? art.y : -24) * projection.state.userZoom - (kind === 'internet' || !resource ? 38 : 76);
+        const pressure = kind === 'compute' ? visual.app.pressure : kind === 'database' ? visual.sql.pressure : kind === 'cache' ? visual.cache.pressure : null;
+        const warning = pressure === 'warning' || pressure === 'overcapacity';
+        const detail = !resource ? 'Build here +' : resource.remaining > 0 ? `Construction · ${resource.remaining}s`
+          : kind === 'compute' ? `${app.instances}/4 active${warning ? ' · ! pressure' : ''}`
+          : kind === 'database' ? visual.sql.writePressure === 'overcapacity' || visual.sql.writePressure === 'warning' ? '! Write pressure' : visual.sql.readPressure === 'overcapacity' || visual.sql.readPressure === 'warning' ? '! Read pressure' : 'Read / write core'
+          : kind === 'internet' ? visual.internet.rateLimited ? 'Intake limited' : 'Traffic origin'
+          : kind === 'edge' ? visual.edge.boost === 'active' ? 'Filtering boosted' : 'Protected ingress' : 'Read cache';
+        return <div key={kind} className={`facility-plaque${warning ? ' pressure' : ''}`} hidden={p.x < 35 || p.x > width-35 || top < 0 || top > height-50} style={{ left: p.x, top }}>
+          <strong>{({ internet: 'INTAKE', edge: 'EDGE', compute: 'APP SERVICE', cache: 'CACHE', database: 'SQL' })[kind]}</strong><span>{detail}</span>
+        </div>;
+      })}
+    </div>
+    <div className="player-camera-controls" role="group" aria-label="Camera navigation" onKeyDown={event => {
+      if (event.key === '+' || event.key === '=') navigation.step(1);
+      else if (event.key === '-') navigation.step(-1);
+      else if (event.key === '0') navigation.fit();
+      else if (event.key.startsWith('Arrow')) navigation.pan({ x: event.key === 'ArrowLeft' ? 60 : event.key === 'ArrowRight' ? -60 : 0, y: event.key === 'ArrowUp' ? 60 : event.key === 'ArrowDown' ? -60 : 0 });
+      else return;
+      event.preventDefault();
+    }}>
+      <button type="button" aria-label="Zoom out" disabled={projection.state.userZoom <= .75} onClick={() => navigation.step(-1)}>−</button>
+      <output aria-label="Camera zoom">{Math.round(projection.state.userZoom * 100)}%</output>
+      <button type="button" aria-label="Zoom in" disabled={projection.state.userZoom >= 1.8} onClick={() => navigation.step(1)}>+</button>
+      <button type="button" aria-label="Fit architecture" onClick={() => navigation.fit()}>Fit</button>
+      <details><summary aria-label="More camera controls">Move</summary><div className="camera-pan-controls">
+        <button type="button" aria-label="Pan left" onClick={() => navigation.pan({ x: 80, y: 0 })}>←</button>
+        <button type="button" aria-label="Pan up" onClick={() => navigation.pan({ x: 0, y: 80 })}>↑</button>
+        <button type="button" aria-label="Pan down" onClick={() => navigation.pan({ x: 0, y: -80 })}>↓</button>
+        <button type="button" aria-label="Pan right" onClick={() => navigation.pan({ x: -80, y: 0 })}>→</button>
+        <button type="button" disabled={!selected} onClick={() => { if (selected) navigation.focus(selected.kind); }}>Focus selected</button>
+      </div></details>
+    </div>
     <div className="world-controls">
+      <div className="world-keyboard-controls" role="group" aria-label="Infrastructure keyboard controls">
       {(['edge', 'cache'] as const).map(kind => {
         const resource = runtime.architecture.resources.find(r => r.kind === kind);
         return <div className={`world-slot ${resource ? 'installed' : 'empty'}`} key={kind} style={at(kind)} data-testid={`slot-${kind}`}>
-          {!resource ? <BuildPad controller={controller} action={{ type: 'DEPLOY_RESOURCE', kind, ...tycoonPositions[kind] }} label={kind === 'cache' ? 'Add Cache' : 'Add Protected Edge'} role={kind === 'cache' ? 'CACHE' : 'EDGE'} detail={`${definitions[kind].name} · ${definitions[kind].provisioning}s · +${definitions[kind].cost} cr/min`} />
+          {!resource ? <button type="button" aria-label={kind === 'cache' ? 'Add Cache' : 'Add Protected Edge'} aria-disabled={controller.actionReason({ type: 'DEPLOY_RESOURCE', kind, ...tycoonPositions[kind] }) !== null} onClick={() => beginBuild(kind)}>Build {kind === 'cache' ? 'Cache' : 'Edge'}</button>
             : <button type="button" onClick={() => select(resource.id)}>{kind === 'cache' ? 'Cache' : 'Protected Edge'}<small>{resource.remaining > 0 ? `Provisioning ${resource.remaining}s` : 'Active'}</small></button>}
         </div>;
       })}
       <div className="world-slot app-expansion" style={at('compute')}>
         <div className="instance-slots" aria-label="App instance slots">{visual.app.bays.map((bay, i) => <span key={i} data-state={bay} aria-label={`Bay ${i+1}: ${bay}`}>{bay === 'active' ? '■' : bay === 'construction' ? '▧' : '□'}</span>)}</div>
-        {runtime.scaleDue !== null ? <span className="slot-progress">Expanding · {visual.app.scaleRemaining}s</span> : <BuildPad controller={controller} action={{ type: 'SCALE_OUT' }} label="+ App capacity" role="APP" detail={`${app.instances}/4 active · 8s · +5 cr/min`} />}
+        {runtime.scaleDue !== null ? <span className="slot-progress">Expanding · {visual.app.scaleRemaining}s</span> : <button type="button" aria-label="+ App capacity" onClick={() => beginBuild('compute')}>Expand App<small>{app.instances}/4 active · 8s · +5 cr/min</small></button>}
       </div>
       <button type="button" className="intake-control" style={at('internet')} onClick={() => select('internet')}>Traffic intake</button>
       <button type="button" className="intake-control" style={at('database')} onClick={() => select('database')}>SQL processing</button>
-      {selected && <section className="resource-action-card" aria-label="Resource actions" onKeyDown={event => { if (event.key === 'Escape') closeCard(); }}>
+      </div>
+      {buildKind && <section className="world-build-confirmation resource-action-card" style={localPosition(buildKind)} aria-label={`${buildKind === 'compute' ? 'APP' : buildKind.toUpperCase()} expansion`} onKeyDown={e => { if (e.key === 'Escape') closeBuild(); }}>
+        <h2>{buildKind === 'compute' ? 'Expand App' : `Build ${buildKind === 'cache' ? 'Cache' : 'Protected Edge'}`}</h2>
+        <p>{buildKind === 'compute' ? `${app.instances}/4 active · 8s · +5 cr/min` : `${definitions[buildKind].provisioning}s · +${definitions[buildKind].cost} cr/min`}</p>
+        <small>Capacity activates after construction, never before.</small>
+        {buildReason && <p role="status">{buildReason}</p>}
+        <button type="button" disabled={buildReason !== null} onClick={() => { if (buildAction) controller.queueAction(buildAction); closeBuild(); }}>Confirm expansion</button>
+        <button ref={buildCancel} type="button" onClick={closeBuild}>Cancel expansion</button>
+      </section>}
+      {selected && <section className="resource-action-card" style={localPosition(selected.kind)} aria-label="Resource actions" onKeyDown={event => { if (event.key === 'Escape') closeCard(); }}>
         <button ref={cardClose} type="button" className="card-close" onClick={closeCard}>Close resource</button>
         <h2>{definitions[selected.kind].name}</h2>
         {selected.kind === 'internet' && <><p className="resource-state">{visual.internet.rateLimited ? 'Intake limited' : 'Normal intake'}{visual.internet.rateTransition !== 'none' ? ` · ${visual.internet.rateTransition}` : ''}</p><LocalAction controller={controller} action={{ type: 'RATE_LIMIT', enabled: !runtime.rateLimit }}>{runtime.rateLimit ? 'Restore intake' : 'Limit intake'}</LocalAction><small>Limits 5% of all traffic, including customers.</small></>}

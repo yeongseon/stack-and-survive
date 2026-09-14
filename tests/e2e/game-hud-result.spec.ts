@@ -3,7 +3,8 @@ test('compact HUD and outcome preserve actual result values and narrow retry acc
   await page.goto('/?tycoon'); await page.getByRole('button', { name: 'Start Game' }).click();
   await expect(page.getByRole('button', { name: 'Ⅱ Pause', exact: true })).toBeEnabled({ timeout: 20000 });
   const hud = page.getByRole('region', { name: 'Business status' });
-  await expect(hud.getByRole('meter')).toHaveCount(3);
+  await expect(hud.getByRole('meter')).toHaveCount(0);
+  await expect(hud).toContainText('Budget'); await expect(hud).toContainText('Availability');
   await page.getByText('Tycoon QA', { exact: true }).click();
   while (Number(await page.getByTestId('elapsed').textContent()) < 50) await page.getByRole('button', { name: 'Step one tick', exact: true }).click();
   const result = page.getByRole('region', { name: 'Business result' });

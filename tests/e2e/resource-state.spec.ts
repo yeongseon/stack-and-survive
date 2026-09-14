@@ -18,7 +18,7 @@ test('App bays show only real active servers before during and after expansion',
   await page.mouse.click(box.x + node.x + body.modules[0].x * body.scale, box.y + node.y + (body.modules[0].y - 30) * body.scale);
   await expect(page.getByRole('region', { name: 'Resource actions' })).toContainText('Azure App Service');
   await page.getByRole('button', { name: 'Close resource', exact: true }).click();
-  await page.getByRole('button', { name: /App capacity/ }).click();
+  { await page.getByRole('button', { name: /App capacity/ }).focus(); await page.getByRole('button', { name: /App capacity/ }).press('Enter'); };
   await page.getByRole('button', { name: 'Confirm expansion', exact: true }).click();
   await expect.poll(async () => (await app()).bays).toEqual(['active', 'queued', 'locked', 'locked']);
   expect((await app()).modules).toHaveLength(1);

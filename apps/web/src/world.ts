@@ -14,6 +14,8 @@ import { activeEffects, completedResources, drawEffect, effectMotion } from './e
 import { diagnosticsEnabled } from './mode';
 import { placeCaptions } from './annotations';
 import { createPlayerProjection, fitPlayerCamera } from './player-camera';
+import { attachPlayerNavigation, type PlayerNavigation } from './player-navigation';
+import { hitWorldTarget, worldTargets, type WorldTarget } from './world-interaction';
 import { resourceVisualState } from './resource-visual-state';
 import { drawFacilityBanks, facilityStateKey } from './resource-banks';
 import { FacilityLighting } from './facility-lighting';
@@ -24,7 +26,7 @@ import { PacketSprites } from './packet-sprites';
 export function utilizationLabel(u: number | null): string {
   return u === null ? 'READY' : compare(u, 1) > 0 ? '! OVERLOADED' : compare(u, .7) > 0 ? 'WARNING' : 'HEALTHY';
 }
-export async function mountWorld(host: HTMLDivElement, controller: Controller, generation: number, onInspect: () => void): Promise<() => void> {
+export async function mountWorld(host: HTMLDivElement, controller: Controller, generation: number, onInspect: () => void, navigation?: PlayerNavigation, onWorldBuild?: (target: WorldTarget) => void): Promise<() => void> {
   const { default: Phaser } = await import('phaser');
   if (!host.isConnected) return () => {};
   let view: View = controller.getSnapshot();
@@ -41,6 +43,7 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
   const completions = new Map<string, number>();
   let drawnCompletions = 0;
   const undrawnCompletions = new Set<string>();
+  let hovered: WorldTarget | null = null;
   let fitProjection: ReturnType<typeof createPlayerProjection> | null = null;
   let fitSize = '';
   const playerProjection = (width: number, height: number) => {
@@ -64,6 +67,8 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
     stateGraphics!: Phaser.GameObjects.Graphics;
     trafficGraphics!: Phaser.GameObjects.Graphics;
     effectsGraphics!: Phaser.GameObjects.Graphics;
+    frameGraphics!: Phaser.GameObjects.Graphics;
+    interactionGraphics!: Phaser.GameObjects.Graphics;
     structureSignature = '';
     structureDraws = 0;
     environment!: Phaser.GameObjects.Graphics;
@@ -87,6 +92,8 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
       this.stateGraphics = this.add.graphics().setDepth(buildingLayers.state);
       this.trafficGraphics = this.add.graphics();
       this.effectsGraphics = this.add.graphics();
+      this.frameGraphics = this.add.graphics().setScrollFactor(0).setDepth(buildingLayers.effects + 1);
+      this.interactionGraphics = this.add.graphics().setDepth(buildingLayers.state + 1);
       this.sprites = new BuildingSprites(this);
       this.packets = new PacketSprites(this);
       this.lighting = new FacilityLighting(this);
@@ -103,6 +110,13 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
       if (!view.error && (view.state.runtime.status === 'RUNNING' || view.state.runtime.status === 'PREPARATION')) animationTime += delta;
       try {
         const width = this.scale.width; const height = this.scale.height;
+        navigation?.resize({ width, height });
+        const playerCamera = view.playerMode ? navigation?.getSnapshot() : undefined;
+        if (playerCamera) {
+          this.cameras.main.setZoom(playerCamera.state.userZoom);
+          this.cameras.main.centerOn(playerCamera.state.centerX * playerCamera.fitZoom, playerCamera.state.centerY * playerCamera.fitZoom);
+          this.frameGraphics.setScale(1 / playerCamera.state.userZoom).setPosition(width / 2 * (1 - 1 / playerCamera.state.userZoom), height / 2 * (1 - 1 / playerCamera.state.userZoom));
+        }
         const architecture = view.state.runtime.architecture;
         const resources = architecture.resources;
         const camera = viewportCamera(view.camera, width, height);
@@ -138,6 +152,27 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
           host.dataset.placement = view.building && view.preview ? positionError(architecture, snap(view.preview)) ? 'invalid' : 'valid' : 'none';
         }
         if (!renderVisible) return;
+        const interaction = this.interactionGraphics.clear();
+        if (view.playerMode) {
+          const targets = worldTargets(view, width, height);
+          for (const target of targets) {
+            if (target.build && target.kind !== 'compute') {
+              const { x, y } = target.point;
+              interaction.fillStyle(0x153746, .8); interaction.lineStyle(2, 0x8bbcad, .8);
+              interaction.fillPoints([{ x: x-46, y }, { x, y:y-24 }, { x:x+46, y }, { x, y:y+24 }], true);
+              interaction.strokePoints([{ x: x-46, y }, { x, y:y-24 }, { x:x+46, y }, { x, y:y+24 }], true);
+              interaction.lineBetween(x-9, y, x+9, y); interaction.lineBetween(x, y-7, x, y+7);
+              if (target.kind === 'edge') { interaction.lineBetween(x-25,y-3,x-25,y-20); interaction.lineBetween(x+25,y-3,x+25,y-20); }
+              else { for (const dx of [-20,0,20]) interaction.strokeRect(x+dx-5,y-12,10,8); }
+            }
+            if (target.id === hovered?.id) {
+              const b = target.bounds;
+              interaction.lineStyle(3 / (playerCamera?.state.userZoom ?? 1), 0xf4d698, .95);
+              interaction.strokeRoundedRect(target.point.x+b.x-5, target.point.y+b.y-5, b.width+10, b.height+10, 6);
+            }
+          }
+          if (diagnosticsEnabled) host.dataset.worldTargets = JSON.stringify(targets.map(t => ({ id:t.id, kind:t.kind, build:t.build, ...(playerCamera ? playerCamera.fitToScreen(t.point) : t.point) })));
+        }
         this.lighting.update(resources, positions, visualState, width, !!view.playerMode);
         if (diagnosticsEnabled) host.dataset.facilityLights = JSON.stringify(this.lighting.diagnostics());
         for (const [id, badge] of badges) {
@@ -150,8 +185,10 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
             if (!created) return;
             badge = created; badges.set(resource.id, badge); badgeLayer.append(badge);
           }
-          const p = positions[i];
-          const badgeY = p.y + resourceArtBounds(resource.kind, view.playerMode ? playerBuildingScale(resource.kind, width) : 1, view.playerMode).y - 36;
+          const point = positions[i];
+          const badgeTop = point.y + resourceArtBounds(resource.kind, view.playerMode ? playerBuildingScale(resource.kind, width) : 1, view.playerMode).y;
+          const p = playerCamera ? playerCamera.fitToScreen({ x: point.x, y: badgeTop }) : { x: point.x, y: badgeTop };
+          const badgeY = p.y - 36;
           badge.hidden = p.x < 16 || p.x > width - 16 || badgeY < 0 || badgeY > height - 32;
           badge.style.left = `${p.x - 16}px`; badge.style.top = `${badgeY}px`;
         });
@@ -164,6 +201,7 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
         const signature = JSON.stringify([width, height, architecture, camera, view.selected, view.connectionSource, view.preview, view.building, appU, sqlU, requests?.cache.utilization, view.state.runtime.scaleDue, view.state.runtime.preparationScaleDue, lanes, view.playerMode ? facilityStateKey(visualState) : null]);
         if (signature !== this.structureSignature) {
         this.structureSignature = signature; g.clear(); this.stateGraphics.clear();
+        if (diagnosticsEnabled) host.dataset.renderedSelection = view.selected ?? '';
         if (diagnosticsEnabled) host.dataset.structureDraws = String(++this.structureDraws);
         this.sprites.retain(resources.map(r => r.id));
         for (const connection of lanes) {
@@ -295,12 +333,13 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
           host.dataset.completions = JSON.stringify([...completions.keys()]);
           host.dataset.drawnCompletions = String(drawnCompletions);
         }
+        const frame = this.frameGraphics.clear();
         if (view.state.runtime.status === 'FAILED' || view.state.runtime.status === 'COMPLETED') {
-          fx.lineStyle(4, view.state.runtime.status === 'FAILED' ? 0xffa49b : 0x90e9c4, .8);
-          fx.strokeRoundedRect(4, 4, Math.max(1, width - 8), Math.max(1, height - 8), 12);
+          frame.lineStyle(4, view.state.runtime.status === 'FAILED' ? 0xffa49b : 0x90e9c4, .8);
+          frame.strokeRoundedRect(4, 4, Math.max(1, width - 8), Math.max(1, height - 8), 12);
         } else if (view.snapshot?.critical) {
-          fx.lineStyle(3, 0xffac82, effectMotion(view, reducedMotion) ? .4 + .2 * Math.sin(time / 400) : .6);
-          fx.strokeRect(2, 2, Math.max(1, width - 4), Math.max(1, height - 4));
+          frame.lineStyle(3, 0xffac82, effectMotion(view, reducedMotion) ? .4 + .2 * Math.sin(time / 400) : .6);
+          frame.strokeRect(2, 2, Math.max(1, width - 4), Math.max(1, height - 4));
         }
         if (diagnosticsEnabled) host.dataset.effects = JSON.stringify(effects);
         let packetCount = 0;
@@ -336,7 +375,8 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
           host.dataset.frames = String(++frames); host.dataset.packets = String(packetCount);
           host.dataset.appState = utilizationLabel(appU); host.dataset.sqlState = utilizationLabel(sqlU);
           host.dataset.tick = String(view.state.runtime.time);
-          host.dataset.nodes = JSON.stringify(resources.map((r, i) => ({ id: r.id, ...positions[i] })));
+          host.dataset.nodes = JSON.stringify(resources.map((r, i) => ({ id: r.id, ...(playerCamera ? playerCamera.fitToScreen(positions[i]) : positions[i]) })));
+          if (playerCamera) host.dataset.playerCamera = JSON.stringify(playerCamera.state);
         }
       } catch (error) {
         host.dataset.renderer = 'error';
@@ -361,12 +401,9 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
     const point = (e: PointerEvent): Point => { const r = canvas.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; };
     const camera = () => viewportCamera(view.camera, canvas.clientWidth, canvas.clientHeight);
     const logical = (p: Point) => unproject(p, camera(), canvas.clientWidth, canvas.clientHeight);
-    let drag: { pointer: number; id: string | null; last: Point; offset: Point } | null = null;
-    const down = (e: PointerEvent) => {
-      if (e.button !== 0 || drag) return;
-      const p = point(e);
-      if (view.building) { controller.place(logical(p)); return; }
-      const resource = view.state.runtime.architecture.resources
+    const hitResource = (screen: Point) => {
+      const p = view.playerMode && navigation ? navigation.getSnapshot().screenToFit(screen) : screen;
+      return view.state.runtime.architecture.resources
         .map(r => ({ resource: r, center: view.playerMode ? playerProjection(canvas.clientWidth, canvas.clientHeight).resourceScreen(r.kind) : project(r, camera(), canvas.clientWidth, canvas.clientHeight) }))
         .filter(item => {
           const bounds = resourceArtBounds(item.resource.kind, view.playerMode ? playerBuildingScale(item.resource.kind, canvas.clientWidth) : 1, view.playerMode);
@@ -374,6 +411,13 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
             && p.y >= item.center.y + bounds.y && p.y <= item.center.y + bounds.y + bounds.height);
         })
         .sort((a, b) => Math.hypot(p.x - a.center.x, p.y - a.center.y) - Math.hypot(p.x - b.center.x, p.y - b.center.y) || b.resource.y - a.resource.y)[0]?.resource;
+    };
+    let drag: { pointer: number; id: string | null; last: Point; offset: Point } | null = null;
+    const down = (e: PointerEvent) => {
+      if (e.button !== 0 || drag) return;
+      const p = point(e);
+      if (view.building) { controller.place(logical(p)); return; }
+      const resource = hitResource(p);
       if (view.connecting) { if (resource) controller.connectNode(resource.id); return; }
       controller.select(resource?.id ?? null);
       if (resource) onInspect();
@@ -391,8 +435,21 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
     };
     const up = (e: PointerEvent) => { if (drag?.pointer === e.pointerId) { if (canvas.hasPointerCapture(e.pointerId)) canvas.releasePointerCapture(e.pointerId); drag = null; } };
     const wheel = (e: WheelEvent) => { if (view.playerMode) return; e.preventDefault(); controller.setCamera({ ...view.camera, zoom: view.camera.zoom * Math.exp(-e.deltaY * .001) }); };
-    canvas.addEventListener('pointerdown', down); canvas.addEventListener('pointermove', move); canvas.addEventListener('pointerup', up); canvas.addEventListener('pointercancel', up); canvas.addEventListener('wheel', wheel, { passive: false });
-    removeInput = () => { canvas.removeEventListener('pointerdown', down); canvas.removeEventListener('pointermove', move); canvas.removeEventListener('pointerup', up); canvas.removeEventListener('pointercancel', up); canvas.removeEventListener('wheel', wheel); };
+    if (view.playerMode && navigation) {
+      const targetAt = (p: Point) => hitWorldTarget(worldTargets(view, canvas.clientWidth, canvas.clientHeight), navigation.getSnapshot().screenToFit(p), navigation.getSnapshot().state.userZoom);
+      const stopNavigation = attachPlayerNavigation(canvas, navigation, p => {
+        const target = targetAt(p);
+        if (target?.build && onWorldBuild) { onWorldBuild(target); return; }
+        controller.select(target?.id ?? null); if (target) onInspect();
+      });
+      const hover = (event: PointerEvent) => { hovered = event.buttons ? null : targetAt(point(event)); canvas.style.cursor = event.buttons ? 'grabbing' : hovered ? 'pointer' : 'grab'; };
+      const leave = () => { hovered = null; canvas.style.cursor = 'grab'; };
+      canvas.addEventListener('pointermove', hover); canvas.addEventListener('pointerleave', leave);
+      removeInput = () => { stopNavigation(); canvas.removeEventListener('pointermove', hover); canvas.removeEventListener('pointerleave', leave); };
+    } else {
+      canvas.addEventListener('pointerdown', down); canvas.addEventListener('pointermove', move); canvas.addEventListener('pointerup', up); canvas.addEventListener('pointercancel', up); canvas.addEventListener('wheel', wheel, { passive: false });
+      removeInput = () => { canvas.removeEventListener('pointerdown', down); canvas.removeEventListener('pointermove', move); canvas.removeEventListener('pointerup', up); canvas.removeEventListener('pointercancel', up); canvas.removeEventListener('wheel', wheel); };
+    }
     resize = new ResizeObserver(() => { if (host.clientWidth > 0 && host.clientHeight > 0) game?.scale.resize(host.clientWidth, host.clientHeight); });
     intersection = new IntersectionObserver(entries => {
       const entry = entries[entries.length - 1];
