@@ -4,6 +4,8 @@ Issues #157/#158 and owner feedback on low gameplay UI quality. The existing eng
 
 ## Presentation
 
+The game-first outcome layer now shows actual challenge outcome/cause/score, availability and architecture before analysis. Native Details contains the metrics, profiles, evidence, experiments, comparisons and history described below. Background world/header controls are inert during results; guide/camera/local controls are hidden, Tab cycles through visible result controls, and Review opens the existing Learn dialog with focus return. No comparison or record eligibility semantics changed.
+
 `player-console.css` scopes a matte navy/amber/teal console to ordinary gameplay: readable HUD metrics, consistent world-local construction controls, quieter inline guidance and resource cards. No new floating dashboard or authoritative renderer calculation is introduced. The title illustration and QA editor remain separate.
 
 `GameResult` renders an operation report with outcome, score, availability, total cost (including emergency cost), business value, [architecture profile](ARCHITECTURE_PROFILES.md), observed tradeoff and suggested next experiment. The report body scrolls independently; action buttons stay visible. Desktop uses a two-column profile/experiment layout; narrow viewports stack the content.

@@ -116,6 +116,16 @@ export function drawEnvironment(g: Graphics, width: number, height: number, play
     }
   }
   const wallHeight = width < 600 ? 60 : 84;
+  if (player) {
+    for (const kind of ['compute', 'database'] as const) {
+      const p = tycoonPoint(kind, width, height), scale = playerBuildingScale(kind, width);
+      const half = (kind === 'compute' ? 116 : 88) * scale, depth = 48 * scale;
+      polygon(g, [[p.x-half,p.y+18],[p.x,p.y-depth+18],[p.x+half,p.y+18],[p.x,p.y+depth+18]], 0x081b29,.55);
+      polygon(g, [[p.x-half,p.y+10],[p.x,p.y-depth+10],[p.x+half,p.y+10],[p.x,p.y+depth+10]], 0x2b485b,.55);
+      g.lineStyle(1,0x688d9d,.6); g.lineBetween(p.x-half,p.y+10,p.x,p.y+depth+10); g.lineBetween(p.x,p.y+depth+10,p.x+half,p.y+10);
+      for (const side of [-1,1]) { g.lineStyle(3,0x8aafac,.55); g.lineBetween(p.x+side*half*.78,p.y+18,p.x+side*half*.57,p.y+depth*.35+18); }
+    }
+  }
   g.fillGradientStyle(0x1c3046, 0x2c4358, 0x526878, 0x394f65); g.fillRect(0, 0, width, wallHeight);
   polygon(g, [[0, 0], [21, 10], [21, height], [0, height]], 0x293f53);
   polygon(g, [[width - 16, 12], [width, 0], [width, height], [width - 16, height]], 0x22384d);

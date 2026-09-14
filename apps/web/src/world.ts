@@ -16,6 +16,7 @@ import { placeCaptions } from './annotations';
 import { createPlayerProjection, fitPlayerCamera } from './player-camera';
 import { attachPlayerNavigation, type PlayerNavigation } from './player-navigation';
 import { hitWorldTarget, worldTargets, type WorldTarget } from './world-interaction';
+import { drawConstruction } from './construction-art';
 import { resourceVisualState } from './resource-visual-state';
 import { drawFacilityBanks, facilityStateKey } from './resource-banks';
 import { FacilityLighting } from './facility-lighting';
@@ -171,7 +172,11 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
               interaction.strokeRoundedRect(target.point.x+b.x-5, target.point.y+b.y-5, b.width+10, b.height+10, 6);
             }
           }
-          if (diagnosticsEnabled) host.dataset.worldTargets = JSON.stringify(targets.map(t => ({ id:t.id, kind:t.kind, build:t.build, ...(playerCamera ? playerCamera.fitToScreen(t.point) : t.point) })));
+          const construction = drawConstruction(interaction, view, resource => positions[resources.indexOf(resource)], width);
+          if (diagnosticsEnabled) {
+            host.dataset.constructionSites = JSON.stringify(construction);
+            host.dataset.worldTargets = JSON.stringify(targets.map(t => ({ id:t.id, kind:t.kind, build:t.build, ...(playerCamera ? playerCamera.fitToScreen(t.point) : t.point) })));
+          }
         }
         this.lighting.update(resources, positions, visualState, width, !!view.playerMode);
         if (diagnosticsEnabled) host.dataset.facilityLights = JSON.stringify(this.lighting.diagnostics());

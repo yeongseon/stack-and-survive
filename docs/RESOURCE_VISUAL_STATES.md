@@ -33,7 +33,13 @@ Use runtime resources for installation and physical capacity, accepted timers fo
 | Intake queued/pending | Same source | Policy transition cue only | No early rate rejection | Toggle disabled while pending/cooldown |
 | Intake limited | Source plus limiter cue | Static mode marker, not fabricated throughput | Actual rejected bots/customers separated; density still distinguishes offered from admitted | Restore intake when allowed |
 
-## Pause, failure, errors and reduced motion
+## Direct-world interaction and physical construction
+
+The game-first implementation derives facilities, absent footprints and next App bay from authoritative resources. Hover adds a non-color outline; keyboard equivalents reveal with visible focus; selected/build actions project and clamp using the shared player camera. Neither hover nor camera movement changes eligibility. Pan/pinch/cancel never confirms an action.
+
+`constructionSites` includes accepted Cache/Edge provisioning and an accepted pending App bay only. `drawConstruction` uses remaining/due ticks for scaffold height, progress strip and boot markers. Queued-only intent is not construction. Pause freezes progress, active resources have no construction overlay, and existing activation effects remain deduplicated. App/SQL floor plinths are decorative depth, never added capacity.
+
+## Paused/terminal presentation
 
 Pause/terminal retains actual lifecycle and last measured pressure. It must not replay processing successes or filtering events. Error stops animation. Reduced motion replaces continuous scans/pulses with equivalent static shape/state cues without changing requests, timers or routing. Repeated rendering of one snapshot must not manufacture new rewards.
 

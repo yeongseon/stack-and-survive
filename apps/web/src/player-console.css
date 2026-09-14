@@ -158,6 +158,19 @@
 .facility-plaque span { display: block; margin-top: 3px; font-size: 10px; color: #a2c5ce; white-space: nowrap; }
 .facility-plaque.pressure { border-color: #f1b67f; background: #432c25e6; }
 .facility-plaque.pressure span { color: #ffd2a4; }
+.outcome-summary { margin: 0 32px 18px; display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 16px 0; border-block: 1px solid #365361; }
+.outcome-summary strong { font-size: 27px; color: #d4e7e1; }
+.outcome-summary strong span { display: block; font-size: 11px; font-weight: 400; margin-top: 4px; color: #a4bcc6; }
+.outcome-summary p { font-size: 13px; color: #bed3d8; }
+.outcome-details > summary { cursor: pointer; padding: 14px 32px; min-height: 48px; border-top: 1px solid #365361; color: #a9c6d0; font-size: 13px; }
+.outcome-details[open] > summary { margin-bottom: 18px; }
+.outcome-details .report-columns { margin-top: 24px; }
+.diorama-game .operation-report { z-index: 40; }
+.diorama-game:has(.operation-report) .world-guide,
+.diorama-game:has(.operation-report) .player-camera-controls,
+.diorama-game:has(.operation-report) .world-controls { visibility: hidden; pointer-events: none; }
+.tycoon-game .operation-report:not(:has(.outcome-details[open])) { width: min(760px, calc(100vw - 24px)); }
+@media (max-width: 700px) { .outcome-summary { margin-inline: 16px; flex-wrap: wrap; } .outcome-details > summary { padding-inline: 16px; } }
 @media (max-width: 700px) {
   .tycoon-game.diorama-game { padding: 0; }
   .diorama-game .tycoon-header { padding: 8px 12px; }

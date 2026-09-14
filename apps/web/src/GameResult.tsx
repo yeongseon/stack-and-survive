@@ -22,20 +22,28 @@ export function GameResult({ result, architecture, report, restart, review, next
   }, [result, architecture]);
   const profile = useMemo(() => classifyArchitecture(run), [run]);
   const comparison = report?.previous;
-  return <section className={`game-result operation-report${completed ? ' success' : ''}`} aria-label="Business result">
+  return <section className={`game-result operation-report${completed ? ' success' : ''}`} aria-label="Business result" onKeyDown={event => {
+    if (event.key !== 'Tab') return;
+    const controls = [...event.currentTarget.querySelectorAll<HTMLElement>('button:not(:disabled), summary, [tabindex="0"]')].filter(element => element.checkVisibility());
+    const first = controls[0], last = controls.at(-1);
+    if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
+    else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
+  }}>
     <div className="report-banner"><span>Operation report</span><span>{result.elapsedTime}s / {result.challenge?.workload.duration ?? 180}s</span></div>
     <div className="report-scroll">
     <div className="report-heading">
       <div><p className="report-status">{completed ? result.objectiveMet ? 'Objective secured' : 'Operation complete · objective missed' : 'Business interrupted'}</p>
-        <h2 id="game-result-heading">{completed ? 'Business kept flowing' : 'Time for a new approach.'}</h2><p className="report-cause">{result.primary}</p></div>
+        <h2 id="game-result-heading">{completed && result.objectiveMet ? 'CHALLENGE CLEAR' : completed ? 'OBJECTIVE MISSED' : 'OPERATION FAILED'}</h2><p className="report-cause">{result.primary}</p></div>
       <div className="result-score"><small>Score </small><strong>{result.score}</strong><span>/ 10,000</span></div>
     </div>
+    <div className="outcome-summary"><strong>{(result.metrics.availability * 100).toFixed(2)}% <span>availability</span></strong>{run && <p>{architectureSummary(run)}</p>}</div>
+    {result.challenge && <p className="report-objective" data-testid="challenge-outcome">{result.challenge.id} · {result.challenge.objective.kind === 'survive' ? 'Complete the operation' : `Availability ≥ ${result.challenge.objective.target * 100}%`} — {result.objectiveMet ? 'met' : 'not met'}</p>}
+    <details className="outcome-details"><summary>Details · decisions, tradeoffs &amp; records</summary>
     <div className="report-metrics">
       <div><span>Business value</span><strong>{result.economy.netBusinessValue.toFixed(1)} <small>cr</small></strong></div>
       <div><span>Availability</span><strong>{(result.metrics.availability * 100).toFixed(2)}<small>%</small></strong></div>
       <div><span>Total cost</span><strong>{(result.economy.infrastructureCost + result.economy.emergencyCost).toFixed(2)} <small>cr</small></strong></div>
     </div>
-    {result.challenge && <p className="report-objective" data-testid="challenge-outcome">{result.challenge.id} · {result.challenge.objective.kind === 'survive' ? 'Complete the operation' : `Availability ≥ ${result.challenge.objective.target * 100}%`} — {result.objectiveMet ? 'met' : 'not met'}</p>}
     <div className="report-columns">
       <section className="report-profile" aria-label="Architecture profile">
         <span className="report-kicker">Your architecture</span><h3>{profile.title}</h3>
@@ -57,11 +65,12 @@ export function GameResult({ result, architecture, report, restart, review, next
       {report?.baseline?.kind === 'comparable' && <p>Against your previous highest-value completion: {delta(report.baseline.value, 'cr')} business value · {delta(report.baseline.cost, 'cr')} cost · {delta(report.baseline.availability, 'pp')} availability.</p>}
     </section>
     {records}
+    </details>
     </div>
     <div className="report-footer">
     <div className="report-actions">
       {nextLevel && <button ref={primary} type="button" aria-label="Next level" className="result-primary" onClick={nextLevel}>Next level<span>Take on the next objective →</span></button>}
-      <button ref={nextLevel ? undefined : primary} type="button" className={nextLevel ? 'report-alternate' : 'result-primary'} aria-label="Play again" aria-describedby="game-result-heading" onClick={restart}>Play again<span>Try another architecture →</span></button>
+      <button ref={nextLevel ? undefined : primary} type="button" className={nextLevel ? 'report-alternate' : 'result-primary'} aria-label="Play again" aria-describedby="game-result-heading" onClick={restart}>Try another architecture<span>Play again · fresh baseline →</span></button>
       <button type="button" className="result-review" onClick={review}>Review business</button>
     </div>
     <p className="report-reset-note">A fresh App + SQL baseline. Same challenge. No upgrades carried over.</p>

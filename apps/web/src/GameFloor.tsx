@@ -71,7 +71,7 @@ export function GameFloor({ controller, view, guideTarget = null }: { controller
     if (opener.current?.isConnected && opener.current.matches('button, summary, [tabindex]')) opener.current.focus({ preventScroll: true });
     else host.current?.querySelector<HTMLButtonElement>('[aria-label="Fit architecture"]')?.focus({ preventScroll: true });
   };
-  return <div className="tycoon-floor world" ref={host} data-testid="world" data-guide-target={guideTarget ?? undefined} aria-label="Living cloud business">
+  return <div className="tycoon-floor world" inert={!!view.result} ref={host} data-testid="world" data-guide-target={guideTarget ?? undefined} aria-label="Living cloud business">
     <div className="facility-plaques" aria-hidden="true">
       {(['internet', 'edge', 'compute', 'cache', 'database'] as const).map(kind => {
         const resource = runtime.architecture.resources.find(r => r.kind === kind);

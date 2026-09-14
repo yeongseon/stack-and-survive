@@ -17,8 +17,10 @@ for (const width of [1440, 390, 1920, 320, 1024]) test(`direct diorama operation
   await expect(page.getByRole('region', { name: 'CACHE expansion' })).toBeVisible();
   await page.getByRole('button', { name: 'Confirm expansion', exact: true }).click();
   await expect.poll(async () => JSON.parse((await surface.getAttribute('data-resource-states'))!).cache.lifecycle).toBe('provisioning');
+  await expect.poll(async () => JSON.parse((await surface.getAttribute('data-construction-sites'))!).some((s: {id:string}) => s.id === 'cache')).toBe(true);
   await page.screenshot({ path: info.outputPath(`diorama-construction-${width}.png`) });
   await expect.poll(async () => JSON.parse((await surface.getAttribute('data-resource-states'))!).cache.lifecycle).toBe('active');
+  await expect.poll(async () => JSON.parse((await surface.getAttribute('data-construction-sites'))!).some((s: {id:string}) => s.id === 'cache')).toBe(false);
   await target('app-bay');
   await expect(page.getByRole('region', { name: 'APP expansion' })).toBeVisible();
   await page.getByRole('button', { name: 'Confirm expansion', exact: true }).click();

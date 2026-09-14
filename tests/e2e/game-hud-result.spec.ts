@@ -10,8 +10,19 @@ test('compact HUD and outcome preserve actual result values and narrow retry acc
   const result = page.getByRole('region', { name: 'Business result' });
   await expect(result).toContainText('App Service Saturation'); await expect(result).toContainText('Score 1073');
   await expect(result.getByRole('button', { name: 'Play again' })).toBeFocused();
+  await expect(page.getByRole('button', { name: 'Zoom in', exact: true })).toHaveCount(0);
+  await expect(page.getByRole('region', { name: 'World guide' })).toHaveCount(0);
+  await expect(page.locator('.tycoon-header')).toHaveJSProperty('inert', true);
+  await expect(page.getByTestId('world')).toHaveJSProperty('inert', true);
+  await result.getByRole('button', { name: 'Review business' }).focus(); await page.keyboard.press('Tab');
+  await expect(result.locator('.outcome-details > summary')).toBeFocused();
+  await page.keyboard.press('Shift+Tab'); await expect(result.getByRole('button', { name: 'Review business' })).toBeFocused();
   const state = JSON.parse((await page.getByTestId('diagnostics').textContent())!);
+  await expect(result.getByRole('region', { name: 'Architecture profile' })).toHaveCount(0);
+  await result.getByText('Details · decisions, tradeoffs & records', { exact: true }).click();
   await expect(result).toContainText(`${state.result.economy.netBusinessValue.toFixed(1)} cr`);
+  await expect(result.getByRole('region', { name: 'Architecture profile' })).toBeVisible();
+  await result.getByText('Details · decisions, tradeoffs & records', { exact: true }).click();
   for (const width of [320,390,1024,1440,1920]) {
     await page.setViewportSize({ width, height: 740 });
     const rect = (await result.boundingBox())!;
@@ -20,6 +31,7 @@ test('compact HUD and outcome preserve actual result values and narrow retry acc
     const retry = (await result.getByRole('button', { name: 'Play again', exact: true }).boundingBox())!;
     expect(retry.y).toBeGreaterThanOrEqual(0); expect(retry.y + retry.height).toBeLessThanOrEqual(740);
     expect(retry.height).toBeGreaterThanOrEqual(44);
+    await result.getByRole('button', { name: 'Play again', exact: true }).click({ trial: true });
     expect(await result.evaluate(element => element.scrollWidth <= element.clientWidth)).toBe(true);
     await page.screenshot({ path: info.outputPath(`operation-report-${width}.png`) });
   }
