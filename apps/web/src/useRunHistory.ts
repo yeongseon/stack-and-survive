@@ -2,6 +2,7 @@ import { useCallback, useRef, useState } from 'react';
 import type { Architecture } from '@stack-and-survive/schema';
 import type { View } from './controller';
 import { emptyHistory, historyKey, parseHistory, recordRun, summarizeRun, type RunHistory, type RunSummary } from './run-history';
+import { buildRunReport, type RunReport } from './run-report';
 
 export function useRunHistory() {
   const [history, setHistory] = useState(() => {
@@ -10,6 +11,7 @@ export function useRunHistory() {
   const current = useRef(history);
   const seen = useRef(new WeakSet<object>());
   const [latest, setLatest] = useState<RunSummary | null>(null);
+  const [report, setReport] = useState<{ result: NonNullable<View['result']>; data: RunReport } | null>(null);
   const [message, setMessage] = useState('');
   const pendingWrite = useRef(false);
   const save = useCallback((next: RunHistory) => {
@@ -24,15 +26,16 @@ export function useRunHistory() {
     if (seen.current.has(result)) return;
     try {
       const summary = summarizeRun(result, architecture, crypto.randomUUID());
+      const data = buildRunReport(summary, current.current);
       const next = recordRun(current.current, summary);
-      seen.current.add(result); setLatest(summary); save(next);
+      seen.current.add(result); setLatest(summary); setReport({ result, data }); save(next);
     } catch { setMessage('This run could not be recorded. Its game result remains available.'); }
   }, [save]);
   const clear = useCallback(() => {
     try {
       localStorage.removeItem(historyKey); pendingWrite.current = false;
-      current.current = emptyHistory(); setHistory(current.current); setLatest(null); setMessage('Run history cleared. Other settings and level unlocks are unchanged.');
+      current.current = emptyHistory(); setHistory(current.current); setLatest(null); setReport(null); setMessage('Run history cleared. Other settings and level unlocks are unchanged.');
     } catch { setMessage('Run history could not be cleared. Existing records were preserved.'); }
   }, []);
-  return { history, latest, message, complete, clear, retrySave: () => save(current.current), needsSave: pendingWrite.current };
+  return { history, latest, report, message, complete, clear, retrySave: () => save(current.current), needsSave: pendingWrite.current };
 }
