@@ -31,6 +31,9 @@ test('real failed and successful attempts persist separately and only success se
   await expect.poll(async () => (await data())?.runs.length).toBe(2);
   const saved = await data(); expect(saved.bests).toHaveLength(1);
   expect(saved.bests[0].lowestCost.id).toBe(saved.runs[1].id);
+  await expect(page.getByRole('region', { name: 'Architecture profile' })).toContainText('Cache-led expansion');
+  await expect(page.getByRole('region', { name: 'Run comparison' })).toContainText('Different duration or outcome — no efficiency comparison');
+  await expect(page.getByRole('region', { name: 'Run comparison' })).toContainText('New personal best');
   await page.getByRole('region', { name: 'Business result' }).getByText('Run records & personal best', { exact: true }).click();
   await page.setViewportSize({ width: 320, height: 568 });
   const records = page.getByRole('region', { name: 'Local run records' });

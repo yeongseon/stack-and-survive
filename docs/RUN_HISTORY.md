@@ -22,6 +22,6 @@ Unavailable/quota-limited storage retains session records, reports the write fai
 
 ## UI and evidence
 
-Title/result details show current-challenge bests and recent attempts with duration/objective status. Other conditions are labeled not comparable. `recentComparable` returns the latest matching run for downstream comparison; profiles/richer replay feedback remain #157/#158.
+Title/result details show current-challenge bests and recent attempts with duration/objective status. Other conditions are labeled not comparable. `recentComparable` returns the latest matching run for the [operation report](OPERATION_REPORT.md); its snapshot is captured before the current run is added. The report displays [descriptive profiles](ARCHITECTURE_PROFILES.md), compatible previous/best comparisons and fresh-run actions without changing stored record schema.
 
 Tests cover real failure→success, retention beyond 20, first-tie behavior, unlike objectives, duplicate handoff, rejected actions, altered final architecture/metrics, reload, storage retry and isolated clear. Human replay motivation still requires #159.

@@ -18,6 +18,7 @@ export function ChallengeApplication() {
   const nextAvailable = ladder.selected + 1 < challengeLadder.length && unlockedLevel(ladder.progress) > ladder.selected;
   const recordPanel = <RunHistoryPanel history={records.history} challenge={selected.challenge} message={records.message} clear={records.clear} retrySave={records.retrySave} needsSave={records.needsSave} />;
   return <TycoonGame key={`${selected.challenge.id}:${ladder.generation}`} challenge={selected.challenge} onResult={complete}
+    runReport={records.report}
     nextLevel={nextAvailable ? () => ladder.select(ladder.selected + 1) : undefined}
     resultContent={<details className="result-records"><summary>Run records &amp; personal best</summary>{recordPanel}</details>}
     titleContent={<section className="challenge-select" aria-label="Challenge selection">

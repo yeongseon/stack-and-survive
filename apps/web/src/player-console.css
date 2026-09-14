@@ -1,0 +1,155 @@
+.tycoon-game {
+  --console-ink: #e9f1f2;
+  --console-muted: #a8bec6;
+  --console-line: #36505d;
+  --console-accent: #f4c477;
+  background: #0c1e29;
+  color: var(--console-ink);
+}
+.tycoon-game:not(:has(.title-screen)) { padding: 20px clamp(12px, 2.4vw, 40px); }
+.tycoon-game .tycoon-header { max-width: 1600px; margin-inline: auto; height: auto; min-height: 58px; gap: 16px; padding-bottom: 16px; }
+.tycoon-game .tycoon-header h1 { font-size: 19px; letter-spacing: .08em; font-weight: 800; }
+.tycoon-game .tycoon-header button { min-height: 44px; padding: 10px 16px; background: #172f3c; border: 1px solid var(--console-line); box-shadow: none; font-size: 13px; }
+.tycoon-game .game-hud { max-width: 1600px; margin-inline: auto; padding: 16px 22px; gap: 32px; border: 1px solid var(--console-line); border-radius: 8px; background: #132b38; box-shadow: 0 8px 24px #0002; }
+.tycoon-game .hud-reading { flex: 0 1 190px; gap: 12px; }
+.tycoon-game .hud-reading > span { width: 30px; text-align: center; font-size: 22px; color: #8aadb8; }
+.tycoon-game .hud-reading > div { flex: 1; }
+.tycoon-game .hud-reading small { font-size: 12px; letter-spacing: .02em; }
+.tycoon-game .hud-reading strong { font-size: 29px; color: var(--console-ink); margin-top: 4px; }
+.tycoon-game .hud-reading meter { height: 4px; margin-top: 8px; }
+.tycoon-game .hud-pressure { font-size: 13px; line-height: 1.5; max-width: 290px; }
+.tycoon-game .hud-pressure.urgent { border-radius: 3px; background: #533b2d; color: #ffdcac; }
+.tycoon-game .tycoon-floor { border: 1px solid #29434f; border-radius: 10px; background: #0b202b; box-shadow: 0 18px 50px #0003; }
+.tycoon-game .world-slot button, .tycoon-game .intake-control { background: #16313fee; color: #e6f0ef; border: 1px solid #6a939c; box-shadow: 0 4px 12px #06141d66; border-radius: 6px; min-height: 44px; font-size: 12px; }
+.tycoon-game .world-slot small { font-size: 11px; color: #b0d3c8; }
+.tycoon-game .world-slot .pad-trigger { min-width: 100px; min-height: 62px; padding: 8px 14px; border: 1px dashed #d4ae6b; border-radius: 6px; background: #152e3beb; box-shadow: 0 4px 0 #091c27; }
+.tycoon-game .pad-trigger > span { display: inline-block; font-size: 22px; vertical-align: middle; margin-right: 8px; color: var(--console-accent); }
+.tycoon-game .pad-trigger > strong { font-size: 12px; letter-spacing: .08em; }
+.tycoon-game .instance-slots { padding: 3px 6px; border-radius: 4px 4px 0 0; gap: 9px; background: #112b37; }
+.tycoon-game .resource-action-card { padding: 20px; border-color: #6f8d98; background: #122d3b; box-shadow: 0 12px 40px #0008; }
+.tycoon-game .resource-action-card h2 { font-size: 20px; margin-top: 8px; }
+.tycoon-game .resource-action-card p { font-size: 14px; line-height: 1.6; }
+.tycoon-game .resource-action-card small { font-size: 12px; line-height: 1.6; }
+.tycoon-game .resource-action-card button { min-height: 44px; background: #214352; box-shadow: none; }
+.tycoon-game .resource-action-card .card-close { font-size: 12px; }
+.tycoon-game .business-feedback { background: #102835f0; border-left: 2px solid #83cbb1; font-size: 13px; }
+.tycoon-game .business-feedback span { font-size: 11px; line-height: 1.6; }
+.tycoon-game .world-guide { max-width: 1600px; border: 0; border-left: 2px solid #7cadb5; border-radius: 0; padding: 12px 18px; background: #132b36; }
+.tycoon-game .world-guide h2 { font-size: 16px; color: #dbe8e9; }
+.tycoon-game .world-guide p { font-size: 13px; line-height: 1.5; }
+.tycoon-game .world-guide small { font-size: 11px; }
+.tycoon-game .world-guide button { box-shadow: none; background: #203e4c; min-height: 44px; }
+.tycoon-game .world-guide > div:first-child { flex: 1; }
+.tycoon-game .guide-actions { flex-direction: row; min-width: 0; }
+.tycoon-game .guide-actions button:last-child { background: transparent; border-color: transparent; color: #a9c1ca; }
+.pad-details { width: min(360px, calc(100vw - 32px)); padding: 24px; background: #122c39; border-color: #66838f; box-shadow: 0 20px 80px #000b; }
+.pad-details > strong { font-size: 21px; color: #f0d4a2; }
+.pad-details p { font-size: 14px; line-height: 1.7; }
+.pad-details button { min-height: 44px; box-shadow: none; }
+.pad-details button:first-of-type { background: #efc47d; color: #152d36; border: 0; font-weight: 700; }
+.tycoon-game .operation-report {
+  width: min(940px, calc(100vw - 40px)); max-height: calc(100dvh - 40px);
+  padding: 0; text-align: left; background: #102634; border: 1px solid #4b6572;
+  border-radius: 12px; box-shadow: 0 30px 100px #000b; color: var(--console-ink);
+  scrollbar-color: #587987 #102634; scrollbar-width: thin;
+  display: flex; flex-direction: column; overflow: hidden;
+}
+.report-scroll { overflow: auto; min-height: 0; overscroll-behavior: contain; }
+.report-banner, .report-footer { flex-shrink: 0; }
+.report-footer { padding-top: 16px; border-top: 1px solid #3b5360; background: #142e3b; }
+.tycoon-game .operation-report.success { border-color: #668f89; }
+.report-banner { display: flex; justify-content: space-between; gap: 12px; padding: 14px 28px; background: #193746; border-bottom: 1px solid #3b5360; font-size: 11px; text-transform: uppercase; letter-spacing: .15em; color: #afc9d1; }
+.report-heading { display: flex; align-items: center; justify-content: space-between; gap: 28px; padding: 28px 32px 24px; }
+.report-status { font-size: 12px; color: #edbc89; font-weight: 700; }
+.success .report-status { color: #92d8be; }
+.tycoon-game .operation-report h2 { max-width: 570px; font-size: clamp(28px, 3.5vw, 43px); line-height: 1.08; letter-spacing: -.03em; text-transform: none; margin: 8px 0 12px; }
+.report-cause { color: var(--console-muted); font-size: 14px; margin: 0; }
+.tycoon-game .operation-report .result-score { flex-shrink: 0; text-align: right; }
+.tycoon-game .operation-report .result-score small { font-size: 10px; letter-spacing: .15em; }
+.tycoon-game .operation-report .result-score strong { display: block; font-size: 49px; line-height: 1.15; font-variant-numeric: tabular-nums; color: #f3d3a0; }
+.result-score > span { font-size: 11px; color: #9ab3bd; }
+.report-metrics { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 1px; margin: 0 32px; background: #3b5360; border: 1px solid #3b5360; border-radius: 7px; overflow: hidden; }
+.report-metrics > div { padding: 17px 20px; background: #193440; }
+.report-metrics span { display: block; font-size: 12px; color: #b3c8cf; margin-bottom: 8px; }
+.report-metrics strong { font-size: 27px; font-variant-numeric: tabular-nums; }
+.report-metrics small { font-size: 13px; font-weight: 400; color: #b3c8cf; }
+.report-objective { margin: 12px 32px 24px; font-size: 12px; color: #a8bfc8; overflow-wrap: anywhere; }
+.report-columns { display: grid; grid-template-columns: 1.15fr 1fr; gap: 28px; padding: 0 32px 24px; }
+.report-kicker { font-size: 10px; color: #96b5c1; text-transform: uppercase; letter-spacing: .16em; }
+.tycoon-game .operation-report h3 { font-size: 23px; text-transform: none; color: #e7eeed; line-height: 1.25; margin: 9px 0 14px; letter-spacing: -.02em; }
+.report-columns p, .report-columns li { font-size: 13px; line-height: 1.65; color: #bcd0d6; }
+.report-columns ul { padding-left: 18px; }
+.report-columns li { margin-bottom: 6px; }
+.report-topology { padding: 8px 12px; border-left: 2px solid #85c4b7; background: #193944; color: #d3e8e3 !important; }
+.report-tradeoff { border-top: 1px solid #36505b; padding-top: 12px; }
+.report-experiment { background: #213b44; border: 1px solid #456069; padding: 20px; border-radius: 7px; }
+.tycoon-game .report-experiment h3 { color: #f2d2a0; }
+.report-experiment small { display: block; color: #aabec4; font-size: 11px; line-height: 1.5; }
+.report-engine-insight { border-top: 1px solid #4a6269; padding-top: 12px; }
+.report-comparison { margin: 0 32px 24px; padding: 16px 0; border-top: 1px solid #3b5360; border-bottom: 1px solid #3b5360; }
+.tycoon-game .report-comparison h3 { font-size: 16px; margin: 0 0 6px; }
+.report-comparison p { font-size: 12px; line-height: 1.6; color: #b5c9d0; }
+.report-deltas { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin-top: 12px; }
+.report-deltas span { font-size: 11px; color: #abc0c8; }
+.report-deltas strong { display: block; font-size: 18px; color: #e7eff0; margin-top: 5px; font-variant-numeric: tabular-nums; }
+.report-comparison .report-records-note { color: #a5dac3; }
+.report-actions { display: flex; gap: 12px; align-items: stretch; padding: 0 32px; }
+.tycoon-game .report-actions button { min-height: 52px; margin: 0; border-radius: 6px; box-shadow: none; }
+.tycoon-game .report-actions .result-primary { flex: 1; width: auto; background: #f0c582; color: #172e38; font-size: 17px; text-align: left; padding: 14px 20px; border: 0; }
+.report-actions button span { display: block; font-size: 11px; font-weight: 400; margin-top: 4px; }
+.report-alternate { flex: 1; padding: 12px 18px; background: #203f4e; border: 1px solid #5c7e8c; color: #e1edef; text-align: left; font-size: 15px; }
+.tycoon-game .report-actions .result-review { color: #b9d2dc; font-size: 13px; background: transparent; padding: 12px; }
+.report-reset-note { padding: 0 32px; font-size: 11px; color: #9db5c0; margin: 12px 0 24px; }
+.tycoon-game .operation-report .result-records { margin: 0; border-top: 1px solid #3b5360; border-radius: 0; background: #0e2330; padding: 12px 32px; }
+.tycoon-game .result-records > summary { font-size: 13px; min-height: 44px; display: list-item; align-content: center; color: #c2d5dc; }
+.tycoon-game .run-history-panel { font-size: 13px; padding: 12px 0; }
+.tycoon-game .run-history-panel p, .tycoon-game .run-history-panel small { font-size: 12px; }
+.tycoon-game .run-history-panel h3 { font-size: 15px; }
+.tycoon-game .run-history-panel button { min-height: 44px; box-shadow: none; }
+.tycoon-game .run-history-list { max-height: none; }
+.tycoon-game .title-records .run-history-list { max-height: 230px; }
+@media (max-width: 700px) {
+  .tycoon-game:not(:has(.title-screen)) { padding: 10px; }
+  .tycoon-game .tycoon-header { gap: 8px; padding-bottom: 10px; }
+  .tycoon-game .tycoon-header h1 { font-size: 13px; letter-spacing: .01em; }
+  .tycoon-game .tycoon-header button { padding: 8px 10px; font-size: 12px; }
+  .tycoon-game .tycoon-header nav { gap: 5px; }
+  .tycoon-game .game-hud { gap: 10px; padding: 12px; flex-wrap: wrap; }
+  .tycoon-game .hud-reading { flex: 1; min-width: 0; gap: 0; }
+  .tycoon-game .hud-reading > span { display: none; }
+  .tycoon-game .hud-reading small { font-size: 10px; }
+  .tycoon-game .hud-reading strong { font-size: 21px; }
+  .tycoon-game .hud-reading strong small { font-size: 9px; }
+  .tycoon-game .hud-pressure { flex-basis: 100%; max-width: none; font-size: 12px; margin: 2px 0 0; border-top: 1px solid #36505d; padding-top: 9px; }
+  .tycoon-game .world-guide { padding: 10px 12px; gap: 8px; }
+  .tycoon-game .world-guide h2 { font-size: 14px; }
+  .tycoon-game .world-guide p { font-size: 12px; }
+  .tycoon-game .guide-actions { gap: 6px; }
+  .tycoon-game .world-slot button { min-width: 94px; }
+  .tycoon-game .operation-report { width: calc(100vw - 16px); max-height: calc(100dvh - 16px); border-radius: 8px; }
+  .report-banner { padding: 12px 16px; font-size: 9px; letter-spacing: .08em; }
+  .report-heading { padding: 20px 16px; gap: 12px; align-items: flex-start; }
+  .tycoon-game .operation-report h2 { font-size: 28px; }
+  .report-status { font-size: 11px; }
+  .report-cause { font-size: 12px; }
+  .tycoon-game .operation-report .result-score strong { font-size: 30px; }
+  .report-metrics { margin-inline: 16px; }
+  .report-metrics > div { padding: 12px 8px; }
+  .report-metrics strong { font-size: 19px; }
+  .report-metrics span { font-size: 10px; }
+  .report-metrics small { font-size: 10px; }
+  .report-objective { margin: 12px 16px 20px; font-size: 11px; }
+  .report-columns { grid-template-columns: 1fr; padding: 0 16px 20px; gap: 12px; }
+  .report-experiment { padding: 16px; }
+  .report-comparison { margin: 0 16px 20px; }
+  .report-deltas { gap: 8px; }
+  .report-deltas strong { font-size: 15px; }
+  .report-actions { padding: 0 16px; flex-wrap: wrap; }
+  .tycoon-game .report-actions .result-primary { flex-basis: 100%; padding: 10px 14px; }
+  .report-actions .report-alternate { flex-basis: 55%; padding: 8px 12px; }
+  .report-actions .result-review { flex: 1; min-height: 44px; }
+  .report-actions { gap: 6px; }
+  .report-footer { padding-top: 10px; }
+  .report-reset-note { padding: 0 16px; margin: 8px 0 12px; font-size: 10px; }
+  .tycoon-game .operation-report .result-records { padding: 12px 16px; }
+}

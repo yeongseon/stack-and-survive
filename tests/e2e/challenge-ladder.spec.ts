@@ -34,7 +34,7 @@ test('approved ladder unlocks sequentially from real successful runs and ends wi
     await finish();
     const next = page.getByRole('button', { name: 'Next level', exact: true });
     if (level < 2) {
-      await expect(next).toBeVisible(); await next.click();
+      await expect(next).toBeVisible(); await expect(next).toBeFocused(); await next.click();
       await expect(page.locator('canvas')).toHaveCount(0);
       await expect(page.getByRole('region', { name: 'Game introduction' })).toHaveAttribute('data-budget', '140');
     } else await expect(next).toHaveCount(0);
