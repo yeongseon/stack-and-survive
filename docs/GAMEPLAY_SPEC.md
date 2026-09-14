@@ -55,7 +55,7 @@ Business feedback uses actual served orders/tick revenue, never spendable budget
 
 Pause freezes authoritative time, accepted countdowns and costs; inspection remains available, new live actions do not. Errors stop advancement; renderer rebuild reconstructs from existing state. Countdown recovery resumes its remaining time safely. Normal restart from pause/error returns to clean title/baseline and invalidates stale callbacks.
 
-At completion/failure preserve the stopped world. Result shows engine cause, score, NBV, availability, elapsed time and insight. Survival is distinct from target attainment. Play again is primary and receives focus; Review opens Learn and returns focus on close.
+At completion/failure preserve the stopped world. The [operation report](OPERATION_REPORT.md) shows engine cause, score, NBV, availability, elapsed time, descriptive architecture profile, compatible history comparisons and a suggested next experiment. Survival is distinct from target attainment. A real eligible Next level is primary and receives focus; otherwise Play again is primary. Review opens Learn and returns focus on close. The report body scrolls while action buttons stay visible.
 
 Normal retry resets architecture, runtime, budget and temporary actions. It does **not** preserve upgraded infrastructure. Refresh starts at the title with validated local completion progress and [run records/personal bests](RUN_HISTORY.md), but no running scenario or architecture restoration.
 
