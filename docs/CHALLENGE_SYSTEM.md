@@ -1,6 +1,6 @@
 # Challenge system
 
-Version: 0.3. #153 implements challenge identity; #154 measures live strategies; #155 adds the owner-approved three-objective ladder. History, profiles, modifiers and daily challenges remain separate work. This document is not approval of example numeric modifiers.
+Version: 0.4. #153 implements challenge identity; #154 measures live strategies; #155 adds the owner-approved three-objective ladder; #156 adds bounded local records. Profiles, modifiers and daily challenges remain separate work. This document is not approval of example numeric modifiers.
 
 ## Responsibilities (current versus planned)
 
@@ -10,7 +10,7 @@ Version: 0.3. #153 implements challenge identity; #154 measures live strategies;
 | Objective | Evaluates business success independently of workload generation |
 | Modifier | Typed deterministic allowed transformation with explicit precedence/validation |
 | Challenge | Immutable workload/rules/objective/seed identity and level context |
-| RunResult | Actual terminal metrics, initial/final architecture, accepted actions and complete challenge identity |
+| RunResult | Actual terminal metrics, initial/final architecture, complete action outcomes and challenge identity |
 | Profile | Pure descriptive classification of actual behavior/outcomes |
 | History / PersonalBest | Bounded versioned eligible local records, not simulation state |
 | DailyChallenge | Deterministic UTC-date mapping to an allowed challenge version |
@@ -25,7 +25,7 @@ Current objective kinds: survive (complete full duration) and availability (comp
 
 Workload/objective/traffic records are frozen on parse. Application controller captures the actual initial architecture at Start/countdown entry, records ordered runtime action outcomes and attaches challenge/initialArchitecture/objectiveMet/actionLog to its terminal result. The pure engine result remains unchanged. Normal/QA resets retain the selected challenge; QA manual editor UI remains the default Black Friday shell, not a new challenge selector. Switching a TycoonGame challenge requires a new keyed component/controller rather than changing props mid-run.
 
-No result-history persistence or architecture-profile classification is introduced here. Existing phase/attribution metrics provide actual served/lost/peak evidence; do not synthesize extra metrics before their contracts exist. Same complete identity plus initial architecture and action schedule must reproduce results. A seed alone is insufficient when content changes.
+Local result-history persistence is specified in [Run history](RUN_HISTORY.md); architecture-profile classification remains separate work. Existing phase/attribution metrics provide actual served/lost/peak evidence; do not synthesize extra metrics before their contracts exist. Same complete identity plus initial architecture and action schedule must reproduce results. A seed alone is insufficient when content changes.
 
 Compare like conditions, label differences explicitly and retain termination/duration. A failed partial run is not an eligible cheapest full completion. Do not compare bests across changed prices, objectives or seed/rules without a clearly non-equivalent label. Never replay an old action schedule against the already-upgraded final architecture.
 
@@ -59,6 +59,6 @@ Candidate objective families: survival, availability, budget/cost efficiency, NB
 
 ## Persistence and acceptance
 
-#156/#163 must define schema versions, bounds/retention, migrations, duplicate save handling and reset/failure behavior. Store only necessary local game data. Challenge identity, initial architecture and ordered actions are required for reproducible comparison, not merely a final resource list.
+#156 stores versioned local history with 20 recent attempts and independent objective-valid bests for each approved challenge. Full initial/final architecture, ordered accepted/rejected actions and metrics are replay-validated on load/write. Unsupported versions or corrupt input fall back safely; failed writes preserve session records with retry, and clear removes only the history key. [Run history](RUN_HISTORY.md) defines eligibility, ties, bounds and lifecycle. Future #163 collections need their own versioning, retention and reset contract.
 
-Identity/injection and the approved objective ladder are implemented; history/profile/modifier/daily designs above remain separate. Tests precede materialization/evaluation/storage changes and preserve legacy outputs. New result comparison requires both complete challenge records; mixed legacy/new metadata is explicitly not equivalent. Existing all-legacy session comparison remains compatible. #159 human replayability gates P1, independently of green tests.
+Identity/injection, the approved objective ladder and local history are implemented; profile/modifier/daily designs above remain separate. Tests precede materialization/evaluation/storage changes and preserve legacy outputs. New result comparison requires both complete challenge records; mixed legacy/new metadata is explicitly not equivalent. Existing all-legacy session comparison remains compatible. #159 human replayability gates P1, independently of green tests.

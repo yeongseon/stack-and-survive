@@ -22,8 +22,9 @@ Each document owns its subject. An art mockup cannot override numerical rules. I
 - [Audio feedback](AUDIO_FEEDBACK.md): original optional synthesis, lifecycle and remaining human listening checks.
 - [World guide](WORLD_GUIDE.md): optional pressure-based guidance, explicit persistence and remaining human validation.
 - [Game design references](GAME_DESIGN_REFERENCES.md): text-only pattern discussion.
-- [Replayability design](REPLAYABILITY_DESIGN.md): proposed micro/run/meta loops.
-- [Challenge system](CHALLENGE_SYSTEM.md): proposed identity and deterministic composition.
+- [Replayability design](REPLAYABILITY_DESIGN.md): implemented loops and remaining replay plans.
+- [Challenge system](CHALLENGE_SYSTEM.md): current identity/ladder and planned deterministic composition.
+- [Run history](RUN_HISTORY.md): bounded records, full provenance validation and eligible personal bests.
 - [Strategy balance](ARCHITECTURE_STRATEGY_BALANCE.md): observed results versus hypotheses.
 - [Scale-in evaluation](SCALE_IN_EVALUATION.md): proposal awaiting approval.
 - [Asset attribution](../apps/web/public/assets/ATTRIBUTION.md): actual provenance.
