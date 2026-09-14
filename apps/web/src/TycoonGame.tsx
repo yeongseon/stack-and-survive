@@ -11,9 +11,10 @@ import { useWorldGuide } from './useWorldGuide';
 import { WorldGuide } from './WorldGuide';
 import { guideHint } from './world-guide';
 import { blackFridayChallenge, type Challenge } from '@stack-and-survive/scenarios/challenge';
+import type { Architecture } from '@stack-and-survive/schema';
 
-export function TycoonGame({ challenge = blackFridayChallenge, titleContent, onResult, nextLevel }: {
-  challenge?: Challenge; titleContent?: ReactNode; onResult?: (result: NonNullable<View['result']>) => void; nextLevel?: () => void;
+export function TycoonGame({ challenge = blackFridayChallenge, titleContent, onResult, nextLevel, resultContent }: {
+  challenge?: Challenge; titleContent?: ReactNode; onResult?: (result: NonNullable<View['result']>, finalArchitecture: Architecture) => void; nextLevel?: () => void; resultContent?: ReactNode;
 }) {
   const [controller] = useState(() => createController(undefined, undefined, true, challenge));
   const view = useSyncExternalStore(controller.subscribe, controller.getSnapshot);
@@ -35,9 +36,9 @@ export function TycoonGame({ challenge = blackFridayChallenge, titleContent, onR
   const restart = () => { controller.reset(); setEntered(false); };
   const reportedResult = useRef<View['result']>(null);
   useEffect(() => {
-    if (view.result && reportedResult.current !== view.result) { reportedResult.current = view.result; onResult?.(view.result); }
+    if (view.result && reportedResult.current !== view.result) { reportedResult.current = view.result; onResult?.(view.result, view.state.runtime.architecture); }
     if (!view.result) reportedResult.current = null;
-  }, [view.result, onResult]);
+  }, [view.result, view.state.runtime.architecture, onResult]);
   return <main className="tycoon-game" onClick={event => { if (event.target instanceof Element && event.target.closest('button')) sound.click(); }}>
     {!entered ? <section className="title-screen" aria-label="Game introduction" data-time={diagnosticsEnabled ? runtime.time : undefined} data-budget={diagnosticsEnabled ? view.state.economy.remainingBudget : undefined}>
       <TitleWorld />
@@ -57,7 +58,7 @@ export function TycoonGame({ challenge = blackFridayChallenge, titleContent, onR
       <GameFloor controller={controller} view={view} guideTarget={guide.visible ? guideHint(view, guide.stage).target : null} />
       {view.countdown !== null && <div className="welcome-countdown" role="status">{scenarioName} begins in <strong>{view.countdown}</strong></div>}
       {view.notice && diagnosticsEnabled && <p className="tycoon-notice">{view.notice}</p>}
-      {view.result && <GameResult result={view.result} restart={restart} review={() => open('learn')} nextLevel={view.result.objectiveMet ? nextLevel : undefined} />}
+      {view.result && <GameResult result={view.result} restart={restart} review={() => open('learn')} nextLevel={view.result.objectiveMet ? nextLevel : undefined} records={resultContent} />}
       {view.error && <section role="alert" className="tycoon-result"><p>{view.error}</p><button type="button" onClick={() => controller.recoverRenderer()}>Rebuild graphics</button><button type="button" onClick={restart}>Return to title</button></section>}
       {diagnosticsEnabled && <details className="tycoon-qa"><summary>Tycoon QA</summary><button onClick={() => controller.inspectNextTick()}>Step one tick</button><output data-testid="elapsed">{runtime.time}</output><pre data-testid="diagnostics">{JSON.stringify(view)}</pre></details>}
     </>}
