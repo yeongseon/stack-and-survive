@@ -1,7 +1,8 @@
 import { expect, test } from '@playwright/test';
 import { baseline } from '../../packages/cloud-domain/src/index';
 
-for (const tycoon of [false, true]) test(`measure a real peak workload and disclose actual graphics backend (${tycoon ? 'tycoon' : 'editor'})`, async ({ page, browser }, info) => {
+for (const mode of ['editor', 'tycoon-fit', 'tycoon-close']) test(`measure a real peak workload and disclose actual graphics backend (${mode})`, async ({ page, browser }, info) => {
+  const tycoon = mode !== 'editor';
   const architecture = baseline(3, true, true);
   const positions = [{ x: -260, y: -100 }, { x: 0, y: 0 }, { x: 260, y: 100 }, { x: -220, y: 200 }, { x: 100, y: -200 }];
   architecture.resources.forEach((r, i) => { Object.assign(r, positions[i]); });
@@ -22,14 +23,14 @@ for (const tycoon of [false, true]) test(`measure a real peak workload and discl
     await expect(page.getByRole('button', { name: 'Ⅱ Pause', exact: true })).toBeEnabled({ timeout: 10000 });
     await page.getByText('Tycoon QA', { exact: true }).click();
     await page.getByRole('button', { name: 'Step one tick', exact: true }).click();
-    await page.getByRole('button', { name: /Add Cache/ }).click();
+    await page.getByRole('button', { name: /Add Cache/ }).focus(); await page.getByRole('button', { name: /Add Cache/ }).press('Enter');
     await page.getByRole('button', { name: 'Confirm expansion', exact: true }).click();
-    await page.getByRole('button', { name: /Add Protected Edge/ }).click();
+    { await page.getByRole('button', { name: /Add Protected Edge/ }).focus(); await page.getByRole('button', { name: /Add Protected Edge/ }).press('Enter'); };
     await page.getByRole('button', { name: 'Confirm expansion', exact: true }).click();
-    await page.getByRole('button', { name: /App capacity/ }).click();
+    { await page.getByRole('button', { name: /App capacity/ }).focus(); await page.getByRole('button', { name: /App capacity/ }).press('Enter'); };
     await page.getByRole('button', { name: 'Confirm expansion', exact: true }).click();
     for (let i=0;i<9;i++) await page.getByRole('button', { name: 'Step one tick', exact: true }).click();
-    await page.getByRole('button', { name: /App capacity/ }).click();
+    { await page.getByRole('button', { name: /App capacity/ }).focus(); await page.getByRole('button', { name: /App capacity/ }).press('Enter'); };
     await page.getByRole('button', { name: 'Confirm expansion', exact: true }).click();
   } else {
     await page.getByRole('button', { name: 'Start operation', exact: true }).click();
@@ -39,6 +40,12 @@ for (const tycoon of [false, true]) test(`measure a real peak workload and discl
   await page.getByRole('button', { name: tycoon ? 'Ⅱ Pause' : 'Pause operation', exact: true }).click();
   await page.getByRole('button', { name: tycoon ? '▶ Resume' : 'Resume operation', exact: true }).click();
   await surface.scrollIntoViewIfNeeded();
+  if (mode === 'tycoon-close') {
+    await page.getByRole('button', { name: 'Zoom in', exact: true }).click();
+    await page.getByRole('button', { name: 'Zoom in', exact: true }).click();
+    await page.getByRole('button', { name: 'Zoom in', exact: true }).click();
+    await expect(page.getByRole('status', { name: 'Camera zoom' })).toHaveText('180%');
+  }
   const measured = await surface.evaluate(async element => {
     const start = performance.now(); let previous = start; const intervals: number[] = [];
     const framesBefore = Number(element.getAttribute('data-frames'));
@@ -62,7 +69,7 @@ for (const tycoon of [false, true]) test(`measure a real peak workload and discl
   expect(measured.tickAfter - measured.tickBefore).toBeGreaterThanOrEqual(19);
   expect(measured.maxPackets).toBeLessThanOrEqual(200);
   await page.getByRole('button', { name: tycoon ? 'Ⅱ Pause' : 'Pause operation', exact: true }).click();
-  const evidence = { browser: browser.version(), graphics, viewport: { width: 1440, height: 900 }, fixture: `Black Friday v0.2, App3 + Cache + WAF, peak500RPS/40%bots, ${tycoon ? 'built through live world actions' : 'QA editor fixture'}`, mode: 'headless full Chromium with requested ANGLE Metal; inspect actual renderer before interpreting', measured };
+  const evidence = { browser: browser.version(), graphics, camera: mode, viewport: { width: 1440, height: 900 }, fixture: `Black Friday v0.2, App3 + Cache + WAF, peak500RPS/40%bots, ${tycoon ? 'built through live world actions' : 'QA editor fixture'}`, mode: 'headless full Chromium with requested ANGLE Metal; inspect actual renderer before interpreting', measured };
   console.log(JSON.stringify(evidence));
   await info.attach('performance-evidence', { body: JSON.stringify(evidence, null, 2), contentType: 'application/json' });
 });
