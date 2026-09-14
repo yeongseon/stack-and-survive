@@ -16,10 +16,15 @@ test('compact HUD and outcome preserve actual result values and narrow retry acc
     const rect = (await result.boundingBox())!;
     expect(rect.x).toBeGreaterThanOrEqual(0); expect(rect.x+rect.width).toBeLessThanOrEqual(width);
     expect(rect.y).toBeGreaterThanOrEqual(0); expect(rect.y+rect.height).toBeLessThanOrEqual(740);
+    const retry = (await result.getByRole('button', { name: 'Play again', exact: true }).boundingBox())!;
+    expect(retry.y).toBeGreaterThanOrEqual(0); expect(retry.y + retry.height).toBeLessThanOrEqual(740);
+    expect(retry.height).toBeGreaterThanOrEqual(44);
+    expect(await result.evaluate(element => element.scrollWidth <= element.clientWidth)).toBe(true);
+    await page.screenshot({ path: info.outputPath(`operation-report-${width}.png`) });
   }
   await page.screenshot({ path: info.outputPath('game-outcome.png') });
   await result.getByRole('button', { name: 'Review business' }).click();
   await expect(page.getByRole('dialog')).toContainText('Write capacity 70/s');
   await page.keyboard.press('Escape'); await expect(result.getByRole('button', { name: 'Review business' })).toBeFocused();
-  await result.getByRole('button', { name: 'Play again' }).click(); await expect(page.getByRole('button', { name: 'Start Game' })).toBeFocused();
+  await result.getByRole('button', { name: 'Play again' }).focus(); await page.keyboard.press('Enter'); await expect(page.getByRole('button', { name: 'Start Game' })).toBeFocused();
 });

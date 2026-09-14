@@ -31,7 +31,7 @@ it('uses injected workload through ticks HUD events results and faithful initial
   expect(hud).toContain('max="50"'); expect(hud).toContain('max="100"');
   expect(objectives(c.getSnapshot())[0].value).toBe('12 / 12s');
   expect(c.getSnapshot().events.some(e => e.text === 'Demand phase 2 / 2')).toBe(true);
-  expect(renderToStaticMarkup(createElement(GameResult, { result, restart: () => {}, review: () => {} }))).toContain('short-test');
+  expect(renderToStaticMarkup(createElement(GameResult, { result, architecture: c.getSnapshot().state.runtime.architecture, report: null, restart: () => {}, review: () => {} }))).toContain('short-test');
   c.redesign(); expect(c.getSnapshot().challenge).toEqual(challenge);
   c.reset(); expect(c.getSnapshot().state.economy.remainingBudget).toBe(50); c.destroy();
 });
