@@ -6,10 +6,12 @@
 *{box-sizing:border-box}body{margin:0;color:#deeced;background:#0b1b27;font:13px 'Avenir Next',sans-serif}header{height:110px;padding:18px 28px;display:flex;justify-content:space-between;align-items:center;gap:20px}h1{font-size:20px;margin:0 0 5px}p{color:#9bb4c1;margin:0;line-height:1.6}nav{display:flex;align-items:center;gap:10px;flex-wrap:wrap}button,select{font:inherit;color:#e0ebec;background:#213d4d;border:1px solid #567887;border-radius:4px;padding:10px}a{color:#9bdde4}.world{position:relative;height:calc(100dvh - 110px);min-height:540px;overflow:hidden;background:radial-gradient(ellipse at 48% 56%,#28475b,#132b3c 64%,#091d2b)}.floor{position:absolute;inset:0;background:repeating-linear-gradient(26deg,transparent 0 38px,#567b8b16 39px 40px),repeating-linear-gradient(-26deg,transparent 0 38px,#567b8b16 39px 40px)}.routes{position:absolute;width:100%;height:100%;pointer-events:none}.routes path{fill:none;stroke:#7dc7d0;stroke-width:2}.routes .bed{stroke:#061824;stroke-width:13}.routes .write{stroke:#d3a66c}.facility{position:absolute;transform:translate(-50%,-62%);width:var(--size);aspect-ratio:1;pointer-events:none}.facility img{position:absolute;inset:0;width:100%;height:100%}.facility figcaption{position:absolute;top:12%;left:50%;transform:translateX(-50%);white-space:nowrap;font-size:10px;letter-spacing:.14em;color:#c5dee4;text-shadow:0 2px 4px #000}.hidden figcaption{visibility:hidden}.foot{position:absolute;bottom:20px;left:28px;right:28px;display:flex;justify-content:space-between;color:#99b4c1;font-size:11px}.rail{position:absolute;left:4%;right:4%;height:12px;border-block:1px solid #6b7d8066;background:repeating-linear-gradient(90deg,#bca56a55 0 12px,transparent 12px 140px)}.rail.top{top:9%}.rail.bottom{bottom:12%}figure{margin:0}
 @media(max-width:700px){header{height:174px;padding:16px;display:block}header nav{margin-top:12px;gap:8px}h1{font-size:17px}.world{height:calc(100dvh - 174px);min-height:650px}.foot{left:12px;right:12px;font-size:9px;gap:15px}.facility figcaption{font-size:9px}.rail.top{top:3%}}
 </style>
+<style>.environment{position:absolute;inset:0;pointer-events:none}.environment img{position:absolute;transform:translate(-50%,-62%);opacity:.63;filter:brightness(.66) saturate(.7)}.environment .foreground{opacity:.55;filter:brightness(.55)}.facility{isolation:isolate}.facility:before{content:'';position:absolute;inset:38% 12% 8%;background:radial-gradient(ellipse,#77c8d419,transparent 68%);z-index:-1}</style>
 <header><div><h1>Core Facility V3 · display-scale study</h1><p>Static, original art only. Not a simulation or shipped game.</p></div><nav aria-label="Art review controls"><label>App modules <select id="modules"><option>1</option><option selected>2</option><option>3</option><option>4</option></select></label><label>State <select id="state"><option value="normal">Normal</option><option value="build">App construction</option><option value="read">SQL read pressure</option><option value="write">SQL write pressure</option></select></label><button id="labels" type="button">Hide labels</button><a href="./preview.html">Source sheet</a></nav></header>
-<main class="world" aria-label="Static V3 composition"><div class="floor"></div><div class="rail top"></div><div class="rail bottom"></div><svg class="routes" aria-hidden="true" preserveAspectRatio="none"></svg><div id="facilities"></div><div class="foot"><span>SOURCE REVIEW · NO RUNTIME IMPORTS</span><span>Lines = potential paths · no processing outcomes shown</span></div></main>
+<main class="world" aria-label="Static V3 composition"><div class="floor"></div><div class="rail top"></div><div class="rail bottom"></div><div class="environment" aria-hidden="true"></div><svg class="routes" aria-hidden="true" preserveAspectRatio="none"></svg><div id="facilities"></div><div class="foot"><span>SOURCE REVIEW · NO RUNTIME IMPORTS</span><span>Lines = potential paths · no processing outcomes shown</span></div></main>
 <script type="module">
 import {facilitySvg,overlaySvg} from './core-facilities.mjs';
+import {environmentSvg} from './environment-kit.mjs';
 const names=['intake','protected-edge','app-service','redis-cache','azure-sql'];
 const raster=new URLSearchParams(location.search).get('raster')==='1';
 const sourceImage=(source,name)=>{const img=new Image();img.src=raster?`./dist/${name}.png`:`data:image/svg+xml;charset=utf-8,${encodeURIComponent(source)}`;img.alt='';return img;};
@@ -20,6 +22,18 @@ function render(){
  const anchors=small?[[.23,.18],[.71,.32],[.37,.48],[.24,.75],[.75,.76]]:[[.12,.48],[.31,.58],[.51,.62],[.70,.38],[.86,.65]];
  const sizes=small?[170,168,235,174,220]:[275,292,370,290,350].map(size=>size*Math.min(1.25,width/1440));
  const count=Number(document.querySelector('#modules').value),state=document.querySelector('#state').value;
+ const environment=document.querySelector('.environment');environment.replaceChildren();
+ const addProp=(name,x,y,size,foreground=false)=>{const image=sourceImage(environmentSvg(name),`env-${name}`);image.dataset.environment=name;image.style.cssText=`left:${x*100}%;top:${y*100}%;width:${size}px;height:${size}px`;if(foreground)image.className='foreground';environment.append(image);};
+ if(small){
+   addProp('wall-section',.27,.06,200);addProp('service-door',.75,.07,174);
+   addProp('pipe-straight',.48,.96,220,true);addProp('floor-vent',.10,.52,62);
+ }else{
+   const kit=['rack-c','cooling-a','rack-b','pdu','rack-c','cooling-b','electrical-cabinet'];
+   for(let i=0;i<12;i++)addProp(kit[i%kit.length],.055+i*.08,.13,Math.min(205,width*.14));
+   for(let i=0;i<5;i++)addProp(i%2?'cable-tray':'floor-vent',.13+i*.19,.81,92);
+   addProp('electrical-cabinet',.075,.97,180,true);addProp('cooling-b',.185,.96,205,true);
+   addProp('pipe-elbow',.9,.97,205,true);addProp('rail',.77,.96,205,true);
+ }
  const host=document.querySelector('#facilities');host.replaceChildren();
  for(let i=0;i<names.length;i++){
   const f=document.createElement('figure');f.className='facility';f.dataset.facility=names[i];f.style.cssText=`left:${anchors[i][0]*100}%;top:${anchors[i][1]*100}%;--size:${sizes[i]}px;z-index:${Math.round(anchors[i][1]*100)}`;

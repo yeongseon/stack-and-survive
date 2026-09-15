@@ -3,6 +3,7 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { facilityNames, facilitySvg, overlayNames, overlaySvg, deploymentNames, deploymentSvg, coreGeometry } from './core-facilities.mjs';
+import { environmentNames, environmentSvg } from './environment-kit.mjs';
 
 const output = fileURLToPath(new URL('./dist/', import.meta.url));
 await mkdir(output, { recursive: true });
@@ -12,7 +13,7 @@ try {
   const records = [];
   const entries = [...facilityNames.map(name => [name, facilitySvg(name)]), ...[1,2,3,4].map(count => [`app-${count}`, facilitySvg('app-service', count)]),
     ...overlayNames.flatMap(name=>name.startsWith('app-')?[0,1,2,3].map(bay=>[`${name}-${bay}`,overlaySvg(name,bay)]):[[name,overlaySvg(name)]]),
-    ...deploymentNames.map(name=>[name,deploymentSvg(name)])];
+    ...deploymentNames.map(name=>[name,deploymentSvg(name)]),...environmentNames.map(name=>[`env-${name}`,environmentSvg(name)])];
   for (const [name, source] of entries) {
     await page.setContent(`<style>html,body{margin:0;background:transparent}svg{display:block}</style>${source}`);
     const bounds = await page.locator('svg > g').evaluate(group => {

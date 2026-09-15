@@ -182,3 +182,5 @@ export function deploymentSvg(name) {
   }
   return bevelMaterials(art,`${name}-`);
 }
+
+export const artPrimitives = Object.freeze({ box, plane, line, vent, fan, cabinet, trim, svg: bevelMaterials });

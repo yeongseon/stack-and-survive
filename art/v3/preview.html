@@ -9,9 +9,11 @@ body{margin:0;background:#0d1e2a;color:#d0e1e8;font:14px 'Avenir Next',sans-seri
 <section><h2>Independent state overlays</h2><p>Illustrative state fixtures, not simulated outcomes. Two active App modules remain two while the next bay is under construction. Read/write warnings occupy separate SQL regions. Filtering and Cache activity overlays must be driven by real events when integrated.</p><div class="bays" id="states"></div></section>
 <section><h2>Inactive deployment stages</h2><p>Foundation → frame → boot. No active memory glow or filtering scanner before activation. These sources do not own gameplay timers.</p><div class="bays" id="deployments"></div></section>
 <section><h2>Display-scale composition study</h2><p>Static art arrangement, not gameplay. Lines indicate potential read/write paths only; no packets, rates, queues or successful processing are fabricated. <a href="./scene.html">Open 1440 × 900 review scene →</a></p></section>
+<section><h2>Cohesive indoor environment kit</h2><p>Twenty original modular pieces share the facility materials. Neutral equipment is decorative, never additional usable capacity.</p><div class="bays" id="environment"></div></section>
 <style>figure img{display:block;width:100%;height:auto}.layered{position:relative}.layered>img:not(:first-child){position:absolute;inset:0;width:100%;height:100%}.hidden .layered~figcaption{display:none}a{color:#9bdde4}</style>
 <script type="module">
 import {facilityNames,facilitySvg,overlaySvg,deploymentNames,deploymentSvg} from './core-facilities.mjs';
+import {environmentNames,environmentSvg} from './environment-kit.mjs';
 const image=source=>{const img=document.createElement('img');img.src=`data:image/svg+xml;charset=utf-8,${encodeURIComponent(source)}`;img.alt='';return img;};
 const figure=(name,art)=>{const f=document.createElement('figure');f.append(typeof art==='string'?image(art):art);const c=document.createElement('figcaption');c.textContent=name;f.append(c);return f;};
 for(const name of facilityNames)document.querySelector('#facilities').append(figure(name,facilitySvg(name)));
@@ -29,5 +31,6 @@ const states=[
 ];
 for(const [label,name,count,overlays] of states){const layers=document.createElement('div');layers.className='layered';layers.append(image(facilitySvg(name,count)),...overlays.map(([key,bay])=>image(overlaySvg(key,bay))));document.querySelector('#states').append(figure(label,layers));}
 for(const name of deploymentNames)document.querySelector('#deployments').append(figure(name,deploymentSvg(name)));
+for(const name of environmentNames)document.querySelector('#environment').append(figure(name,environmentSvg(name)));
 document.querySelector('#labels').onclick=e=>{document.body.classList.toggle('hidden');e.currentTarget.textContent=document.body.classList.contains('hidden')?'Show labels':'Hide labels';};
 </script></html>
