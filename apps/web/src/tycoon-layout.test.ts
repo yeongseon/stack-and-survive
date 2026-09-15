@@ -11,12 +11,12 @@ it('opens a fixed valid business with only Internet App1 and SQL installed', () 
   const runtime = createPreparation(a);
   for (const slot of ['edge', 'cache', 'app-2', 'app-3', 'app-4'] as const) expect(slotState(runtime, slot)).toBe('empty');
 });
-it('presents a left-to-right desktop chain and keeps responsive anchors inside the facility', () => {
+it('keeps the same left-to-right canonical geography at every viewport', () => {
   const kinds = ['internet', 'edge', 'compute', 'cache', 'database'] as const;
   for (const width of [320, 390, 1024, 1440, 1920]) {
     const points = kinds.map(kind => tycoonPoint(kind, width, 640));
-    for (const point of points) { expect(point.x).toBeGreaterThan(60); expect(point.x).toBeLessThan(width - 60); expect(point.y).toBeGreaterThan(120); expect(point.y).toBeLessThan(550); }
-    if (width >= 900) for (let i = 1; i < points.length; i++) expect(points[i].x).toBeGreaterThan(points[i-1].x);
+    for (const [i,point] of points.entries()) { expect(point).toEqual(tycoonPoint(kinds[i])); expect(point.x).toBeGreaterThan(60); expect(point.x).toBeLessThan(2340); expect(point.y).toBeGreaterThan(120); expect(point.y).toBeLessThan(1290); }
+    for (let i = 1; i < points.length; i++) expect(points[i].x).toBeGreaterThan(points[i-1].x);
   }
 });
 it('derives real pending and active slots without promoting later App slots', () => {

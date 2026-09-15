@@ -17,7 +17,7 @@ it('makes SQL dominant while scaling player hit and badge bounds with its artwor
   const original = resourceArtBounds('database'); const scaled = resourceArtBounds('database', 1.65);
   expect(scaled.width).toBeCloseTo(original.width * 1.65);
   expect(scaled.y).toBeCloseTo(original.y * 1.65);
-  expect(playerBuildingScale('database', 320)).toBeLessThan(playerBuildingScale('database', 1440));
+  expect(playerBuildingScale('database', 320)).toBe(playerBuildingScale('database', 1440));
 });
 it('uses measured visible art height rather than transparent source canvas for display sizing', () => {
   expect(buildingAssets.compute!.visible.height).toBe(108);
