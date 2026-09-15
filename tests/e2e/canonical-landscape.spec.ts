@@ -7,7 +7,7 @@ test('opening establishes fixed geography without ticking and phone portrait req
   await expect(page.getByTestId('opening-reveal')).toBeVisible();
   const state = async () => JSON.parse((await page.getByTestId('diagnostics').textContent())!);
   expect((await state()).state.runtime.time).toBe(0);
-  expect((await state()).state.economy.remainingBudget).toBe(140);
+  expect((await state()).state.economy.remainingBudget).toBe(75);
   expect((await state()).countdown).toBeNull();
   const surface = page.locator('[data-renderer="ready"]');
   await expect(surface).toHaveAttribute('data-world-nodes', /compute/);
@@ -61,7 +61,7 @@ test('portrait Start never starts a run and rejected enhancements do not block l
   await page.waitForTimeout(1300);
   await expect(page.locator('canvas')).toHaveCount(0);
   await expect(page.locator('.title-screen')).toHaveAttribute('data-time','0');
-  await expect(page.locator('.title-screen')).toHaveAttribute('data-budget','140');
+  await expect(page.locator('.title-screen')).toHaveAttribute('data-budget','75');
   await page.setViewportSize({width:844,height:390});
   await page.getByRole('button', {name:'Continue in landscape',exact:true}).click();
   await expect(page.getByRole('button', {name:'Ⅱ Pause',exact:true})).toBeEnabled();
@@ -93,7 +93,7 @@ test('interrupted overview and held countdown never advance hidden or portrait g
   await page.getByRole('button',{name:'Return to title',exact:true}).click();
   await page.waitForTimeout(2000);
   await expect(page.locator('.title-screen')).toHaveAttribute('data-time','0');
-  await expect(page.locator('.title-screen')).toHaveAttribute('data-budget','140');
+  await expect(page.locator('.title-screen')).toHaveAttribute('data-budget','75');
   await expect(page.locator('canvas')).toHaveCount(0);
 });
 

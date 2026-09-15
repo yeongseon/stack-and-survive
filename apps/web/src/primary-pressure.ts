@@ -4,9 +4,10 @@ import { compare } from '@stack-and-survive/simulation/economy';
 
 export function primaryPressure(view: View): { label: string; why: string; urgent: boolean } {
   const budget = view.state.economy.remainingBudget;
+  const reinvests = view.challenge?.rulesVersion === '0.3';
   if (compare(budget / (view.challenge?.workload.budget ?? blackFriday.budget), .2) < 0) return {
-    label: compare(budget, 0) <= 0 ? 'Budget exhausted' : 'Budget running low', urgent: true,
-    why: 'Less than 20% of the operational budget remains. Check running costs before expanding. Revenue does not refill this budget.',
+    label: compare(budget, 0) <= 0 ? `${reinvests?'Upgrade Funds':'Budget'} exhausted` : `${reinvests?'Upgrade Funds':'Budget'} running low`, urgent: true,
+    why: reinvests ? 'Less than 20% of initial Upgrade Funds remains. Only 10% of successful sales is reinvested; watch running costs.' : 'Less than 20% of the operational budget remains. Check running costs before expanding. Revenue does not refill this budget.',
   };
   const r = view.snapshot?.requests;
   if (!r) return { label: 'Awaiting demand', why: 'Start the operation to measure processing pressure. Preparation does not consume the operational budget.', urgent: false };

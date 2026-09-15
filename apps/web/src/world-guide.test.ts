@@ -34,7 +34,7 @@ it('does not direct unavailable actions during pending construction pause failur
   view.queuedActions.length = 0; view.state.runtime.scaleDue = 9;
   expect(guideHint(view, 'decide').target).toBe(null);
   view.state.runtime.scaleDue = null; view.state.economy.remainingBudget = 10;
-  expect(guideHint(view, 'decide').title).toBe('Budget is running low');
+  expect(guideHint(view, 'decide').title).toBe('Upgrade Funds are running low');
   view.state.runtime.status = 'PAUSED'; expect(guideHint(view, 'decide').target).toBe(null);
   view.state.runtime.status = 'FAILED'; expect(guideHint(view, 'decide').title).toBe('Review your decision');
   expect(guideHint({ ...view, error: 'Graphics unavailable' }, 'decide').target).toBe(null);

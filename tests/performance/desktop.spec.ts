@@ -24,14 +24,14 @@ for (const mode of ['editor', 'tycoon-fit', 'tycoon-close']) test(`measure a rea
     await page.getByText('Tycoon QA', { exact: true }).click();
     await page.getByRole('button', { name: 'Step one tick', exact: true }).click();
     await page.getByRole('button', { name: /Add Cache/ }).focus(); await page.getByRole('button', { name: /Add Cache/ }).press('Enter');
-    await page.getByRole('button', { name: 'Confirm expansion', exact: true }).click();
+    await expect(page.getByRole('button', { name: 'Confirm expansion', exact: true })).toHaveCount(0);
     { await page.getByRole('button', { name: /Add Protected Edge/ }).focus(); await page.getByRole('button', { name: /Add Protected Edge/ }).press('Enter'); };
-    await page.getByRole('button', { name: 'Confirm expansion', exact: true }).click();
+    await expect(page.getByRole('button', { name: 'Confirm expansion', exact: true })).toHaveCount(0);
     { await page.getByRole('button', { name: /App capacity/ }).focus(); await page.getByRole('button', { name: /App capacity/ }).press('Enter'); };
-    await page.getByRole('button', { name: 'Confirm expansion', exact: true }).click();
+    await expect(page.getByRole('button', { name: 'Confirm expansion', exact: true })).toHaveCount(0);
     for (let i=0;i<9;i++) await page.getByRole('button', { name: 'Step one tick', exact: true }).click();
     { await page.getByRole('button', { name: /App capacity/ }).focus(); await page.getByRole('button', { name: /App capacity/ }).press('Enter'); };
-    await page.getByRole('button', { name: 'Confirm expansion', exact: true }).click();
+    await expect(page.getByRole('button', { name: 'Confirm expansion', exact: true })).toHaveCount(0);
   } else {
     await page.getByRole('button', { name: 'Start operation', exact: true }).click();
     await page.locator('summary').filter({ hasText: 'Developer inspector' }).click();
@@ -73,7 +73,7 @@ for (const mode of ['editor', 'tycoon-fit', 'tycoon-close']) test(`measure a rea
   expect(measured.tickAfter - measured.tickBefore).toBeGreaterThanOrEqual(19);
   expect(measured.maxPackets).toBeLessThanOrEqual(200);
   await page.getByRole('button', { name: tycoon ? 'Ⅱ Pause' : 'Pause operation', exact: true }).click();
-  const evidence = { browser: browser.version(), graphics, camera: mode, viewport: { width: 1440, height: 900 }, fixture: `Black Friday v0.2, App3 + Cache + WAF, peak500RPS/40%bots, ${tycoon ? 'built through live world actions' : 'QA editor fixture'}`, mode: 'headless full Chromium with requested ANGLE Metal; inspect actual renderer before interpreting', measured };
+  const evidence = { browser: browser.version(), graphics, camera: mode, viewport: { width: 1440, height: 900 }, fixture: `Black Friday ${tycoon ? 'v0.3, 560RPS/40%bots during sample, built through live world actions' : 'v0.2, 500RPS/40%bots, QA editor fixture'}, App3 + Cache + WAF`, mode: 'headless full Chromium with requested ANGLE Metal; inspect actual renderer before interpreting', measured };
   console.log(JSON.stringify(evidence));
   await info.attach('performance-evidence', { body: JSON.stringify(evidence, null, 2), contentType: 'application/json' });
 });

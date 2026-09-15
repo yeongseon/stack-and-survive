@@ -8,6 +8,7 @@ import { businessFeedback } from './business-feedback';
 import type { WorldTarget } from './world-interaction';
 import { resourceVisualState } from './resource-visual-state';
 import { playerBuildingScale, resourceArtBounds } from './building-assets';
+import { recoveryFeedback, reinvestedThisTick, type Recovery } from './wave-feedback';
 
 function LocalAction({ controller, action, children }: { controller: Controller; action: ActionRequest; children: React.ReactNode }) {
   const reason = controller.actionReason(action);
@@ -19,20 +20,30 @@ export function GameFloor({ controller, view, navigation, onReady, blocked = fal
   const projection = useSyncExternalStore(navigation.subscribe, navigation.getSnapshot);
   const cardClose = useRef<HTMLButtonElement>(null);
   const opener = useRef<HTMLElement | null>(null);
-  const [buildKind, setBuildKind] = useState<'compute' | 'cache' | 'edge' | null>(null);
-  const buildCancel = useRef<HTMLButtonElement>(null);
+  const [actionFeedback,setActionFeedback]=useState<{kind:'compute'|'cache'|'edge';text:string;rejected:boolean}|null>(null);
+  const [recovery,setRecovery]=useState<Recovery|null>(null);
+  const previousView=useRef(view);
+  const lastRecovery=useRef(-Infinity);
   const beginBuild = useCallback((kind: 'compute' | 'cache' | 'edge') => {
-    opener.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
-    controller.select(null); setBuildKind(kind);
+    const action:ActionRequest=kind==='compute'?{type:'SCALE_OUT'}:{type:'DEPLOY_RESOURCE',kind,...tycoonPositions[kind]};
+    const reason=controller.actionReason(action);
+    if(!reason)controller.queueAction(action);
+    setActionFeedback({kind,rejected:!!reason,text:reason??`${kind==='compute'?'App expansion':kind==='cache'?'Cache':'Protected Edge'} requested · ${kind==='compute'?8:definitions[kind].provisioning}s to activate`});
   }, [controller]);
   const worldBuild = useCallback((target: WorldTarget) => { if (target.kind === 'compute' || target.kind === 'cache' || target.kind === 'edge') beginBuild(target.kind); }, [beginBuild]);
-  useEffect(() => { if (buildKind) buildCancel.current?.focus({ preventScroll: true }); }, [buildKind]);
+  useEffect(()=>{if(!actionFeedback)return;const timer=setTimeout(()=>setActionFeedback(null),2600);return()=>clearTimeout(timer);},[actionFeedback]);
+  useEffect(()=>{
+    const found=recoveryFeedback(previousView.current,view);previousView.current=view;
+    if(found&&found.time-lastRecovery.current>=4){lastRecovery.current=found.time;setRecovery(found);}
+    if(view.state.runtime.status!=='RUNNING'||view.error)setRecovery(null);
+  },[view]);
+  useEffect(()=>{if(!recovery)return;const timer=setTimeout(()=>setRecovery(null),2200);return()=>clearTimeout(timer);},[recovery]);
   const select = useCallback((id: string) => {
-    setBuildKind(null);
+    setActionFeedback(null);
     opener.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     controller.select(id);
   }, [controller]);
-  const inspect = useCallback(() => { opener.current = null; setBuildKind(null); }, []);
+  const inspect = useCallback(() => { opener.current = null; setActionFeedback(null); }, []);
   useEffect(() => { if (view.selected) cardClose.current?.focus({ preventScroll: true }); }, [view.selected]);
   const closeCard = () => {
     controller.select(null);
@@ -67,13 +78,7 @@ export function GameFloor({ controller, view, navigation, onReady, blocked = fal
     const preferred = right + 280 <= width - 12 ? right : left >= 12 ? left : p.x + 32;
     return { left: Math.max(12, Math.min(width - 292, preferred)), top: Math.max(height < 500 ? 70 : 100, Math.min(height - 320, p.y - 180)) };
   };
-  const buildAction: ActionRequest | null = buildKind === 'compute' ? { type: 'SCALE_OUT' } : buildKind ? { type: 'DEPLOY_RESOURCE', kind: buildKind, ...tycoonPositions[buildKind] } : null;
-  const buildReason = buildAction ? controller.actionReason(buildAction) : null;
-  const closeBuild = () => {
-    setBuildKind(null);
-    if (opener.current?.isConnected && opener.current.matches('button, summary, [tabindex]')) opener.current.focus({ preventScroll: true });
-    else host.current?.querySelector<HTMLButtonElement>('[aria-label="Fit architecture"]')?.focus({ preventScroll: true });
-  };
+  const messagePosition=(kind:keyof typeof tycoonPositions)=>{const p=projection.resourceScreen(kind);return {left:Math.max(125,Math.min((host.current?.clientWidth??1440)-125,p.x)),top:Math.max(155,p.y-45)};};
   return <div className="tycoon-floor world" inert={!!view.result || blocked} ref={host} data-testid="world" data-guide-target={guideTarget ?? undefined} aria-label="Living cloud business">
     <div className="facility-plaques" aria-hidden="true">
       {(['internet', 'edge', 'compute', 'cache', 'database'] as const).map(kind => {
@@ -125,19 +130,13 @@ export function GameFloor({ controller, view, navigation, onReady, blocked = fal
       })}
       <div className="world-slot app-expansion" style={at('compute')}>
         <div className="instance-slots" aria-label="App instance slots">{visual.app.bays.map((bay, i) => <span key={i} data-state={bay} aria-label={`Bay ${i+1}: ${bay}`}>{bay === 'active' ? '■' : bay === 'construction' ? '▧' : '□'}</span>)}</div>
-        {runtime.scaleDue !== null ? <span className="slot-progress">Expanding · {visual.app.scaleRemaining}s</span> : <button type="button" aria-label="+ App capacity" onClick={() => beginBuild('compute')}>Expand App<small>{app.instances}/4 active · 8s · +5 cr/min</small></button>}
+        {runtime.scaleDue !== null ? <span className="slot-progress">Expanding · {visual.app.scaleRemaining}s</span> : <button type="button" aria-label="+ App capacity" aria-disabled={controller.actionReason({type:'SCALE_OUT'})!==null} title={controller.actionReason({type:'SCALE_OUT'})??'8s to activate · +5 cr/min'} onClick={() => beginBuild('compute')}>Expand App<small>{app.instances}/4 active · 8s · +5 cr/min</small></button>}
       </div>
       <button type="button" className="intake-control" style={at('internet')} onClick={() => select('internet')}>Traffic intake</button>
       <button type="button" className="intake-control" style={at('database')} onClick={() => select('database')}>SQL processing</button>
       </div>
-      {buildKind && <section className="world-build-confirmation resource-action-card" style={localPosition(buildKind)} aria-label={`${buildKind === 'compute' ? 'APP' : buildKind.toUpperCase()} expansion`} onKeyDown={e => { if (e.key === 'Escape') closeBuild(); }}>
-        <h2>{buildKind === 'compute' ? 'Expand App' : `Build ${buildKind === 'cache' ? 'Cache' : 'Protected Edge'}`}</h2>
-        <p>{buildKind === 'compute' ? `${app.instances}/4 active · 8s · +5 cr/min` : `${definitions[buildKind].provisioning}s · +${definitions[buildKind].cost} cr/min`}</p>
-        <small>Capacity activates after construction, never before.</small>
-        {buildReason && <p role="status">{buildReason}</p>}
-        <button type="button" disabled={buildReason !== null} onClick={() => { if (buildAction) controller.queueAction(buildAction); closeBuild(); }}>Confirm expansion</button>
-        <button ref={buildCancel} type="button" onClick={closeBuild}>Cancel expansion</button>
-      </section>}
+      {actionFeedback&&<div className={`action-feedback${actionFeedback.rejected?' rejected':''}`} role="status" style={messagePosition(actionFeedback.kind)}>{actionFeedback.text}</div>}
+      {recovery&&<div className="recovery-feedback" role="status" style={messagePosition(recovery.kind)}>{recovery.text}</div>}
       {selected && <section className="resource-action-card" style={localPosition(selected.kind)} aria-label="Resource actions" onKeyDown={event => { if (event.key === 'Escape') closeCard(); }}>
         <button ref={cardClose} type="button" className="card-close" onClick={closeCard}>Close resource</button>
         <h2>{definitions[selected.kind].name}</h2>
@@ -148,6 +147,6 @@ export function GameFloor({ controller, view, navigation, onReady, blocked = fal
         {selected.kind === 'database' && <><p className="resource-state">Reads: {visual.sql.readPressure}<br/>Writes: {visual.sql.writePressure}</p><small>Capacity and routing explained in Learn</small></>}
       </section>}
     </div>
-    {feedback && <div key={feedback.tick} className="business-feedback" data-testid="business-feedback">✓ Orders served · {feedback.orders.toFixed(1)}/s <span>+{feedback.revenue.toFixed(2)} cr revenue this tick · not spendable budget</span></div>}
+    {feedback && <div key={feedback.tick} className="business-feedback" data-testid="business-feedback">✓ Orders served · {feedback.orders.toFixed(1)}/s <span>+{feedback.revenue.toFixed(2)} cr sales · +{reinvestedThisTick(view).toFixed(2)} Upgrade Funds ({view.challenge?.rulesVersion==='0.3'?'10%':'0% legacy'})</span></div>}
   </div>;
 }

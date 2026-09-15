@@ -13,11 +13,11 @@ test('living operation expands real capacity and activates Cache and Edge only a
   const state = async () => JSON.parse((await page.getByTestId('diagnostics').textContent())!);
   await step.click();
   await page.getByRole('button', { name: /Add Cache/ }).focus(); await page.getByRole('button', { name: /Add Cache/ }).press('Enter');
-  await page.getByRole('button', { name: 'Confirm expansion', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Confirm expansion', exact: true })).toHaveCount(0);
   { await page.getByRole('button', { name: /Add Protected Edge/ }).focus(); await page.getByRole('button', { name: /Add Protected Edge/ }).press('Enter'); };
-  await page.getByRole('button', { name: 'Confirm expansion', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Confirm expansion', exact: true })).toHaveCount(0);
   { await page.getByRole('button', { name: /App capacity/ }).focus(); await page.getByRole('button', { name: /App capacity/ }).press('Enter'); };
-  await page.getByRole('button', { name: 'Confirm expansion', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Confirm expansion', exact: true })).toHaveCount(0);
   await step.click();
   const accepted = await state();
   expect(accepted.snapshot.requests.cache.active).toBe(false);
@@ -61,7 +61,7 @@ test('observed App pressure falls only after a world-local expansion activates',
   const pressure = async () => JSON.parse((await surface.getAttribute('data-pressure-queues'))!)[0].count;
   const before = await pressure(); expect(before).toBeGreaterThan(8);
   { await page.getByRole('button', { name: /App capacity/ }).focus(); await page.getByRole('button', { name: /App capacity/ }).press('Enter'); };
-  await page.getByRole('button', { name: 'Confirm expansion', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Confirm expansion', exact: true })).toHaveCount(0);
   while (Number(await page.getByTestId('elapsed').textContent()) < 39) await step.click();
   await expect(surface).toHaveAttribute('data-tick', '39'); expect(await pressure()).toBe(before);
   await step.click(); await expect(surface).toHaveAttribute('data-tick', '40'); expect(await pressure()).toBeLessThan(before);

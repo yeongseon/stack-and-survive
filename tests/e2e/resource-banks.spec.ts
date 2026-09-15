@@ -16,7 +16,7 @@ test('resource anatomy follows live construction, separate SQL pressure and actu
   for (const name of ['Add Cache', 'Add Protected Edge', '+ App capacity']) {
     await page.getByRole('button', { name, exact: true }).focus();
     await page.getByRole('button', { name, exact: true }).click();
-    await page.getByRole('button', { name: 'Confirm expansion', exact: true }).click();
+    await expect(page.getByRole('button', { name: 'Confirm expansion', exact: true })).toHaveCount(0);
   }
   await step.click();
   await expect.poll(async () => (await state()).cache.lifecycle).toBe('provisioning');
@@ -29,7 +29,7 @@ test('resource anatomy follows live construction, separate SQL pressure and actu
   await expect.poll(async () => (await state()).app.bays.filter((b: string) => b === 'active').length).toBe(2);
   for (const count of [3, 4]) {
     { await page.getByRole('button', { name: '+ App capacity', exact: true }).focus(); await page.getByRole('button', { name: '+ App capacity', exact: true }).press('Enter'); };
-    await page.getByRole('button', { name: 'Confirm expansion', exact: true }).click();
+    await expect(page.getByRole('button', { name: 'Confirm expansion', exact: true })).toHaveCount(0);
     for (let i = 0; i < 9; i++) await step.click();
     await expect.poll(async () => (await state()).app.bays.filter((b: string) => b === 'active').length).toBe(count);
   }

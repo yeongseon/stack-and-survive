@@ -12,7 +12,7 @@ test('project-path Pages build loads real facilities and never exposes QA', asyn
   expect([...v3Assets].every(path => path.startsWith('/stack-and-survive/assets/v3/'))).toBe(true);
   await expect(page.getByRole('button', { name: 'Ⅱ Pause', exact: true })).toBeEnabled();
   { await page.getByRole('button', { name: 'Add Cache', exact: true }).focus(); await page.getByRole('button', { name: 'Add Cache', exact: true }).press('Enter'); };
-  await page.getByRole('button', { name: 'Confirm expansion', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Confirm expansion', exact: true })).toHaveCount(0);
   await expect(page.getByTestId('slot-cache')).toContainText('Active');
   for (const image of await page.locator('.world-service-badges img').all()) {
     await expect(image).toHaveAttribute('src', /^\/stack-and-survive\/assets\//);

@@ -32,7 +32,7 @@ export function LearnDialog({ dialogRef, page, view, onClose, restart, sound, gu
     {page === 'how' ? <>
       <p>Watch traffic reach your App and SQL. When pressure builds, click the + controls on the data-center floor.</p>
       <ol><li>Add App capacity when compute is overloaded. New instances need 8 seconds.</li><li>Add Cache to reduce SQL reads. It does not remove Order writes.</li><li>Add Protected Edge to filter bots before they reach App.</li></ol>
-      <p>Costs are running credits, not purchase prices. Revenue does not refill budget. Pressure markers are not requests waiting to be served later.</p>
+        <p>One click on an empty App bay or Cache/Edge footprint requests construction. Costs are running credits, not purchase prices. Under balance 0.3, 10% of successful sales replenishes Upgrade Funds. Bots earn nothing. Lost sales excludes bots. Pressure markers are not a persistent waiting queue.</p>
     </> : page === 'about' ? <p>A browser game about Azure infrastructure decisions. All capacities and costs are game assumptions, not Azure prices or specifications. The game does not deploy real resources. Official service icons identify Microsoft Azure services; no endorsement is implied.</p> : <>
       <h3>Why is this happening?</h3><p>{pressure.why}</p><p>Representative pressure markers are not a buffered queue. Dropped requests do not succeed later.</p>
       <MissionPanel view={view} /><h3>Detailed metrics</h3>
