@@ -12,6 +12,8 @@
     "check:assets": "node scripts/asset-manifest.mjs",
     "check:assets:release": "node scripts/asset-manifest.mjs --release",
     "test:assets": "node --test scripts/asset-manifest.test.mjs",
+    "check:assets:v3": "node art/v3/check-runtime.mjs",
+    "test:art": "node --test art/v3/core-facilities.test.mjs art/v3/environment-kit.test.mjs",
     "build": "pnpm --filter @stack-and-survive/web build",
     "build:pages": "pnpm --filter @stack-and-survive/web exec vite build --base /stack-and-survive/ --outDir dist-pages",
     "test:pages": "playwright test --config playwright.pages.config.ts",

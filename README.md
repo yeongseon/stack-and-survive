@@ -6,13 +6,13 @@
 
 **[Play the browser demo](https://yeongseon.dev/stack-and-survive/)** · GitHub Pages production build, no real Azure deployment.
 
-Pages is owner-directed under a [narrow existing-asset demo exception](docs/PAGES_DEMO_EXCEPTION.md). Asset rights remain pending; this is not a general license or release clearance. The project-path build is verified with `pnpm build:pages` and `pnpm test:pages`; deployment follows successful main-branch Quality CI.
+Pages is owner-directed under an [exact-inventory demo exception, explicitly extended to original V3 art](docs/PAGES_DEMO_EXCEPTION.md). Asset rights remain pending; this is not a general license or release clearance. The project-path build is verified with `pnpm build:pages` and `pnpm test:pages`; deployment follows successful main-branch Quality CI.
 
 Stack & Survive is a real-time cloud infrastructure management game where players scale and optimize Azure architecture as demand grows, keeping requests flowing, customers served, and costs under control.
 
 ## Project status
 
-**Game-first diorama with working Zoom/Pan/Fit, direct facility interaction, physical construction and outcome-first results (#199/#200); reviewed camera lifecycle coverage merged in #201. Next P0: [Production Art V3 #202](https://github.com/yeongseon/stack-and-survive/issues/202). Human validation and manual audio/rights decisions remain pending.**
+**Canonical landscape diorama with original V3 hero facilities, fixed indoor environment kit, state-driven pressure/work feedback and outcome-first results. Production Art V3 is integrated under the approved demo inventory; final visual acceptance, real-player validation and manual audio/rights decisions remain pending in [#202](https://github.com/yeongseon/stack-and-survive/issues/202).**
 
 Start with the [documentation authority index](docs/README.md). Current normal behavior is in [Gameplay](docs/GAMEPLAY_SPEC.md); future work is in [Product Roadmap](docs/PRODUCT_ROADMAP.md). `docs/archive/` preserves history and must not guide new implementation. The repository is public source; no project-wide open-source license has been selected. #164 tracks license, third-party rights and security decisions.
 

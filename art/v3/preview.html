@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Production Art V3 — source review</title>
+<style>
+body{margin:0;background:#0d1e2a;color:#d0e1e8;font:14px 'Avenir Next',sans-serif}header{padding:28px 40px;border-bottom:1px solid #355362}h1{font-size:25px;margin:8px 0}p{color:#9cb6c4;line-height:1.6}button{background:#294a5a;color:#e3edef;padding:10px 16px;border:1px solid #567885;border-radius:5px;cursor:pointer}main{padding:24px;display:grid;grid-template-columns:repeat(3,1fr);gap:18px}figure{margin:0;background:radial-gradient(ellipse at 50% 65%,#254154,#132936 65%);border:1px solid #2a4655;position:relative}svg{display:block;width:100%;height:auto}figcaption{position:absolute;left:20px;top:20px;font-size:12px;letter-spacing:.12em;text-transform:uppercase}.hidden figcaption{display:none}section{padding:0 24px 30px}.bays{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.note{color:#d0ad7c}@media(max-width:700px){main{grid-template-columns:1fr 1fr}.bays{grid-template-columns:1fr 1fr}header{padding:20px}}
+</style>
+<header><span>ORIGINAL SOURCE STUDY · NOT RUNTIME ASSETS</span><h1>Production Art V3 / Facility vocabulary</h1><p>Steel housings, recessed server bays, memory fins, inspection gate and ingress conduits. Labels-hidden review is not a substitute for actual participant identification.</p><button id="labels">Hide labels</button><p class="note">Source preview only. No Azure assets embedded. License unselected; runtime manifest and public-distribution review pending.</p></header>
+<main id="facilities"></main><section><h2>Physical App population · 1 → 4</h2><p>Only actual modules appear. Empty bays remain empty; this sheet is not a gameplay simulation.</p><div class="bays" id="bays"></div></section>
+<section><h2>Independent state overlays</h2><p>Illustrative state fixtures, not simulated outcomes. Two active App modules remain two while the next bay is under construction. Read/write warnings occupy separate SQL regions. Filtering and Cache activity overlays must be driven by real events when integrated.</p><div class="bays" id="states"></div></section>
+<section><h2>Inactive deployment stages</h2><p>Foundation → frame → boot. No active memory glow or filtering scanner before activation. These sources do not own gameplay timers.</p><div class="bays" id="deployments"></div></section>
+<section><h2>Display-scale composition study</h2><p>Static art arrangement, not gameplay. Lines indicate potential read/write paths only; no packets, rates, queues or successful processing are fabricated. <a href="./scene.html">Open 1440 × 900 review scene →</a></p></section>
+<section><h2>Cohesive indoor environment kit</h2><p>Twenty original modular pieces share the facility materials. Neutral equipment is decorative, never additional usable capacity.</p><div class="bays" id="environment"></div></section>
+<style>figure img{display:block;width:100%;height:auto}.layered{position:relative}.layered>img:not(:first-child){position:absolute;inset:0;width:100%;height:100%}.hidden .layered~figcaption{display:none}a{color:#9bdde4}</style>
+<script type="module">
+import {facilityNames,facilitySvg,overlaySvg,deploymentNames,deploymentSvg} from './core-facilities.mjs';
+import {environmentNames,environmentSvg} from './environment-kit.mjs';
+const image=source=>{const img=document.createElement('img');img.src=`data:image/svg+xml;charset=utf-8,${encodeURIComponent(source)}`;img.alt='';return img;};
+const figure=(name,art)=>{const f=document.createElement('figure');f.append(typeof art==='string'?image(art):art);const c=document.createElement('figcaption');c.textContent=name;f.append(c);return f;};
+for(const name of facilityNames)document.querySelector('#facilities').append(figure(name,facilitySvg(name)));
+for(let i=1;i<=4;i++)document.querySelector('#bays').append(figure(`${i}/4 active`,facilitySvg('app-service',i)));
+const states=[
+['App · 2 active / next available','app-service',2,[['app-available',2],['app-locked',3]]],
+['App · 2 active / next construction','app-service',2,[['app-construction',2],['app-locked',3]]],
+['App · 2 active / request queued','app-service',2,[['app-queued',2],['app-locked',3]]],
+['App · active overload','app-service',2,[['app-overload',0],['app-overload',1]]],
+['SQL · read pressure','azure-sql',0,[['sql-read-warning',0]]],
+['SQL · write pressure','azure-sql',0,[['sql-write-warning',0]]],
+['SQL · critical','azure-sql',0,[['sql-critical',0]]],
+['Edge · filtering event','protected-edge',0,[['edge-filter',0]]],
+['Cache · activity event','redis-cache',0,[['cache-activity',0]]],
+];
+for(const [label,name,count,overlays] of states){const layers=document.createElement('div');layers.className='layered';layers.append(image(facilitySvg(name,count)),...overlays.map(([key,bay])=>image(overlaySvg(key,bay))));document.querySelector('#states').append(figure(label,layers));}
+for(const name of deploymentNames)document.querySelector('#deployments').append(figure(name,deploymentSvg(name)));
+for(const name of environmentNames)document.querySelector('#environment').append(figure(name,environmentSvg(name)));
+document.querySelector('#labels').onclick=e=>{document.body.classList.toggle('hidden');e.currentTarget.textContent=document.body.classList.contains('hidden')?'Show labels':'Hide labels';};
+</script></html>

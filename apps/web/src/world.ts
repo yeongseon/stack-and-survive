@@ -23,6 +23,8 @@ import { FacilityLighting } from './facility-lighting';
 import { resourceActivity, drawResourceActivity } from './resource-activity';
 import { drawIntake, packetPalette } from './workload-art';
 import { PacketSprites } from './packet-sprites';
+import { v3, v3Images } from './art-v3';
+import { V3Sprites } from './v3-sprites';
 
 export function utilizationLabel(u: number | null): string {
   return u === null ? 'READY' : compare(u, 1) > 0 ? '! OVERLOADED' : compare(u, .7) > 0 ? 'WARNING' : 'HEALTHY';
@@ -72,12 +74,17 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
     sprites!: BuildingSprites;
     packets!: PacketSprites;
     lighting!: FacilityLighting;
+    heroSprites!: V3Sprites;
     preload() {
-      for (const asset of [...Object.values(buildingAssets), moduleAsset]) {
+      for (const asset of v3 ? v3Images : [...Object.values(buildingAssets), moduleAsset]) {
         this.load.image(asset.texture, asset.src);
       }
     }
     create() {
+      if(v3 && v3Images.some(asset=>!this.textures.exists(asset.texture))) {
+        host.dataset.renderer='error'; controller.presentationFailed('V3 preview textures did not load. Re-export the local art and rebuild graphics.');
+        this.scene.pause(); return;
+      }
       this.environment = this.add.graphics();
       this.graphics = this.add.graphics();
       this.stateGraphics = this.add.graphics().setDepth(buildingLayers.state);
@@ -88,8 +95,9 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
       this.sprites = new BuildingSprites(this);
       this.packets = new PacketSprites(this);
       this.lighting = new FacilityLighting(this);
+      this.heroSprites = new V3Sprites(this);
       this.trafficGraphics.setDepth(buildingLayers.traffic); this.effectsGraphics.setDepth(buildingLayers.effects);
-      this.events.once('shutdown', () => { this.sprites.destroy(); this.packets.destroy(); this.lighting.destroy(); });
+      this.events.once('shutdown', () => { this.sprites.destroy(); this.packets.destroy(); this.lighting.destroy(); this.heroSprites.destroy(); });
       this.captions = Array.from({ length: 5 }, () => this.add.text(0, 0, '', {
         fontFamily: 'Trebuchet MS, sans-serif', fontSize: '13px', fontStyle: 'bold', color: '#f2faff', align: 'center', backgroundColor: '#234253', padding: { x: 8, y: 5 },
       }).setOrigin(.5, 0).setDepth(buildingLayers.labels));
@@ -126,6 +134,12 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
         }
         const requests = view.snapshot?.requests;
         const visualState = resourceVisualState(view, reducedMotion);
+        if (v3 && view.playerMode) {
+          this.heroSprites.begin();
+          resources.map((resource,i)=>({resource,p:positions[i]})).sort((a,b)=>a.p.y-b.p.y).forEach(({resource,p},rank)=>this.heroSprites.update(resource,p,rank,view,animationTime,reducedMotion));
+          this.heroSprites.end();
+          if(diagnosticsEnabled)host.dataset.v3Sprites=JSON.stringify(this.heroSprites.diagnostics());
+        }
         const appU = requests?.app.utilization ?? null;
         const sqlU = requests ? Math.max(requests.sql.readUtilization, requests.sql.writeUtilization) : null;
         const flows = view.state.runtime.status === 'RUNNING' && !view.error && requests ? visualFlows(requests) : [];
@@ -165,7 +179,7 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
               interaction.strokeRoundedRect(target.point.x+b.x-5, target.point.y+b.y-5, b.width+10, b.height+10, 6);
             }
           }
-          const construction = drawConstruction(interaction, view, resource => positions[resources.indexOf(resource)], width);
+          const construction = v3 ? [] : drawConstruction(interaction, view, resource => positions[resources.indexOf(resource)], width);
           if (diagnosticsEnabled) {
             host.dataset.constructionSites = JSON.stringify(construction);
             host.dataset.worldTargets = JSON.stringify(targets.map(t => ({ id:t.id, kind:t.kind, build:t.build, ...(playerCamera ? playerCamera.fitToScreen(t.point) : t.point) })));
@@ -220,10 +234,11 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
           const state = resource.remaining > 0 ? `PROVISIONING ${resource.remaining}s` : !connected ? 'DISCONNECTED' : utilizationLabel(u);
           const pending = resource.kind === 'compute' && (view.state.runtime.scaleDue !== null || view.state.runtime.preparationScaleDue !== null);
           const artScale = view.playerMode ? playerBuildingScale(resource.kind, width) : 1;
-          const spriteBody = this.sprites.update(resource, p, pending, rank, view.playerMode && resource.kind === 'compute' ? visualState.app.bays : undefined, artScale);
-          const building = drawBuilding(g, p, resource, connected, view.selected === resource.id,
+          const hero = !!v3 && !!view.playerMode;
+          const spriteBody = hero || this.sprites.update(resource, p, pending, rank, view.playerMode && resource.kind === 'compute' ? visualState.app.bays : undefined, artScale);
+          const building = hero ? buildingPresentation(resource,connected,view.selected===resource.id,pending) : drawBuilding(g, p, resource, connected, view.selected === resource.id,
             pending, state === 'WARNING', state === '! OVERLOADED', spriteBody, this.stateGraphics, artScale);
-          if (view.playerMode && resource.remaining === 0 && (resource.kind === 'compute' || resource.kind === 'database')) {
+          if (!hero && view.playerMode && resource.remaining === 0 && (resource.kind === 'compute' || resource.kind === 'database')) {
             const color = state === '! OVERLOADED' ? 0xff685d : state === 'WARNING' ? 0xffb64f : 0x67dded;
             this.stateGraphics.lineStyle(state === '! OVERLOADED' ? 4 : 2, color, .75);
             this.stateGraphics.strokeEllipse(p.x, p.y + 12, 116 * artScale, 40 * artScale);
@@ -237,7 +252,7 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
             }
           }
           buildingStates.push({ id: resource.id, ...building });
-          if (view.playerMode) renderedBanks.push({ id: resource.id, ...drawFacilityBanks(this.stateGraphics, resource.kind, p, artScale, visualState) });
+          if (view.playerMode && !hero) renderedBanks.push({ id: resource.id, ...drawFacilityBanks(this.stateGraphics, resource.kind, p, artScale, visualState) });
           if (targets.includes(resource.id)) { this.stateGraphics.lineStyle(2, 0xefc27b); this.stateGraphics.strokeCircle(p.x, p.y, 48); }
           const name = width < 600 ? { internet: 'Internet', compute: 'App', database: 'SQL', cache: 'Cache', edge: 'WAF' }[resource.kind] : definitions[resource.kind].name;
           this.captions[i].setFontSize(width < 600 ? 11 : 13).setWordWrapWidth(width < 600 ? 82 : 260, true)
@@ -276,7 +291,7 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
         g = this.trafficGraphics.clear();
         const effects = activeEffects(view);
         const fx = this.effectsGraphics.clear();
-        if (view.playerMode) {
+        if (view.playerMode && !v3) {
           const activity = resourceActivity(view);
           const pose = drawResourceActivity(fx, activity, resources, positions, animationTime, effectMotion(view, reducedMotion), width);
           if (diagnosticsEnabled) host.dataset.resourceActivity = JSON.stringify({ items: activity, pose });
@@ -342,7 +357,7 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
         if (diagnosticsEnabled) host.dataset.effects = JSON.stringify(effects);
         let packetCount = 0;
         this.packets.begin();
-        if (view.playerMode) {
+        if (view.playerMode && !v3) {
           const intake = positions[resources.findIndex(r => r.kind === 'internet')];
           if (intake) drawIntake(fx, intake, visualState.internet);
         }
@@ -360,8 +375,9 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
               const length = Math.hypot(b.x - a.x, b.y - a.y) || 1;
               const offset = (lane % 3 - 1) * 4;
               const x = point.x - (b.y - a.y) / length * offset; const y = point.y + (b.x - a.x) / length * offset;
-              g.lineStyle(flow.kind === 'order' ? 4 : 3, packetPalette[flow.kind], .22);
-              g.lineBetween(x - (b.x - a.x) / length * 17, y - (b.y - a.y) / length * 17, x, y);
+              g.lineStyle(flow.kind === 'order' ? 4 : 3, packetPalette[flow.kind], v3 ? .4 : .22);
+              const trail=v3?30:17;
+              g.lineBetween(x - (b.x - a.x) / length * trail, y - (b.y - a.y) / length * trail, x, y);
               this.packets.draw({ x, y }, flow, p);
             }
           });

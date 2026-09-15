@@ -3,6 +3,7 @@ import type { Point } from './editor';
 import type { VisualFlow } from './traffic';
 import { drawPacket, packetEndpoint } from './workload-art';
 import { buildingLayers } from './building-assets';
+import { v3 } from './art-v3';
 
 export function packetTexture(flow: VisualFlow, progress: number) {
   return `packet-${flow.kind}-${progress > .85 ? packetEndpoint(flow) : 'packet'}`;
@@ -35,7 +36,7 @@ export class PacketSprites {
     const key = packetTexture(flow, progress);
     const image = this.images[this.used] ?? this.scene.add.image(0, 0, key).setDepth(buildingLayers.traffic + 1);
     this.images[this.used++] = image;
-    image.setTexture(key).setPosition(point.x, point.y).setVisible(true);
+    image.setTexture(key).setPosition(point.x, point.y).setScale(v3 ? flow.kind==='order'?1.65:1.4 : 1).setVisible(true);
   }
   end() { for (let i = this.used; i < this.images.length; i++) this.images[i].setVisible(false); }
   diagnostics() { return { allocated: this.images.length, visible: this.used }; }
