@@ -57,25 +57,35 @@ export function generateHallBackground(): HTMLCanvasElement {
   ctx.globalAlpha = 1;
 
   // === FLOOR SECTORS (colored zones under each facility area) ===
-  const sectorFill = (x: number, y: number, w: number, h: number, r: number, color: string, alpha: number, borderColor?: string) => {
+  const sectorFill = (x: number, y: number, w: number, h: number, r: number, color: string, alpha: number, borderColor: string, glowColor: string, glowAlpha: number) => {
+    // Outer glow halo
+    const gx = x + w / 2, gy = y + h / 2;
+    const grad = ctx.createRadialGradient(gx, gy, Math.min(w, h) * 0.2, gx, gy, Math.max(w, h) * 0.7);
+    grad.addColorStop(0, glowColor);
+    grad.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = grad; ctx.globalAlpha = glowAlpha;
+    ctx.fillRect(x - 40, y - 40, w + 80, h + 80);
+    // Fill
     ctx.fillStyle = color; ctx.globalAlpha = alpha;
     roundRect(ctx, x, y, w, h, r); ctx.fill();
-    if (borderColor) {
-      ctx.strokeStyle = borderColor; ctx.globalAlpha = alpha * 1.4; ctx.lineWidth = 1.5;
-      roundRect(ctx, x, y, w, h, r); ctx.stroke();
-    }
+    // Inner border (bright)
+    ctx.strokeStyle = borderColor; ctx.globalAlpha = alpha * 1.8; ctx.lineWidth = 1.8;
+    roundRect(ctx, x, y, w, h, r); ctx.stroke();
+    // Outer soft border
+    ctx.strokeStyle = borderColor; ctx.globalAlpha = alpha * 0.5; ctx.lineWidth = 4;
+    roundRect(ctx, x - 3, y - 3, w + 6, h + 6, r + 3); ctx.stroke();
   };
 
   // Ingress zone (Intake area)
-  sectorFill(360, 440, 440, 390, 18, '#0a2838', 0.6, '#2a6878');
+  sectorFill(360, 440, 440, 390, 18, '#0a2838', 0.6, '#2a7888', '#3090b0', 0.06);
   // Security corridor (Edge)
-  sectorFill(660, 480, 440, 420, 18, '#0e1e28', 0.55, '#5a4838');
-  // Central compute hall (App Service — largest, most dominant)
-  sectorFill(920, 420, 600, 580, 24, '#0c2840', 0.65, '#2a7898');
+  sectorFill(660, 480, 440, 420, 18, '#0e1e28', 0.55, '#6a5040', '#906838', 0.05);
+  // Central compute hall (App Service — MAIN HERO, largest + brightest)
+  sectorFill(920, 420, 600, 580, 24, '#0c2a44', 0.7, '#3090b8', '#30a8d0', 0.1);
   // Cache zone
-  sectorFill(1280, 320, 460, 420, 18, '#082830', 0.5, '#2a886a');
+  sectorFill(1280, 320, 460, 420, 18, '#082830', 0.5, '#30a078', '#38c0a0', 0.06);
   // SQL data-core zone
-  sectorFill(1540, 470, 580, 540, 22, '#0e1830', 0.6, '#3050a0');
+  sectorFill(1540, 470, 580, 540, 22, '#0e1830', 0.6, '#3858b0', '#2850a0', 0.07);
   ctx.globalAlpha = 1;
 
   // === MAIN TRAFFIC CORRIDORS (floor markings between facilities) ===
@@ -252,6 +262,72 @@ export function generateHallBackground(): HTMLCanvasElement {
   // === SUBTLE NOISE-LIKE VARIATION (painted feel) ===
   drawFloorVariation(ctx);
 
+  return canvas;
+}
+
+export function generateForegroundLayer(): HTMLCanvasElement {
+  const canvas = document.createElement('canvas');
+  canvas.width = W; canvas.height = H;
+  const ctx = canvas.getContext('2d')!;
+
+  // Overhead pipe/cable tray silhouettes at top and bottom edges
+  // These create depth without blocking gameplay
+
+  // Top edge: partial overhead cable tray
+  ctx.fillStyle = '#0a1822';
+  ctx.globalAlpha = 0.45;
+  ctx.fillRect(60, 0, W - 120, 8);
+  // Tray supports
+  for (let x = 120; x < W - 80; x += 240) {
+    ctx.fillStyle = '#0c1e2c';
+    ctx.globalAlpha = 0.4;
+    ctx.fillRect(x - 3, 0, 6, 24);
+    // Cross brace
+    ctx.strokeStyle = '#1a3040';
+    ctx.lineWidth = 2;
+    ctx.globalAlpha = 0.3;
+    ctx.beginPath();
+    ctx.moveTo(x - 20, 6);
+    ctx.lineTo(x + 20, 6);
+    ctx.stroke();
+  }
+
+  // Bottom-left foreground pipe silhouette
+  ctx.fillStyle = '#081620';
+  ctx.globalAlpha = 0.3;
+  roundRect(ctx, 30, H - 60, 350, 12, 4);
+  ctx.fill();
+  // Pipe highlight
+  ctx.strokeStyle = '#2a4858';
+  ctx.lineWidth = 1;
+  ctx.globalAlpha = 0.25;
+  ctx.beginPath();
+  ctx.moveTo(35, H - 56);
+  ctx.lineTo(375, H - 56);
+  ctx.stroke();
+
+  // Bottom-right foreground railing
+  ctx.fillStyle = '#081620';
+  ctx.globalAlpha = 0.25;
+  ctx.fillRect(W - 380, H - 55, 340, 4);
+  // Railing posts
+  for (let x = W - 370; x < W - 50; x += 85) {
+    ctx.fillRect(x, H - 65, 3, 18);
+  }
+
+  // Left edge: partial machinery silhouette
+  ctx.fillStyle = '#060e18';
+  ctx.globalAlpha = 0.2;
+  roundRect(ctx, -5, 300, 40, 180, 6);
+  ctx.fill();
+
+  // Right edge: partial cabinet silhouette
+  ctx.fillStyle = '#060e18';
+  ctx.globalAlpha = 0.2;
+  roundRect(ctx, W - 35, 400, 40, 200, 6);
+  ctx.fill();
+
+  ctx.globalAlpha = 1;
   return canvas;
 }
 
@@ -517,15 +593,15 @@ function drawPipe(ctx: CanvasRenderingContext2D, x: number, y: number, w: number
 function drawZoneGlow(ctx: CanvasRenderingContext2D, zones: ReturnType<typeof facilityZone>[]) {
   const glows: { cx: number; cy: number; color: string; rx: number; ry: number; alpha: number }[] = [
     // Intake - cool blue arrival
-    { cx: zones[0].cx, cy: zones[0].cy, color: '#3a90c0', rx: 180, ry: 140, alpha: 0.1 },
+    { cx: zones[0].cx, cy: zones[0].cy, color: '#3a90c0', rx: 200, ry: 160, alpha: 0.14 },
     // Edge - amber/security
-    { cx: zones[1].cx, cy: zones[1].cy, color: '#906838', rx: 160, ry: 120, alpha: 0.08 },
-    // Compute - dominant cyan (main hero, biggest glow)
-    { cx: zones[2].cx, cy: zones[2].cy, color: '#30a8d0', rx: 260, ry: 220, alpha: 0.14 },
+    { cx: zones[1].cx, cy: zones[1].cy, color: '#a07040', rx: 170, ry: 130, alpha: 0.11 },
+    // Compute - DOMINANT cyan (main hero, biggest and brightest glow)
+    { cx: zones[2].cx, cy: zones[2].cy, color: '#30b0e0', rx: 300, ry: 260, alpha: 0.2 },
     // Cache - green/cyan energetic
-    { cx: zones[3].cx, cy: zones[3].cy, color: '#38c0a0', rx: 150, ry: 120, alpha: 0.1 },
+    { cx: zones[3].cx, cy: zones[3].cy, color: '#38c8a8', rx: 170, ry: 140, alpha: 0.13 },
     // SQL - deep indigo data core
-    { cx: zones[4].cx, cy: zones[4].cy, color: '#2850a0', rx: 200, ry: 170, alpha: 0.12 },
+    { cx: zones[4].cx, cy: zones[4].cy, color: '#2858b0', rx: 220, ry: 190, alpha: 0.16 },
   ];
 
   for (const g of glows) {
