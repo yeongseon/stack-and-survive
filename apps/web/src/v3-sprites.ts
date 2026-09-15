@@ -5,7 +5,7 @@ import type { View } from './controller';
 import { v3, v3Asset, v3Texture, v3Unit } from './art-v3';
 import { playerBuildingScale, buildingLayers, resourceArtBounds } from './building-assets';
 import { resourceVisualState } from './resource-visual-state';
-import { tycoonPoint } from './tycoon-layout';
+// tycoonPoint no longer needed — env scenery baked into hall-background
 import { resourceActivity } from './resource-activity';
 
 export class V3Sprites {
@@ -15,40 +15,8 @@ export class V3Sprites {
   private activity: Phaser.GameObjects.Graphics;
   constructor(private scene: Phaser.Scene) {
     this.activity=scene.add.graphics().setDepth(buildingLayers.state+2);
-    if(!v3)return;
-    const protectedAreas = (['internet','edge','compute','cache','database'] as const).map(kind=>{
-      const point=tycoonPoint(kind),bounds=resourceArtBounds(kind,playerBuildingScale(kind),true);
-      return {x:point.x+bounds.x-30,y:point.y+bounds.y-70,width:bounds.width+60,height:bounds.height+125};
-    });
-    const place=(name:string,x:number,y:number,scale:number,alpha=.72)=>{
-      const asset=v3Asset(`env-${name}`),b=asset.visible;
-      const bounds={x:x+b.x*scale,y:y+b.y*scale,width:b.width*scale,height:b.height*scale};
-      if(protectedAreas.some(p=>bounds.x<p.x+p.width&&bounds.x+bounds.width>p.x&&bounds.y<p.y+p.height&&bounds.y+bounds.height>p.y))return;
-      if(!scene.textures.exists(asset.texture))return;
-      this.scenery.push(scene.add.image(x,y,asset.texture).setOrigin(asset.originX,asset.originY).setDisplaySize(asset.width*scale,asset.height*scale)
-        .setTint(0x809aa8).setAlpha(alpha).setDepth(5+y*.001));
-    };
-    for(const row of [245,415])for(let i=0;i<5;i++)place('rack-c',560+i*150,row,2.35);
-    for(const row of [225,395])for(let i=0;i<3;i++)place(i===1?'pdu':'cooling-b',145+i*155,row,2.4,.68);
-    for(let i=0;i<4;i++){
-      place('electrical-cabinet',1480+i*180,245,2.6,.62);
-      place(i%2?'pdu':'cooling-a',1505+i*180,420,2.2,.6);
-      place('conduit-amber',1480+i*175,480,1.5,.5);
-    }
-    for(const row of [1095,1260])for(let i=0;i<6;i++)place(i%3===2?'cooling-a':'rack-b',880+i*145,row,2.4,.56);
-    for(let i=0;i<4;i++){
-      place('cooling-b',220+i*145,1110,2.5,.72);
-      place('pipe-elbow',225+i*145,1260,2.15,.6);
-    }
-    for(const x of [155,2240])for(let i=0;i<5;i++)place(i%2?'electrical-cabinet':'cooling-b',x,580+i*116,2.7);
-    for(let i=0;i<12;i++)place(i===7?'service-door':'wall-section',100+i*198,90,2.5,.55);
-    for(let i=0;i<11;i++) {
-      place('cable-tray',260+i*175,970,2,.7);
-      place('floor-vent',230+i*175,490,1.3,.65);
-    }
-    for(const x of [350,2030])place('maintenance-light',x,975,2.5,.85);
-    for(const [x,y] of [[375,455],[1390,470],[735,1000],[1830,1050]])place('rail',x,y,2,.65);
-    for(const [x,y] of [[505,505],[1390,520],[760,965],[1960,990]])place('warning-decal',x,y,1.1,.38);
+    // Environment scenery is now baked into the hall-background texture.
+    // Individual env-* sprite placement has been removed for a cohesive painted look.
   }
   begin() { this.used.clear(); this.activity.clear(); }
   private image(key: string, name: string, p: Point, scale: number, depth: number, alpha = 1) {
