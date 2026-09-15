@@ -1,10 +1,12 @@
 import { expect, test } from '@playwright/test';
 
-for (const width of [1440, 390, 1920, 320, 1024]) test(`player navigation keeps facilities aligned at ${width}px`, async ({ page }, info) => {
-  await page.setViewportSize({ width, height: 900 });
+for (const width of [1440, 844, 1920, 740, 1024]) test(`player navigation keeps facilities aligned at ${width}px`, async ({ page }, info) => {
+  await page.setViewportSize({ width, height: width < 900 ? 390 : 900 });
   await page.goto('/?tycoon');
   await page.getByRole('button', { name: 'Start Game', exact: true }).click();
   await page.getByRole('button', { name: 'Ⅱ Pause', exact: true }).click();
+  await page.getByRole('button', { name: 'Skip guide', exact: true }).click();
+  await page.getByRole('button', { name: 'Fit architecture', exact: true }).click();
   const surface = page.locator('[data-renderer="ready"]');
   const canvas = page.locator('canvas');
   const zoom = page.getByRole('status', { name: 'Camera zoom' });
@@ -13,9 +15,10 @@ for (const width of [1440, 390, 1920, 320, 1024]) test(`player navigation keeps 
   await expect(zoom).toHaveText('125%');
   await expect(surface).toHaveAttribute('data-player-camera', /"userZoom":1.25/);
   const bounds = (await canvas.boundingBox())!;
+  const fitScale = Math.min(bounds.width / 2400, bounds.height / 1350);
   let nodes: { id: string; x: number; y: number }[] = JSON.parse((await surface.getAttribute('data-nodes'))!);
   const app = nodes.find(n => n.id === 'compute')!;
-  await canvas.click({ position: { x: app.x, y: app.y - 35 } });
+  await canvas.click({ position: { x: app.x, y: app.y - 100 * fitScale * 1.25 } });
   await expect(page.getByRole('region', { name: 'Resource actions' })).toContainText('active instances');
   await expect(surface).toHaveAttribute('data-rendered-selection', 'compute');
   await page.getByRole('button', { name: 'Close resource', exact: true }).click();
@@ -37,7 +40,7 @@ for (const width of [1440, 390, 1920, 320, 1024]) test(`player navigation keeps 
   await expect(surface).toHaveAttribute('data-player-camera', /"userZoom":1\}/);
   nodes = JSON.parse((await surface.getAttribute('data-nodes'))!);
   const sql = nodes.find(n => n.id === 'database')!;
-  await canvas.click({ position: { x: sql.x, y: sql.y - 32 } });
+  await canvas.click({ position: { x: sql.x, y: sql.y - 100 * fitScale } });
   await expect(page.getByRole('region', { name: 'Resource actions' })).toContainText('Reads:');
   await page.getByRole('button', { name: 'Close resource', exact: true }).click();
   await page.getByRole('button', { name: 'Zoom out', exact: true }).click();
@@ -50,7 +53,7 @@ for (const width of [1440, 390, 1920, 320, 1024]) test(`player navigation keeps 
     await expect.poll(async () => JSON.parse((await surface.getAttribute('data-player-camera'))!).userZoom).toBe(value);
     nodes = JSON.parse((await surface.getAttribute('data-nodes'))!);
     const compute = nodes.find(n => n.id === 'compute')!;
-    await canvas.click({ position: { x: compute.x, y: compute.y - 45 * value } });
+    await canvas.click({ position: { x: compute.x, y: compute.y - 100 * fitScale * value } });
     await expect(page.getByRole('region', { name: 'Resource actions' })).toContainText('active instances');
     await page.getByRole('button', { name: 'Close resource', exact: true }).click();
   }
@@ -64,6 +67,7 @@ test('touch navigation cancels taps and 100 camera inputs preserve held simulati
   await page.getByRole('button', { name: 'Start Game', exact: true }).click();
   await page.getByRole('button', { name: 'Ⅱ Pause', exact: true }).click();
   if (await page.getByRole('button', { name: 'Skip guide', exact: true }).isVisible()) await page.getByRole('button', { name: 'Skip guide', exact: true }).click();
+  await page.getByRole('button', { name: 'Fit architecture', exact: true }).click();
   const surface = page.locator('[data-renderer="ready"]');
   const before = JSON.parse((await page.getByTestId('diagnostics').textContent())!);
   const frozen = JSON.stringify({ state: before.state, actions: before.queuedActions, challenge: before.challenge });

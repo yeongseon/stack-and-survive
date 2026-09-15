@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from '
 import type { ActionRequest, Controller, View } from './controller';
 import { mountWorld } from './world';
 import { tycoonPositions } from './tycoon-layout';
-import { createPlayerNavigation } from './player-navigation';
+import { type PlayerNavigation } from './player-navigation';
 import { definitions } from '@stack-and-survive/cloud-domain';
 import { businessFeedback } from './business-feedback';
 import type { WorldTarget } from './world-interaction';
@@ -14,9 +14,8 @@ function LocalAction({ controller, action, children }: { controller: Controller;
   return <button type="button" disabled={reason !== null} title={reason ?? undefined} onClick={() => controller.queueAction(action)}>{children}</button>;
 }
 
-export function GameFloor({ controller, view, guideTarget = null }: { controller: Controller; view: View; guideTarget?: string | null }) {
+export function GameFloor({ controller, view, navigation, onReady, blocked = false, guideTarget = null }: { controller: Controller; view: View; navigation: PlayerNavigation; onReady: () => void; blocked?: boolean; guideTarget?: string | null }) {
   const host = useRef<HTMLDivElement>(null);
-  const [navigation] = useState(createPlayerNavigation);
   const projection = useSyncExternalStore(navigation.subscribe, navigation.getSnapshot);
   const cardClose = useRef<HTMLButtonElement>(null);
   const opener = useRef<HTMLElement | null>(null);
@@ -45,14 +44,14 @@ export function GameFloor({ controller, view, guideTarget = null }: { controller
     const surface = document.createElement('div'); surface.className = 'surface'; root.prepend(surface);
     let disposed = false; let cleanup: (() => void) | undefined;
     navigation.resize({ width: root.clientWidth, height: root.clientHeight });
-    mountWorld(surface, controller, view.rendererGeneration, inspect, navigation, worldBuild).then(destroy => { if (disposed) destroy(); else cleanup = destroy; })
+    mountWorld(surface, controller, view.rendererGeneration, inspect, navigation, worldBuild, () => { if (!disposed) onReady(); }).then(destroy => { if (disposed) destroy(); else cleanup = destroy; })
       .catch(error => { if (!disposed) controller.presentationFailed(String(error)); });
     const observer = new ResizeObserver(() => navigation.resize({ width: root.clientWidth, height: root.clientHeight })); observer.observe(root);
     return () => { disposed = true; observer.disconnect(); cleanup?.(); surface.remove(); };
-  }, [controller, view.rendererGeneration, inspect, navigation, worldBuild]);
+  }, [controller, view.rendererGeneration, inspect, navigation, worldBuild, onReady]);
   const at = (kind: keyof typeof tycoonPositions) => {
     const point = projection.resourceScreen(kind);
-    return { left: point.x, top: point.y + 42 * projection.state.userZoom };
+    return { left: point.x, top: point.y + 42 * projection.effectiveZoom };
   };
   const runtime = view.state.runtime;
   const app = runtime.architecture.resources.find(r => r.kind === 'compute')!;
@@ -71,14 +70,14 @@ export function GameFloor({ controller, view, guideTarget = null }: { controller
     if (opener.current?.isConnected && opener.current.matches('button, summary, [tabindex]')) opener.current.focus({ preventScroll: true });
     else host.current?.querySelector<HTMLButtonElement>('[aria-label="Fit architecture"]')?.focus({ preventScroll: true });
   };
-  return <div className="tycoon-floor world" inert={!!view.result} ref={host} data-testid="world" data-guide-target={guideTarget ?? undefined} aria-label="Living cloud business">
+  return <div className="tycoon-floor world" inert={!!view.result || blocked} ref={host} data-testid="world" data-guide-target={guideTarget ?? undefined} aria-label="Living cloud business">
     <div className="facility-plaques" aria-hidden="true">
       {(['internet', 'edge', 'compute', 'cache', 'database'] as const).map(kind => {
         const resource = runtime.architecture.resources.find(r => r.kind === kind);
         const p = projection.resourceScreen(kind);
         const width = host.current?.clientWidth ?? 320, height = host.current?.clientHeight ?? 568;
         const art = resourceArtBounds(kind, playerBuildingScale(kind, width), true);
-        const top = p.y + (resource ? art.y : -24) * projection.state.userZoom - (kind === 'internet' || !resource ? 38 : 76);
+        const top = p.y + (resource ? art.y : -24) * projection.effectiveZoom - (kind === 'internet' || !resource ? 38 : 76);
         const pressure = kind === 'compute' ? visual.app.pressure : kind === 'database' ? visual.sql.pressure : kind === 'cache' ? visual.cache.pressure : null;
         const warning = pressure === 'warning' || pressure === 'overcapacity';
         const detail = !resource ? 'Build here +' : resource.remaining > 0 ? `Construction · ${resource.remaining}s`

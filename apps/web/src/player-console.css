@@ -158,6 +158,42 @@
 .facility-plaque span { display: block; margin-top: 3px; font-size: 10px; color: #a2c5ce; white-space: nowrap; }
 .facility-plaque.pressure { border-color: #f1b67f; background: #432c25e6; }
 .facility-plaque.pressure span { color: #ffd2a4; }
+.opening-caption { position: absolute; z-index: 22; left: 50%; bottom: 8%; transform: translateX(-50%); text-align: center; pointer-events: none; padding: 18px 28px; background: #0b2235df; border-top: 1px solid #7fbcc4; }
+.opening-caption small, .opening-caption strong, .opening-caption span { display: block; }
+.opening-caption small { font-size: 10px; letter-spacing: .25em; color: #9dc4cd; }
+.opening-caption strong { font-size: 21px; margin: 8px 0; }
+.opening-caption span { color: #adc2cb; font-size: 12px; }
+.diorama-game:has(.opening-caption) .world-guide, .diorama-game:has(.opening-caption) .player-camera-controls { visibility: hidden; }
+.tycoon-game:has(.landscape-gate) .world-guide, .tycoon-game:has(.landscape-gate) .tycoon-qa { visibility: hidden; }
+.landscape-gate { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; padding: 24px; background: radial-gradient(ellipse at 50% 35%,#254556,#081c2b 70%); text-align: center; }
+.landscape-gate > div { max-width: 440px; }
+.rotate-device { display: block; font-size: 90px; line-height: 1; color: #edc58c; }
+.landscape-gate h2 { font-size: 30px; margin: 24px 0 14px; }
+.landscape-gate p { font-size: 14px; line-height: 1.7; color: #b9cbd2; }
+.landscape-gate button { display: block; width: 100%; min-height: 48px; margin-top: 12px; border-radius: 6px; box-shadow: none; }
+.landscape-gate button:first-of-type { background: #eac286; color: #112e3d; border: 0; font-weight: 700; }
+.landscape-gate button:last-of-type { color: #c3d5dc; background: transparent; border: 1px solid #486674; }
+@media (max-height: 500px) and (orientation: landscape) {
+  .tycoon-game.diorama-game > .tycoon-floor, .tycoon-game.diorama-game:has(> .world-guide) > .tycoon-floor { height: 100dvh; min-height: 0; }
+  .diorama-game .tycoon-header { padding: 5px 12px; }
+  .diorama-game .tycoon-header h1 { display: none; }
+  .diorama-game .tycoon-header nav { margin-left: auto; }
+  .diorama-game .game-hud { top: 6px; left: 10px; padding: 7px 10px; gap: 15px; max-width: calc(100% - 210px); }
+  .diorama-game .hud-reading { flex: 0 0 82px; }
+  .diorama-game .hud-reading small { font-size: 9px; }
+  .diorama-game .hud-pressure { flex-basis: 125px; }
+  .diorama-game .hud-reading strong { font-size: 16px; }
+  .diorama-game .hud-reading > span { display: none; }
+  .diorama-game .hud-pressure { max-width: 130px; font-size: 10px; }
+  .diorama-game .business-feedback { top: 66px !important; }
+  .diorama-game .world-guide { bottom: 8px; left: 10px; width: 310px; max-height: 108px; overflow: auto; }
+  .diorama-game .world-guide p { font-size: 10px; margin-block: 3px; }
+  .diorama-game .world-guide small { display: none; }
+  .diorama-game .player-camera-controls { right: 8px; bottom: 8px; }
+  .diorama-game .resource-action-card { max-height: calc(100dvh - 80px); }
+  .opening-caption { bottom: 12%; padding: 10px 20px; }
+  .opening-caption strong { font-size: 16px; }
+}
 .outcome-summary { margin: 0 32px 18px; display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 16px 0; border-block: 1px solid #365361; }
 .outcome-summary strong { font-size: 27px; color: #d4e7e1; }
 .outcome-summary strong span { display: block; font-size: 11px; font-weight: 400; margin-top: 4px; color: #a4bcc6; }

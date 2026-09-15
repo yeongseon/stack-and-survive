@@ -19,6 +19,7 @@ export function createPlayerNavigation(initial: PlayerViewport = { width: 1, hei
   };
   return {
     getSnapshot: () => projection,
+    setPresentation(state: PlayerCameraState) { update(state); },
     subscribe(listener: () => void) { listeners.add(listener); return () => { listeners.delete(listener); }; },
     resize(next: PlayerViewport) {
       if (next.width <= 0 || next.height <= 0 || next.width === viewport.width && next.height === viewport.height) return;

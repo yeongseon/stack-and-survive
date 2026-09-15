@@ -69,7 +69,7 @@ test('observed App pressure falls only after a world-local expansion activates',
 });
 
 test('world-local controls stay separate and keyboard accessible on a narrow floor', async ({ page }) => {
-  await page.setViewportSize({ width: 320, height: 740 }); await page.goto('/?tycoon');
+  await page.setViewportSize({ width: 740, height: 390 }); await page.goto('/?tycoon');
   await page.getByRole('button', { name: 'About', exact: true }).click();
   await page.getByRole('button', { name: 'Close', exact: true }).click();
   await expect(page.getByRole('button', { name: 'About', exact: true })).toBeFocused();
