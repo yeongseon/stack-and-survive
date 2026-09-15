@@ -61,7 +61,11 @@ export function GameFloor({ controller, view, navigation, onReady, blocked = fal
   const localPosition = (kind: keyof typeof tycoonPositions) => {
     const p = projection.resourceScreen(kind);
     const width = host.current?.clientWidth ?? 320, height = host.current?.clientHeight ?? 568;
-    return { left: Math.max(12, Math.min(width - 292, p.x + 32)), top: Math.max(100, Math.min(height - 330, p.y - 180)) };
+    const art = resourceArtBounds(kind, playerBuildingScale(kind), true);
+    const right = p.x + (art.x + art.width) * projection.effectiveZoom + 14;
+    const left = p.x + art.x * projection.effectiveZoom - 294;
+    const preferred = right + 280 <= width - 12 ? right : left >= 12 ? left : p.x + 32;
+    return { left: Math.max(12, Math.min(width - 292, preferred)), top: Math.max(height < 500 ? 70 : 100, Math.min(height - 320, p.y - 180)) };
   };
   const buildAction: ActionRequest | null = buildKind === 'compute' ? { type: 'SCALE_OUT' } : buildKind ? { type: 'DEPLOY_RESOURCE', kind: buildKind, ...tycoonPositions[buildKind] } : null;
   const buildReason = buildAction ? controller.actionReason(buildAction) : null;

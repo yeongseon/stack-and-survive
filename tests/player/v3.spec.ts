@@ -24,6 +24,10 @@ test('production V3 renders approved art and physical builds without review endp
   await page.screenshot({ path: info.outputPath('v3-production-baseline.png') });
   await canvas.click({ position: at(1510, 600) });
   await expect(page.getByRole('region', { name: 'CACHE expansion' })).toBeVisible();
+  const cacheCard = (await page.getByRole('region', { name: 'CACHE expansion' }).boundingBox())!;
+  expect(cacheCard.x).toBeGreaterThanOrEqual(0);
+  expect(cacheCard.x + cacheCard.width).toBeLessThanOrEqual(1440);
+  await page.getByRole('button', { name: 'Confirm expansion', exact: true }).click({ trial: true });
   await page.getByRole('button', { name: 'Confirm expansion', exact: true }).click();
   await expect(page.getByTestId('slot-cache')).toContainText('Provisioning');
   await canvas.click({ position: at(875, 725) });
@@ -45,6 +49,14 @@ test('production V3 renders approved art and physical builds without review endp
   await page.getByRole('button', { name: 'Fit architecture', exact: true }).click();
   await expect(page.getByRole('status', { name: 'Camera zoom' })).toHaveText('100%');
   await page.screenshot({ path: info.outputPath('v3-production-landscape.png') });
+  await page.getByRole('button', { name: 'SQL processing', exact: true }).focus();
+  await page.keyboard.press('Enter');
+  const sqlCard = page.getByRole('region', { name: 'Resource actions' });
+  const sqlBounds = (await sqlCard.boundingBox())!;
+  expect(sqlBounds.x).toBeGreaterThanOrEqual(0);
+  expect(sqlBounds.x + sqlBounds.width).toBeLessThanOrEqual(844);
+  expect(sqlBounds.y + sqlBounds.height).toBeLessThanOrEqual(390);
+  await sqlCard.getByRole('button', { name: 'Close resource', exact: true }).click();
   await expect(page.locator('[data-v3-sprites], [data-world-targets], [data-testid="diagnostics"]')).toHaveCount(0);
   expect(failures).toEqual([]);
 });
