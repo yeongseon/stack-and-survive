@@ -12,7 +12,7 @@ Stack & Survive is a real-time cloud infrastructure management game where player
 
 ## Project status
 
-**Living-operation game with stateful facilities, optional sound/guide and an approved three-objective challenge ladder · Human learning/replay validation and audio listening remain pending**
+**Game-first diorama with working Zoom/Pan/Fit, direct facility interaction, physical construction and outcome-first results (#199/#200); reviewed camera lifecycle coverage merged in #201. Next P0: [Production Art V3 #202](https://github.com/yeongseon/stack-and-survive/issues/202). Human validation and manual audio/rights decisions remain pending.**
 
 Start with the [documentation authority index](docs/README.md). Current normal behavior is in [Gameplay](docs/GAMEPLAY_SPEC.md); future work is in [Product Roadmap](docs/PRODUCT_ROADMAP.md). `docs/archive/` preserves history and must not guide new implementation. The repository is public source; no project-wide open-source license has been selected. #164 tracks license, third-party rights and security decisions.
 
@@ -46,7 +46,7 @@ The world is the dominant player surface. Area percentages are design guidance, 
 
 The primary player experience is demand → flow → pressure → expansion/optimization → observed business outcome. Results and redesign/replay support that loop. Better decisions can improve outcomes; more capacity alone does not guarantee more profit.
 
-The approved ladder verification includes 240 unit cases, 72 QA browser cases, seven ordinary-player cases and a Pages project-path smoke test. Actual human observation remains #25/#151/#159; these are not replaced by automated checks. Future runtime scale-in (#132) is design evaluation only, not an implemented or approved gameplay action.
+The reviewed baseline includes 268 unit cases, 92 QA browser cases (including #201), seven ordinary-player cases and one Pages smoke. Real current-build comprehension/game-feel/voluntary replay will be evaluated together in #25/#195/#159 after V3. #151's missing historical comparison is retired, not fabricated. #132 and #160–#163 are frozen future work, not active implementation.
 
 ```text
 Architecture Decision
@@ -69,7 +69,7 @@ docs/
   GAMEPLAY_SPEC.md       Current gameplay v1.0 and QA appendix
   SIMULATION_SPEC.md     Simulation specification v0.2
   TECHNICAL_DESIGN.md    Implemented architecture v1.0
-  VISUAL_DIRECTION.md    Visual direction v0.4
+  VISUAL_DIRECTION.md    Visual direction v0.6 / Production Art V3
   PRODUCT_ROADMAP.md     Future work, not implementation evidence
   IMPLEMENTATION_PLAN.md Current ordered execution and human gates
   archive/               Historical proposals (not authority)
@@ -107,14 +107,14 @@ Use Node 22.22.0 and pnpm 10.32.1. Verification commands and limits are document
 - [Gameplay Specification](docs/GAMEPLAY_SPEC.md) — Current player flow and separate QA editor appendix (v1.0).
 - [Simulation Specification](docs/SIMULATION_SPEC.md) — Corrected simulation rules, authoritative values, and arithmetic reference matrix (v0.2).
 - [Technical Design](docs/TECHNICAL_DESIGN.md) — Actual controller/renderer/UI and browser-local deployment boundary (v1.0).
-- [Visual Direction](docs/VISUAL_DIRECTION.md) — State-accurate art and Production Quality policy (v0.4).
+- [Visual Direction](docs/VISUAL_DIRECTION.md) — Shipped game-first interactions and Production Art V3 direction (v0.6).
 - [Historical Tycoon Reframe](docs/archive/TYCOON_REFRAME_IMPLEMENTATION_PLAN.md) — Archived presentation plan, not current authority.
 - [Asset provenance](apps/web/public/assets/ATTRIBUTION.md) — Original V24 Azure SVG sources, checksums, bundled terms and remaining usage-review limitations.
 - [Implementation Plan](docs/IMPLEMENTATION_PLAN.md) — Current quality/replayability sequence and real-human gates (v1.0).
-- [Replayability Design](docs/REPLAYABILITY_DESIGN.md), [Challenge System](docs/CHALLENGE_SYSTEM.md), [Strategy Balance](docs/ARCHITECTURE_STRATEGY_BALANCE.md) — Implemented challenge identity/ladder and measured strategies, with future profiles/history clearly distinguished.
+- [Replayability Design](docs/REPLAYABILITY_DESIGN.md), [Challenge System](docs/CHALLENGE_SYSTEM.md), [Strategy Balance](docs/ARCHITECTURE_STRATEGY_BALANCE.md) — Implemented challenge/ladder/history/profiles and measured strategies; future variety remains gated.
 - [Asset Strategy](docs/ASSET_STRATEGY.md), [Engineering Rules](docs/ENGINEERING_RULES.md), [Design References](docs/GAME_DESIGN_REFERENCES.md) — Sourcing/change discipline and text-only independent design commentary.
 
-The [ordered MVP backlog (#7)](https://github.com/yeongseon/stack-and-survive/issues/7) links all currently planned work. Prepare the backlog first, then execute one issue at a time in dependency order; individual issues are the source of status and completion evidence.
+The [current backlog (#7)](https://github.com/yeongseon/stack-and-survive/issues/7) tracks V3 art in 2–3 grouped PRs, parallel rights/manual audio checks, one combined human session and submission polish. #123/#142 are completed historical epics; #151 is not planned. Issues remain acceptance units, not a requirement for one PR per issue.
 - [ADR-002: Game Engine Selection](docs/adr/ADR-002-GAME-ENGINE.md) — Executed comparison and accepted Phaser 3.90.0 decision.
 
 `SIMULATION_SPEC.md` is the source of truth for numerical simulation behavior. `TECHNICAL_DESIGN.md` documents the architecture. The implemented local loop still requires human learning validation before demo-readiness claims; hosting requires separate authorization.
