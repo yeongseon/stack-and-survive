@@ -55,9 +55,14 @@ export const coreGeometry = {
     moduleOffset: { x: ((x+29)-(y+28))*1.35, y: ((x+29)+(y+28))*.65 },
   })),
 };
-const module = (x,y) => `<g data-active-module="true">${cabinet(x+4,y+5,24,49,47,98) + box(x+10,y+11,126,36,34,6,'#9cb0b7') + fan(x+28,y+28,134,12)}</g>`;
+const module = (x,y) => `<g data-active-module="true">${box(x+3,y+3,24,56,55,57,'#9fb9c1','#34586d','#173548')
+  +box(x+7,y+7,81,48,47,11,'#c3d4d6','#749aa7','#35566c')+fan(x+30,y+30,95,21)
+  +trim(x+3,y+3,61,56,55,palette.cyan)+trim(x+3,y+3,31,56,55,palette.cyan)
+  +Array.from({length:4},(_,i)=>line([x+12+i*11,y+58,35],[x+12+i*11,y+58,56],'#a8e5ed',3)).join('')}</g>`;
 function appBase() {
   let art=pedestal()+box(-94,-92,19,16,184,23,'#8b9ba1')+box(-78,-92,19,169,13,23,'#8297a1');
+  art+=box(-92,-94,42,17,179,39,'#456b80','#1c394e','#112a3d')+box(-75,-94,42,165,15,39,'#638a9a','#294b61','#1b354a');
+  for(const y of [-73,8]) art+=box(-100,y,42,25,30,86,'#c2d2d0','#42687a','#1c3c52')+trim(-100,y,113,25,30,palette.cyan);
   for (const [x,y] of bayOrigins) {
     art+=box(x,y,19,65,65,4,'#142a3a')+plane(x+6,y+6,23.5,53,53,'#223e50','#7794a0');
     for (const dx of [3,59]) art+=box(x+dx,y+5,24,3,55,3,'#8b9d9f');
@@ -72,6 +77,7 @@ function intake() {
   for (let i=0;i<3;i++) art+=box(-132,-55+i*42,20,92,23,22,'#617f8d')+trim(-132,-55+i*42,39,92,23,palette.cyan);
   art+=box(-52,-70,19,105,135,58)+box(-60,-76,77,122,145,9,'#a3b8bf');
   art+=box(-35,-55,86,68,105,34,'#55788b')+vent(-29,-49,120,56,93,12);
+  art+=`<path d="M238 360V247L320 201 399 248V358L320 405Z" fill="#071d31" stroke="#86afbd" stroke-width="19" stroke-linejoin="bevel"/><path d="M249 353V254L320 215 388 255V352L320 391Z" fill="#103c58" stroke="#63ecff" stroke-width="6"/><path d="M268 344V267L320 236 369 268V343L320 372Z" fill="#1a6881" stroke="#b6faff" stroke-width="3"/><path d="M292 280L344 305 292 331" fill="none" stroke="#d5ffff" stroke-width="10" stroke-linejoin="round"/>`;
   art+=box(42,-18,28,52,46,48,'#bed0cf')+plane(47,-13,77,42,36,'#193e56');
   art+=trim(-60,-76,88,122,145,palette.cyan);
   for(let i=0;i<4;i++) art+=line([-40+i*22,65,30],[-40+i*22,65,66],'#7595a7',2);
@@ -108,8 +114,10 @@ function sql() {
     art+=trim(-67,-68,z+9,131,131,'#74b7d1');
     for(let i=0;i<9;i++) art+=line([-51+i*12,57,z+14],[-51+i*12,57,z+27],'#1b3245',2);
   }
-  art+=box(-66,-67,172,129,128,10,'#b2c4c8')+box(-46,-46,182,89,87,13,'#647f92');
-  art+=fan(-19,-13,197,16)+fan(20,22,197,16);
+  art+=box(-66,-67,172,129,128,19,'#c2d7de','#607e9a','#284661')+box(-46,-46,191,89,87,16,'#365d81');
+  const crown=project(0,0,211);
+  art+=`<ellipse cx="${crown[0]}" cy="${crown[1]}" rx="69" ry="33" fill="#0e2442" stroke="#90bcd4" stroke-width="9"/><ellipse cx="${crown[0]}" cy="${crown[1]}" rx="51" ry="23" fill="#439bbc" stroke="#9aecff" stroke-width="5"/><ellipse cx="${crown[0]}" cy="${crown[1]}" rx="26" ry="12" fill="#c1fbff"/>`;
+  for(const x of [-71,55])art+=box(x,40,19,16,24,166,'#9db4c6','#4f7394','#1e3b58')+trim(x,40,138,16,24,'#94daf2');
   art+=cabinet(-92,22,19,26,69,99,palette.cyan)+cabinet(65,-45,19,26,91,111,palette.amber);
   for(const y of [-35,0,35]) art+=line([59,y,48],[59,y,163],'#adc0c6',3);
   return art;

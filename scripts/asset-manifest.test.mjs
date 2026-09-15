@@ -30,8 +30,10 @@ test('current inventory passes integrity but explicitly fails release rights rea
   const root = fileURLToPath(new URL('../', import.meta.url));
   const manifest = JSON.parse(readFileSync(resolve(root, 'art/asset-manifest.json'), 'utf8'));
   const integrity = validateAssetManifest(manifest, root);
-  assert.deepEqual(integrity.errors, []); assert.equal(integrity.warnings.length, 10);
-  assert.equal(validateAssetManifest(manifest, root, { release: true }).errors.length, 10);
+  assert.equal(manifest.assets.length, 71);
+  assert.equal(manifest.assets.filter(asset => asset.provenance === 'original-v3').length, 61);
+  assert.deepEqual(integrity.errors, []); assert.equal(integrity.warnings.length, 71);
+  assert.equal(validateAssetManifest(manifest, root, { release: true }).errors.length, 71);
 });
 test('accepts a reviewed free asset declaration without network or execution', t => {
   const { root, manifest } = fixture(t);

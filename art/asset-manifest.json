@@ -31,18 +31,661 @@
       "toolchain": "Python3 importer; pinned V24 archive and file hashes",
       "attribution": "apps/web/public/assets/ATTRIBUTION.md",
       "restrictions": "Existing owner-directed identity assets, not CC0 or covered by project code license. Interactive/public-use applicability requires issue164 review. No recolor, distortion, building-texture baking or logo reuse."
+    },
+    "original-v3": {
+      "origin": "original",
+      "author": "Stack & Survive project (AI-assisted original hero-facility and indoor-kit art)",
+      "sourceUrl": "https://github.com/yeongseon/stack-and-survive",
+      "license": "LicenseRef-Project-Unselected",
+      "licenseEvidence": "art/v3/PROVENANCE.md",
+      "review": "rights-pending",
+      "reviewEvidence": "docs/PAGES_DEMO_EXCEPTION.md",
+      "modifications": "Original editable geometry rasterized to transparent PNG; no third-party game artwork or Azure icon paths embedded.",
+      "reproduce": "node art/v3/export-review.mjs && node art/v3/register-runtime.mjs",
+      "toolchain": "Node22; Playwright1.63 Chromium; 640x640 DPR1 PNG; exact exported bytes reviewed before release.",
+      "attribution": "apps/web/public/assets/ATTRIBUTION.md",
+      "restrictions": "Owner explicitly expanded the existing Pages demo exception to original V3 assets. No general project art license, Microsoft permission or employer/IP clearance is inferred; issue164 remains open."
     }
   },
   "assets": [
-    { "id": "app-service", "path": "apps/web/public/assets/buildings/app-service.png", "sha256": "c4691b185c206dea3b9dbfa13c4357c69901b2c47f4abfae38dfdcd0e0ed1d8d", "provenance": "original-buildings", "sourcePath": "art/buildings/app-service.svg", "sourceSha256": "bce256bd44022907a325e63c336128d90d8ede9152de1b62de8d4ac2f7a38239", "role": "App facility body", "boundsKey": "app-service" },
-    { "id": "app-module", "path": "apps/web/public/assets/buildings/app-module.png", "sha256": "c14cd7dc0acf07dea454a6aae1ef0e2eae0f271d8df30c441f5ffd0bb758361b", "provenance": "original-buildings", "sourcePath": "art/buildings/app-module.svg", "sourceSha256": "70916b1086a1ed2acc980c737bc951e109d270d69de910ff332089afda502bb8", "role": "Actual active App instance module", "boundsKey": "app-module" },
-    { "id": "azure-sql", "path": "apps/web/public/assets/buildings/azure-sql.png", "sha256": "a8a68e116d81e06613249aa06bd64226be62aa8a489f4cd721aed5a20c8420f2", "provenance": "original-buildings", "sourcePath": "art/buildings/azure-sql.svg", "sourceSha256": "c8aacbddfff1049ba65687d8b765ba6a302f6985d506729697e0a7a75a443a47", "role": "SQL persistent-data core", "boundsKey": "azure-sql" },
-    { "id": "redis", "path": "apps/web/public/assets/buildings/redis.png", "sha256": "6af8d7deda94d3f8124f74fa8dcb77a27e3825422c87badbde22c69c39ed321d", "provenance": "original-buildings", "sourcePath": "art/buildings/redis.svg", "sourceSha256": "c60683f337d02601496b3897b8a4b19e2ee5bc51d70f8dcdbe75a976a8b2d211", "role": "Cache memory facility", "boundsKey": "redis" },
-    { "id": "protected-edge", "path": "apps/web/public/assets/buildings/protected-edge.png", "sha256": "caa417cecc9e5d4140cbc8a45d308965bd98783e2483b1130144474d6e9c1a9a", "provenance": "original-buildings", "sourcePath": "art/buildings/protected-edge.svg", "sourceSha256": "470083c9196c345bbbef675107e0848916b06fb1306a8ccb88cb25c42a2fe447", "role": "Protected ingress gateway", "boundsKey": "protected-edge" },
-    { "id": "badge-app", "path": "apps/web/public/assets/azure-icons/app-service.svg", "sha256": "529d83fc80637a96b6d27f6cfac7536e1c5f9b1b67f58aef4e2e3d6f47fd4925", "provenance": "azure-v24", "archivePath": "Azure_Public_Service_Icons/Icons/app services/10035-icon-service-App-Services.svg", "role": "Separate unchanged App Service identity" },
-    { "id": "badge-sql", "path": "apps/web/public/assets/azure-icons/azure-sql.svg", "sha256": "a26124a2b188ccf910520c935c726f7364e0f5935d7a4319ebcab9c80a40e475", "provenance": "azure-v24", "archivePath": "Azure_Public_Service_Icons/Icons/databases/10130-icon-service-SQL-Database.svg", "role": "Separate unchanged SQL identity" },
-    { "id": "badge-cache", "path": "apps/web/public/assets/azure-icons/managed-redis.svg", "sha256": "fa4b65d5946115084be1e842ecb934ab7f01b3019a450d19640ea3c3eaf9bab0", "provenance": "azure-v24", "archivePath": "Azure_Public_Service_Icons/Icons/databases/03675-icon-service-Azure-Managed-Redis.svg", "role": "Separate unchanged Managed Redis identity" },
-    { "id": "badge-edge", "path": "apps/web/public/assets/azure-icons/application-gateway.svg", "sha256": "531e668e47cf61872b2811ec67dcc103cee2ecc1d272f07132d6196d68ba6c19", "provenance": "azure-v24", "archivePath": "Azure_Public_Service_Icons/Icons/networking/10076-icon-service-Application-Gateways.svg", "role": "Separate unchanged Application Gateway identity" },
-    { "id": "azure-terms", "path": "apps/web/public/assets/azure-icons/Microsoft_Terms_of_Use.pdf", "sha256": "983e83cef1a8f85164760b076a96df54cb50af345861cb1d8344040037d0531c", "provenance": "azure-v24", "archivePath": "Azure_Public_Service_Icons/Microsoft_Terms_of_Use.pdf", "role": "Preserved Microsoft icon source terms" }
+    {
+      "id": "app-service",
+      "path": "apps/web/public/assets/buildings/app-service.png",
+      "sha256": "c4691b185c206dea3b9dbfa13c4357c69901b2c47f4abfae38dfdcd0e0ed1d8d",
+      "provenance": "original-buildings",
+      "sourcePath": "art/buildings/app-service.svg",
+      "sourceSha256": "bce256bd44022907a325e63c336128d90d8ede9152de1b62de8d4ac2f7a38239",
+      "role": "App facility body",
+      "boundsKey": "app-service"
+    },
+    {
+      "id": "app-module",
+      "path": "apps/web/public/assets/buildings/app-module.png",
+      "sha256": "c14cd7dc0acf07dea454a6aae1ef0e2eae0f271d8df30c441f5ffd0bb758361b",
+      "provenance": "original-buildings",
+      "sourcePath": "art/buildings/app-module.svg",
+      "sourceSha256": "70916b1086a1ed2acc980c737bc951e109d270d69de910ff332089afda502bb8",
+      "role": "Actual active App instance module",
+      "boundsKey": "app-module"
+    },
+    {
+      "id": "azure-sql",
+      "path": "apps/web/public/assets/buildings/azure-sql.png",
+      "sha256": "a8a68e116d81e06613249aa06bd64226be62aa8a489f4cd721aed5a20c8420f2",
+      "provenance": "original-buildings",
+      "sourcePath": "art/buildings/azure-sql.svg",
+      "sourceSha256": "c8aacbddfff1049ba65687d8b765ba6a302f6985d506729697e0a7a75a443a47",
+      "role": "SQL persistent-data core",
+      "boundsKey": "azure-sql"
+    },
+    {
+      "id": "redis",
+      "path": "apps/web/public/assets/buildings/redis.png",
+      "sha256": "6af8d7deda94d3f8124f74fa8dcb77a27e3825422c87badbde22c69c39ed321d",
+      "provenance": "original-buildings",
+      "sourcePath": "art/buildings/redis.svg",
+      "sourceSha256": "c60683f337d02601496b3897b8a4b19e2ee5bc51d70f8dcdbe75a976a8b2d211",
+      "role": "Cache memory facility",
+      "boundsKey": "redis"
+    },
+    {
+      "id": "protected-edge",
+      "path": "apps/web/public/assets/buildings/protected-edge.png",
+      "sha256": "caa417cecc9e5d4140cbc8a45d308965bd98783e2483b1130144474d6e9c1a9a",
+      "provenance": "original-buildings",
+      "sourcePath": "art/buildings/protected-edge.svg",
+      "sourceSha256": "470083c9196c345bbbef675107e0848916b06fb1306a8ccb88cb25c42a2fe447",
+      "role": "Protected ingress gateway",
+      "boundsKey": "protected-edge"
+    },
+    {
+      "id": "badge-app",
+      "path": "apps/web/public/assets/azure-icons/app-service.svg",
+      "sha256": "529d83fc80637a96b6d27f6cfac7536e1c5f9b1b67f58aef4e2e3d6f47fd4925",
+      "provenance": "azure-v24",
+      "archivePath": "Azure_Public_Service_Icons/Icons/app services/10035-icon-service-App-Services.svg",
+      "role": "Separate unchanged App Service identity"
+    },
+    {
+      "id": "badge-sql",
+      "path": "apps/web/public/assets/azure-icons/azure-sql.svg",
+      "sha256": "a26124a2b188ccf910520c935c726f7364e0f5935d7a4319ebcab9c80a40e475",
+      "provenance": "azure-v24",
+      "archivePath": "Azure_Public_Service_Icons/Icons/databases/10130-icon-service-SQL-Database.svg",
+      "role": "Separate unchanged SQL identity"
+    },
+    {
+      "id": "badge-cache",
+      "path": "apps/web/public/assets/azure-icons/managed-redis.svg",
+      "sha256": "fa4b65d5946115084be1e842ecb934ab7f01b3019a450d19640ea3c3eaf9bab0",
+      "provenance": "azure-v24",
+      "archivePath": "Azure_Public_Service_Icons/Icons/databases/03675-icon-service-Azure-Managed-Redis.svg",
+      "role": "Separate unchanged Managed Redis identity"
+    },
+    {
+      "id": "badge-edge",
+      "path": "apps/web/public/assets/azure-icons/application-gateway.svg",
+      "sha256": "531e668e47cf61872b2811ec67dcc103cee2ecc1d272f07132d6196d68ba6c19",
+      "provenance": "azure-v24",
+      "archivePath": "Azure_Public_Service_Icons/Icons/networking/10076-icon-service-Application-Gateways.svg",
+      "role": "Separate unchanged Application Gateway identity"
+    },
+    {
+      "id": "azure-terms",
+      "path": "apps/web/public/assets/azure-icons/Microsoft_Terms_of_Use.pdf",
+      "sha256": "983e83cef1a8f85164760b076a96df54cb50af345861cb1d8344040037d0531c",
+      "provenance": "azure-v24",
+      "archivePath": "Azure_Public_Service_Icons/Microsoft_Terms_of_Use.pdf",
+      "role": "Preserved Microsoft icon source terms"
+    },
+    {
+      "id": "v3-intake",
+      "path": "apps/web/public/assets/v3/intake.png",
+      "sha256": "c850735a71a4470b236dbce0d3c4338b6e7ec881eaca80a2f66e01009875346d",
+      "provenance": "original-v3",
+      "sourcePath": "art/v3/sources/intake.svg",
+      "sourceSha256": "1f5a4087e82dfb4748b7857967ae2cf15d09a72fefbaa8412a09f56795f1cf30",
+      "role": "Original V3 intake; renderer selects from authoritative state"
+    },
+    {
+      "id": "v3-protected-edge",
+      "path": "apps/web/public/assets/v3/protected-edge.png",
+      "sha256": "29f0c97e8485fbe891ddd1e2a82fefb27affbcce18211f0e0c91acaadbcc27c7",
+      "provenance": "original-v3",
+      "sourcePath": "art/v3/sources/protected-edge.svg",
+      "sourceSha256": "0b710643393185a6ca267616219a523798cddde5de1e867e04303b5bd35bf700",
+      "role": "Original V3 protected-edge; renderer selects from authoritative state"
+    },
+    {
+      "id": "v3-app-service",
+      "path": "apps/web/public/assets/v3/app-service.png",
+      "sha256": "bc03db57a2c2e0024ddb2a3c28205581025b437ef44a06b6c794dc242f0107d1",
+      "provenance": "original-v3",
+      "sourcePath": "art/v3/sources/app-service.svg",
+      "sourceSha256": "c78782350b48a44f761bf30c10f5226fe0ff2565957f96b018349bb4da97e36a",
+      "role": "Original V3 app-service; renderer selects from authoritative state"
+    },
+    {
+      "id": "v3-app-module",
+      "path": "apps/web/public/assets/v3/app-module.png",
+      "sha256": "4efb2ffbc7da38be31f655d2f15a5f9662c42e1feeb36d6b1d3b83bacb8ae19b",
+      "provenance": "original-v3",
+      "sourcePath": "art/v3/sources/app-module.svg",
+      "sourceSha256": "02406025468b188b1e5232820aef7353f709f86b55448fb08be3dfab3da70a39",
+      "role": "Original V3 app-module; renderer selects from authoritative state"
+    },
+    {
+      "id": "v3-redis-cache",
+      "path": "apps/web/public/assets/v3/redis-cache.png",
+      "sha256": "7e7f398ed6bded9fc3375913841a5aa66702f340d6c105855c9f304ea53a0882",
+      "provenance": "original-v3",
+      "sourcePath": "art/v3/sources/redis-cache.svg",
+      "sourceSha256": "f6bfe278201ab1208c11170b16df542037986551855cf1fe005d44efd2d1f802",
+      "role": "Original V3 redis-cache; renderer selects from authoritative state"
+    },
+    {
+      "id": "v3-azure-sql",
+      "path": "apps/web/public/assets/v3/azure-sql.png",
+      "sha256": "1540523cbdf4de59306faf8322df89f315d71c4cc039aa1bab8c8702b8da6f11",
+      "provenance": "original-v3",
+      "sourcePath": "art/v3/sources/azure-sql.svg",
+      "sourceSha256": "d1725b70565d8815cb75250c5217f95f99f8e8f1adb4b1cb20f1daf129b2aa70",
+      "role": "Original V3 azure-sql; renderer selects from authoritative state"
+    },
+    {
+      "id": "v3-app-1",
+      "path": "apps/web/public/assets/v3/app-1.png",
+      "sha256": "72e1849bbd1ec0e4e913a8f578e1ceeda5c7d506bddd27db27fb3ee3111455bb",
+      "provenance": "original-v3",
+      "sourcePath": "art/v3/sources/app-1.svg",
+      "sourceSha256": "cbd7326a959ede1a5fa061df6b74e9ac033145bf7719195c45d8ff8a7cccaedb",
+      "role": "Original V3 app-1; renderer selects from authoritative state"
+    },
+    {
+      "id": "v3-app-2",
+      "path": "apps/web/public/assets/v3/app-2.png",
+      "sha256": "4931b86206d2e8fa96a3c696f2288a38d7e89998f25e65c8e81b4b7b0b0a8dcf",
+      "provenance": "original-v3",
+      "sourcePath": "art/v3/sources/app-2.svg",
+      "sourceSha256": "cc44c8f994741ce9725181dde4936724a98dc38fb9bc2f1120d29cd14744907d",
+      "role": "Original V3 app-2; renderer selects from authoritative state"
+    },
+    {
+      "id": "v3-app-3",
+      "path": "apps/web/public/assets/v3/app-3.png",
+      "sha256": "1d0b57d07d439dea067dace1ecd02dcf0f3265cfeb84b1be75bd24d759e3dd28",
+      "provenance": "original-v3",
+      "sourcePath": "art/v3/sources/app-3.svg",
+      "sourceSha256": "0fa214e109d92010a527426f4875c59ccb1cc3741923e1bd30f19820b55d5ad8",
+      "role": "Original V3 app-3; renderer selects from authoritative state"
+    },
+    {
+      "id": "v3-app-4",
+      "path": "apps/web/public/assets/v3/app-4.png",
+      "sha256": "d58b27f9519506254c03272e68d0b2951fe9da6ff2a76cc7446ac5c7d384ab8e",
+      "provenance": "original-v3",
+      "sourcePath": "art/v3/sources/app-4.svg",
+      "sourceSha256": "d1681e2d173656df31e2dbd76953cb70ddb5e8adc9ee4d75da783a0b2aadef29",
+      "role": "Original V3 app-4; renderer selects from authoritative state"
+    },
+    {
+      "id": "v3-app-available-0",
+      "path": "apps/web/public/assets/v3/app-available-0.png",
+      "sha256": "d0762e62bf000f781d11a602b372a5f90df28708561bd110eaefac5bf7ba5539",
+      "provenance": "original-v3",
+      "sourcePath": "art/v3/sources/app-available-0.svg",
+      "sourceSha256": "919d222b56ffc04d65db7cbffb7f1c362dccae31b0621a518d57c9565e33812a",
+      "role": "Original V3 app-available-0; renderer selects from authoritative state"
+    },
+    {
+      "id": "v3-app-available-1",
+      "path": "apps/web/public/assets/v3/app-available-1.png",
+      "sha256": "92106587b86d194f9322ff12fa0abf50c3f3db8baea3c273e76efca47a6549c9",
+      "provenance": "original-v3",
+      "sourcePath": "art/v3/sources/app-available-1.svg",
+      "sourceSha256": "a97625877797cb467f4eb63d38b41127d9268eda9cc55d55e5586ed673058c24",
+      "role": "Original V3 app-available-1; renderer selects from authoritative state"
+    },
+    {
+      "id": "v3-app-available-2",
+      "path": "apps/web/public/assets/v3/app-available-2.png",
+      "sha256": "769f577f92b1ed80b2a503d7f3a7dc43d5ae5efcc78c4b318fe9f3844ee58b1a",
+      "provenance": "original-v3",
+      "sourcePath": "art/v3/sources/app-available-2.svg",
+      "sourceSha256": "8f4e46dddd0cd8617a71a7ebb0fb4ba9121ab6e0635e89db960073c680d704a5",
+      "role": "Original V3 app-available-2; renderer selects from authoritative state"
+    },
+    {
+      "id": "v3-app-available-3",
+      "path": "apps/web/public/assets/v3/app-available-3.png",
+      "sha256": "96c1f59573c2023f24f1e2613c0e81f811c22c0e8f22276c371bbcab78621c5e",
+      "provenance": "original-v3",
+      "sourcePath": "art/v3/sources/app-available-3.svg",
+      "sourceSha256": "87235e34599ed7a003022797f572a6fd335dd061c802d16e6c99cfc1fe334c3b",
+      "role": "Original V3 app-available-3; renderer selects from authoritative state"
+    },
+    {
+      "id": "v3-app-locked-0",
+      "path": "apps/web/public/assets/v3/app-locked-0.png",
+      "sha256": "807b2a2102b56ec7009052ffb46aff4fb9e9de8e331b91c75cf18162d5327d0c",
+      "provenance": "original-v3",
+      "sourcePath": "art/v3/sources/app-locked-0.svg",
+      "sourceSha256": "1421ef171341abe3f84c26c0620574defa8644c3da91396ceb4e9ae0e9aa2540",
+      "role": "Original V3 app-locked-0; renderer selects from authoritative state"
+    },
+    {
+      "id": "v3-app-locked-1",
+      "path": "apps/web/public/assets/v3/app-locked-1.png",
+      "sha256": "72182442520157c78b73159bf4cec8ad504f9d49391423dd82701c200ba6c55b",
+      "provenance": "original-v3",
+      "sourcePath": "art/v3/sources/app-locked-1.svg",
+      "sourceSha256": "66b886a4bfb81d0d241135f8ec6df22b6e39b0506112471465f532dd8afcc757",
+      "role": "Original V3 app-locked-1; renderer selects from authoritative state"
+    },
+    {
+      "id": "v3-app-locked-2",
+      "path": "apps/web/public/assets/v3/app-locked-2.png",
+      "sha256": "15a809d8f1f624b3da7bd2dd68505044aab10b570cca6443fef3c0998fa62a1c",
+      "provenance": "original-v3",
+      "sourcePath": "art/v3/sources/app-locked-2.svg",
+      "sourceSha256": "3c94a8f7695fdb02a128d87c0125bb1ea75fd8b19c4b3038de8e88269b75e0f9",
+      "role": "Original V3 app-locked-2; renderer selects from authoritative state"
+    },
+    {
+      "id": "v3-app-locked-3",
+      "path": "apps/web/public/assets/v3/app-locked-3.png",
+      "sha256": "8aee399c2e0b5ee8626b9fa4d3ad565c2d50da978f5b6b2a8f3f8d7566521b70",
+      "provenance": "original-v3",
+      "sourcePath": "art/v3/sources/app-locked-3.svg",
+      "sourceSha256": "9a144f4b915ab9e6b279be4022b1339710ba9b28727d5d584cb3eeb31555f319",
+      "role": "Original V3 app-locked-3; renderer selects from authoritative state"
+    },
+    {
+      "id": "v3-app-queued-0",
+      "path": "apps/web/public/assets/v3/app-queued-0.png",
+      "sha256": "9b492970a74000dd841ddb63aa78f23fa4bad9f0e7ab4261e96e2ac8a41bfd63",
+      "provenance": "original-v3",
+      "sourcePath": "art/v3/sources/app-queued-0.svg",
+      "sourceSha256": "329eb4a7ec118514a9b0a502cb84d52e79822db5af473d73ce7db3aaace68332",
+      "role": "Original V3 app-queued-0; renderer selects from authoritative state"
+    },
+    {
+      "id": "v3-app-queued-1",
+      "path": "apps/web/public/assets/v3/app-queued-1.png",
+      "sha256": "9e8be98d19080fbef99593282e6ec3a6f8d01677990205352c1b0db8d086e0f5",
+      "provenance": "original-v3",
+      "sourcePath": "art/v3/sources/app-queued-1.svg",
+      "sourceSha256": "2bd808fd9e8f06560e21953abe4e77f0605cf317f33f03172e484440ba336a95",
+      "role": "Original V3 app-queued-1; renderer selects from authoritative state"
+    },
+    {
+      "id": "v3-app-queued-2",
+      "path": "apps/web/public/assets/v3/app-queued-2.png",
+      "sha256": "be6acee658b743d9939ff47359fd97c8acb532d23a084c143d851765df5dcf59",
+      "provenance": "original-v3",
+      "sourcePath": "art/v3/sources/app-queued-2.svg",
+      "sourceSha256": "3296a5c6a90281ad1349d5f798d3c01bc9e21f993584ca0ca344c4b632f7d247",
+      "role": "Original V3 app-queued-2; renderer selects from authoritative state"
+    },
+    {
+      "id": "v3-app-queued-3",
+      "path": "apps/web/public/assets/v3/app-queued-3.png",
+      "sha256": "1718a50d49ffbf5b43eaf366566d8fe5efac74bae239a1e2919a473af35ba5db",
+      "provenance": "original-v3",
+      "sourcePath": "art/v3/sources/app-queued-3.svg",
+      "sourceSha256": "e9d70d1325ab40830d3810e6f73b7a770c903bb37d47bd7a95fae2792054cedf",
+      "role": "Original V3 app-queued-3; renderer selects from authoritative state"
+    },
+    {
+      "id": "v3-app-construction-0",
+      "path": "apps/web/public/assets/v3/app-construction-0.png",
+      "sha256": "2ba93bd740a85a2450d4cb065f522b6ba620fae5192678e8179aca0366fe939b",
+      "provenance": "original-v3",
+      "sourcePath": "art/v3/sources/app-construction-0.svg",
+      "sourceSha256": "bced33c79fe5dbf7972891b08114d232cc3e87a96cacad49852b69b1d0bfb0d5",
+      "role": "Original V3 app-construction-0; renderer selects from authoritative state"
+    },
+    {
+      "id": "v3-app-construction-1",
+      "path": "apps/web/public/assets/v3/app-construction-1.png",
+      "sha256": "f38ae9afeca6669dec6752b8f241cbd3540d1be4d5d72e584502d3890f7f7d12",
+      "provenance": "original-v3",
+      "sourcePath": "art/v3/sources/app-construction-1.svg",
+      "sourceSha256": "f5a345b04f4ed61435d96ecbbcbc2fbe970f5c877f7f6028749a8590b3f9eaac",
+      "role": "Original V3 app-construction-1; renderer selects from authoritative state"
+    },
+    {
+      "id": "v3-app-construction-2",
+      "path": "apps/web/public/assets/v3/app-construction-2.png",
+      "sha256": "4e86b31004bf4704881bfd265d1a9246a11cbbcab10a24470752b62c806f953b",
+      "provenance": "original-v3",
+      "sourcePath": "art/v3/sources/app-construction-2.svg",
+      "sourceSha256": "21138c6d9d5e66d288a81475a2c9f1cbdc6a9f8443d8f9de545abc094add3b42",
+      "role": "Original V3 app-construction-2; renderer selects from authoritative state"
+    },
+    {
+      "id": "v3-app-construction-3",
+      "path": "apps/web/public/assets/v3/app-construction-3.png",
+      "sha256": "9e4baa71f4d6aee188a2209312f3bf12ac4fb92527a6ab1a64cc6cb698e85cf5",
+      "provenance": "original-v3",
+      "sourcePath": "art/v3/sources/app-construction-3.svg",
+      "sourceSha256": "1392341428509fefb0242392b547ad2a4532aea4b06477ccf0f4c95b15d9b7e2",
+      "role": "Original V3 app-construction-3; renderer selects from authoritative state"
+    },
+    {
+      "id": "v3-app-overload-0",
+      "path": "apps/web/public/assets/v3/app-overload-0.png",
+      "sha256": "fa09b27efa3203038f6b22dd9a246d6d909100868e1fa4207e16c8cf2fd7742c",
+      "provenance": "original-v3",
+      "sourcePath": "art/v3/sources/app-overload-0.svg",
+      "sourceSha256": "f23528b98d6e461ad6f214ada4d056d7d3f7e4edb062c3884025b91f6ed97bf2",
+      "role": "Original V3 app-overload-0; renderer selects from authoritative state"
+    },
+    {
+      "id": "v3-app-overload-1",
+      "path": "apps/web/public/assets/v3/app-overload-1.png",
+      "sha256": "7fa8461e657f7aeb319b8fde65bed23199077b12b0c23a2a19aeaa75a308b214",
+      "provenance": "original-v3",
+      "sourcePath": "art/v3/sources/app-overload-1.svg",
+      "sourceSha256": "11a03304eeeb726e2d01e65b0665282eaee1f986d8456540eff1beb775504b70",
+      "role": "Original V3 app-overload-1; renderer selects from authoritative state"
+    },
+    {
+      "id": "v3-app-overload-2",
+      "path": "apps/web/public/assets/v3/app-overload-2.png",
+      "sha256": "3b8bb119b3c2fbf07b5ad7c9fda636d2a02e9d497763621ecdaad8cdc50816d0",
+      "provenance": "original-v3",
+      "sourcePath": "art/v3/sources/app-overload-2.svg",
+      "sourceSha256": "5abb37591c974bd19b4d95ccb300c6ed64484bb2ad345d1d95009ef6a1dc0f07",
+      "role": "Original V3 app-overload-2; renderer selects from authoritative state"
+    },
+    {
+      "id": "v3-app-overload-3",
+      "path": "apps/web/public/assets/v3/app-overload-3.png",
+      "sha256": "e65bc45cf2e21a83cd33ec18b04a0bf324f00c7fa6f712778eb9ac434372aaab",
+      "provenance": "original-v3",
+      "sourcePath": "art/v3/sources/app-overload-3.svg",
+      "sourceSha256": "3e34604d329efa1a0bccdc737105bd95344da4816912cb5c550f05b6c0f90af5",
+      "role": "Original V3 app-overload-3; renderer selects from authoritative state"
+    },
+    {
+      "id": "v3-sql-read-warning",
+      "path": "apps/web/public/assets/v3/sql-read-warning.png",
+      "sha256": "8c38515b02f7150cfa06de24bac1dd96b3d014cad9755cb8dd90c72402d8a1bb",
+      "provenance": "original-v3",
+      "sourcePath": "art/v3/sources/sql-read-warning.svg",
+      "sourceSha256": "9e451b91a3f2f908b2f780cdce6d052682dc57ac6ec69a7ee87131cefee81eea",
+      "role": "Original V3 sql-read-warning; renderer selects from authoritative state"
+    },
+    {
+      "id": "v3-sql-write-warning",
+      "path": "apps/web/public/assets/v3/sql-write-warning.png",
+      "sha256": "741929d0fed8cd06fccd236b2492b21d917df7587a2e79d1fde1ef014e9690ea",
+      "provenance": "original-v3",
+      "sourcePath": "art/v3/sources/sql-write-warning.svg",
+      "sourceSha256": "b3882bee68aeaae3d6311d8740572dc8055738c26c36b219d7cd9ed0c8b568f5",
+      "role": "Original V3 sql-write-warning; renderer selects from authoritative state"
+    },
+    {
+      "id": "v3-sql-critical",
+      "path": "apps/web/public/assets/v3/sql-critical.png",
+      "sha256": "1a03501414dc19588fb69756caef02fbd0d9e32202190e7c23515b2e71c7198a",
+      "provenance": "original-v3",
+      "sourcePath": "art/v3/sources/sql-critical.svg",
+      "sourceSha256": "22d2bcf898c00f9cbbba4bfe2fb0fea4fc418700e4da04063a60b6d95976c542",
+      "role": "Original V3 sql-critical; renderer selects from authoritative state"
+    },
+    {
+      "id": "v3-edge-filter",
+      "path": "apps/web/public/assets/v3/edge-filter.png",
+      "sha256": "20f029b9bd8f0db769a79614e78797b5db2ee5782b43d2b6a9ecda39197b7161",
+      "provenance": "original-v3",
+      "sourcePath": "art/v3/sources/edge-filter.svg",
+      "sourceSha256": "c3b0e20517eb73972772d035650b596b28d47c624a69eb2b7016fe4e7c990df0",
+      "role": "Original V3 edge-filter; renderer selects from authoritative state"
+    },
+    {
+      "id": "v3-cache-activity",
+      "path": "apps/web/public/assets/v3/cache-activity.png",
+      "sha256": "f347fb783107457dee2336bdaac3b0ddc6f9a3e0a552d12c1abaefb078d03bed",
+      "provenance": "original-v3",
+      "sourcePath": "art/v3/sources/cache-activity.svg",
+      "sourceSha256": "ef939e91ea668a110d9c6a79b0826c5947b49920943aa8b27f14751f225b4fb2",
+      "role": "Original V3 cache-activity; renderer selects from authoritative state"
+    },
+    {
+      "id": "v3-cache-foundation",
+      "path": "apps/web/public/assets/v3/cache-foundation.png",
+      "sha256": "7bffabf149131d05d0e151110b53340b8ee5933f8dcffe1977347a63629ebcc9",
+      "provenance": "original-v3",
+      "sourcePath": "art/v3/sources/cache-foundation.svg",
+      "sourceSha256": "061217e27569529f940ab75a3abfc015f48745d6ca4aa45b0c0f55afef250d0a",
+      "role": "Original V3 cache-foundation; renderer selects from authoritative state"
+    },
+    {
+      "id": "v3-cache-frame",
+      "path": "apps/web/public/assets/v3/cache-frame.png",
+      "sha256": "e767571695804cb266e330663eb83f364320b94cad261277484cf4c37e49b1c0",
+      "provenance": "original-v3",
+      "sourcePath": "art/v3/sources/cache-frame.svg",
+      "sourceSha256": "553bfb5aec909934280500ac60ab320818cc442028a0280c2dca1ab0bbec0561",
+      "role": "Original V3 cache-frame; renderer selects from authoritative state"
+    },
+    {
+      "id": "v3-cache-boot",
+      "path": "apps/web/public/assets/v3/cache-boot.png",
+      "sha256": "385933e013fa23f09aee2dc2d7a59ea5b711680da524501eb2f6e22d04eb875e",
+      "provenance": "original-v3",
+      "sourcePath": "art/v3/sources/cache-boot.svg",
+      "sourceSha256": "a70fc774fa200dc46145ea084e36236bcccc5dfd27cdf1cbff393616f6ced4c3",
+      "role": "Original V3 cache-boot; renderer selects from authoritative state"
+    },
+    {
+      "id": "v3-edge-foundation",
+      "path": "apps/web/public/assets/v3/edge-foundation.png",
+      "sha256": "7bffabf149131d05d0e151110b53340b8ee5933f8dcffe1977347a63629ebcc9",
+      "provenance": "original-v3",
+      "sourcePath": "art/v3/sources/edge-foundation.svg",
+      "sourceSha256": "4a80f6073a08c27fe364e8b1756754e390670a5d3de19fe01f6ce94c64f34e8e",
+      "role": "Original V3 edge-foundation; renderer selects from authoritative state"
+    },
+    {
+      "id": "v3-edge-frame",
+      "path": "apps/web/public/assets/v3/edge-frame.png",
+      "sha256": "5c0e778b6c39d3c93bc80e7e65317ffd43f0d831ca58ac5663c829b35883d3bd",
+      "provenance": "original-v3",
+      "sourcePath": "art/v3/sources/edge-frame.svg",
+      "sourceSha256": "fe0ed799c4dec3ce4bf7c2aa1a7f17722d0d6ee68909b7bf96d5c303b7ecbc28",
+      "role": "Original V3 edge-frame; renderer selects from authoritative state"
+    },
+    {
+      "id": "v3-edge-boot",
+      "path": "apps/web/public/assets/v3/edge-boot.png",
+      "sha256": "828ad5f5a5217b0c60cc2d1dadc683bfb3e48b48deb60adb1911e02274ad8b7f",
+      "provenance": "original-v3",
+      "sourcePath": "art/v3/sources/edge-boot.svg",
+      "sourceSha256": "a91c6657b761f0d9e210c748c1cc37bc4c904826620442cd790fc5a5f2821424",
+      "role": "Original V3 edge-boot; renderer selects from authoritative state"
+    },
+    {
+      "id": "v3-env-rack-a",
+      "path": "apps/web/public/assets/v3/env-rack-a.png",
+      "sha256": "48d2ce7cc7f663ceabdf5d1f4345481de18157c2a6845d3cd8db9c2cff3d12de",
+      "provenance": "original-v3",
+      "sourcePath": "art/v3/sources/env-rack-a.svg",
+      "sourceSha256": "1a93846738d519b1eaad2a3497098af373faa88d04d7988b13ebe511755423c8",
+      "role": "Original V3 env-rack-a; renderer selects from authoritative state"
+    },
+    {
+      "id": "v3-env-rack-b",
+      "path": "apps/web/public/assets/v3/env-rack-b.png",
+      "sha256": "b60093e232c561b69691e132f9cad1857faeeee257299b0551beb1d3b4ea3c8b",
+      "provenance": "original-v3",
+      "sourcePath": "art/v3/sources/env-rack-b.svg",
+      "sourceSha256": "996b8cbae1f12632d06175e2ccacedfe8cd0a5ad3bd3e65759785fd64cf6db49",
+      "role": "Original V3 env-rack-b; renderer selects from authoritative state"
+    },
+    {
+      "id": "v3-env-rack-c",
+      "path": "apps/web/public/assets/v3/env-rack-c.png",
+      "sha256": "af1c32d8d9ba871902ad0b67d3d3ef74e286ce4e987ee7adb31f87d917cfad4f",
+      "provenance": "original-v3",
+      "sourcePath": "art/v3/sources/env-rack-c.svg",
+      "sourceSha256": "05d31239239e25648ac34d48b815974f3da359ccd67e3a75f8b27fa384769b6a",
+      "role": "Original V3 env-rack-c; renderer selects from authoritative state"
+    },
+    {
+      "id": "v3-env-cooling-a",
+      "path": "apps/web/public/assets/v3/env-cooling-a.png",
+      "sha256": "ff9b735e48491cbb784656cecdae84d3ffd9b3dcca73ca740faac633726da207",
+      "provenance": "original-v3",
+      "sourcePath": "art/v3/sources/env-cooling-a.svg",
+      "sourceSha256": "ba0862c18b0ac5e6b63b7266861f1d1236c647ce9b6c6d9d615160f7872ca83d",
+      "role": "Original V3 env-cooling-a; renderer selects from authoritative state"
+    },
+    {
+      "id": "v3-env-cooling-b",
+      "path": "apps/web/public/assets/v3/env-cooling-b.png",
+      "sha256": "f75c34166ea30b3b9fe4c45d4bbf61e2177802600fe7caabf99108a3b3feebdc",
+      "provenance": "original-v3",
+      "sourcePath": "art/v3/sources/env-cooling-b.svg",
+      "sourceSha256": "1e3d7943cb26619a186daaf6f87f63e6c93e093779512463cf038ce584710210",
+      "role": "Original V3 env-cooling-b; renderer selects from authoritative state"
+    },
+    {
+      "id": "v3-env-pdu",
+      "path": "apps/web/public/assets/v3/env-pdu.png",
+      "sha256": "ad10d45a85a7692c4fd6cf3cce15a391bcd8b4e6316754ede06e03c3e34064e1",
+      "provenance": "original-v3",
+      "sourcePath": "art/v3/sources/env-pdu.svg",
+      "sourceSha256": "4623a5b3a65ef785f9124623c30a10f6bafc03861bd8a05d14304d96f235714b",
+      "role": "Original V3 env-pdu; renderer selects from authoritative state"
+    },
+    {
+      "id": "v3-env-electrical-cabinet",
+      "path": "apps/web/public/assets/v3/env-electrical-cabinet.png",
+      "sha256": "9e1134c9fcdfe77c3ab4a1aa30e6eecb73b0fecb56fa9f238d71257a3d8b55ee",
+      "provenance": "original-v3",
+      "sourcePath": "art/v3/sources/env-electrical-cabinet.svg",
+      "sourceSha256": "3b63de4f769e2a25178ea9d3b7f5ae5baaf685ab96555f6635ad50228814aeb0",
+      "role": "Original V3 env-electrical-cabinet; renderer selects from authoritative state"
+    },
+    {
+      "id": "v3-env-wall-section",
+      "path": "apps/web/public/assets/v3/env-wall-section.png",
+      "sha256": "4d04816eb487c269503af7c2eb0e388f55c67e3a028480e6265cff0cbdea4c72",
+      "provenance": "original-v3",
+      "sourcePath": "art/v3/sources/env-wall-section.svg",
+      "sourceSha256": "6b9d4425471c3098060acf24106bf841d1e8ef9c1be031cbea4599b237491508",
+      "role": "Original V3 env-wall-section; renderer selects from authoritative state"
+    },
+    {
+      "id": "v3-env-service-door",
+      "path": "apps/web/public/assets/v3/env-service-door.png",
+      "sha256": "6f548d16905be76192759072b8a14ac88320113a59b5482c09994a42a87d9abb",
+      "provenance": "original-v3",
+      "sourcePath": "art/v3/sources/env-service-door.svg",
+      "sourceSha256": "2823f65d6d088371600c76a867cfa375d8d27e40fe4a430ce65a644a7cdc7412",
+      "role": "Original V3 env-service-door; renderer selects from authoritative state"
+    },
+    {
+      "id": "v3-env-raised-tile",
+      "path": "apps/web/public/assets/v3/env-raised-tile.png",
+      "sha256": "78e22c8dc9d63ac77c3d2d7c0699916db2da241510d7430cb1635f01658338ed",
+      "provenance": "original-v3",
+      "sourcePath": "art/v3/sources/env-raised-tile.svg",
+      "sourceSha256": "ed096a973d3110e0a61da22a26b2b73c36971b7cd3b5e7c4c293f49224ffa1e3",
+      "role": "Original V3 env-raised-tile; renderer selects from authoritative state"
+    },
+    {
+      "id": "v3-env-grated-tile",
+      "path": "apps/web/public/assets/v3/env-grated-tile.png",
+      "sha256": "a4f4121bb62187f43a55d5300c2f30f604da535e6128fd375bb60da768189684",
+      "provenance": "original-v3",
+      "sourcePath": "art/v3/sources/env-grated-tile.svg",
+      "sourceSha256": "476511bbb0b1c85121b6e21bd7c53437627a64d79b5a38d01266fc8a3ddee009",
+      "role": "Original V3 env-grated-tile; renderer selects from authoritative state"
+    },
+    {
+      "id": "v3-env-floor-vent",
+      "path": "apps/web/public/assets/v3/env-floor-vent.png",
+      "sha256": "65488f3c0f0177a773b1bc3996eed27b0280d98bf8c0e6e020592e9feb6df82e",
+      "provenance": "original-v3",
+      "sourcePath": "art/v3/sources/env-floor-vent.svg",
+      "sourceSha256": "633e4fa94d87ac8ac7d51bc70adcb2343c0b54ecedfcf0d9f2c48c6a8d970cf1",
+      "role": "Original V3 env-floor-vent; renderer selects from authoritative state"
+    },
+    {
+      "id": "v3-env-cable-tray",
+      "path": "apps/web/public/assets/v3/env-cable-tray.png",
+      "sha256": "f295f70727af690925d7328bddaca09c4c447c632b2b24c0cb7c9686d55994c2",
+      "provenance": "original-v3",
+      "sourcePath": "art/v3/sources/env-cable-tray.svg",
+      "sourceSha256": "6f4bb230563a1dff6f49891dfaac80eac2b451f0013a219ce6497db2a16f0685",
+      "role": "Original V3 env-cable-tray; renderer selects from authoritative state"
+    },
+    {
+      "id": "v3-env-conduit-cyan",
+      "path": "apps/web/public/assets/v3/env-conduit-cyan.png",
+      "sha256": "718038f206e15f2419a3306662ce87f66972b8db479d2545caba9ae8b8669f70",
+      "provenance": "original-v3",
+      "sourcePath": "art/v3/sources/env-conduit-cyan.svg",
+      "sourceSha256": "06aebd08f4bdbb338efa4c67e01967afa1c9db00e4ed3b59581ab60f6e1ac95e",
+      "role": "Original V3 env-conduit-cyan; renderer selects from authoritative state"
+    },
+    {
+      "id": "v3-env-conduit-amber",
+      "path": "apps/web/public/assets/v3/env-conduit-amber.png",
+      "sha256": "ea37df180bf5738627cf07cec596384efc3253717bf0cb332a1e765d3c907427",
+      "provenance": "original-v3",
+      "sourcePath": "art/v3/sources/env-conduit-amber.svg",
+      "sourceSha256": "49f97592cfe44643d4bb75ef17ae97e64eafb13aead18683d57808ad465c5f3f",
+      "role": "Original V3 env-conduit-amber; renderer selects from authoritative state"
+    },
+    {
+      "id": "v3-env-rail",
+      "path": "apps/web/public/assets/v3/env-rail.png",
+      "sha256": "b6d82ee5d2d6bcd2db9c8ffe6fe09ec6b57a8a99627e3317483477ba1b65d13e",
+      "provenance": "original-v3",
+      "sourcePath": "art/v3/sources/env-rail.svg",
+      "sourceSha256": "b1eb96643950b5fdc071dbecab2ec164a737f56fb9d790a29f5dad4851f6b657",
+      "role": "Original V3 env-rail; renderer selects from authoritative state"
+    },
+    {
+      "id": "v3-env-warning-decal",
+      "path": "apps/web/public/assets/v3/env-warning-decal.png",
+      "sha256": "2a5a3ad16551f62fd6f25580f8aae0ff03a9d0b5270db76aa35acc90169dc0b5",
+      "provenance": "original-v3",
+      "sourcePath": "art/v3/sources/env-warning-decal.svg",
+      "sourceSha256": "d97eadbb1505a4835b199896bc51a9b9178b51a3a1c5cb2ef3adf1b554f29b86",
+      "role": "Original V3 env-warning-decal; renderer selects from authoritative state"
+    },
+    {
+      "id": "v3-env-maintenance-light",
+      "path": "apps/web/public/assets/v3/env-maintenance-light.png",
+      "sha256": "47cff1ab02bbc3052487d1b767ecbdafa90123acc7d22505e79c714af1823767",
+      "provenance": "original-v3",
+      "sourcePath": "art/v3/sources/env-maintenance-light.svg",
+      "sourceSha256": "3bf8c58e57d1eed0e60e9a44d3e15fdfbec0828de0a6010414136056ee90cf16",
+      "role": "Original V3 env-maintenance-light; renderer selects from authoritative state"
+    },
+    {
+      "id": "v3-env-pipe-straight",
+      "path": "apps/web/public/assets/v3/env-pipe-straight.png",
+      "sha256": "a4b8a2262a8957eac0b6fdb1b14cf7ed5ccafb6e039a93294634aac5217a6940",
+      "provenance": "original-v3",
+      "sourcePath": "art/v3/sources/env-pipe-straight.svg",
+      "sourceSha256": "03930cf0c7a4323878e19b4a4d4191f0728d2fad850c59348de08fe234c3b972",
+      "role": "Original V3 env-pipe-straight; renderer selects from authoritative state"
+    },
+    {
+      "id": "v3-env-pipe-elbow",
+      "path": "apps/web/public/assets/v3/env-pipe-elbow.png",
+      "sha256": "e938fb2a52d00f4066fdfae51a28113335ec3421f4d9a43c036334bc50e11be1",
+      "provenance": "original-v3",
+      "sourcePath": "art/v3/sources/env-pipe-elbow.svg",
+      "sourceSha256": "4cd79f38d784f6ac2d498801431a00af68711200efd28d31a19adbc4f30592c5",
+      "role": "Original V3 env-pipe-elbow; renderer selects from authoritative state"
+    }
   ]
 }
