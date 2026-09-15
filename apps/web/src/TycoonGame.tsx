@@ -16,6 +16,7 @@ import type { RunReport } from './run-report';
 import { createPlayerNavigation } from './player-navigation';
 import { createLandscapeClock, enhanceLandscape, requiresLandscape } from './landscape-session';
 import { v3 } from './art-v3';
+import { GameShellMenu, type ShellPage } from './GameShellMenu';
 import './player-console.css';
 
 export function TycoonGame({ challenge = blackFridayChallenge, titleContent, onResult, nextLevel, resultContent, runReport }: {
@@ -42,6 +43,10 @@ export function TycoonGame({ challenge = blackFridayChallenge, titleContent, onR
   const sound = useGameSound(controller);
   const guide = useWorldGuide();
   const [entered, setEntered] = useState(false);
+  const [shell, setShell] = useState<ShellPage | null>(null);
+  const shellOpener = useRef<HTMLElement | null>(null);
+  const returnToPause = useRef(false);
+  const restorePauseAfterRotation = useRef(false);
   useEffect(() => {
     const update = () => {
       const unsuitable = requiresLandscape(innerWidth, innerHeight);
@@ -84,11 +89,44 @@ export function TycoonGame({ challenge = blackFridayChallenge, titleContent, onR
   const dialogOpener = useRef<HTMLElement | null>(null);
   const startButton = useRef<HTMLButtonElement>(null);
   const learnButton = useRef<HTMLButtonElement>(null);
+  const pauseButton = useRef<HTMLButtonElement>(null);
+  const rebuildButton = useRef<HTMLButtonElement>(null);
   useEffect(() => { if (!entered) startButton.current?.focus(); else learnButton.current?.focus(); }, [entered]);
   useEffect(() => () => { enhancementGeneration.current++; controller.destroy(); }, [controller]);
   useEffect(() => { if (orientationGate) gateRef.current?.querySelector<HTMLButtonElement>('button')?.focus(); }, [orientationGate, portrait]);
   const open = (next: typeof page) => { dialogOpener.current = document.activeElement instanceof HTMLElement ? document.activeElement : null; setPage(next); dialog.current?.showModal(); };
   const runtime = view.state.runtime;
+  const showShell = (next: ShellPage) => {
+    shellOpener.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    setShell(next);
+  };
+  const closeShell = () => {
+    setShell(null);
+    if (shellOpener.current?.isConnected) shellOpener.current.focus({ preventScroll: true });
+    else pauseButton.current?.focus({ preventScroll: true });
+  };
+  const resumeFromMenu = () => { closeShell(); if (!gateOpen.current && !controller.getSnapshot().error) controller.resume(); };
+  const pauseFromPlayer = () => { controller.pause(); showShell('pause'); };
+  useEffect(() => {
+    if (orientationGate && (shell || returnToPause.current)) restorePauseAfterRotation.current = true;
+    if (orientationGate || view.error || view.result) {
+      setShell(null); returnToPause.current = false;
+      dialog.current?.close();
+    }
+    if (view.error) { restorePauseAfterRotation.current = false; rebuildButton.current?.focus({ preventScroll: true }); }
+  }, [orientationGate, view.error, view.result, shell]);
+  useEffect(() => {
+    const escape = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape' || event.defaultPrevented || shell || dialog.current?.open || orientationGate || opening || !entered || view.error || view.result) return;
+      const target = event.target;
+      if (target instanceof Element && target.closest('input,textarea,select,[contenteditable="true"],.resource-action-card')) return;
+      if (runtime.status === 'RUNNING' || runtime.status === 'PAUSED') {
+        event.preventDefault(); controller.pause(); shellOpener.current = pauseButton.current ?? null; setShell('pause');
+      }
+    };
+    document.addEventListener('keydown', escape);
+    return () => document.removeEventListener('keydown', escape);
+  }, [shell, orientationGate, opening, entered, view.error, view.result, runtime.status, controller]);
   const currentChallenge = view.challenge ?? blackFridayChallenge;
   const scenarioName = currentChallenge.workload.id === 'black-friday' ? 'Black Friday' : currentChallenge.workload.id;
   const enhance = () => {
@@ -109,9 +147,11 @@ export function TycoonGame({ challenge = blackFridayChallenge, titleContent, onR
     if (requiresLandscape(innerWidth, innerHeight)) return;
     gateOpen.current = false; setOrientationGate(false); clock.hold(false);
     if (!entered) start(false); else if (!opening && interruptedRunning.current && controller.getSnapshot().state.runtime.status === 'PAUSED') controller.resume();
+    else if (restorePauseAfterRotation.current && !controller.getSnapshot().error) setShell('pause');
+    restorePauseAfterRotation.current = false;
     interruptedRunning.current = false;
   };
-  const restart = () => { enhancementGeneration.current++; setEnhancementMessage(null); opened.current = false; gateOpen.current = false; interruptedRunning.current = false; clock.hold(false); controller.reset(); navigation.fit(); setOpening(false); setWorldReady(false); setOrientationGate(false); setEntered(false); };
+  const restart = () => { returnToPause.current = false; restorePauseAfterRotation.current = false; setShell(null); enhancementGeneration.current++; setEnhancementMessage(null); opened.current = false; gateOpen.current = false; interruptedRunning.current = false; clock.hold(false); controller.reset(); navigation.fit(); setOpening(false); setWorldReady(false); setOrientationGate(false); setEntered(false); };
   const reportedResult = useRef<View['result']>(null);
   useEffect(() => {
     if (view.result && reportedResult.current !== view.result) { reportedResult.current = view.result; onResult?.(view.result, view.state.runtime.architecture); }
@@ -120,6 +160,7 @@ export function TycoonGame({ challenge = blackFridayChallenge, titleContent, onR
   return <main className={`tycoon-game${entered ? ' diorama-game' : ''}${v3 ? ' hero-art-review' : ''}`} onClick={event => { if (event.target instanceof Element && event.target.closest('button')) sound.click(); }}>
     {!entered ? <section className="title-screen" inert={orientationGate} aria-label="Game introduction" data-time={diagnosticsEnabled ? runtime.time : undefined} data-budget={diagnosticsEnabled ? view.state.economy.remainingBudget : undefined}>
       <TitleWorld />
+      <button className="title-settings" type="button" onClick={() => showShell('settings')}>Settings</button>
       <div className="title-heading"><p className="title-eyebrow">A REAL-TIME CLOUD INFRASTRUCTURE GAME</p>
         <h1><span className="title-stack">STACK</span> <em>&amp;</em> SURVIVE</h1><p className="title-tagline">Build. Scale. Keep the business flowing.</p>
         <p className="title-description">Your customers are arriving. Make every infrastructure decision count.</p>
@@ -130,7 +171,7 @@ export function TycoonGame({ challenge = blackFridayChallenge, titleContent, onR
         <button type="button" aria-label="About" onClick={() => open('about')}>About<small>The idea &amp; the technology</small></button>
       </nav><p className="title-footnote">SAME WORKLOAD. DIFFERENT ARCHITECTURES. DIFFERENT OUTCOMES.</p></div>
     </section> : <>
-      <header className="tycoon-header" inert={!!view.result || opening || orientationGate}><h1>STACK <em>&amp;</em> SURVIVE</h1><nav aria-label="Game controls"><button ref={learnButton} type="button" onClick={() => open('learn')}>ⓘ Learn</button><button type="button" disabled={runtime.status !== 'RUNNING' && runtime.status !== 'PAUSED'} onClick={() => runtime.status === 'PAUSED' ? controller.resume() : controller.pause()}>{runtime.status === 'PAUSED' ? '▶ Resume' : 'Ⅱ Pause'}</button></nav></header>
+      <header className="tycoon-header" inert={!!view.result || opening || orientationGate}><h1>STACK <em>&amp;</em> SURVIVE</h1><nav aria-label="Game controls"><button ref={learnButton} type="button" onClick={() => open('learn')}>ⓘ Learn</button><button ref={pauseButton} type="button" disabled={runtime.status !== 'RUNNING' && runtime.status !== 'PAUSED'} onClick={() => runtime.status === 'PAUSED' ? controller.resume() : pauseFromPlayer()}>{runtime.status === 'PAUSED' ? '▶ Resume' : 'Ⅱ Pause'}</button></nav></header>
       <GameHUD view={view} />
       <WorldGuide view={view} guide={guide} returnFocus={() => learnButton.current?.focus()} />
       <GameFloor controller={controller} view={view} navigation={navigation} onReady={ready} blocked={opening || orientationGate} guideTarget={guide.visible ? guideHint(view, guide.stage).target : null} />
@@ -138,7 +179,7 @@ export function TycoonGame({ challenge = blackFridayChallenge, titleContent, onR
       {view.countdown !== null && <div className="welcome-countdown" role="status">{scenarioName} begins in <strong>{view.countdown}</strong></div>}
       {view.notice && diagnosticsEnabled && <p className="tycoon-notice">{view.notice}</p>}
       {view.result && <GameResult result={view.result} architecture={runtime.architecture} report={runReport?.result === view.result ? runReport.data : null} restart={restart} review={() => open('learn')} nextLevel={view.result.objectiveMet ? nextLevel : undefined} records={resultContent} />}
-      {view.error && <section role="alert" className="tycoon-result"><p>{view.error}</p><button type="button" onClick={() => controller.recoverRenderer()}>Rebuild graphics</button><button type="button" onClick={restart}>Return to title</button></section>}
+      {view.error && <section role="alert" className="tycoon-result"><p>{view.error}</p><button ref={rebuildButton} type="button" onClick={() => controller.recoverRenderer()}>Rebuild graphics</button><button type="button" onClick={restart}>Return to title</button></section>}
       {diagnosticsEnabled && <details className="tycoon-qa"><summary>Tycoon QA</summary><button onClick={() => controller.inspectNextTick()}>Step one tick</button><output data-testid="elapsed">{runtime.time}</output><pre data-testid="diagnostics">{JSON.stringify(view)}</pre></details>}
     </>}
     {orientationGate && <section ref={gateRef} className="landscape-gate" role="dialog" aria-modal="true" aria-label="Landscape play required" onKeyDown={event => {
@@ -149,6 +190,15 @@ export function TycoonGame({ challenge = blackFridayChallenge, titleContent, onR
       if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
       else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
     }}><div><span className="rotate-device" aria-hidden="true">↻</span><h2>{portrait ? 'Rotate your device' : 'Ready for landscape play'}</h2><p>Designed for landscape play. One data center, one fixed geography.</p><p>{entered ? 'Your operation is held. Continue when you are ready.' : 'The operation has not started. No budget or time has been spent.'}</p>{enhancementMessage && <p role="status">{enhancementMessage}</p>}<button type="button" onClick={continueLandscape}>{portrait ? 'Try landscape / fullscreen' : 'Continue in landscape'}</button><button type="button" onClick={restart}>Return to title</button></div></section>}
-    <LearnDialog guide={guide} sound={sound} dialogRef={dialog} page={page} view={view} restart={restart} onClose={() => { if (dialogOpener.current?.isConnected) dialogOpener.current.focus(); else startButton.current?.focus(); }} />
+    <LearnDialog guide={guide} sound={sound} dialogRef={dialog} page={page} view={view} restart={restart} onClose={() => {
+      if (gateOpen.current) gateRef.current?.querySelector<HTMLButtonElement>('button')?.focus();
+      else if (controller.getSnapshot().error) rebuildButton.current?.focus();
+      else if (returnToPause.current) { returnToPause.current = false; setShell('pause'); }
+      else if (dialogOpener.current?.isConnected) dialogOpener.current.focus(); else startButton.current?.focus();
+    }} />
+    {shell && !orientationGate && !view.error && !view.result && <GameShellMenu page={shell} paused={entered && runtime.status === 'PAUSED'} sound={sound} guide={guide}
+      close={closeShell} resume={resumeFromMenu} restart={restart} help={next => {
+        returnToPause.current = entered && runtime.status === 'PAUSED'; setShell(null); open(next);
+      }} />}
   </main>;
 }

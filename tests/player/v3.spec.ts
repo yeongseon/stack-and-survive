@@ -40,7 +40,7 @@ test('production V3 renders approved art and physical builds without review endp
   await expect(page.getByTestId('slot-cache')).toContainText('Active');
   await expect(page.getByTestId('slot-edge')).toContainText('Active');
   await page.screenshot({ path: info.outputPath('v3-production-active.png') });
-  await page.getByRole('button', { name: 'Ⅱ Pause', exact: true }).click();
+  await page.getByRole('button', { name: 'Ⅱ Pause', exact: true }).click(); await page.getByRole('button', { name: 'Inspect paused world', exact: true }).click();
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.setViewportSize({ width: 844, height: 390 });
   await page.getByRole('button', { name: 'Fit architecture', exact: true }).click();

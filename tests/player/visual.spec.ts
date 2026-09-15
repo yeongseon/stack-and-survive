@@ -47,7 +47,7 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 1920, height: 108
     await expect(page.getByRole('button', { name: 'Ⅱ Pause', exact: true })).toBeEnabled({ timeout: 10000 });
     await expect(page.getByTestId('traffic')).toContainText('100', { timeout: 10000 });
     await page.screenshot({ path: info.outputPath(`player-world-${viewport.width}.png`) });
-    await page.getByRole('button', { name: 'Ⅱ Pause', exact: true }).click();
+    await page.getByRole('button', { name: 'Ⅱ Pause', exact: true }).click(); await page.getByRole('button', { name: 'Inspect paused world', exact: true }).click();
     await expect(page.getByRole('button', { name: '▶ Resume', exact: true })).toBeVisible();
     expect(errors).toEqual([]);
   });

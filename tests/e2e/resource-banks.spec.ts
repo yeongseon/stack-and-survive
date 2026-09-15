@@ -52,7 +52,7 @@ test('resource anatomy follows live construction, separate SQL pressure and actu
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await expect.poll(async () => (await state()).canAnimate).toBe(false);
   await expect.poll(edgeCue).toBe('boost-bars');
-  await page.getByRole('button', { name: 'Ⅱ Pause', exact: true }).click();
+  await page.getByRole('button', { name: 'Ⅱ Pause', exact: true }).click(); await page.getByRole('button', { name: 'Inspect paused world', exact: true }).click();
   await expect.poll(async () => (await state()).live).toBe(false);
   const frozen = await surface.getAttribute('data-facility-banks');
   await step.click(); expect(await surface.getAttribute('data-facility-banks')).toBe(frozen);

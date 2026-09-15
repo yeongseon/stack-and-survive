@@ -15,7 +15,7 @@ test('opening establishes fixed geography without ticking and phone portrait req
   await page.screenshot({ path: info.outputPath('whole-map-1440.png') });
   await expect(page.getByTestId('opening-reveal')).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Ⅱ Pause', exact: true })).toBeEnabled();
-  await page.getByRole('button', { name: 'Ⅱ Pause', exact: true }).click();
+  await page.getByRole('button', { name: 'Ⅱ Pause', exact: true }).click(); await page.getByRole('button', { name: 'Inspect paused world', exact: true }).click();
   await page.getByRole('button', { name: 'Skip guide', exact: true }).click();
   await expect(page.getByRole('status', { name: 'Camera zoom' })).toHaveText('145%');
   await page.screenshot({ path: info.outputPath('operational-1440.png') });
@@ -33,7 +33,7 @@ test('opening establishes fixed geography without ticking and phone portrait req
   expect((await state()).state.runtime.status).toBe('PAUSED');
   await page.getByRole('button', { name: '▶ Resume', exact: true }).click();
   await expect(page.getByRole('button', { name: 'Ⅱ Pause', exact: true })).toBeEnabled();
-  await page.getByRole('button', { name: 'Ⅱ Pause', exact: true }).click();
+  await page.getByRole('button', { name: 'Ⅱ Pause', exact: true }).click(); await page.getByRole('button', { name: 'Inspect paused world', exact: true }).click();
   await expect(surface).toHaveAttribute('data-world-nodes', geography!);
   await page.getByRole('button', { name: 'Fit architecture', exact: true }).click();
   await expect(page.getByRole('status', { name: 'Camera zoom' })).toHaveText('100%');

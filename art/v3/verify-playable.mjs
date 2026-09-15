@@ -69,6 +69,7 @@ try {
   assert.ok((await layers()).layers.some(item=>item.key==='edge-filter'));
   await shot('edge-filter-1440');
   await page.getByRole('button',{name:'Ⅱ Pause',exact:true}).click();
+  await page.getByRole('button',{name:'Inspect paused world',exact:true}).click();
   await waitState(()=>!JSON.parse(document.querySelector('[data-resource-states]').dataset.resourceStates).live);
   await page.emulateMedia({reducedMotion:'reduce'});
   await page.setViewportSize({width:844,height:390});await shot('landscape-paused-844');
