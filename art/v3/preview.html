@@ -6,10 +6,28 @@ body{margin:0;background:#0d1e2a;color:#d0e1e8;font:14px 'Avenir Next',sans-seri
 </style>
 <header><span>ORIGINAL SOURCE STUDY · NOT RUNTIME ASSETS</span><h1>Production Art V3 / Facility vocabulary</h1><p>Steel housings, recessed server bays, memory fins, inspection gate and ingress conduits. Labels-hidden review is not a substitute for actual participant identification.</p><button id="labels">Hide labels</button><p class="note">Source preview only. No Azure assets embedded. License unselected; runtime manifest and public-distribution review pending.</p></header>
 <main id="facilities"></main><section><h2>Physical App population · 1 → 4</h2><p>Only actual modules appear. Empty bays remain empty; this sheet is not a gameplay simulation.</p><div class="bays" id="bays"></div></section>
+<section><h2>Independent state overlays</h2><p>Illustrative state fixtures, not simulated outcomes. Two active App modules remain two while the next bay is under construction. Read/write warnings occupy separate SQL regions. Filtering and Cache activity overlays must be driven by real events when integrated.</p><div class="bays" id="states"></div></section>
+<section><h2>Inactive deployment stages</h2><p>Foundation → frame → boot. No active memory glow or filtering scanner before activation. These sources do not own gameplay timers.</p><div class="bays" id="deployments"></div></section>
+<section><h2>Display-scale composition study</h2><p>Static art arrangement, not gameplay. Lines indicate potential read/write paths only; no packets, rates, queues or successful processing are fabricated. <a href="./scene.html">Open 1440 × 900 review scene →</a></p></section>
+<style>figure img{display:block;width:100%;height:auto}.layered{position:relative}.layered>img:not(:first-child){position:absolute;inset:0;width:100%;height:100%}.hidden .layered~figcaption{display:none}a{color:#9bdde4}</style>
 <script type="module">
-import {facilityNames,facilitySvg} from './core-facilities.mjs';
-const figure=(name,art)=>{const f=document.createElement('figure');f.innerHTML=art;const c=document.createElement('figcaption');c.textContent=name;f.append(c);return f;};
+import {facilityNames,facilitySvg,overlaySvg,deploymentNames,deploymentSvg} from './core-facilities.mjs';
+const image=source=>{const img=document.createElement('img');img.src=`data:image/svg+xml;charset=utf-8,${encodeURIComponent(source)}`;img.alt='';return img;};
+const figure=(name,art)=>{const f=document.createElement('figure');f.append(typeof art==='string'?image(art):art);const c=document.createElement('figcaption');c.textContent=name;f.append(c);return f;};
 for(const name of facilityNames)document.querySelector('#facilities').append(figure(name,facilitySvg(name)));
 for(let i=1;i<=4;i++)document.querySelector('#bays').append(figure(`${i}/4 active`,facilitySvg('app-service',i)));
+const states=[
+['App · 2 active / next available','app-service',2,[['app-available',2],['app-locked',3]]],
+['App · 2 active / next construction','app-service',2,[['app-construction',2],['app-locked',3]]],
+['App · 2 active / request queued','app-service',2,[['app-queued',2],['app-locked',3]]],
+['App · active overload','app-service',2,[['app-overload',0],['app-overload',1]]],
+['SQL · read pressure','azure-sql',0,[['sql-read-warning',0]]],
+['SQL · write pressure','azure-sql',0,[['sql-write-warning',0]]],
+['SQL · critical','azure-sql',0,[['sql-critical',0]]],
+['Edge · filtering event','protected-edge',0,[['edge-filter',0]]],
+['Cache · activity event','redis-cache',0,[['cache-activity',0]]],
+];
+for(const [label,name,count,overlays] of states){const layers=document.createElement('div');layers.className='layered';layers.append(image(facilitySvg(name,count)),...overlays.map(([key,bay])=>image(overlaySvg(key,bay))));document.querySelector('#states').append(figure(label,layers));}
+for(const name of deploymentNames)document.querySelector('#deployments').append(figure(name,deploymentSvg(name)));
 document.querySelector('#labels').onclick=e=>{document.body.classList.toggle('hidden');e.currentTarget.textContent=document.body.classList.contains('hidden')?'Show labels':'Hide labels';};
 </script></html>
