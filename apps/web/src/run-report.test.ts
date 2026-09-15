@@ -6,7 +6,7 @@ import { emptyHistory, recordRun, summarizeRun } from './run-history';
 import { buildRunReport, compareRuns } from './run-report';
 
 function finished(instances = 4, cache = true, edge = false) {
-  const c = createController({ start: () => () => {} }, { load: () => baseline(instances, cache, edge), save: () => {}, clear: () => {} });
+  const c = createController({ start: () => () => {} }, { load: () => baseline(instances, cache, edge), save: () => {}, clear: () => {} }, false, challengeLadder[0].challenge);
   c.start(); while (!c.getSnapshot().result) c.inspectNextTick();
   const summary = summarizeRun(c.getSnapshot().result!, c.getSnapshot().state.runtime.architecture, 'report-run');
   c.destroy(); return summary;

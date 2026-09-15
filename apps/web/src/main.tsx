@@ -12,7 +12,7 @@ import { glossary, pressureHint } from './help';
 import { ServiceIcon } from './ServiceIcon';
 import { useViewportLayout } from './useViewportLayout';
 import { BuildPanel } from './BuildPanel';
-import { blackFriday } from '@stack-and-survive/scenarios';
+import { blackFridayV02 as blackFriday } from '@stack-and-survive/scenarios';
 import { pressureQueues } from './queue-visualization';
 import { MissionPanel } from './MissionPanel';
 import { diagnosticsEnabled } from './mode';
