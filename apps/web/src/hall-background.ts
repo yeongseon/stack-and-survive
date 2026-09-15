@@ -213,8 +213,14 @@ export function generateHallBackground(): HTMLCanvasElement {
   ctx.beginPath(); ctx.moveTo(200, 960); ctx.lineTo(W - 200, 960); ctx.stroke();
   ctx.globalAlpha = 1;
 
+  // === FLOOR CONDUITS & CABLE RUNS (visual density between zones) ===
+  drawFloorConduits(ctx, zones);
+
   // === STATIC BACKGROUND INFRASTRUCTURE ===
   drawBackgroundRacks(ctx, zones);
+
+  // === FACILITY PLATFORM MARKINGS (ground anchors) ===
+  drawFacilityPlatforms(ctx, zones);
 
   // === FLOOR BOTTOM BASEBOARD ===
   ctx.fillStyle = '#1c3445'; ctx.globalAlpha = 0.8;
@@ -642,6 +648,94 @@ function drawFloorVariation(ctx: CanvasRenderingContext2D) {
     g.addColorStop(1, 'rgba(0,0,0,0)');
     ctx.fillStyle = g; ctx.globalAlpha = p.a;
     ctx.fillRect(p.x - p.r, p.y - p.r, p.r * 2, p.r * 2);
+  }
+  ctx.globalAlpha = 1;
+}
+
+function drawFloorConduits(ctx: CanvasRenderingContext2D, zones: ReturnType<typeof facilityZone>[]) {
+  // Horizontal conduit runs across the hall floor
+  const conduits: { x1: number; x2: number; y: number; color: string; width: number }[] = [
+    // Main power bus (amber) across top zone
+    { x1: 100, x2: 2300, y: 475, color: '#7a6838', width: 4 },
+    // Cooling supply (cyan) mid-hall
+    { x1: 150, x2: 2250, y: 985, color: '#3a7888', width: 3 },
+    // Data trunk (blue) connecting compute → SQL
+    { x1: zones[2].cx - 50, x2: zones[4].cx + 50, y: zones[2].cy + 120, color: '#2a5080', width: 3 },
+    // Secondary power (amber) lower zone
+    { x1: 200, x2: 900, y: 1180, color: '#6a5830', width: 2.5 },
+    { x1: 1400, x2: 2100, y: 1170, color: '#6a5830', width: 2.5 },
+  ];
+  for (const c of conduits) {
+    // Conduit trough
+    ctx.fillStyle = '#081420'; ctx.globalAlpha = 0.3;
+    ctx.fillRect(c.x1, c.y - 3, c.x2 - c.x1, 6);
+    // Conduit line
+    ctx.strokeStyle = c.color; ctx.lineWidth = c.width; ctx.globalAlpha = 0.25;
+    ctx.beginPath(); ctx.moveTo(c.x1, c.y); ctx.lineTo(c.x2, c.y); ctx.stroke();
+    // Highlight
+    ctx.strokeStyle = c.color; ctx.lineWidth = 1; ctx.globalAlpha = 0.15;
+    ctx.beginPath(); ctx.moveTo(c.x1, c.y - 2.5); ctx.lineTo(c.x2, c.y - 2.5); ctx.stroke();
+    // Junction boxes
+    for (let x = c.x1 + 80; x < c.x2 - 40; x += 200) {
+      ctx.fillStyle = '#2a4050'; ctx.globalAlpha = 0.4;
+      ctx.fillRect(x - 6, c.y - 5, 12, 10);
+      ctx.strokeStyle = c.color; ctx.lineWidth = 0.8; ctx.globalAlpha = 0.3;
+      ctx.strokeRect(x - 6, c.y - 5, 12, 10);
+    }
+  }
+
+  // Vertical conduit drops from overhead to facility zones
+  const drops: { x: number; y1: number; y2: number; color: string }[] = [
+    { x: zones[0].cx, y1: 175, y2: zones[0].cy - 80, color: '#3a80a0' },
+    { x: zones[1].cx, y1: 175, y2: zones[1].cy - 80, color: '#806040' },
+    { x: zones[2].cx - 30, y1: 175, y2: zones[2].cy - 100, color: '#3098c0' },
+    { x: zones[2].cx + 30, y1: 175, y2: zones[2].cy - 100, color: '#80a840' },
+    { x: zones[3].cx, y1: 175, y2: zones[3].cy - 80, color: '#38a088' },
+    { x: zones[4].cx, y1: 175, y2: zones[4].cy - 80, color: '#3050a0' },
+  ];
+  for (const d of drops) {
+    ctx.strokeStyle = d.color; ctx.lineWidth = 2; ctx.globalAlpha = 0.18;
+    ctx.setLineDash([8, 12]);
+    ctx.beginPath(); ctx.moveTo(d.x, d.y1); ctx.lineTo(d.x, d.y2); ctx.stroke();
+    ctx.setLineDash([]);
+  }
+  ctx.globalAlpha = 1;
+}
+
+function drawFacilityPlatforms(ctx: CanvasRenderingContext2D, zones: ReturnType<typeof facilityZone>[]) {
+  const labels: { zone: ReturnType<typeof facilityZone>; color: string; label: string }[] = [
+    { zone: zones[0], color: '#3a90b0', label: 'INGRESS' },
+    { zone: zones[1], color: '#906840', label: 'SECURITY' },
+    { zone: zones[2], color: '#3098c0', label: 'COMPUTE' },
+    { zone: zones[3], color: '#38a888', label: 'CACHE' },
+    { zone: zones[4], color: '#3058a0', label: 'DATA CORE' },
+  ];
+  for (const { zone, color } of labels) {
+    // Platform base (isometric diamond)
+    const hw = zone.w * 0.35, hd = 28;
+    ctx.fillStyle = color; ctx.globalAlpha = 0.06;
+    ctx.beginPath();
+    ctx.moveTo(zone.cx - hw, zone.cy + 20);
+    ctx.lineTo(zone.cx, zone.cy + 20 - hd);
+    ctx.lineTo(zone.cx + hw, zone.cy + 20);
+    ctx.lineTo(zone.cx, zone.cy + 20 + hd);
+    ctx.closePath();
+    ctx.fill();
+    // Platform edge
+    ctx.strokeStyle = color; ctx.lineWidth = 1.5; ctx.globalAlpha = 0.2;
+    ctx.beginPath();
+    ctx.moveTo(zone.cx - hw, zone.cy + 20);
+    ctx.lineTo(zone.cx, zone.cy + 20 - hd);
+    ctx.lineTo(zone.cx + hw, zone.cy + 20);
+    ctx.lineTo(zone.cx, zone.cy + 20 + hd);
+    ctx.closePath();
+    ctx.stroke();
+    // Corner markers
+    ctx.globalAlpha = 0.3;
+    for (const [px, py] of [[zone.cx - hw, zone.cy + 20], [zone.cx + hw, zone.cy + 20], [zone.cx, zone.cy + 20 - hd], [zone.cx, zone.cy + 20 + hd]]) {
+      ctx.fillStyle = color;
+      ctx.fillRect(px - 2, py - 2, 4, 4);
+    }
   }
   ctx.globalAlpha = 1;
 }
