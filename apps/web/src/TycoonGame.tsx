@@ -9,6 +9,8 @@ import { TitleWorld } from './TitleWorld';
 import { useGameSound } from './useGameSound';
 import { useWorldGuide } from './useWorldGuide';
 import { WorldGuide } from './WorldGuide';
+import { PauseMenu } from './PauseMenu';
+import { SettingsPanel } from './SettingsPanel';
 import { guideHint } from './world-guide';
 import { blackFridayChallenge, type Challenge } from '@stack-and-survive/scenarios/challenge';
 import type { Architecture } from '@stack-and-survive/schema';
@@ -42,10 +44,13 @@ export function TycoonGame({ challenge = blackFridayChallenge, titleContent, onR
   const sound = useGameSound(controller);
   const guide = useWorldGuide();
   const [entered, setEntered] = useState(false);
+  const [titleSettings, setTitleSettings] = useState(false);
+  const [pauseMenuVisible, setPauseMenuVisible] = useState(false);
   useEffect(() => {
     const update = () => {
       const unsuitable = requiresLandscape(innerWidth, innerHeight);
       setPortrait(unsuitable);
+      setPauseMenuVisible(false);
       if (unsuitable && opened.current && !controller.getSnapshot().result) {
         if (!gateOpen.current) interruptedRunning.current = controller.getSnapshot().state.runtime.status === 'RUNNING';
         gateOpen.current = true; clock.hold(true); controller.pause(); setOrientationGate(true);
@@ -57,8 +62,16 @@ export function TycoonGame({ challenge = blackFridayChallenge, titleContent, onR
     };
     const motion = matchMedia('(prefers-reduced-motion: reduce)');
     const updateMotion = () => setReducedMotion(motion.matches);
-    window.addEventListener('resize', update); document.addEventListener('visibilitychange', visibility); motion.addEventListener('change', updateMotion);
-    return () => { window.removeEventListener('resize', update); document.removeEventListener('visibilitychange', visibility); motion.removeEventListener('change', updateMotion); };
+    const keydown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && opened.current && !dialog.current?.open && !gateOpen.current) {
+        e.preventDefault();
+        const snap = controller.getSnapshot();
+        if (snap.state.runtime.status === 'RUNNING') { controller.pause(); setPauseMenuVisible(true); }
+        else if (snap.state.runtime.status === 'PAUSED') { controller.resume(); setPauseMenuVisible(false); }
+      }
+    };
+    window.addEventListener('resize', update); document.addEventListener('visibilitychange', visibility); motion.addEventListener('change', updateMotion); window.addEventListener('keydown', keydown);
+    return () => { window.removeEventListener('resize', update); document.removeEventListener('visibilitychange', visibility); motion.removeEventListener('change', updateMotion); window.removeEventListener('keydown', keydown); };
   }, [clock, controller]);
   useEffect(() => {
     if (!entered || !worldReady || !opening || portrait || orientationGate || hidden || view.error) return;
@@ -128,9 +141,12 @@ export function TycoonGame({ challenge = blackFridayChallenge, titleContent, onR
         <button type="button" aria-label="How to Play" onClick={() => open('how')}>How to Play<small>Learn the basics</small></button>
         <button ref={startButton} type="button" aria-label="Start Game" className="start-game" onClick={() => start()}>▶ Start Game<small>One business. {currentChallenge.workload.duration === 180 ? 'Three minutes.' : `${currentChallenge.workload.duration} seconds.`}</small></button>
         <button type="button" aria-label="About" onClick={() => open('about')}>About<small>The idea &amp; the technology</small></button>
-      </nav><p className="title-footnote">SAME WORKLOAD. DIFFERENT ARCHITECTURES. DIFFERENT OUTCOMES.</p></div>
+      </nav><button type="button" className="title-settings-btn" aria-label="Settings" onClick={() => setTitleSettings(!titleSettings)}>&#9881; Settings</button>
+      {titleSettings && <div className="title-settings-panel"><SettingsPanel sound={sound} guide={guide} /></div>}
+      <p className="title-footnote">SAME WORKLOAD. DIFFERENT ARCHITECTURES. DIFFERENT OUTCOMES.</p></div>
     </section> : <>
-      <header className="tycoon-header" inert={!!view.result || opening || orientationGate}><h1>STACK <em>&amp;</em> SURVIVE</h1><nav aria-label="Game controls"><button ref={learnButton} type="button" onClick={() => open('learn')}>ⓘ Learn</button><button type="button" disabled={runtime.status !== 'RUNNING' && runtime.status !== 'PAUSED'} onClick={() => runtime.status === 'PAUSED' ? controller.resume() : controller.pause()}>{runtime.status === 'PAUSED' ? '▶ Resume' : 'Ⅱ Pause'}</button></nav></header>
+      <header className="tycoon-header" inert={!!view.result || opening || orientationGate}><h1>STACK <em>&amp;</em> SURVIVE</h1><nav aria-label="Game controls"><button ref={learnButton} type="button" onClick={() => open('learn')}>ⓘ Learn</button><button type="button" disabled={runtime.status !== 'RUNNING' && runtime.status !== 'PAUSED'} onClick={() => { if (runtime.status === 'PAUSED') { controller.resume(); setPauseMenuVisible(false); } else { controller.pause(); setPauseMenuVisible(true); } }}>{runtime.status === 'PAUSED' ? '▶ Resume' : 'Ⅱ Pause'}</button></nav></header>
+      {pauseMenuVisible && runtime.status === 'PAUSED' && !view.result && <PauseMenu sound={sound} guide={guide} onResume={() => { controller.resume(); setPauseMenuVisible(false); }} onHowToPlay={() => { setPauseMenuVisible(false); open('how'); }} onReturnToTitle={() => { setPauseMenuVisible(false); restart(); }} />}
       <GameHUD view={view} />
       <WorldGuide view={view} guide={guide} returnFocus={() => learnButton.current?.focus()} />
       <GameFloor controller={controller} view={view} navigation={navigation} onReady={ready} blocked={opening || orientationGate} guideTarget={guide.visible ? guideHint(view, guide.stage).target : null} />

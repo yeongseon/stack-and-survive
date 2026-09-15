@@ -275,3 +275,69 @@
   .report-reset-note { padding: 0 16px; margin: 8px 0 12px; font-size: 10px; }
   .tycoon-game .operation-report .result-records { padding: 12px 16px; }
 }
+
+/* Pause menu overlay */
+.pause-overlay {
+  position: fixed; inset: 0; z-index: 9000;
+  background: rgba(4, 12, 20, 0.82);
+  backdrop-filter: blur(6px);
+  display: flex; align-items: center; justify-content: center;
+  animation: pause-fade-in .2s ease-out;
+  pointer-events: none;
+}
+@keyframes pause-fade-in { from { opacity: 0; } to { opacity: 1; } }
+.pause-menu {
+  background: #112a38; border: 1px solid #3a6070; border-radius: 12px;
+  padding: 32px 40px; min-width: 280px; max-width: 360px;
+  box-shadow: 0 20px 60px rgba(0,0,0,.5); text-align: center;
+  pointer-events: auto;
+}
+.pause-menu h2 {
+  font-size: 28px; font-weight: 800; letter-spacing: .12em;
+  color: #e8f2f4; margin: 0 0 24px;
+}
+.pause-menu-item {
+  display: block; width: 100%; padding: 14px 20px; margin: 8px 0;
+  background: #1a3848; border: 1px solid #3a6070; border-radius: 8px;
+  color: #d8eaee; font-size: 15px; font-weight: 600; letter-spacing: .04em;
+  cursor: pointer; transition: background .15s, border-color .15s;
+  min-height: 48px;
+}
+.pause-menu-item:hover, .pause-menu-item:focus-visible {
+  background: #224858; border-color: #5aadbe; outline: none;
+}
+.pause-resume { color: #80e8d0; border-color: #3a8878; }
+.pause-resume:hover, .pause-resume:focus-visible { background: #1a4040; border-color: #60d0b0; }
+.pause-danger { color: #e8a888; border-color: #6a4838; }
+.pause-danger:hover, .pause-danger:focus-visible { background: #3a2828; border-color: #c08060; }
+
+/* Settings panel (reused in pause menu and title) */
+.settings-panel { text-align: left; padding: 8px 0; }
+.settings-panel h3 {
+  font-size: 13px; font-weight: 700; letter-spacing: .06em;
+  color: #8aadb8; margin: 16px 0 8px; text-transform: uppercase;
+}
+.settings-panel h3:first-child { margin-top: 0; }
+.settings-panel section { margin-bottom: 12px; }
+.settings-panel button {
+  padding: 8px 14px; background: #1a3848; border: 1px solid #3a6070;
+  border-radius: 6px; color: #d8eaee; font-size: 13px; cursor: pointer;
+  min-height: 40px; margin-right: 8px; margin-bottom: 4px;
+}
+.settings-panel button:hover { background: #224858; border-color: #5aadbe; }
+.settings-range { display: flex; align-items: center; gap: 10px; font-size: 13px; color: #a8bec6; margin: 6px 0; }
+.settings-range input[type="range"] { flex: 1; accent-color: #5aadbe; }
+.settings-checkbox { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #a8bec6; margin: 6px 0; }
+.settings-checkbox input[type="checkbox"] { accent-color: #5aadbe; width: 18px; height: 18px; }
+
+/* Title screen settings button */
+.title-settings-btn {
+  display: inline-block; margin: 12px auto 0; padding: 8px 18px;
+  background: transparent; border: 1px solid #3a5868; border-radius: 6px;
+  color: #8aadb8; font-size: 13px; cursor: pointer; letter-spacing: .04em;
+}
+.title-settings-btn:hover { background: #1a3040; border-color: #5a8898; color: #c8dce0; }
+.title-settings-panel {
+  margin: 12px auto 0; max-width: 320px; padding: 16px 20px;
+  background: #0c2030e8; border: 1px solid #3a5868; border-radius: 10px;
+}
