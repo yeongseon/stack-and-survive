@@ -42,6 +42,8 @@ The MVP simulates Azure architecture concepts. It does **not** deploy real Azure
 
 ### Game-first controls
 
+**Settings and Pause:** title Settings groups sound/volume/vibration, world-guide tips and supported fullscreen. During play, Pause or Escape opens Resume / Settings / How to Play / Inspect paused world / Return to Title. Inspect keeps the operation paused; closing settings never resumes it automatically. The HUD distinguishes upcoming traffic spikes, bot attacks, recovery windows and the final wave. Routine per-second sales banners are omitted; activation/recovery cues remain.
+
 **One fixed landscape world:** facilities no longer rearrange on narrow screens. Phone play requires landscape; portrait Start shows a rotate-device gate while title/help remain available. After Start the camera establishes the whole hall, then focuses the operating sector before the existing countdown; Fit returns to that whole map. Reduced motion skips the sweep. Fullscreen/orientation lock is best-effort, never a requirement for manual landscape play. Rotating during operation holds it until explicit Continue; a manual pause stays paused. This canonical-map foundation (#208) precedes V3 runtime asset sizing/integration.
 
 Click infrastructure directly: empty App bay and Cache/Edge footprints request expansion once; unavailable/repeated requests report their reason. Wheel/pinch/drag/Fit and keyboard equivalents remain unchanged. Follow the next-wave indicator and lost-sales counter; only10% of successful revenue adds funds. Physical construction still follows actual ticks. Results retain full evidence under **Details**. Balance0.3 records/progress use new namespaces, leaving old saved data untouched. No speed controls, FIFO, scale-in or SQL scaling were added.
