@@ -1,9 +1,9 @@
-import approvedInventory from '../../../art/v3/runtime-inventory.json';
+import approvedInventory from '../../../art/v3/runtime-inventory.json' with { type: 'json' };
 import { assetUrl } from './asset-url';
 
-const localReview = import.meta.env.DEV && import.meta.env.MODE === 'art-preview';
+const localReview = import.meta.env?.DEV && import.meta.env?.MODE === 'art-preview';
 export const v3 = localReview && typeof __V3_REVIEW__ !== 'undefined' ? __V3_REVIEW__
-  : import.meta.env.PROD && import.meta.env.MODE !== 'qa' ? approvedInventory : null;
+  : import.meta.env?.PROD && import.meta.env?.MODE !== 'qa' ? approvedInventory : null;
 export const v3Unit = .3;
 export function v3Texture(name: string) { return `v3-${name}`; }
 const source = (name: string) => localReview ? `/__art-v3/${name}.png` : assetUrl(`assets/v3/${name}.png`);
