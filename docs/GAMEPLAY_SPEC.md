@@ -5,7 +5,8 @@ Version: 1.2. Current ordinary behavior includes the game-first camera/direct-wo
 ## 1. Normal-player journey
 
 ```text
-Title → Start Game → 5-second countdown → living business
+Title → Start Game in landscape → whole-map Fit → operating-sector reveal
+ → existing 5-second countdown → living business
  → demand grows → observe pressure → world-local decision
  → accepted provisioning/action → real changed flow → outcome
  → Play again (fresh baseline) / Review business (Learn)
@@ -15,7 +16,7 @@ No architecture setup precedes Start Game. Decorative TitleWorld and title help 
 
 ## 2. Initial architecture and routes
 
-Fixed Internet → App1 → SQL. Cache/Edge start absent. Desktop flow is left-to-right; narrow viewports stagger anchors without affecting throughput or latency.
+Fixed Internet → App1 → SQL. Cache/Edge start absent. One canonical2400×1350 landscape world preserves the same facility geography on every device; viewport changes camera framing and HUD, never positions or topology.
 
 Edge activation replaces direct ingress with Internet → Edge → App. Cache activation adds App → Cache → SQL for eligible reads; **direct App → SQL writes remain**. Until accepted deployment completes, the original route stays valid. Players never wire partial live topology.
 
@@ -37,7 +38,9 @@ Click physical facilities to inspect; click the next empty App bay or absent Cac
 
 ### Camera navigation
 
-Wheel/trackpad zoom anchors at the pointer; touch pinch zooms and drag pans after a six-pixel threshold. Drag/pinch/cancel release never activates infrastructure. Buttons offer 75/90/100/125/150/180% relative Fit; Fit restores overview. Move exposes pan buttons and Focus selected. Arrow/+/-/0 shortcuts apply while camera controls are focused. Camera is presentation-only: no simulation tick, action, economy, score or replay changes. New runs start Fit; pause/recovery preserves the store; resize preserves normalized center/zoom and clamps. Response is immediate, including reduced motion. Outside-world page scrolling remains normal.
+Wheel/trackpad zoom anchors at the pointer; touch pinch zooms and drag pans after a six-pixel threshold. Drag/pinch/cancel release never activates infrastructure. Buttons offer75/90/100/125/150/180% relative whole-map Fit. Move exposes pan/focus, with optional Arrow/+/-/0 while camera controls are focused. New runs show Fit750ms then a1050ms focus to145% operational view, before the five-second countdown; reduced motion jumps directly. Pause/recovery preserves the store; resize preserves canonical center/zoom and clamps. Navigation and intro do not alter simulation/replay/economy. Outside-world scrolling remains normal.
+
+Viewports up to900px wide and taller than wide show a rotate-device gate on Start or mid-operation, not a vertical map rearrangement. Title/help/results can be read in portrait. Start/Continue attempts fullscreen/orientation lock on coarse-pointer devices; unsupported/rejected requests leave manual landscape play available. Portrait holds countdown and pauses active gameplay. Landscape alone does not resume: Continue resumes only a run interrupted by the gate, while a previously manual Pause stays paused. Hidden pre-run countdown is held; hidden RUNNING retains its existing clock policy. No budget/time is spent during orientation gate or opening reveal.
 
 ## 4. Before / during / after
 
@@ -69,7 +72,7 @@ The approved ladder is Survive (180s) → Reliable Business (180s and ≥99% cum
 
 Keyboard/touch semantics, focus restoration and non-color cues are required. Reduced-motion changes apply during a session without changing simulation. Offscreen rendering can stop while authoritative RUNNING time continues. Very short screens may scroll, but required controls/results must remain reachable.
 
-Verify 320/390/1024/1440/1920 widths, actual before/during/after fixtures, no pad collisions and truthful endpoint effects. Do not add fake SQL pressure to optimized scenes. #25 requires actual participant understanding; #151 compares the quality pass and #159 tests voluntary replay.
+Verify phone844×390/740×390 and desktop1024/1440/1920 gameplay,320/390 portrait gates, actual lifecycle fixtures and truthful endpoints. #25/#195/#159 share one final human session after V3; historical comparison #151 is retired.
 
 ## Appendix A — QA/development editor only
 

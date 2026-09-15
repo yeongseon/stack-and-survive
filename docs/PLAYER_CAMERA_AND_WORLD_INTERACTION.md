@@ -1,6 +1,6 @@
 # Player Camera and World Interaction
 
-Version: 1.0. **Prospective implementation contract**, established by #197 for [Epic #186](https://github.com/yeongseon/stack-and-survive/issues/186). This specifies required behavior, not shipped controls. At the reviewed merged baseline PR #185 (`abdd412`), normal play still uses responsive fixed anchors, DOM expansion pads and resource cards. Camera foundation PR #196 is unmerged at this document's introduction; it does not provide user-facing navigation. [Gameplay](GAMEPLAY_SPEC.md) remains the authority for currently supported play.
+Version: 1.1. Cross-layer contract established by #197, implemented by #199/#200 and updated with canonical landscape integration #208. **ONE WORLD. DIFFERENT CAMERAS.** Fixed geography, landscape-first mobile and an opening whole-hall reveal supersede responsive player reflow. [Gameplay](GAMEPLAY_SPEC.md) owns supported controls; [Player camera](PLAYER_CAMERA.md) records implemented coordinates and lifecycle details.
 
 ## Purpose
 
@@ -21,17 +21,17 @@ This contract owns cross-layer camera/gesture/interaction rules. A narrower math
 
 Camera state MUST NOT enter simulation state, challenge identity, replay actionLog, run history/comparison identity, scoring or persisted architecture. It may be held by a dedicated presentation store owned by the player world; renderer and React consumers subscribe to the same snapshot. Camera-only updates must not publish gameplay mutations or restart the clock.
 
-The existing editor `Camera`, `project()` and `unproject()` mathematics may be reused without changing QA behavior. Player `tycoonPoint()` currently describes responsive screen anchors, not simulation positions. Explicitly distinguish:
+The editor `Camera`, `project()` and `unproject()` mathematics are reused without changing QA behavior. Player `tycoonPoint()` describes fixed canonical presentation coordinates, not simulation positions. Explicitly distinguish:
 
 1. Simulation resource coordinates: never rewritten by camera operations.
-2. Responsive Fit/world presentation plane: the architecture composition at default overview.
+2. Canonical 2400×1350 landscape presentation plane: fixed facility/prop geography, independent of viewport.
 3. Screen coordinates: the shared camera transform applied to that plane.
 
-Resource rendering, footprint/bay hit testing, selected-action anchors and independent Azure badges must consume the same projection. Fit may reflow the composition at responsive breakpoints; resize preserves useful normalized center and user zoom, then clamps. Selected-resource focus may explicitly use the resource's new position. Do not create a second React position calculation.
+Resource rendering, footprint/bay hit testing, selected-action anchors and independent Azure badges consume one projection. Fit must not reflow the composition at breakpoints; resize preserves canonical center and zoom, then clamps. Only camera and HUD respond to viewport. Do not create a second React position calculation or change facility art size by device width.
 
 Apply user camera transformation **exactly once**. Phaser camera/container transforms are acceptable on Fit-projected geometry if that geometry is not also manually transformed by user zoom. A CSS `transform: scale()` shortcut over only the canvas, or unsynchronized React/Phaser zoom state, is not acceptable. Any remaining DOM anchor uses the exported world-to-screen projection; pointer input uses the corresponding inverse. Respect canvas CSS size versus renderer coordinate size.
 
-## Required camera operations — planned, not yet supported
+## Camera operations
 
 - Zoom in/out using keyboard-accessible buttons.
 - Pointer-anchored wheel/trackpad zoom, normalized for `deltaMode` and bounded per event.
@@ -51,11 +51,11 @@ Zoom preserves the world point underneath its pointer/pinch anchor within docume
 
 Bound pan using world extents with approximately 8–12% viewport margin (initially 10%). The architecture cannot be permanently lost outside the viewport. Center an axis that cannot meaningfully pan at a zoomed-out scale. Fit always recovers overview.
 
-Run start/retry resets to Fit. Pause/resume preserves camera. Resize preserves useful center/zoom and clamps; it does not move simulation resources. Explicit focus may center a selected resource subject to bounds; ordinary selection need not steal the camera. Provisioning completion never auto-pans. Renderer recovery should preserve a valid presentation snapshot or explicitly recover to Fit without changing the run.
+Run start/retry begins at Fit, holds the whole-map establishing shot, then focuses the operational sector before the existing countdown starts. Pause/resume preserves camera. Resize preserves canonical center/zoom and clamps; it never moves resources. Explicit focus may center a selected resource subject to bounds. Provisioning completion never auto-pans; renderer recovery preserves the valid presentation snapshot.
 
-Wheel/pinch response is immediate. Optional button Fit/focus easing is short (120–200ms) and disabled under reduced motion. Navigation never automatically pauses/ticks the game. Dispose all listeners, pointer capture and animations when the world is removed; no late callbacks may affect the next run.
+Wheel/pinch/buttons respond immediately. Opening overview holds750ms and transitions1050ms to center(1210,620), zoom1.45; reduced motion jumps directly. These are presentation values. Opening cannot tick/spend/generate workload/actions or start countdown early. Hidden opening is interrupted safely. Small portrait play is gated: hold startup callbacks and pause active runtime, require explicit Continue in landscape, preserve a prior manual Pause. Fullscreen/orientation lock is progressive enhancement attempted from user gesture only. Do not change the existing RUNNING hidden-tab policy. Dispose listeners/captures/animation and invalidate late enhancement completions on restart/unmount.
 
-## Direct world interaction — required target
+## Direct world interaction
 
 | World target | Required behavior |
 |---|---|
@@ -112,7 +112,7 @@ Transform existing scene objects/camera projection on navigation. Do not regener
 
 ## Verification and staged documentation
 
-Unit: projection roundtrip (document tolerance), Fit/effective zoom, finite inputs, min/max, pointer anchoring/clamp precedence, pan bounds, resize/focus and gesture cancellation. Browser: 320/390/1024/1440/1920, min/Fit/max hits for every facility/footprint/bay, 100 navigation operations with held runtime invariants, resize while zoomed, retry/pause/recovery, real keyboard buttons, supported touch gestures, scrolling outside world and reduced motion. State which touch coverage is emulated versus real hardware.
+Unit: projection roundtrip, fixed geography/art dimensions, Fit/effective zoom, finite inputs, min/max, pointer anchor/clamp, pan/resize/focus and gesture cancellation. Browser:844×390/740×390 landscape and1024/1440/1920 desktop play;320/390 portrait gate plus title/help/results; navigation invariance, intro/countdown interruption, manual/rotation pause distinction, resize/recovery, keyboard and supported touch. State which coverage is emulated versus physical hardware.
 
 Before implementation (#197): update this contract, Visual Direction v0.5, PRD principles, roadmap, execution plan and authority index. Preserve current control descriptions in gameplay/technical/state docs and root README.
 
@@ -124,7 +124,7 @@ After the relevant implementation merges:
 
 SIMULATION_SPEC, strategy balance, run-history/challenge semantics and asset policy/inventory need no changes for this epic. A proposed change there requires separate scope review, not a camera shortcut. Archives remain historical.
 
-Actual unfamiliar-person review asks whether this looks/feels like a game before reading text and records the #195 questions verbatim. Coordinate #25/#151/#159, disclose the missing historical baseline, and never replace human evidence with AI scores or screenshots. Gated P1 remains separate.
+Actual unfamiliar-person review follows Production Art V3 and records #25/#195/#159 questions verbatim without prompting replay. #151 is retired; do not reconstruct a historical baseline. #132/#160–#163 are not planned in current Hackathon scope. Never substitute AI scores or screenshots for human evidence.
 
 ## Reference basis
 
