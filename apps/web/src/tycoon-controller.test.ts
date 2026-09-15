@@ -19,7 +19,7 @@ it('title is inert and countdown starts exactly once without manual setup', () =
   expect(c.getSnapshot().state.runtime.architecture.resources[1]).toMatchObject({ x: 0, y: 0, instances: 1 });
   c.beginGame(); c.beginGame(); expect(starts).toBe(1);
   for (let i = 0; i < 4; i++) callback!();
-  expect(c.getSnapshot().countdown).toBe(1); expect(c.getSnapshot().state.economy.remainingBudget).toBe(140);
+  expect(c.getSnapshot().countdown).toBe(1); expect(c.getSnapshot().state.economy.remainingBudget).toBe(75);
   callback!(); expect(c.getSnapshot().state.runtime.status).toBe('RUNNING'); expect(starts).toBe(2);
   callback!(); expect(c.getSnapshot().state.runtime.time).toBe(1);
   const stale = callback!; c.reset(); stale(); expect(c.getSnapshot().state.runtime.time).toBe(0);

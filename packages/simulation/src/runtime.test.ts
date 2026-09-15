@@ -1,6 +1,6 @@
 import { expect, it } from 'vitest';
 import { baseline } from '@stack-and-survive/cloud-domain';
-import { blackFriday } from '@stack-and-survive/scenarios';
+import { blackFridayV02 as blackFriday } from '@stack-and-survive/scenarios';
 import { advancePreparation, advanceRuntime, createPreparation, pauseRuntime, requestPreparationScale, resumeRuntime, retryRuntime, startRuntime, type Action, type Runtime } from './runtime';
 
 // Timing fixtures explicitly assume sufficient budget; affordability is owned by issue #11.

@@ -15,8 +15,8 @@ it('keeps identical action schedules and terminal results with navigation betwee
     controller.start();
     while (!controller.getSnapshot().result) {
       const time = controller.getSnapshot().state.runtime.time;
-      if (time === 20 || time === 66 || time === 110) controller.queueAction({ type: 'SCALE_OUT' });
-      if (time === 65) controller.queueAction({ type: 'DEPLOY_RESOURCE', kind: 'cache', x: 190, y: -100 });
+      if (time === 16 || time === 57 || time === 102) controller.queueAction({ type: 'SCALE_OUT' });
+      if (time === 17) controller.queueAction({ type: 'DEPLOY_RESOURCE', kind: 'cache', x: 190, y: -100 });
       if (navigate) {
         navigation.zoom(time % 2 ? .75 : 1.8, { x: 500, y: 450 }); navigation.pan({ x: 40, y: -20 });
         if (time % 3 === 0) navigation.fit();

@@ -23,7 +23,7 @@ test('guide responds to actual pressure without acting and persists only explici
   await expect(guide).toContainText('Consider more App capacity');
   await expect(page.getByTestId('world')).toHaveAttribute('data-guide-target', 'compute');
   { await page.getByRole('button', { name: '+ App capacity', exact: true }).focus(); await page.getByRole('button', { name: '+ App capacity', exact: true }).press('Enter'); };
-  await page.getByRole('button', { name: 'Confirm expansion', exact: true }).click(); await step.click();
+  await expect(page.getByRole('button', { name: 'Confirm expansion', exact: true })).toHaveCount(0); await step.click();
   await expect(guide).toContainText('Construction is not capacity yet');
   await guide.getByRole('button', { name: 'Skip guide', exact: true }).click();
   await expect(guide).toHaveCount(0); await expect(page.getByRole('button', { name: 'ⓘ Learn', exact: true })).toBeFocused();

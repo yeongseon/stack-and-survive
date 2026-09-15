@@ -12,7 +12,7 @@ test('working facilities animate only active capacity and keep static equivalent
   const first = (await activity()).pose.angle;
   await expect.poll(async () => (await activity()).pose.angle).not.toBe(first);
   { await page.getByRole('button', { name: '+ App capacity', exact: true }).focus(); await page.getByRole('button', { name: '+ App capacity', exact: true }).press('Enter'); };
-  await page.getByRole('button', { name: 'Confirm expansion', exact: true }).click(); await step.click();
+  await expect(page.getByRole('button', { name: 'Confirm expansion', exact: true })).toHaveCount(0); await step.click();
   await expect.poll(serverCount).toBe(1);
   for (let i=0;i<8;i++) await step.click();
   await expect.poll(serverCount).toBe(2);

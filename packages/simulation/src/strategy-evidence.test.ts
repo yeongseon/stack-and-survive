@@ -1,9 +1,9 @@
 import { expect, it } from 'vitest';
 import { baseline } from '@stack-and-survive/cloud-domain';
-import { blackFriday } from '@stack-and-survive/scenarios';
+import { blackFridayV02 as blackFriday } from '@stack-and-survive/scenarios';
 import { advanceSimulation, createSimulation, simulationResult } from './results';
 import { startRuntime, type Action } from './runtime';
-import { blackFridayChallenge, evaluateObjective } from '@stack-and-survive/scenarios/challenge';
+import { blackFridayChallengeV02 as blackFridayChallenge, evaluateObjective } from '@stack-and-survive/scenarios/challenge';
 import { compare } from './economy';
 
 type PlanAction = Action extends infer A ? A extends Action ? Omit<A, 'sequence'> : never : never;

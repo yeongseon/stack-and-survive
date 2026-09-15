@@ -20,10 +20,10 @@ function run(intents: Intent[]) {
 }
 
 it.each([
-  { id: 'cache-led', actions: [scale(20), cache(65), scale(66), scale(110)] },
-  { id: 'layered', actions: [scale(22), cache(70), edge(71), scale(112)] },
-  { id: 'cache-first', actions: [cache(0), scale(22), edge(71), scale(112)] },
-  { id: 'emergency-bridge', actions: [scale(22), cache(70), edge(71), { type: 'EMERGENCY_WAF', time: 120 } as Intent, scale(142)] },
+  { id: 'cache-led', actions: [scale(16), cache(17), scale(57), scale(102)] },
+  { id: 'layered', actions: [scale(16), cache(17), edge(57), scale(57)] },
+  { id: 'cache-first', actions: [cache(0), scale(16), edge(57), scale(57)] },
+  { id: 'emergency-bridge', actions: [scale(16), cache(17), edge(57), scale(57), { type: 'EMERGENCY_WAF', time: 110 } as Intent] },
 ])('describes a reachable completed live $id run without ranking it', ({ id, actions }) => {
   const summary = run(actions);
   expect(summary.status).toBe('COMPLETED');
@@ -35,11 +35,11 @@ it.each([
 });
 
 it('uses accepted order including sequence ties, never rejected requests', () => {
-  const sameTick = run([cache(0), scale(0), edge(71), scale(112)]);
+  const sameTick = run([cache(0), scale(0), edge(57), scale(57)]);
   expect(classifyArchitecture(sameTick).id).toBe('cache-first');
-  const reverse = run([scale(0), cache(0), edge(71), scale(112)]);
+  const reverse = run([scale(0), cache(0), edge(57), scale(57)]);
   expect(classifyArchitecture(reverse).id).toBe('layered');
-  const rejected = run([scale(22), cache(70), edge(71), scale(112)]);
+  const rejected = run([scale(16), cache(17), edge(57), scale(57)]);
   rejected.actionLog.unshift({ action: { type: 'EMERGENCY_WAF', time: 0, sequence: 0 }, accepted: false, reason: 'No Edge' });
   expect(classifyArchitecture(rejected).id).toBe('layered');
 });
@@ -47,12 +47,12 @@ it('uses accepted order including sequence ties, never rejected requests', () =>
 it('does not call failures complete or missing and pending evidence a known strategy', () => {
   const failed = run([]);
   expect(classifyArchitecture(failed).id).toBe('mixed');
-  expect(classifyArchitecture(failed).evidence.join(' ')).toContain('Stopped at 50s');
+  expect(classifyArchitecture(failed).evidence.join(' ')).toContain('Stopped at 45s');
   expect(classifyArchitecture(null).id).toBe('unknown');
-  const pending = run([scale(20), cache(65), scale(66), scale(110), edge(179)]);
+  const pending = run([scale(16), cache(17), scale(57), scale(102), edge(179)]);
   expect(pending.finalArchitecture.resources.find(r => r.kind === 'edge')?.remaining).toBeGreaterThan(0);
   expect(classifyArchitecture(pending).id).toBe('cache-led');
-  const noCharge = run([scale(22), cache(70), edge(71), scale(112)]);
+  const noCharge = run([scale(16), cache(17), edge(57), scale(57)]);
   noCharge.actionLog.push({ action: { type: 'EMERGENCY_WAF', time: 179, sequence: 4 }, accepted: true, reason: null });
   expect(classifyArchitecture(noCharge).id).toBe('layered');
 });

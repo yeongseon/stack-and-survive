@@ -4,7 +4,7 @@ test('ordinary production game cannot expose debug controls and follows real tim
   const errors: string[] = []; page.on('pageerror', error => errors.push(error.message));
   await page.goto('/?debug=true&mode=qa');
   await page.getByRole('button', { name: 'How to Play', exact: true }).click();
-  await expect(page.getByRole('dialog')).toContainText('does not refill budget');
+  await expect(page.getByRole('dialog')).toContainText('10% of successful sales replenishes Upgrade Funds');
   await page.keyboard.press('Escape');
   await expect(page.getByRole('button', { name: 'How to Play', exact: true })).toBeFocused();
   await page.getByRole('button', { name: 'Start Game' }).click();
@@ -27,7 +27,7 @@ test('ordinary production game cannot expose debug controls and follows real tim
   await page.getByRole('button', { name: 'Return to title / restart', exact: true }).click();
   await page.getByRole('button', { name: 'Start Game' }).click();
   await expect(page.getByRole('region', { name: 'Business result' })).toContainText('Business interrupted', { timeout: 70000 });
-  await expect(page.getByRole('region', { name: 'Business result' })).toContainText('Score 1073');
+  await expect(page.getByRole('region', { name: 'Business result' })).toContainText('Score 810');
   await page.screenshot({ path: info.outputPath('player-result.png') });
   await page.getByRole('button', { name: 'Play again', exact: true }).click();
   await expect(page.getByRole('button', { name: 'Start Game' })).toBeVisible();
@@ -40,11 +40,11 @@ test('ordinary player builds live infrastructure through world controls without 
   await expect(page.locator('[data-renderer="ready"]')).toHaveCount(1, { timeout: 20000 });
   await expect(page.getByRole('button', { name: 'Ⅱ Pause', exact: true })).toBeEnabled({ timeout: 20000 });
   await page.getByRole('button', { name: /Add Cache/ }).focus(); await page.getByRole('button', { name: /Add Cache/ }).press('Enter');
-  await page.getByRole('button', { name: 'Confirm expansion', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Confirm expansion', exact: true })).toHaveCount(0);
   { await page.getByRole('button', { name: /Add Protected Edge/ }).focus(); await page.getByRole('button', { name: /Add Protected Edge/ }).press('Enter'); };
-  await page.getByRole('button', { name: 'Confirm expansion', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Confirm expansion', exact: true })).toHaveCount(0);
   { await page.getByRole('button', { name: /App capacity/ }).focus(); await page.getByRole('button', { name: /App capacity/ }).press('Enter'); };
-  await page.getByRole('button', { name: 'Confirm expansion', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Confirm expansion', exact: true })).toHaveCount(0);
   await expect(page.getByTestId('slot-cache')).toContainText('Provisioning', { timeout: 5000 });
   await expect(page.getByTestId('slot-cache')).toContainText('Active', { timeout: 10000 });
   await expect(page.getByTestId('slot-edge')).toContainText('Active');

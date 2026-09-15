@@ -12,7 +12,7 @@ export const glossary = [
   ['WAF', 'Protected ingress filters bots only on its connected path; false positives block some legitimate requests.'],
   ['Rate Limit', 'Rejects all request classes proportionally. It can lower latency, but costs customers and is not a free throughput upgrade.'],
   ['Net business value', 'Revenue minus infrastructure cost, emergency cost, and incident loss.'],
-  ['Budget', 'The remaining allowed infrastructure and emergency expenditure. Revenue does not refill it.'],
+  ['Upgrade Funds', 'In balance 0.3, initial funds plus 10% of successful sales minus infrastructure and emergency cost. Bots earn no revenue. Legacy balance 0.2 uses its original non-replenishing budget.'],
 ] as const;
 
 export function pressureHint(snapshot: RequestSnapshot | null): string {

@@ -18,12 +18,12 @@ test('approved ladder unlocks sequentially from real successful runs and ends wi
     for (const name of ['Add Cache', '+ App capacity']) {
       await page.getByRole('button', { name, exact: true }).focus();
       await page.getByRole('button', { name, exact: true }).click();
-      await page.getByRole('button', { name: 'Confirm expansion', exact: true }).click();
+      await expect(page.getByRole('button', { name: 'Confirm expansion', exact: true })).toHaveCount(0);
     }
     for (let i = 0; i < 9; i++) await step.click();
     for (let expansion = 0; expansion < 2; expansion++) {
       { await page.getByRole('button', { name: '+ App capacity', exact: true }).focus(); await page.getByRole('button', { name: '+ App capacity', exact: true }).press('Enter'); };
-      await page.getByRole('button', { name: 'Confirm expansion', exact: true }).click();
+      await expect(page.getByRole('button', { name: 'Confirm expansion', exact: true })).toHaveCount(0);
       for (let i = 0; i < 9; i++) await step.click();
     }
     while (Number(await page.getByTestId('elapsed').textContent()) < 180) await step.click();
@@ -37,7 +37,7 @@ test('approved ladder unlocks sequentially from real successful runs and ends wi
     if (level < 2) {
       await expect(next).toBeVisible(); await expect(next).toBeFocused(); await next.click();
       await expect(page.locator('canvas')).toHaveCount(0);
-      await expect(page.getByRole('region', { name: 'Game introduction' })).toHaveAttribute('data-budget', '140');
+      await expect(page.getByRole('region', { name: 'Game introduction' })).toHaveAttribute('data-budget', '75');
     } else await expect(next).toHaveCount(0);
   }
   await page.reload(); await expect(select.locator('option')).toHaveCount(3);
@@ -51,7 +51,7 @@ test('approved ladder unlocks sequentially from real successful runs and ends wi
 
 test('corrupt or unavailable progression storage does not unlock levels or block play', async ({ page }) => {
   await page.addInitScript(() => {
-    localStorage.setItem('stack-and-survive.progress.v1', '{corrupt');
+    localStorage.setItem('stack-and-survive.progress.balance-0.3.v1', '{corrupt');
     Storage.prototype.setItem = () => { throw new Error('storage blocked'); };
   });
   await page.goto('/?tycoon');

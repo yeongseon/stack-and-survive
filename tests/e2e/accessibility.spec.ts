@@ -13,7 +13,7 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 1920, height: 108
     await page.keyboard.press('Enter');
     await expect(page.getByRole('region', { name: 'Selected resource' })).toContainText('Write capacity: 70/s');
     await page.locator('summary').filter({ hasText: 'How to play' }).click();
-    await expect(page.getByText('Revenue does not refill it.', { exact: false })).toBeVisible();
+    await expect(page.getByText('Legacy balance 0.2 uses its original non-replenishing budget.', { exact: false })).toBeVisible();
     await expect(page.getByText('No sound is required.', { exact: false })).toBeVisible();
     const unnamed = await page.getByRole('button').evaluateAll(buttons => buttons.filter(b => !(b.getAttribute('aria-label') || b.textContent || '').trim()).length);
     expect(unnamed).toBe(0);

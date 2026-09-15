@@ -15,20 +15,20 @@ for (const width of [1440, 844, 1920, 740, 1024]) test(`direct diorama operation
     await canvas.click({ position: { x: t.x, y: t.y } });
   }
   await target('cache');
-  await expect(page.getByRole('region', { name: 'CACHE expansion' })).toBeVisible();
-  await page.getByRole('button', { name: 'Confirm expansion', exact: true }).click();
+  await expect(page.getByRole('status').filter({hasText:'Cache requested'})).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Confirm expansion', exact: true })).toHaveCount(0);
   await expect.poll(async () => JSON.parse((await surface.getAttribute('data-resource-states'))!).cache.lifecycle).toBe('provisioning');
   await expect.poll(async () => JSON.parse((await surface.getAttribute('data-construction-sites'))!).some((s: {id:string}) => s.id === 'cache')).toBe(true);
   await page.screenshot({ path: info.outputPath(`diorama-construction-${width}.png`) });
   await expect.poll(async () => JSON.parse((await surface.getAttribute('data-resource-states'))!).cache.lifecycle).toBe('active');
   await expect.poll(async () => JSON.parse((await surface.getAttribute('data-construction-sites'))!).some((s: {id:string}) => s.id === 'cache')).toBe(false);
   await target('app-bay');
-  await expect(page.getByRole('region', { name: 'APP expansion' })).toBeVisible();
-  await page.getByRole('button', { name: 'Confirm expansion', exact: true }).click();
+  await expect(page.getByRole('status').filter({hasText:'App expansion requested'})).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Confirm expansion', exact: true })).toHaveCount(0);
   await expect.poll(async () => JSON.parse((await surface.getAttribute('data-resource-states'))!).app.bays.filter((state: string) => state === 'active').length).toBe(2);
   await target('edge');
-  await expect(page.getByRole('region', { name: 'EDGE expansion' })).toBeVisible();
-  await page.getByRole('button', { name: 'Confirm expansion', exact: true }).click();
+  await expect(page.getByRole('status').filter({hasText:'Protected Edge requested'})).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Confirm expansion', exact: true })).toHaveCount(0);
   await expect.poll(async () => JSON.parse((await surface.getAttribute('data-resource-states'))!).edge.lifecycle).toBe('active');
   await target('edge');
   await expect(page.getByRole('region', { name: 'Resource actions' })).toContainText('Filtering normal');

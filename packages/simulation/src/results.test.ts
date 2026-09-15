@@ -1,6 +1,6 @@
 import { expect, it } from 'vitest';
 import { baseline } from '@stack-and-survive/cloud-domain';
-import { blackFriday, parseScenario } from '@stack-and-survive/scenarios';
+import { blackFridayV02 as blackFriday, parseScenario } from '@stack-and-survive/scenarios';
 import { emptyAttribution, explain } from './attribution';
 import { simulateScenario } from './results';
 

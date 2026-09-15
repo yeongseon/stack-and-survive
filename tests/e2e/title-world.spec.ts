@@ -2,14 +2,14 @@ import { expect, test } from '@playwright/test';
 test('title preview is decorative and motion preferences do not start a business', async ({ page }, info) => {
   await page.goto('/?tycoon');
   const title = page.getByRole('region', { name: 'Game introduction' });
-  await expect(title).toHaveAttribute('data-time', '0'); await expect(title).toHaveAttribute('data-budget', '140');
+  await expect(title).toHaveAttribute('data-time', '0'); await expect(title).toHaveAttribute('data-budget', '75');
   await expect(page.locator('.title-world use[href="#scene-rack"]')).toHaveCount(25);
   await expect(page.locator('.title-world image')).toHaveCount(0);
   await expect(page.locator('.title-scene-static .title-flow')).toHaveCount(0);
   await expect(page.locator('.title-scene-motion .title-flow')).toHaveCount(8);
   await expect(page.locator('.title-flow').first()).toHaveCSS('animation-name', 'title-packet-flow');
   await page.waitForTimeout(1600);
-  await expect(title).toHaveAttribute('data-time', '0'); await expect(title).toHaveAttribute('data-budget', '140');
+  await expect(title).toHaveAttribute('data-time', '0'); await expect(title).toHaveAttribute('data-budget', '75');
   await expect(page.locator('canvas')).toHaveCount(0);
   await page.getByRole('button', { name: 'How to Play', exact: true }).click();
   await expect(page.getByRole('dialog')).toBeVisible(); await page.keyboard.press('Escape');

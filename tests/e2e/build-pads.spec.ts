@@ -1,15 +1,20 @@
 import { expect, test } from '@playwright/test';
 test.use({ hasTouch: true });
-test('floor pads disclose real costs before committing and retain keyboard cancellation', async ({ page }) => {
-  await page.setViewportSize({ width: 740, height: 390 }); await page.goto('/?tycoon');
-  await page.getByRole('button', { name: 'Start Game' }).click();
-  await expect(page.getByRole('button', { name: 'Ⅱ Pause', exact: true })).toBeEnabled({ timeout: 20000 });
-  const cache = page.getByRole('button', { name: 'Add Cache', exact: true });
-  await cache.focus(); await cache.press('Enter'); const details = page.getByRole('region', { name: 'CACHE expansion' });
-  await expect(details).toContainText('5s · +8 cr/min');
-  await expect(page.getByTestId('slot-cache')).not.toContainText('Provisioning');
-  const rect = (await details.boundingBox())!; expect(rect.x).toBeGreaterThanOrEqual(0); expect(rect.x + rect.width).toBeLessThanOrEqual(740);
-  await page.keyboard.press('Escape'); await expect(details).not.toBeVisible(); await expect(cache).toBeFocused();
-  await cache.press('Enter'); await page.getByRole('button', { name: 'Confirm expansion', exact: true }).click();
-  await expect(cache).toHaveAttribute('aria-disabled', 'true');
+test('single keyboard action requests deployment and duplicate or paused requests remain guarded', async ({ page }) => {
+  await page.setViewportSize({width:740,height:390});await page.goto('/?tycoon');
+  await page.getByRole('button',{name:'Start Game',exact:true}).click();
+  await expect(page.getByRole('button',{name:'Ⅱ Pause',exact:true})).toBeEnabled();
+  await page.getByText('Tycoon QA',{exact:true}).click();await page.getByRole('button',{name:'Step one tick',exact:true}).click();
+  const cache=page.getByRole('button',{name:'Add Cache',exact:true});
+  await cache.focus();await cache.press('Enter');await cache.press('Enter');
+  await expect(page.getByRole('button',{name:'Confirm expansion'})).toHaveCount(0);
+  const state=()=>page.getByTestId('diagnostics').textContent();
+  expect(JSON.parse((await state())!).queuedActions.filter((a:{kind:string})=>a.kind==='cache')).toHaveLength(1);
+  await expect(cache).toHaveAttribute('aria-disabled','true');
+  await page.getByRole('button',{name:'Step one tick',exact:true}).click();
+  await expect(page.getByTestId('slot-cache')).toContainText('Provisioning');
+  await page.getByRole('button',{name:'Ⅱ Pause',exact:true}).click();
+  const edge=page.getByRole('button',{name:'Add Protected Edge',exact:true});await edge.focus();await edge.press('Enter');
+  expect(JSON.parse((await state())!).queuedActions).toHaveLength(0);
+  await expect(edge).toHaveAttribute('aria-disabled','true');
 });

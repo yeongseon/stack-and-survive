@@ -13,7 +13,7 @@ test('sound stays opt-in and settings persist without changing gameplay', async 
   await expect(page.getByRole('button', { name: 'Enable sound', exact: true })).toBeVisible();
   await expect(page.getByRole('slider', { name: 'Volume', exact: true })).toHaveValue('0.2');
   await expect(page.getByRole('region', { name: 'Game introduction' })).toHaveAttribute('data-time', '0');
-  await expect(page.getByRole('region', { name: 'Game introduction' })).toHaveAttribute('data-budget', '140');
+  await expect(page.getByRole('region', { name: 'Game introduction' })).toHaveAttribute('data-budget', '75');
   await page.keyboard.press('Escape');
   await page.getByRole('button', { name: 'Start Game', exact: true }).click();
   await expect(page.locator('[data-renderer="ready"]')).toHaveCount(1);

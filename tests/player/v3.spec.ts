@@ -24,21 +24,17 @@ test('production V3 renders approved art and physical builds without review endp
   const at = (x: number, y: number) => ({ x: bounds.width / 2 + (x - 1210) * scale, y: bounds.height / 2 + (y - 620) * scale });
   await page.screenshot({ path: info.outputPath('v3-production-baseline.png') });
   await canvas.click({ position: at(1510, 600) });
-  await expect(page.getByRole('region', { name: 'CACHE expansion' })).toBeVisible();
-  const cacheCard = (await page.getByRole('region', { name: 'CACHE expansion' }).boundingBox())!;
-  expect(cacheCard.x).toBeGreaterThanOrEqual(0);
-  expect(cacheCard.x + cacheCard.width).toBeLessThanOrEqual(1440);
-  await page.getByRole('button', { name: 'Confirm expansion', exact: true }).click({ trial: true });
-  await page.getByRole('button', { name: 'Confirm expansion', exact: true }).click();
+  await expect(page.getByRole('status').filter({hasText:'Cache requested'})).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Confirm expansion', exact: true })).toHaveCount(0);
   await expect(page.getByTestId('slot-cache')).toContainText('Provisioning');
   await canvas.click({ position: at(875, 725) });
-  await page.getByRole('button', { name: 'Confirm expansion', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Confirm expansion', exact: true })).toHaveCount(0);
   // The next bay is a source-defined 76-unit diagonal from the first bay, not an HTML button.
   const bayX = (6 + 32.5 - (-70 + 32.5)) * 1.35 * .3 * 2.5;
   const bayY = ((6 + 32.5 + -70 + 32.5) * .65 - 24) * .3 * 2.5;
   await canvas.click({ position: at(1190 + bayX, 790 + bayY) });
-  await expect(page.getByRole('region', { name: 'APP expansion' })).toBeVisible();
-  await page.getByRole('button', { name: 'Confirm expansion', exact: true }).click();
+  await expect(page.getByRole('status').filter({hasText:'App expansion requested'})).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Confirm expansion', exact: true })).toHaveCount(0);
   await page.screenshot({ path: info.outputPath('v3-production-construction.png') });
   await expect(page.getByRole('button', { name: '+ App capacity', exact: true })).toContainText('2/4 active', { timeout: 15000 });
   await expect(page.getByTestId('slot-cache')).toContainText('Active');

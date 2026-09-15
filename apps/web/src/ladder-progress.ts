@@ -2,7 +2,7 @@ import { challengeLadder } from '@stack-and-survive/scenarios/ladder';
 import { evaluateObjective, sameChallenge } from '@stack-and-survive/scenarios/challenge';
 import type { View } from './controller';
 
-export const progressKey = 'stack-and-survive.progress.v1';
+export const progressKey = 'stack-and-survive.progress.balance-0.3.v1';
 export type LadderProgress = { version: 1; completed: string[] };
 export const emptyProgress = (): LadderProgress => ({ version: 1, completed: [] });
 export function parseProgress(raw: string | null): LadderProgress {

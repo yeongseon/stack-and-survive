@@ -1,5 +1,5 @@
 import { baseline, validateStart } from '@stack-and-survive/cloud-domain';
-import { blackFridayChallenge, parseChallenge, evaluateObjective, type Challenge } from '@stack-and-survive/scenarios/challenge';
+import { blackFridayChallenge, blackFridayChallengeV02, parseChallenge, evaluateObjective, type Challenge } from '@stack-and-survive/scenarios/challenge';
 import { advanceSimulation, createSimulation, simulationResult } from '@stack-and-survive/simulation/results';
 import { advancePreparation, pauseRuntime, requestPreparationScale, resumeRuntime, startRuntime, type Action } from '@stack-and-survive/simulation/runtime';
 import type { Architecture, Kind } from '@stack-and-survive/schema';
@@ -44,7 +44,7 @@ const clock: Clock = {
   start(callback) { const id = globalThis.setInterval(callback, 1000); return () => globalThis.clearInterval(id); },
 };
 
-export function createController(timer: Clock = clock, repository?: SaveRepository, playerMode = false, challengeInput: unknown = blackFridayChallenge) {
+export function createController(timer: Clock = clock, repository?: SaveRepository, playerMode = false, challengeInput: unknown = playerMode ? blackFridayChallenge : blackFridayChallengeV02) {
   const challenge = parseChallenge(challengeInput);
   const scenario = challenge.workload;
   let initialArchitecture: Architecture;

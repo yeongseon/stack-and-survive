@@ -4,11 +4,11 @@ test('compact HUD and outcome preserve actual result values and narrow retry acc
   await expect(page.getByRole('button', { name: 'Ⅱ Pause', exact: true })).toBeEnabled({ timeout: 20000 });
   const hud = page.getByRole('region', { name: 'Business status' });
   await expect(hud.getByRole('meter')).toHaveCount(0);
-  await expect(hud).toContainText('Budget'); await expect(hud).toContainText('Availability');
+  await expect(hud).toContainText('Upgrade Funds'); await expect(hud).toContainText('Availability');
   await page.getByText('Tycoon QA', { exact: true }).click();
-  while (Number(await page.getByTestId('elapsed').textContent()) < 50) await page.getByRole('button', { name: 'Step one tick', exact: true }).click();
+  while (Number(await page.getByTestId('elapsed').textContent()) < 45) await page.getByRole('button', { name: 'Step one tick', exact: true }).click();
   const result = page.getByRole('region', { name: 'Business result' });
-  await expect(result).toContainText('App Service Saturation'); await expect(result).toContainText('Score 1073');
+  await expect(result).toContainText('App Service Saturation'); await expect(result).toContainText('Score 810');
   await expect(result.getByRole('button', { name: 'Play again' })).toBeFocused();
   await expect(page.getByRole('button', { name: 'Zoom in', exact: true })).toHaveCount(0);
   await expect(page.getByRole('region', { name: 'World guide' })).toHaveCount(0);

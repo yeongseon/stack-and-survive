@@ -1,6 +1,6 @@
 # Stack & Survive — Gameplay Specification
 
-Version: 1.2. Current ordinary behavior includes the game-first camera/direct-world slice (#199) and matching physical/outcome polish. [Simulation](SIMULATION_SPEC.md) owns calculations; [Roadmap](PRODUCT_ROADMAP.md) marks future features.
+Version: 1.3. Ordinary behavior includes balance0.3 final game-feel sprint #212. [Simulation](SIMULATION_SPEC.md) owns calculations; [Roadmap](PRODUCT_ROADMAP.md) marks future features. QA editor defaults to explicit legacy0.2 for historical numerical comparisons.
 
 ## 1. Normal-player journey
 
@@ -34,7 +34,7 @@ Browse reads may terminate successfully at Cache; misses/overflow reach SQL. Ord
 
 These summaries do not redefine [numerical rules](SIMULATION_SPEC.md). Acceptance, ordering, affordability and exact activation ticks remain in that contract. Live actions require RUNNING; duplicates/pending conflicts are rejected. No runtime scale-in, SQL/Cache scaling, uninstall, move or disconnect exists.
 
-Click physical facilities to inspect; click the next empty App bay or absent Cache/Edge footprint for projected cost/delay confirmation. Confirm queues the existing action; Cancel/Escape returns focus to the opener or Fit. Keyboard equivalents reveal as an outlined group on focus and use the same controller contracts. Unavailable actions explain why and cannot be confirmed. SQL has no scaling control.
+Click physical facilities to inspect; click the next empty App bay or absent Cache/Edge footprint **once** to request construction. No second confirmation. A short local message acknowledges request/delay or rejection. Keyboard equivalents reveal on focus and use the same guarded controller commands. Repeated/paused/unaffordable requests remain unavailable; real ticks still decide acceptance and activation. Costs/delays remain available in controls and Learn; no purchase cost is invented. SQL has no scaling control.
 
 ### Camera navigation
 
@@ -52,11 +52,13 @@ Cache/Edge lifecycle is exclusive: absent pad, provisioning construction, or ins
 
 ## 5. HUD, cards and Learn
 
-The world fills the player viewport with a small overlay HUD: remaining budget, offered demand, current availability, short pressure, Learn/Pause and camera controls. Facility plaques display actual identity/active instances/construction/pressure. Detailed meters are not permanent chrome; frozen readings remain distinct from live processing.
+HUD: Upgrade Funds, demand, availability, pressure, lost legitimate sales/sec and next-wave countdown/RPS/bot share. Balance0.3 starts at75 funds and reinvests10% of successful sales. Last5 seconds of the next-wave countdown are highlighted only while RUNNING; pause freezes it. No future income is credited. Final/no-next phase hides the panel. Lost sales excludes bots and labels paused/final readings.
+
+Local recovery cues derive from a new authoritative snapshot: actual activation; sales loss returning to zero from >.02cr/s; or throughput increasing at least15% and15requests/s with at least5percentage-point availability improvement. They do not assert counterfactual causation or add money. Cues last2.2s, minimum4ticks apart, clear outside RUNNING and do not repeat a snapshot. Request acknowledgements last2.6s. Money comes only from the economic model.
 
 Resource cards prioritize state/action while retaining cost and false-positive tradeoffs. Learn contains actual objectives/events, pressure explanation, capacities, accounting and glossary. Production has no persistent Build/Manage, initial-instance form, save/reset architecture controls, standalone command console or developer inspector.
 
-Business feedback uses actual served orders/tick revenue, never spendable budget or duplicate per-render rewards. Optional original synthesized sound and feature-detected vibration are controlled in Learn/help, default off and gesture-enabled; [audio lifecycle and pending listening acceptance](AUDIO_FEEDBACK.md) are separate from simulation. The [optional world guide](WORLD_GUIDE.md) offers three explicit Observe/Decide/Compare tips based on real pressure, with Skip/Finish and replay in Learn. It never pauses or acts for the player; finishing tips is not a comprehension score.
+Business feedback shows actual served orders, sales and their versioned reinvestment share; rendering it does not credit funds again. Optional original synthesized sound/vibration stays default-off and gesture-enabled; [audio/manual acceptance](AUDIO_FEEDBACK.md) remains separate. The [world guide](WORLD_GUIDE.md) provides skippable Observe/Decide/Compare hints without acting or pausing for the player. Tips are not a comprehension score.
 
 ## 6. Pause, errors and results
 

@@ -61,7 +61,7 @@ export function explain(attribution: Attribution, options: { budgetFailure?: boo
     'Excessive Rate Limiting': 'Rate limiting rejected customers. Reduce its active duration if the latency benefit is not worth the lost business.',
     'WAF False Positives': 'Ingress filtering blocked legitimate traffic. Stronger filtering trades customer access for bot protection.',
     'Unfiltered Bot Traffic': 'Bots displaced legitimate requests at App admission. Protected ingress can reduce this pressure before compute.',
-    'Budget Exhaustion': 'Infrastructure and emergency spending exhausted the operational budget. Revenue does not replenish it.',
+    'Budget Exhaustion': 'Infrastructure and emergency spending exhausted the available operating funds.',
     'Overprovisioning': 'The service survived with costly, lightly utilized compute. Compare a smaller instance configuration.',
     'Negative Business Value': 'Operating and incident costs exceeded realized business value despite survival.',
     'No Critical Issue': 'No business-loss cause crossed the reporting threshold. Compare target attainment and cost before expanding.',

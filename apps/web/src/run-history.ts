@@ -8,7 +8,7 @@ import { compare } from '@stack-and-survive/simulation/economy';
 import type { View } from './controller';
 
 export const HISTORY_LIMIT = 20;
-export const historyKey = 'stack-and-survive.history.v1';
+export const historyKey = 'stack-and-survive.history.balance-0.3.v1';
 export type RunSummary = {
   id: string; challenge: Challenge; status: 'FAILED' | 'COMPLETED'; elapsed: number; objectiveMet: boolean;
   availability: number; cost: number; emergencyCost: number; nbv: number; score: number;

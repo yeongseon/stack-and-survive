@@ -1,9 +1,9 @@
 import { integer, number, record, text, type Scenario } from '@stack-and-survive/schema';
-import { blackFriday, parseScenario } from './index';
+import { blackFriday, blackFridayV02, parseScenario } from './index';
 
 export type Objective = Readonly<{ id: string; version: number; kind: 'survive' } | { id: string; version: number; kind: 'availability'; target: number }>;
 export type Challenge = Readonly<{
-  schemaVersion: 1; id: string; version: number; rulesVersion: '0.2'; seedAlgorithm: 'fixed-v1'; seed: number;
+  schemaVersion: 1; id: string; version: number; rulesVersion: Scenario['balanceVersion']; seedAlgorithm: 'fixed-v1'; seed: number;
   workload: Scenario; objective: Objective; canonical: string; contentHash: string;
 }>;
 
@@ -23,7 +23,7 @@ function fingerprint(value: string) {
 export function parseChallenge(input: unknown): Challenge {
   const c = record(input, 'challenge');
   keys(c, ['schemaVersion', 'id', 'version', 'rulesVersion', 'seedAlgorithm', 'seed', 'workload', 'objective', 'canonical', 'contentHash'], 'challenge');
-  if (c.schemaVersion !== 1 || c.rulesVersion !== '0.2' || c.seedAlgorithm !== 'fixed-v1') throw new Error('Unsupported challenge schema, rules or seed algorithm');
+  if (c.schemaVersion !== 1 || (c.rulesVersion !== '0.2' && c.rulesVersion !== '0.3') || c.seedAlgorithm !== 'fixed-v1') throw new Error('Unsupported challenge schema, rules or seed algorithm');
   const raw = record(c.workload, 'workload');
   keys(raw, ['schemaVersion', 'balanceVersion', 'id', 'duration', 'budget', 'businessMix', 'traffic', 'targets'], 'workload');
   keys(record(raw.businessMix, 'mix'), ['browse', 'order'], 'mix');
@@ -31,6 +31,7 @@ export function parseChallenge(input: unknown): Challenge {
   if (!Array.isArray(raw.traffic) || raw.traffic.length > 1000) throw new Error('Invalid challenge phase count');
   for (const phase of raw.traffic) keys(record(phase, 'phase'), ['start', 'end', 'rps', 'botRatio'], 'phase');
   const workload = parseScenario(raw);
+  if (workload.balanceVersion !== c.rulesVersion) throw new Error('Challenge rules must match workload balance version');
   if (workload.duration > 3600 || workload.id.length > 80) throw new Error('Challenge workload exceeds supported bounds');
   const o = record(c.objective, 'objective');
   const id = identifier(o.id, 'objective id'), version = integer(o.version, 'objective version', 1, Number.MAX_SAFE_INTEGER);
@@ -43,14 +44,15 @@ export function parseChallenge(input: unknown): Challenge {
   } else throw new Error('Unsupported objective kind');
   const condition = {
     schemaVersion: 1 as const, id: identifier(c.id, 'challenge id'), version: integer(c.version, 'challenge version', 1, Number.MAX_SAFE_INTEGER),
-    rulesVersion: '0.2' as const, seedAlgorithm: 'fixed-v1' as const, seed: integer(c.seed, 'challenge seed', 0, 0xffffffff), workload, objective,
+    rulesVersion: workload.balanceVersion, seedAlgorithm: 'fixed-v1' as const, seed: integer(c.seed, 'challenge seed', 0, 0xffffffff), workload, objective,
   };
   const canonical = JSON.stringify(condition);
   return Object.freeze({ ...condition, canonical, contentHash: fingerprint(canonical) });
 }
 export const blackFridayChallenge = parseChallenge({ schemaVersion: 1, id: 'black-friday', version: 1,
-  rulesVersion: '0.2', seedAlgorithm: 'fixed-v1', seed: 0, workload: blackFriday,
+  rulesVersion: '0.3', seedAlgorithm: 'fixed-v1', seed: 0, workload: blackFriday,
   objective: { id: 'survive', version: 1, kind: 'survive' } });
+export const blackFridayChallengeV02 = parseChallenge({ ...blackFridayChallenge, rulesVersion: '0.2', workload: blackFridayV02 });
 
 export function sameChallenge(a: unknown, b: unknown) {
   try { return parseChallenge(a).canonical === parseChallenge(b).canonical; } catch { return false; }
