@@ -1,0 +1,6 @@
+{
+  "schemaVersion":1,"balanceVersion":"0.2","id":"black-friday","duration":180,"budget":140,
+  "businessMix":{"browse":0.8,"order":0.2},
+  "traffic":[{"start":0,"end":30,"rps":100,"botRatio":0},{"start":30,"end":75,"rps":220,"botRatio":0},{"start":75,"end":120,"rps":300,"botRatio":0.2},{"start":120,"end":180,"rps":500,"botRatio":0.4}],
+  "targets":{"availability":0.99,"latencyMs":300,"netBusinessValue":360}
+}

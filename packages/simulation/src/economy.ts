@@ -4,6 +4,7 @@ import { parseScenario } from '@stack-and-survive/scenarios';
 import { advanceRuntime, createPreparation, type Action, type Runtime, type TickTransition } from './runtime';
 
 export const value = Object.freeze({ browse: .002, order: .05, incident: .25 });
+export function reinvestmentRate(scenario: Scenario): number { return scenario.balanceVersion === '0.3' ? .1 : 0; }
 export function epsilon(a: number, b: number): number { return 1e-9 * Math.max(1, Math.abs(a), Math.abs(b)); }
 export function compare(a: number, b: number): -1 | 0 | 1 {
   return Math.abs(a - b) <= epsilon(a, b) ? 0 : a < b ? -1 : 1;
@@ -44,7 +45,8 @@ export function advanceEconomy(state: EconomicState, scenario: Scenario, actions
   const infrastructureCost = previous.infrastructureCost + cost;
   const emergencyCost = previous.emergencyCost + transition.emergencyCharges;
   const incidentLoss = previous.incidentLoss + Math.max(0, potential - revenue) * value.incident;
-  const remainingBudget = scenario.budget - infrastructureCost - emergencyCost;
+  const totalRevenue = previous.revenue + revenue;
+  const remainingBudget = scenario.budget + totalRevenue * reinvestmentRate(scenario) - infrastructureCost - emergencyCost;
   const economy = {
     revenue: previous.revenue + revenue, potentialRevenue: previous.potentialRevenue + potential,
     infrastructureCost, emergencyCost, incidentLoss, remainingBudget,

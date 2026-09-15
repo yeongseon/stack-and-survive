@@ -1,7 +1,10 @@
 import { expect, it } from 'vitest';
 import { blackFriday, parseScenario } from './index';
 it('loads the canonical versioned 180-second scenario', () => {
-  expect(blackFriday.duration).toBe(180); expect(blackFriday.traffic[3].botRatio).toBe(.4);
+  expect(blackFriday.duration).toBe(180); expect(blackFriday.balanceVersion).toBe('0.3');
+  expect(blackFriday.budget).toBe(75); expect(blackFriday.traffic[3].botRatio).toBe(.35);
+  expect(blackFriday.traffic).toHaveLength(8);
+  expect(blackFriday.traffic[4].rps).toBeLessThan(blackFriday.traffic[3].rps);
 });
 it('rejects malformed ratios, gaps and unsupported versions', () => {
   expect(() => parseScenario({ ...blackFriday, businessMix: { browse: .8, order: .3 } })).toThrow('sum');

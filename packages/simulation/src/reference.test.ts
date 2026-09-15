@@ -1,6 +1,6 @@
 import { expect, it } from 'vitest';
 import { baseline } from '@stack-and-survive/cloud-domain';
-import { blackFriday, parseScenario } from '@stack-and-survive/scenarios';
+import { blackFridayV02 as blackFriday, parseScenario } from '@stack-and-survive/scenarios';
 import { advanceSimulation, createSimulation, simulateScenario } from './results';
 import { pauseRuntime, resumeRuntime, startRuntime, type Action } from './runtime';
 import { processRequests } from './index';
