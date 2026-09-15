@@ -28,7 +28,18 @@ export class V3Sprites {
       this.scenery.push(scene.add.image(x,y,asset.texture).setOrigin(asset.originX,asset.originY).setDisplaySize(asset.width*scale,asset.height*scale)
         .setTint(0x809aa8).setAlpha(alpha).setDepth(5+y*.001));
     };
-    for(const row of [250,415,1100,1270])for(let i=0;i<15;i++)place(i%5===4?'cooling-a':i%3===0?'rack-c':'rack-b',180+i*145,row,2.4);
+    for(const row of [245,415])for(let i=0;i<5;i++)place('rack-c',560+i*150,row,2.35);
+    for(const row of [225,395])for(let i=0;i<3;i++)place(i===1?'pdu':'cooling-b',145+i*155,row,2.4,.68);
+    for(let i=0;i<4;i++){
+      place('electrical-cabinet',1480+i*180,245,2.6,.62);
+      place(i%2?'pdu':'cooling-a',1505+i*180,420,2.2,.6);
+      place('conduit-amber',1480+i*175,480,1.5,.5);
+    }
+    for(const row of [1095,1260])for(let i=0;i<6;i++)place(i%3===2?'cooling-a':'rack-b',880+i*145,row,2.4,.56);
+    for(let i=0;i<4;i++){
+      place('cooling-b',220+i*145,1110,2.5,.72);
+      place('pipe-elbow',225+i*145,1260,2.15,.6);
+    }
     for(const x of [155,2240])for(let i=0;i<5;i++)place(i%2?'electrical-cabinet':'cooling-b',x,580+i*116,2.7);
     for(let i=0;i<12;i++)place(i===7?'service-door':'wall-section',100+i*198,90,2.5,.55);
     for(let i=0;i<11;i++) {
@@ -36,6 +47,8 @@ export class V3Sprites {
       place('floor-vent',230+i*175,490,1.3,.65);
     }
     for(const x of [350,2030])place('maintenance-light',x,975,2.5,.85);
+    for(const [x,y] of [[375,455],[1390,470],[735,1000],[1830,1050]])place('rail',x,y,2,.65);
+    for(const [x,y] of [[505,505],[1390,520],[760,965],[1960,990]])place('warning-decal',x,y,1.1,.38);
   }
   begin() { this.used.clear(); this.activity.clear(); }
   private image(key: string, name: string, p: Point, scale: number, depth: number, alpha = 1) {
@@ -60,6 +73,7 @@ export class V3Sprites {
       const duration=resource.kind==='cache'?5:4;
       const progress=1-resource.remaining/duration;
       this.image(resource.id,`${resource.kind}-${progress<.3?'foundation':progress<.7?'frame':'boot'}`,p,scale,base);
+      this.progress(p.x,p.y+30*scale,90*scale,progress);
       return;
     }
     this.image(resource.id,name,p,scale,base);
@@ -85,7 +99,13 @@ export class V3Sprites {
               g.lineBetween(x,y,x+Math.cos(a)*radius,y+Math.sin(a)*radius*.48);
             }
           }
-        } else layer(`bay-${i}`,`app-${bay}-${i}`);
+        } else {
+          layer(`bay-${i}`,`app-${bay}-${i}`);
+          if(bay==='construction'&&state.app.scaleRemaining!==null){
+            const center=geometry.appBays[i].center;
+            this.progress(p.x+(center[0]-geometry.origin.x)*v3Unit*scale,p.y+(center[1]-geometry.origin.y)*v3Unit*scale+22*scale,42*scale,1-state.app.scaleRemaining/8);
+          }
+        }
       });
     }
     if(resource.kind==='database') {
@@ -102,8 +122,11 @@ export class V3Sprites {
     if(pressure==='warning'||pressure==='overcapacity'){
       const bounds=resourceArtBounds(resource.kind,scale,true),g=this.activity;
       const color=pressure==='overcapacity'?0xff7355:0xffbe62;
-      g.fillStyle(color,.07*pulse);g.fillEllipse(p.x,p.y-8,bounds.width*.9,90*scale);
-      g.lineStyle(3,color,pulse*.7);g.strokeEllipse(p.x,p.y+12,bounds.width*.85,55*scale);
+      g.fillStyle(color,.065*pulse);g.fillEllipse(p.x,p.y-8,bounds.width*.9,90*scale);
+      for(const side of [-1,1]){
+        const x=p.x+side*bounds.width*.32,y=p.y+19;
+        g.lineStyle(3,color,pulse*.8);g.lineBetween(x-side*20,y+9,x,y);g.lineBetween(x,y,x+side*20,y+9);
+      }
       if(pressure==='overcapacity'&&state.live)for(let i=0;i<5;i++){
         const phase=moving?(time/950+i/5)%1:.35;
         const x=p.x+(i-2)*bounds.width/6,y=p.y+bounds.y+55-phase*28;
@@ -112,6 +135,11 @@ export class V3Sprites {
     }
     if(resource.kind==='cache'&&state.cache.showHitEffect)layer('hits','cache-activity',pulse);
     if(resource.kind==='edge'&&state.edge.showFilterEffect)layer('filter','edge-filter',pulse);
+  }
+  private progress(x: number,y: number,width: number,value: number){
+    const progress=Math.max(0,Math.min(1,value));
+    this.activity.fillStyle(0x081c29,.95);this.activity.fillRoundedRect(x-width/2,y,width,7,2);
+    this.activity.fillStyle(0xefc985,.95);this.activity.fillRoundedRect(x-width/2,y,width*progress,7,2);
   }
   end(){ for(const [key,image] of this.images)if(!this.used.has(key))image.setVisible(false); }
   diagnostics(){return {allocated:this.images.size,visible:this.used.size,scenery:this.scenery.length,

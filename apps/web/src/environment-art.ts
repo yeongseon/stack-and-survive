@@ -149,9 +149,14 @@ export function drawEnvironment(g: Graphics, width: number, height: number, play
   }
   const objects = player ? v3 ? [] : playerFacilityLayout(width, height) : facilityLayout(width, height);
   if(player && v3){
-    for(const [x,y,w,h] of [[340,470,1680,475],[80,115,2220,350],[80,1030,2220,290]]){
+    for(const [x,y,w,h] of [[340,470,1680,475],[85,120,425,350],[535,120,810,350],[1380,120,865,360],[85,1040,645,270],[820,1030,1280,300]]){
       g.fillStyle(0x071b28,.25);g.fillRoundedRect(x,y,w,h,16);
       g.lineStyle(2,0x7597a4,.25);g.strokeRoundedRect(x,y,w,h,16);
+    }
+    g.fillStyle(0x030f1c,.23);g.fillRect(1380,120,865,350);
+    for(const [x,y,w,color] of [[115,472,370,0x68c2cb],[565,474,750,0x789aa5],[1410,489,790,0xc4aa72],[115,1035,580,0x68c2cb]]){
+      g.lineStyle(3,color,.45);g.lineBetween(x,y,x+w,y);
+      for(let at=x;at<x+w;at+=90){g.lineStyle(1,0x0a1723,.9);g.lineBetween(at,y-5,at+9,y+5);}
     }
     for(const y of [460,990]){
       g.lineStyle(13,0x091d2c);g.lineBetween(280,y,2120,y);
