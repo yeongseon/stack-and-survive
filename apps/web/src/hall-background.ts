@@ -21,24 +21,33 @@ export function generateHallBackground(): HTMLCanvasElement {
   const ctx = canvas.getContext('2d')!;
   const zones = (['internet', 'edge', 'compute', 'cache', 'database'] as const).map(facilityZone);
 
-  // --- Base floor ---
-  const floorGrad = ctx.createLinearGradient(0, 0, W, H);
-  floorGrad.addColorStop(0, '#0a1e2d');
-  floorGrad.addColorStop(0.3, '#0d2436');
-  floorGrad.addColorStop(0.6, '#102a3c');
-  floorGrad.addColorStop(1, '#081a28');
+  // === BASE FLOOR ===
+  const floorGrad = ctx.createRadialGradient(W * .5, H * .55, 100, W * .5, H * .55, W * .7);
+  floorGrad.addColorStop(0, '#0f2a3d');
+  floorGrad.addColorStop(0.5, '#0b2233');
+  floorGrad.addColorStop(1, '#061520');
   ctx.fillStyle = floorGrad;
   ctx.fillRect(0, 0, W, H);
 
-  // --- Isometric floor grid (subtle) ---
+  // === ISOMETRIC FLOOR GRID ===
   const tile = 56;
-  ctx.globalAlpha = 0.06;
-  ctx.strokeStyle = '#4a7a94';
-  ctx.lineWidth = 0.5;
   for (let row = -1; row < Math.ceil(H / (tile * .55)) + 1; row++) {
     for (let col = -1; col < Math.ceil(W / tile) + 1; col++) {
       const x = col * tile + (row % 2 ? tile / 2 : 0);
       const y = row * tile * .55;
+      // Tile fill (alternating subtle)
+      if ((row + col) % 4 === 0) {
+        ctx.fillStyle = '#0d2536';
+        ctx.globalAlpha = 0.3;
+        ctx.beginPath();
+        ctx.moveTo(x, y); ctx.lineTo(x + tile / 2, y + tile * .275);
+        ctx.lineTo(x, y + tile * .55); ctx.lineTo(x - tile / 2, y + tile * .275);
+        ctx.closePath(); ctx.fill();
+      }
+      // Grid lines
+      ctx.globalAlpha = 0.055;
+      ctx.strokeStyle = '#4a7a94';
+      ctx.lineWidth = 0.5;
       ctx.beginPath();
       ctx.moveTo(x, y); ctx.lineTo(x + tile / 2, y + tile * .275);
       ctx.lineTo(x, y + tile * .55); ctx.lineTo(x - tile / 2, y + tile * .275);
@@ -47,375 +56,523 @@ export function generateHallBackground(): HTMLCanvasElement {
   }
   ctx.globalAlpha = 1;
 
-  // --- Floor sectors (visual zones) ---
-  const sectorStyle = (color: string, alpha: number) => {
+  // === FLOOR SECTORS (colored zones under each facility area) ===
+  const sectorFill = (x: number, y: number, w: number, h: number, r: number, color: string, alpha: number, borderColor?: string) => {
     ctx.fillStyle = color; ctx.globalAlpha = alpha;
+    roundRect(ctx, x, y, w, h, r); ctx.fill();
+    if (borderColor) {
+      ctx.strokeStyle = borderColor; ctx.globalAlpha = alpha * 1.4; ctx.lineWidth = 1.5;
+      roundRect(ctx, x, y, w, h, r); ctx.stroke();
+    }
   };
 
-  // Ingress zone (left)
-  sectorStyle('#0c2a3a', 0.5);
-  roundRect(ctx, 60, 440, 480, 400, 24);
-  ctx.fill();
-
-  // Security corridor
-  sectorStyle('#0e2230', 0.4);
-  roundRect(ctx, 560, 480, 380, 380, 20);
-  ctx.fill();
-
-  // Central compute hall
-  sectorStyle('#0f2638', 0.55);
-  roundRect(ctx, 960, 450, 560, 520, 28);
-  ctx.fill();
-
-  // Cache acceleration zone
-  sectorStyle('#0b2535', 0.4);
-  roundRect(ctx, 1340, 340, 380, 380, 22);
-  ctx.fill();
-
+  // Ingress zone (Intake area)
+  sectorFill(360, 440, 440, 390, 18, '#0a2838', 0.6, '#2a6878');
+  // Security corridor (Edge)
+  sectorFill(660, 480, 440, 420, 18, '#0e1e28', 0.55, '#5a4838');
+  // Central compute hall (App Service — largest, most dominant)
+  sectorFill(920, 420, 600, 580, 24, '#0c2840', 0.65, '#2a7898');
+  // Cache zone
+  sectorFill(1280, 320, 460, 420, 18, '#082830', 0.5, '#2a886a');
   // SQL data-core zone
-  sectorStyle('#121e32', 0.5);
-  roundRect(ctx, 1580, 520, 520, 480, 26);
-  ctx.fill();
-
+  sectorFill(1540, 470, 580, 540, 22, '#0e1830', 0.6, '#3050a0');
   ctx.globalAlpha = 1;
 
-  // --- Floor treatment lines ---
-  ctx.globalAlpha = 0.35;
-  ctx.strokeStyle = '#3a6070';
-  ctx.lineWidth = 2;
-  // Main cable run
-  ctx.beginPath();
-  ctx.moveTo(280, 460); ctx.lineTo(2120, 460);
-  ctx.stroke();
-  ctx.beginPath();
-  ctx.moveTo(280, 990); ctx.lineTo(2120, 990);
-  ctx.stroke();
+  // === MAIN TRAFFIC CORRIDORS (floor markings between facilities) ===
+  drawTrafficCorridors(ctx, zones);
 
-  // Zone separator strips
-  ctx.globalAlpha = 0.15;
+  // === ZONE SEPARATOR STRIPS ===
   for (const y of [460, 990]) {
     ctx.fillStyle = '#091d2c';
-    ctx.fillRect(280, y - 6, 1840, 13);
-    ctx.strokeStyle = '#7cd3d8';
-    ctx.globalAlpha = 0.25;
+    ctx.globalAlpha = 0.7;
+    ctx.fillRect(240, y - 7, 1920, 14);
+    ctx.strokeStyle = '#5cc8d0';
+    ctx.globalAlpha = 0.3;
     ctx.lineWidth = 1.5;
-    ctx.beginPath(); ctx.moveTo(280, y - 6); ctx.lineTo(2120, y - 6); ctx.stroke();
-    ctx.globalAlpha = 0.15;
-  }
-  // Amber safety markings
-  ctx.globalAlpha = 0.4;
-  ctx.strokeStyle = '#cfb56f';
-  ctx.lineWidth = 3;
-  for (let x = 300; x < 2110; x += 135) {
-    ctx.beginPath(); ctx.moveTo(x, 456); ctx.lineTo(x + 22, 456); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(x, 986); ctx.lineTo(x + 22, 986); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(240, y - 7); ctx.lineTo(2160, y - 7); ctx.stroke();
+    ctx.strokeStyle = '#c8a854';
+    ctx.globalAlpha = 0.25;
+    ctx.beginPath(); ctx.moveTo(240, y + 7); ctx.lineTo(2160, y + 7); ctx.stroke();
+    // Amber dashes
+    ctx.globalAlpha = 0.45;
+    ctx.strokeStyle = '#cfb56f';
+    ctx.lineWidth = 3;
+    for (let x = 260; x < 2150; x += 90) {
+      ctx.beginPath(); ctx.moveTo(x, y - 4); ctx.lineTo(x + 18, y - 4); ctx.stroke();
+    }
   }
   ctx.globalAlpha = 1;
 
-  // --- Wall (top) ---
-  const wallGrad = ctx.createLinearGradient(0, 0, 0, 120);
-  wallGrad.addColorStop(0, '#1c3046');
-  wallGrad.addColorStop(0.5, '#2c4358');
-  wallGrad.addColorStop(1, '#1a3248');
+  // === WALL (top) ===
+  const wallH = 130;
+  const wallGrad = ctx.createLinearGradient(0, 0, 0, wallH);
+  wallGrad.addColorStop(0, '#1a2c40');
+  wallGrad.addColorStop(0.4, '#2a4058');
+  wallGrad.addColorStop(0.8, '#223a50');
+  wallGrad.addColorStop(1, '#142a3c');
   ctx.fillStyle = wallGrad;
-  ctx.fillRect(0, 0, W, 120);
-  // Wall panel lines
-  ctx.strokeStyle = '#30495b';
-  ctx.lineWidth = 1.5;
+  ctx.fillRect(0, 0, W, wallH);
+  // Wall panels with depth
   for (let x = 30; x < W; x += 140) {
-    ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, 120); ctx.stroke();
-  }
-  // Wall trim
-  ctx.strokeStyle = '#59788a';
-  ctx.lineWidth = 2;
-  ctx.beginPath(); ctx.moveTo(0, 11); ctx.lineTo(W, 11); ctx.stroke();
-  ctx.strokeStyle = '#aa9464';
-  ctx.lineWidth = 1.5;
-  ctx.beginPath(); ctx.moveTo(0, 20); ctx.lineTo(W, 20); ctx.stroke();
-  ctx.strokeStyle = '#14293d';
-  ctx.lineWidth = 3;
-  ctx.beginPath(); ctx.moveTo(0, 13); ctx.lineTo(W, 13); ctx.stroke();
-
-  // --- Wall lights ---
-  for (let x = 78; x < W; x += 140) {
-    ctx.fillStyle = '#ffd89a';
-    ctx.globalAlpha = 0.07;
-    drawEllipse(ctx, x, 145, 95, 70);
-    ctx.fill();
-    ctx.globalAlpha = 0.8;
-    ctx.fillStyle = '#f0d5a4';
-    roundRect(ctx, x - 8, 25, 17, 5, 2);
-    ctx.fill();
-  }
-  ctx.globalAlpha = 1;
-
-  // --- Side walls ---
-  ctx.fillStyle = '#293f53';
-  ctx.beginPath();
-  ctx.moveTo(0, 0); ctx.lineTo(21, 10); ctx.lineTo(21, H); ctx.lineTo(0, H); ctx.closePath();
-  ctx.fill();
-  ctx.fillStyle = '#22384d';
-  ctx.beginPath();
-  ctx.moveTo(W - 16, 12); ctx.lineTo(W, 0); ctx.lineTo(W, H); ctx.lineTo(W - 16, H); ctx.closePath();
-  ctx.fill();
-
-  // --- Overhead cable runs (top area) ---
-  ctx.globalAlpha = 0.75;
-  ctx.fillStyle = '#152b40';
-  ctx.fillRect(35, 155, W - 70, 14);
-  ctx.strokeStyle = '#65a5bd';
-  ctx.lineWidth = 1.5;
-  ctx.globalAlpha = 0.5;
-  ctx.beginPath(); ctx.moveTo(35, 159); ctx.lineTo(W - 35, 159); ctx.stroke();
-  ctx.strokeStyle = '#abb895';
-  ctx.globalAlpha = 0.4;
-  ctx.beginPath(); ctx.moveTo(35, 167); ctx.lineTo(W - 35, 167); ctx.stroke();
-  // Vertical cable drops
-  ctx.strokeStyle = '#334d61';
-  ctx.lineWidth = 1.5;
-  ctx.globalAlpha = 0.4;
-  for (let x = 40; x < W - 40; x += 55) {
-    ctx.beginPath(); ctx.moveTo(x, 157); ctx.lineTo(x, 170); ctx.stroke();
-  }
-  ctx.globalAlpha = 1;
-
-  // --- Static background racks (baked, NOT individual objects) ---
-  drawBackgroundRacks(ctx, zones);
-
-  // --- Floor bottom baseboard ---
-  ctx.fillStyle = '#1c3445';
-  ctx.globalAlpha = 0.8;
-  ctx.fillRect(22, H - 15, W - 44, 8);
-  ctx.globalAlpha = 1;
-  for (let x = 32; x < W - 25; x += 120) {
-    ctx.strokeStyle = '#4a6270';
-    ctx.lineWidth = 2.5;
-    ctx.beginPath(); ctx.moveTo(x, H - 32); ctx.lineTo(x, H - 11); ctx.stroke();
-    ctx.fillStyle = '#c2b181';
-    ctx.globalAlpha = 0.6;
-    ctx.fillRect(x - 4, H - 34, 8, 3);
+    ctx.strokeStyle = '#30495b';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, wallH); ctx.stroke();
+    // Panel inner shading
+    ctx.fillStyle = '#1a3040';
+    ctx.globalAlpha = 0.3;
+    ctx.fillRect(x + 2, 22, 66, wallH - 30);
+    ctx.globalAlpha = 1;
+    // Decorative rivet line
+    ctx.fillStyle = '#4a6678';
+    ctx.globalAlpha = 0.4;
+    for (let ry = 30; ry < wallH - 10; ry += 25) {
+      ctx.fillRect(x + 3, ry, 3, 3);
+    }
     ctx.globalAlpha = 1;
   }
-  ctx.strokeStyle = '#314857';
-  ctx.lineWidth = 2.5;
-  ctx.beginPath(); ctx.moveTo(25, H - 19); ctx.lineTo(W - 25, H - 19); ctx.stroke();
-  ctx.strokeStyle = '#b9a77b';
+  // Wall trims
+  ctx.strokeStyle = '#59788a'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(0, 11); ctx.lineTo(W, 11); ctx.stroke();
+  ctx.strokeStyle = '#aa9464'; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(0, 20); ctx.lineTo(W, 20); ctx.stroke();
+  ctx.strokeStyle = '#14293d'; ctx.lineWidth = 3;
+  ctx.beginPath(); ctx.moveTo(0, 14); ctx.lineTo(W, 14); ctx.stroke();
+  // Wall-floor shadow transition
+  const wallShadow = ctx.createLinearGradient(0, wallH - 10, 0, wallH + 40);
+  wallShadow.addColorStop(0, 'rgba(4,10,18,0.7)');
+  wallShadow.addColorStop(1, 'rgba(4,10,18,0)');
+  ctx.fillStyle = wallShadow;
+  ctx.fillRect(0, wallH - 10, W, 50);
+
+  // === WALL LIGHTS ===
+  for (let x = 78; x < W; x += 140) {
+    // Warm light pool on floor
+    const pool = ctx.createRadialGradient(x, wallH + 40, 5, x, wallH + 40, 90);
+    pool.addColorStop(0, 'rgba(255,216,154,0.09)');
+    pool.addColorStop(0.5, 'rgba(255,200,130,0.04)');
+    pool.addColorStop(1, 'rgba(255,200,130,0)');
+    ctx.fillStyle = pool;
+    ctx.fillRect(x - 90, wallH - 10, 180, 120);
+    // Light fixture
+    ctx.fillStyle = '#f0d5a4';
+    ctx.globalAlpha = 0.85;
+    roundRect(ctx, x - 8, 26, 17, 5, 2); ctx.fill();
+    // Glow behind fixture
+    ctx.fillStyle = '#ffeab8';
+    ctx.globalAlpha = 0.12;
+    drawEllipse(ctx, x, 38, 40, 20); ctx.fill();
+    ctx.globalAlpha = 1;
+  }
+
+  // === SIDE WALLS ===
+  ctx.fillStyle = '#1e3548';
+  ctx.beginPath();
+  ctx.moveTo(0, 0); ctx.lineTo(24, 12); ctx.lineTo(24, H); ctx.lineTo(0, H); ctx.closePath();
+  ctx.fill();
+  // Left wall inner highlight
+  ctx.strokeStyle = '#3a5a6e';
   ctx.lineWidth = 1;
-  ctx.globalAlpha = 0.75;
-  ctx.beginPath(); ctx.moveTo(25, H - 23); ctx.lineTo(W - 25, H - 23); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(22, 15); ctx.lineTo(22, H - 10); ctx.stroke();
+
+  ctx.fillStyle = '#1a2f42';
+  ctx.beginPath();
+  ctx.moveTo(W - 18, 14); ctx.lineTo(W, 0); ctx.lineTo(W, H); ctx.lineTo(W - 18, H); ctx.closePath();
+  ctx.fill();
+
+  // === OVERHEAD CABLE TRAY ===
+  ctx.globalAlpha = 0.8;
+  ctx.fillStyle = '#0e2234';
+  ctx.fillRect(30, 155, W - 60, 16);
+  ctx.strokeStyle = '#55a0b8'; ctx.lineWidth = 1.5; ctx.globalAlpha = 0.45;
+  ctx.beginPath(); ctx.moveTo(30, 157); ctx.lineTo(W - 30, 157); ctx.stroke();
+  ctx.strokeStyle = '#a0b088'; ctx.globalAlpha = 0.35;
+  ctx.beginPath(); ctx.moveTo(30, 169); ctx.lineTo(W - 30, 169); ctx.stroke();
+  // Cable tray supports (vertical drops)
+  ctx.strokeStyle = '#2a4858'; ctx.lineWidth = 2; ctx.globalAlpha = 0.55;
+  for (let x = 80; x < W - 40; x += 120) {
+    ctx.beginPath(); ctx.moveTo(x, 155); ctx.lineTo(x, 175); ctx.stroke();
+    // Cable bundle below tray
+    ctx.strokeStyle = '#1a3848'; ctx.lineWidth = 3; ctx.globalAlpha = 0.3;
+    ctx.beginPath(); ctx.moveTo(x - 15, 172); ctx.lineTo(x + 15, 172); ctx.stroke();
+    ctx.strokeStyle = '#2a4858'; ctx.globalAlpha = 0.55;
+  }
+  // Secondary cable tray (mid-height)
+  ctx.fillStyle = '#081820'; ctx.globalAlpha = 0.4;
+  ctx.fillRect(200, 960, W - 400, 10);
+  ctx.strokeStyle = '#3a6878'; ctx.lineWidth = 1; ctx.globalAlpha = 0.3;
+  ctx.beginPath(); ctx.moveTo(200, 960); ctx.lineTo(W - 200, 960); ctx.stroke();
   ctx.globalAlpha = 1;
-  for (let x = 27; x < W - 25; x += 44) {
-    ctx.strokeStyle = '#c1ae7c';
-    ctx.lineWidth = 1.5;
-    ctx.globalAlpha = 0.5;
+
+  // === STATIC BACKGROUND INFRASTRUCTURE ===
+  drawBackgroundRacks(ctx, zones);
+
+  // === FLOOR BOTTOM BASEBOARD ===
+  ctx.fillStyle = '#1c3445'; ctx.globalAlpha = 0.8;
+  ctx.fillRect(22, H - 16, W - 44, 9);
+  ctx.globalAlpha = 1;
+  for (let x = 32; x < W - 25; x += 100) {
+    ctx.strokeStyle = '#4a6270'; ctx.lineWidth = 2.5;
+    ctx.beginPath(); ctx.moveTo(x, H - 34); ctx.lineTo(x, H - 10); ctx.stroke();
+    ctx.fillStyle = '#c2b181'; ctx.globalAlpha = 0.6;
+    ctx.fillRect(x - 4, H - 36, 8, 3);
+    ctx.globalAlpha = 1;
+  }
+  ctx.strokeStyle = '#314857'; ctx.lineWidth = 2.5;
+  ctx.beginPath(); ctx.moveTo(25, H - 19); ctx.lineTo(W - 25, H - 19); ctx.stroke();
+  ctx.strokeStyle = '#b9a77b'; ctx.lineWidth = 1; ctx.globalAlpha = 0.7;
+  ctx.beginPath(); ctx.moveTo(25, H - 23); ctx.lineTo(W - 25, H - 23); ctx.stroke();
+  for (let x = 27; x < W - 25; x += 40) {
+    ctx.strokeStyle = '#c1ae7c'; ctx.lineWidth = 1.5; ctx.globalAlpha = 0.45;
     ctx.beginPath(); ctx.moveTo(x, H - 20); ctx.lineTo(x + 7, H - 26); ctx.stroke();
   }
   ctx.globalAlpha = 1;
 
-  // --- Atmospheric depth overlays ---
-  // Vignette-like darkness at edges
-  const vigL = ctx.createLinearGradient(0, 0, 200, 0);
-  vigL.addColorStop(0, 'rgba(4,12,20,0.45)');
-  vigL.addColorStop(1, 'rgba(4,12,20,0)');
-  ctx.fillStyle = vigL;
-  ctx.fillRect(0, 120, 200, H - 120);
+  // === ATMOSPHERIC DEPTH ===
+  // Edge vignetting
+  const vig = (x1: number, y1: number, x2: number, y2: number, a: number, fx: number, fy: number, fw: number, fh: number) => {
+    const g = ctx.createLinearGradient(x1, y1, x2, y2);
+    g.addColorStop(0, `rgba(3,8,14,${a})`);
+    g.addColorStop(1, 'rgba(3,8,14,0)');
+    ctx.fillStyle = g; ctx.fillRect(fx, fy, fw, fh);
+  };
+  vig(0, 0, 250, 0, 0.55, 0, wallH, 250, H - wallH);
+  vig(W, 0, W - 250, 0, 0.55, W - 250, wallH, 250, H - wallH);
+  vig(0, H, 0, H - 180, 0.5, 0, H - 180, W, 180);
 
-  const vigR = ctx.createLinearGradient(W, 0, W - 200, 0);
-  vigR.addColorStop(0, 'rgba(4,12,20,0.45)');
-  vigR.addColorStop(1, 'rgba(4,12,20,0)');
-  ctx.fillStyle = vigR;
-  ctx.fillRect(W - 200, 120, 200, H - 120);
-
-  const vigB = ctx.createLinearGradient(0, H, 0, H - 150);
-  vigB.addColorStop(0, 'rgba(4,12,20,0.4)');
-  vigB.addColorStop(1, 'rgba(4,12,20,0)');
-  ctx.fillStyle = vigB;
-  ctx.fillRect(0, H - 150, W, 150);
-
-  // --- Facility zone glow pools ---
+  // === FACILITY ZONE GLOW (strong under-lighting) ===
   drawZoneGlow(ctx, zones);
 
-  // --- Ambient haze at top ---
-  const haze = ctx.createLinearGradient(0, 120, 0, 350);
-  haze.addColorStop(0, 'rgba(16,36,52,0.6)');
-  haze.addColorStop(1, 'rgba(16,36,52,0)');
+  // === TOP AMBIENT HAZE ===
+  const haze = ctx.createLinearGradient(0, wallH, 0, wallH + 200);
+  haze.addColorStop(0, 'rgba(10,24,38,0.55)');
+  haze.addColorStop(1, 'rgba(10,24,38,0)');
   ctx.fillStyle = haze;
-  ctx.fillRect(0, 120, W, 230);
+  ctx.fillRect(0, wallH, W, 200);
+
+  // === SUBTLE NOISE-LIKE VARIATION (painted feel) ===
+  drawFloorVariation(ctx);
 
   return canvas;
 }
 
+function drawTrafficCorridors(ctx: CanvasRenderingContext2D, zones: ReturnType<typeof facilityZone>[]) {
+  // Draw subtle floor path between adjacent facilities
+  const path = [
+    { from: zones[0], to: zones[1] }, // intake → edge
+    { from: zones[1], to: zones[2] }, // edge → compute
+    { from: zones[2], to: zones[3] }, // compute → cache
+    { from: zones[2], to: zones[4] }, // compute → SQL
+  ];
+
+  for (const { from, to } of path) {
+    const dx = to.cx - from.cx;
+    const dy = to.cy - from.cy;
+    const len = Math.hypot(dx, dy) || 1;
+    const nx = -dy / len;
+    const ny = dx / len;
+    const hw = 22; // half-width of corridor
+
+    // Darker floor strip
+    ctx.fillStyle = '#06131e';
+    ctx.globalAlpha = 0.35;
+    ctx.beginPath();
+    ctx.moveTo(from.cx + nx * hw, from.cy + ny * hw);
+    ctx.lineTo(to.cx + nx * hw, to.cy + ny * hw);
+    ctx.lineTo(to.cx - nx * hw, to.cy - ny * hw);
+    ctx.lineTo(from.cx - nx * hw, from.cy - ny * hw);
+    ctx.closePath();
+    ctx.fill();
+
+    // Edge lines (subtle guidance)
+    ctx.strokeStyle = '#3a6878';
+    ctx.lineWidth = 1;
+    ctx.globalAlpha = 0.2;
+    ctx.beginPath();
+    ctx.moveTo(from.cx + nx * hw, from.cy + ny * hw);
+    ctx.lineTo(to.cx + nx * hw, to.cy + ny * hw);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(from.cx - nx * hw, from.cy - ny * hw);
+    ctx.lineTo(to.cx - nx * hw, to.cy - ny * hw);
+    ctx.stroke();
+
+    // Center glow line
+    const lineGrad = ctx.createLinearGradient(from.cx, from.cy, to.cx, to.cy);
+    lineGrad.addColorStop(0, 'rgba(80,200,220,0.06)');
+    lineGrad.addColorStop(0.5, 'rgba(80,200,220,0.12)');
+    lineGrad.addColorStop(1, 'rgba(80,200,220,0.06)');
+    ctx.strokeStyle = lineGrad;
+    ctx.lineWidth = 2;
+    ctx.globalAlpha = 1;
+    ctx.beginPath();
+    ctx.moveTo(from.cx, from.cy);
+    ctx.lineTo(to.cx, to.cy);
+    ctx.stroke();
+
+    // Direction arrows along path
+    ctx.fillStyle = '#5ac0d0';
+    ctx.globalAlpha = 0.12;
+    const steps = Math.floor(len / 80);
+    for (let i = 1; i < steps; i++) {
+      const t = i / steps;
+      const ax = from.cx + dx * t;
+      const ay = from.cy + dy * t;
+      const adx = dx / len * 6;
+      const ady = dy / len * 6;
+      ctx.beginPath();
+      ctx.moveTo(ax + adx, ay + ady);
+      ctx.lineTo(ax - adx + nx * 5, ay - ady + ny * 5);
+      ctx.lineTo(ax - adx - nx * 5, ay - ady - ny * 5);
+      ctx.closePath();
+      ctx.fill();
+    }
+  }
+  ctx.globalAlpha = 1;
+}
+
 function drawBackgroundRacks(ctx: CanvasRenderingContext2D, zones: ReturnType<typeof facilityZone>[]) {
-  const racks: { x: number; y: number; w: number; h: number; kind: 'rack' | 'cooling' | 'cabinet' | 'pipe' }[] = [];
+  type Rack = { x: number; y: number; w: number; h: number; kind: 'rack' | 'cooling' | 'cabinet' | 'pipe'; alpha?: number };
+  const racks: Rack[] = [];
 
-  // Top row racks (behind facilities)
-  for (let i = 0; i < 7; i++) racks.push({ x: 480 + i * 155, y: 250, w: 54, h: 98 + (i % 3) * 10, kind: i % 4 === 2 ? 'cooling' : 'rack' });
-  // Left infrastructure column
-  for (let i = 0; i < 5; i++) racks.push({ x: 155, y: 500 + i * 118, w: 70, h: 100 + (i % 2) * 16, kind: i % 2 ? 'cabinet' : 'cooling' });
-  // Right infrastructure column
-  for (let i = 0; i < 5; i++) racks.push({ x: 2235, y: 500 + i * 118, w: 70, h: 100 + (i % 2) * 16, kind: i % 2 ? 'cooling' : 'cabinet' });
-  // Back rack rows (deeper in hall)
-  for (let i = 0; i < 8; i++) racks.push({ x: 550 + i * 148, y: 330 + (i % 2) * 8, w: 60, h: 95, kind: i % 5 === 3 ? 'cooling' : 'rack' });
-  // Lower infrastructure
-  for (let i = 0; i < 7; i++) racks.push({ x: 820 + i * 155, y: 1100 + (i % 2) * 14, w: 58, h: 92, kind: i % 6 === 4 ? 'cooling' : 'rack' });
-  for (let i = 0; i < 5; i++) racks.push({ x: 200 + i * 150, y: 1110, w: 64, h: 96, kind: i % 3 === 0 ? 'cooling' : 'rack' });
-  // Electrical/power zone (right of SQL)
-  for (let i = 0; i < 4; i++) racks.push({ x: 1480 + i * 180, y: 250, w: 62, h: 110, kind: 'cabinet' });
-  for (let i = 0; i < 4; i++) racks.push({ x: 1505 + i * 180, y: 420, w: 52, h: 85, kind: i % 2 ? 'cooling' : 'cabinet' });
-  // Service corridors - pipe runs
-  for (let i = 0; i < 5; i++) racks.push({ x: 225 + i * 145, y: 1260, w: 80, h: 30, kind: 'pipe' });
+  // Upper back row (receding depth)
+  for (let i = 0; i < 9; i++) racks.push({ x: 380 + i * 180, y: 240 + (i % 3) * 6, w: 48 + (i % 2) * 8, h: 82 + (i % 3) * 14, kind: i % 5 === 2 ? 'cooling' : i % 7 === 6 ? 'cabinet' : 'rack', alpha: 0.55 });
+  // Left column (infrastructure corridor)
+  for (let i = 0; i < 6; i++) racks.push({ x: 130 + (i % 2) * 30, y: 480 + i * 105, w: 65, h: 95 + (i % 2) * 18, kind: i % 3 === 0 ? 'cooling' : i % 3 === 1 ? 'cabinet' : 'rack', alpha: 0.65 });
+  // Right column
+  for (let i = 0; i < 6; i++) racks.push({ x: 2260 - (i % 2) * 25, y: 480 + i * 105, w: 60, h: 90 + (i % 2) * 15, kind: i % 3 === 1 ? 'cooling' : 'cabinet', alpha: 0.6 });
+  // Deep back rows (between upper wall and facilities)
+  for (let i = 0; i < 10; i++) racks.push({ x: 450 + i * 160, y: 340 + (i % 2) * 10, w: 55, h: 88, kind: i % 4 === 1 ? 'cooling' : 'rack', alpha: 0.45 });
+  // Lower infrastructure row
+  for (let i = 0; i < 9; i++) racks.push({ x: 720 + i * 145, y: 1100 + (i % 3) * 8, w: 52 + (i % 2) * 10, h: 85 + (i % 2) * 12, kind: i % 5 === 3 ? 'cooling' : 'rack', alpha: 0.6 });
+  // Bottom-left cooling cluster
+  for (let i = 0; i < 5; i++) racks.push({ x: 170 + i * 140, y: 1120 + (i % 2) * 12, w: 58, h: 92, kind: i % 2 === 0 ? 'cooling' : 'rack', alpha: 0.65 });
+  // Electrical zone (right upper)
+  for (let i = 0; i < 3; i++) racks.push({ x: 1520 + i * 200, y: 245, w: 56, h: 105, kind: 'cabinet', alpha: 0.55 });
+  for (let i = 0; i < 3; i++) racks.push({ x: 1540 + i * 200, y: 410, w: 50, h: 78, kind: i % 2 ? 'cooling' : 'cabinet', alpha: 0.5 });
+  // Pipe runs at bottom
+  for (let i = 0; i < 6; i++) racks.push({ x: 180 + i * 160, y: 1260, w: 90, h: 24, kind: 'pipe', alpha: 0.5 });
+  for (let i = 0; i < 4; i++) racks.push({ x: 1400 + i * 180, y: 1250, w: 85, h: 22, kind: 'pipe', alpha: 0.45 });
 
-  // Filter out anything overlapping facility zones
+  // Filter overlapping
   const visible = racks.filter(r => !overlapsAny(r.x - r.w / 2, r.y - r.h, r.w, r.h + 15, zones));
 
+  // Sort by Y for depth ordering
+  visible.sort((a, b) => a.y - b.y);
+
   for (const rack of visible) {
-    const { x, y, w, h, kind } = rack;
+    const { x, y, w, h, kind, alpha: baseAlpha } = rack;
+    const a = baseAlpha ?? 0.7;
+
     // Contact shadow
-    ctx.fillStyle = '#040c14';
-    ctx.globalAlpha = 0.35;
-    drawEllipse(ctx, x, y + 4, w * 1.8, 14);
+    ctx.fillStyle = '#030a12';
+    ctx.globalAlpha = a * 0.5;
+    drawEllipse(ctx, x + 2, y + 5, w * 2, 16);
     ctx.fill();
-    ctx.globalAlpha = 1;
 
     if (kind === 'pipe') {
-      drawPipe(ctx, x, y, w);
+      drawPipe(ctx, x, y, w, a);
       continue;
     }
 
-    // Isometric box
-    const frontColor = kind === 'rack' ? '#2a3d4e' : kind === 'cooling' ? '#3a5562' : '#384d5e';
-    const sideColor = kind === 'rack' ? '#1c2e3c' : kind === 'cooling' ? '#2a4350' : '#283c4e';
-    const topColor = kind === 'rack' ? '#506878' : kind === 'cooling' ? '#5a7a84' : '#4a6272';
-    const depth = 10;
+    const depth = kind === 'cabinet' ? 12 : 10;
 
     // Front face
-    ctx.fillStyle = frontColor;
-    ctx.globalAlpha = 0.72;
+    const frontColor = kind === 'rack' ? '#253848' : kind === 'cooling' ? '#325060' : '#2e4555';
+    ctx.fillStyle = frontColor; ctx.globalAlpha = a;
     ctx.fillRect(x - w / 2, y - h, w, h);
 
-    // Side face
+    // Side face (lighter = depth cue)
+    const sideColor = kind === 'rack' ? '#1a2a38' : kind === 'cooling' ? '#243e4c' : '#223644';
     ctx.fillStyle = sideColor;
     ctx.beginPath();
-    ctx.moveTo(x + w / 2, y - h); ctx.lineTo(x + w / 2 + depth, y - h - 6);
-    ctx.lineTo(x + w / 2 + depth, y - 6); ctx.lineTo(x + w / 2, y);
+    ctx.moveTo(x + w / 2, y - h); ctx.lineTo(x + w / 2 + depth, y - h - 7);
+    ctx.lineTo(x + w / 2 + depth, y - 7); ctx.lineTo(x + w / 2, y);
     ctx.closePath(); ctx.fill();
 
     // Top face
+    const topColor = kind === 'rack' ? '#4a6678' : kind === 'cooling' ? '#5a7a86' : '#446070';
     ctx.fillStyle = topColor;
     ctx.beginPath();
-    ctx.moveTo(x - w / 2, y - h); ctx.lineTo(x - w / 2 + depth, y - h - 6);
-    ctx.lineTo(x + w / 2 + depth, y - h - 6); ctx.lineTo(x + w / 2, y - h);
+    ctx.moveTo(x - w / 2, y - h); ctx.lineTo(x - w / 2 + depth, y - h - 7);
+    ctx.lineTo(x + w / 2 + depth, y - h - 7); ctx.lineTo(x + w / 2, y - h);
     ctx.closePath(); ctx.fill();
 
-    ctx.globalAlpha = 1;
+    if (kind === 'rack') drawRackDetails(ctx, x, y, w, h, a);
+    else if (kind === 'cooling') drawCoolingDetails(ctx, x, y, w, h, a);
+    else drawCabinetDetails(ctx, x, y, w, h, a);
 
-    if (kind === 'rack') {
-      // Inner panel
-      ctx.fillStyle = '#131f2c';
-      ctx.globalAlpha = 0.75;
-      ctx.fillRect(x - w / 2 + 4, y - h + 7, w - 8, h - 14);
-
-      // Server slots
-      const slots = Math.floor((h - 20) / 12);
-      for (let j = 0; j < slots; j++) {
-        const sy = y - h + 11 + j * ((h - 22) / slots);
-        ctx.strokeStyle = '#3d5868';
-        ctx.globalAlpha = 0.6;
-        ctx.lineWidth = 0.7;
-        ctx.beginPath(); ctx.moveTo(x - w / 2 + 6, sy); ctx.lineTo(x + w / 2 - 6, sy + 2); ctx.stroke();
-        // Status LED
-        ctx.fillStyle = j % 3 === 0 ? '#5fafd1' : '#3a6080';
-        ctx.globalAlpha = 0.7;
-        ctx.fillRect(x + w / 2 - 9, sy, 2, 2);
-      }
-      // Frame highlight
-      ctx.strokeStyle = '#6b8fa3';
-      ctx.globalAlpha = 0.3;
-      ctx.lineWidth = 0.7;
-      ctx.strokeRect(x - w / 2 + 3, y - h + 6, w - 6, h - 13);
-      // Top LED strip
-      ctx.strokeStyle = '#45b1d6';
-      ctx.globalAlpha = 0.5;
-      ctx.lineWidth = 1.5;
-      ctx.beginPath(); ctx.moveTo(x - w / 2 + 5, y - h + 4); ctx.lineTo(x + w / 2 - 5, y - h + 8); ctx.stroke();
-      // Label plate
-      ctx.fillStyle = '#c3b58a';
-      ctx.globalAlpha = 0.4;
-      ctx.fillRect(x - w / 2 + 6, y - 12, 9, 3);
-    } else if (kind === 'cooling') {
-      // Fan circles
-      for (let j = 0; j < 2; j++) {
-        const fy = y - h + 15 + j * (h - 30) / 2;
-        ctx.fillStyle = '#2a3a44';
-        ctx.globalAlpha = 0.7;
-        ctx.beginPath(); ctx.arc(x, fy, w * 0.22, 0, Math.PI * 2); ctx.fill();
-        ctx.strokeStyle = '#8aa0a8';
-        ctx.globalAlpha = 0.5;
-        ctx.lineWidth = 0.8;
-        ctx.beginPath(); ctx.arc(x, fy, w * 0.22, 0, Math.PI * 2); ctx.stroke();
-        // Fan blades
-        ctx.beginPath(); ctx.moveTo(x - 4, fy - 4); ctx.lineTo(x + 4, fy + 4); ctx.stroke();
-        ctx.beginPath(); ctx.moveTo(x - 4, fy + 4); ctx.lineTo(x + 4, fy - 4); ctx.stroke();
-      }
-    } else {
-      // Cabinet door frame
-      ctx.strokeStyle = '#7a8e98';
-      ctx.globalAlpha = 0.45;
-      ctx.lineWidth = 0.8;
-      ctx.strokeRect(x - w / 2 + 3, y - h + 7, w - 6, h - 14);
-      // Handle
-      ctx.fillStyle = '#b9a26b';
-      ctx.globalAlpha = 0.5;
-      ctx.fillRect(x + 2, y - 20, 3, 6);
-    }
     ctx.globalAlpha = 1;
   }
 }
 
-function drawPipe(ctx: CanvasRenderingContext2D, x: number, y: number, w: number) {
-  ctx.fillStyle = '#4a6878';
-  ctx.globalAlpha = 0.55;
-  for (const dy of [-8, 4]) {
-    ctx.fillRect(x - w / 2, y + dy, w, 7);
-    // Pipe brackets
-    for (const bx of [x - w / 3, x, x + w / 3]) {
-      ctx.fillStyle = '#6a838e';
-      ctx.fillRect(bx - 3, y + dy - 2, 6, 11);
+function drawRackDetails(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, a: number) {
+  // Inner panel
+  ctx.fillStyle = '#0e1a26'; ctx.globalAlpha = a * 0.85;
+  ctx.fillRect(x - w / 2 + 4, y - h + 8, w - 8, h - 15);
+  // Server slots
+  const slots = Math.floor((h - 22) / 11);
+  for (let j = 0; j < slots; j++) {
+    const sy = y - h + 12 + j * ((h - 24) / slots);
+    // Slot divider
+    ctx.strokeStyle = '#354a5a'; ctx.globalAlpha = a * 0.55; ctx.lineWidth = 0.6;
+    ctx.beginPath(); ctx.moveTo(x - w / 2 + 6, sy); ctx.lineTo(x + w / 2 - 6, sy + 1.5); ctx.stroke();
+    // LED (varied colors)
+    const led = j % 4 === 0 ? '#5dc0e0' : j % 4 === 1 ? '#4a90b0' : j % 4 === 2 ? '#3a7090' : '#2a5570';
+    ctx.fillStyle = led; ctx.globalAlpha = a * 0.8;
+    ctx.fillRect(x + w / 2 - 10, sy + 1, 2, 2);
+    // Occasional green LED
+    if (j % 5 === 0) {
+      ctx.fillStyle = '#40c080'; ctx.globalAlpha = a * 0.6;
+      ctx.fillRect(x + w / 2 - 14, sy + 1, 2, 2);
     }
-    ctx.fillStyle = '#4a6878';
+  }
+  // Frame highlight
+  ctx.strokeStyle = '#5a8098'; ctx.globalAlpha = a * 0.3; ctx.lineWidth = 0.6;
+  ctx.strokeRect(x - w / 2 + 3, y - h + 7, w - 6, h - 13);
+  // Top LED bar
+  ctx.strokeStyle = '#40b0d8'; ctx.globalAlpha = a * 0.55; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(x - w / 2 + 5, y - h + 5); ctx.lineTo(x + w / 2 - 5, y - h + 8); ctx.stroke();
+  // Bottom label plate
+  ctx.fillStyle = '#b8a570'; ctx.globalAlpha = a * 0.35;
+  ctx.fillRect(x - w / 2 + 6, y - 13, 10, 3);
+  // Side vents
+  if (w >= 40) {
+    ctx.strokeStyle = '#3a5a6a'; ctx.globalAlpha = a * 0.3; ctx.lineWidth = 1;
+    for (let v = 0; v < 3; v++) {
+      const vy = y - h + 20 + v * 18;
+      ctx.beginPath(); ctx.moveTo(x + w / 2 + 3, vy); ctx.lineTo(x + w / 2 + 9, vy - 4); ctx.stroke();
+    }
+  }
+}
+
+function drawCoolingDetails(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, a: number) {
+  const fans = h > 80 ? 3 : 2;
+  for (let j = 0; j < fans; j++) {
+    const fy = y - h + 14 + j * (h - 22) / fans;
+    // Fan housing
+    ctx.fillStyle = '#1e3040'; ctx.globalAlpha = a * 0.75;
+    ctx.beginPath(); ctx.arc(x, fy, w * 0.24, 0, Math.PI * 2); ctx.fill();
+    // Fan ring
+    ctx.strokeStyle = '#7a9aa6'; ctx.globalAlpha = a * 0.55; ctx.lineWidth = 0.8;
+    ctx.beginPath(); ctx.arc(x, fy, w * 0.24, 0, Math.PI * 2); ctx.stroke();
+    // Blade cross
+    ctx.globalAlpha = a * 0.45;
+    for (const angle of [0, Math.PI / 2]) {
+      ctx.beginPath();
+      ctx.moveTo(x + Math.cos(angle) * w * 0.18, fy + Math.sin(angle) * w * 0.18);
+      ctx.lineTo(x - Math.cos(angle) * w * 0.18, fy - Math.sin(angle) * w * 0.18);
+      ctx.stroke();
+    }
+  }
+  // Grille lines
+  ctx.strokeStyle = '#1a3545'; ctx.globalAlpha = a * 0.4; ctx.lineWidth = 1;
+  for (let g = 0; g < 6; g++) {
+    const gy = y - h + 8 + g * (h - 12) / 6;
+    ctx.beginPath(); ctx.moveTo(x - w / 2 + 3, gy); ctx.lineTo(x + w / 2 - 3, gy); ctx.stroke();
+  }
+}
+
+function drawCabinetDetails(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, a: number) {
+  // Door outline
+  ctx.strokeStyle = '#6a8090'; ctx.globalAlpha = a * 0.4; ctx.lineWidth = 0.8;
+  ctx.strokeRect(x - w / 2 + 4, y - h + 8, w - 8, h - 15);
+  // Handle
+  ctx.fillStyle = '#c0a860'; ctx.globalAlpha = a * 0.5;
+  ctx.fillRect(x + 3, y - h / 2, 3, 8);
+  // Status panel
+  if (w >= 42) {
+    ctx.fillStyle = '#162a3c'; ctx.globalAlpha = a * 0.6;
+    ctx.fillRect(x - w / 2 + 7, y - h + 14, w - 14, 16);
+    ctx.strokeStyle = '#b8a870'; ctx.lineWidth = 1; ctx.globalAlpha = a * 0.4;
+    ctx.beginPath(); ctx.moveTo(x - w / 2 + 10, y - h + 22); ctx.lineTo(x + w / 2 - 10, y - h + 22); ctx.stroke();
+    // Indicator LEDs
+    ctx.fillStyle = '#60c0a0'; ctx.globalAlpha = a * 0.5;
+    ctx.fillRect(x - w / 2 + 10, y - h + 17, 3, 3);
+    ctx.fillStyle = '#d0a040'; ctx.fillRect(x - w / 2 + 16, y - h + 17, 3, 3);
+  }
+  // Cable entry grille at bottom
+  ctx.strokeStyle = '#3a5565'; ctx.globalAlpha = a * 0.35; ctx.lineWidth = 0.8;
+  for (let g = 0; g < 3; g++) {
+    ctx.beginPath(); ctx.moveTo(x - w / 2 + 6, y - 12 - g * 4); ctx.lineTo(x + w / 2 - 6, y - 12 - g * 4); ctx.stroke();
+  }
+}
+
+function drawPipe(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, a: number) {
+  for (const dy of [-6, 6]) {
+    // Pipe body
+    ctx.fillStyle = '#4a6878'; ctx.globalAlpha = a * 0.7;
+    roundRect(ctx, x - w / 2, y + dy - 4, w, 8, 3); ctx.fill();
+    // Highlight
+    ctx.strokeStyle = '#6a8a98'; ctx.lineWidth = 0.8; ctx.globalAlpha = a * 0.35;
+    ctx.beginPath(); ctx.moveTo(x - w / 2 + 5, y + dy - 3); ctx.lineTo(x + w / 2 - 5, y + dy - 3); ctx.stroke();
+    // Brackets
+    ctx.fillStyle = '#5a7888'; ctx.globalAlpha = a * 0.6;
+    for (const bx of [x - w * 0.35, x, x + w * 0.35]) {
+      roundRect(ctx, bx - 4, y + dy - 5, 8, 10, 1); ctx.fill();
+    }
   }
   ctx.globalAlpha = 1;
 }
 
 function drawZoneGlow(ctx: CanvasRenderingContext2D, zones: ReturnType<typeof facilityZone>[]) {
   const glows: { cx: number; cy: number; color: string; rx: number; ry: number; alpha: number }[] = [
-    // Intake - cool blue arrival glow
-    { cx: zones[0].cx, cy: zones[0].cy, color: '#4a9ec8', rx: 160, ry: 120, alpha: 0.06 },
-    // Edge - subtle red/amber security glow
-    { cx: zones[1].cx, cy: zones[1].cy, color: '#8a6040', rx: 140, ry: 100, alpha: 0.05 },
-    // Compute - dominant cyan glow (main hero)
-    { cx: zones[2].cx, cy: zones[2].cy, color: '#3aaccc', rx: 220, ry: 180, alpha: 0.08 },
-    // Cache - green/cyan energetic glow
-    { cx: zones[3].cx, cy: zones[3].cy, color: '#40b8a0', rx: 130, ry: 100, alpha: 0.06 },
-    // SQL - deep blue/indigo data core glow
-    { cx: zones[4].cx, cy: zones[4].cy, color: '#3060a0', rx: 180, ry: 140, alpha: 0.07 },
+    // Intake - cool blue arrival
+    { cx: zones[0].cx, cy: zones[0].cy, color: '#3a90c0', rx: 180, ry: 140, alpha: 0.1 },
+    // Edge - amber/security
+    { cx: zones[1].cx, cy: zones[1].cy, color: '#906838', rx: 160, ry: 120, alpha: 0.08 },
+    // Compute - dominant cyan (main hero, biggest glow)
+    { cx: zones[2].cx, cy: zones[2].cy, color: '#30a8d0', rx: 260, ry: 220, alpha: 0.14 },
+    // Cache - green/cyan energetic
+    { cx: zones[3].cx, cy: zones[3].cy, color: '#38c0a0', rx: 150, ry: 120, alpha: 0.1 },
+    // SQL - deep indigo data core
+    { cx: zones[4].cx, cy: zones[4].cy, color: '#2850a0', rx: 200, ry: 170, alpha: 0.12 },
   ];
 
   for (const g of glows) {
-    const grad = ctx.createRadialGradient(g.cx, g.cy, 0, g.cx, g.cy, Math.max(g.rx, g.ry));
-    grad.addColorStop(0, g.color);
-    grad.addColorStop(1, 'rgba(0,0,0,0)');
-    ctx.fillStyle = grad;
-    ctx.globalAlpha = g.alpha;
-    drawEllipse(ctx, g.cx, g.cy, g.rx * 2, g.ry * 2);
+    // Outer diffuse glow
+    const outerGrad = ctx.createRadialGradient(g.cx, g.cy + 20, 0, g.cx, g.cy + 20, Math.max(g.rx, g.ry) * 1.3);
+    outerGrad.addColorStop(0, g.color);
+    outerGrad.addColorStop(0.4, g.color);
+    outerGrad.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = outerGrad; ctx.globalAlpha = g.alpha * 0.4;
+    drawEllipse(ctx, g.cx, g.cy + 20, g.rx * 2.6, g.ry * 2.6);
     ctx.fill();
+    // Inner bright core
+    const innerGrad = ctx.createRadialGradient(g.cx, g.cy, 0, g.cx, g.cy, Math.max(g.rx, g.ry) * 0.6);
+    innerGrad.addColorStop(0, g.color);
+    innerGrad.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = innerGrad; ctx.globalAlpha = g.alpha;
+    drawEllipse(ctx, g.cx, g.cy, g.rx * 1.2, g.ry * 1.2);
+    ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+}
+
+function drawFloorVariation(ctx: CanvasRenderingContext2D) {
+  // Subtle color variation patches to break uniformity (painted feel)
+  const patches = [
+    { x: 400, y: 550, r: 120, color: '#0a2030', a: 0.2 },
+    { x: 1100, y: 700, r: 180, color: '#0c2838', a: 0.15 },
+    { x: 1900, y: 850, r: 140, color: '#081828', a: 0.18 },
+    { x: 700, y: 1050, r: 100, color: '#0e2535', a: 0.12 },
+    { x: 1600, y: 400, r: 130, color: '#0a2030', a: 0.16 },
+    { x: 300, y: 800, r: 90, color: '#122838', a: 0.14 },
+    { x: 2100, y: 600, r: 110, color: '#0a1e30', a: 0.15 },
+    { x: 1200, y: 1200, r: 150, color: '#0c2030', a: 0.13 },
+  ];
+  for (const p of patches) {
+    const g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r);
+    g.addColorStop(0, p.color);
+    g.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = g; ctx.globalAlpha = p.a;
+    ctx.fillRect(p.x - p.r, p.y - p.r, p.r * 2, p.r * 2);
   }
   ctx.globalAlpha = 1;
 }
 
 function drawEllipse(ctx: CanvasRenderingContext2D, cx: number, cy: number, w: number, h: number) {
   ctx.beginPath();
-  ctx.ellipse(cx, cy, w / 2, h / 2, 0, 0, Math.PI * 2);
+  ctx.ellipse(cx, cy, Math.max(1, w / 2), Math.max(1, h / 2), 0, 0, Math.PI * 2);
 }
 
 function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) {
