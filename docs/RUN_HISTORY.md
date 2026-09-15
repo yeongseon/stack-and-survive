@@ -1,6 +1,6 @@
 # Local run records and personal bests
 
-Implementation scope: #156. Records are stored only in this browser under `stack-and-survive.history.v1`; they are not accounts, online rankings, anti-cheat evidence or a saved running game.
+Implementation scope: #156/#212. Current0.3 records use `stack-and-survive.history.balance-0.3.v1`, and progress uses `stack-and-survive.progress.balance-0.3.v1`. Old v1 keys remain untouched; no silent relabeling/deletion. Only exact current ladder identities can populate current bests/unlocks. The record schema stays unchanged; rulesVersion/workload balance must agree. Legacy0.2 replay remains supported explicitly but cannot establish0.3 records. These browser records are not accounts, anti-cheat evidence or a saved running game.
 
 ## Storage and comparison
 

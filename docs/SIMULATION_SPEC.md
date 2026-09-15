@@ -2,6 +2,50 @@
 
 ## Simulation Specification
 
+## Current balance 0.3 — Final Hackathon sprint #212
+
+This section supersedes conflicting budget/workload/version statements in the historical v0.2 specification below. The v0.2 rules and arithmetic reference remain explicitly supported for old replay regression and the QA editor; they are not current ordinary-player balance. No scoring formula, resource capacity, delay, routing, failure streak or per-success revenue value changes in v0.3.
+
+Initial **Upgrade Funds: 75 credits**, duration180s, legitimate mix80% Browse /20% Order. Reinvestment rate10% of cumulative **successful** revenue:
+
+```text
+totalRevenue = previous.revenue + successfulBrowse * .002 + successfulOrder * .05
+remainingBudget = scenario.budget + totalRevenue * .10 - infrastructureCost - emergencyCost
+```
+
+Potential revenue and bots do not generate funds. Reinvestment is recomputed from total revenue, not accumulated again each tick. Incident loss remains25% of lost legitimate opportunity and reduces NBV, not funds a second time. NBV remains revenue minus infrastructure/emergency/incident loss; reinvested revenue is not extra profit. Exact-zero funds exhaustion and tolerance remain unchanged.
+
+Action affordability uses available balance **before** current-tick processing, subtracting earlier same-tick emergency charges. Predicted current-tick income cannot authorize an action. Activation alone adds no money; actual successful work earns its10% share. Preparation/pause/intro/orientation gate earn nothing. Legacy0.2 reinvestment is0.
+
+| Interval (seconds, end exclusive) | Offered RPS | Bot share | Purpose |
+|---|---:|---:|---|
+| 0–25 |100|0%|Opening|
+| 25–50 |260|0%|Customer spike|
+| 50–65 |160|0%|Recovery|
+| 65–95 |440|35%|Attack|
+| 95–110 |200|5%|Recovery|
+| 110–145 |560|40%|Sustained attack/spike|
+| 145–160 |240|0%|Recovery|
+| 160–180 |600|45%|Final wave|
+
+Total legitimate potential revenue is519.564cr, independently computed as Σduration×RPS×(1−botRatio)×(.8×.002+.2×.05). Lost-sales/sec = (offeredBrowse−successfulBrowse)×.002 + (offeredOrder−successfulOrder)×.05, excluding bots. It includes legitimate false positives, limiter rejection and capacity loss once, not the additional incident penalty.
+
+Measured live schedules start Internet/App1/SQL. A=scale, C=Cache, E=Edge; request ticks below, activation delays unchanged. Same-tick sequence follows list order.
+
+| Plan | Requests | Outcome | Availability | Cost | Funds remaining | NBV | Score |
+|---|---|---|---:|---:|---:|---:|---:|
+| No action |none|Fail45s|71.428571%|12.75|68.63|44.67|810|
+| Scale only |A16,A57,A102|Fail45s|92.727273%|14.5|69.32|73.42|3555|
+| Cache + scale |A16,C17,A57,A102|Complete180s|100%|100.483333|26.473067|419.080667|8500|
+| Prepared layers |A16,C17,E57,A57|Complete180s|99.620116%|100.6|26.159026|416.496825|9474|
+| Early maximum |C0,E0,A0,A8,A16|Complete180s|99.504465%|124.133333|2.565605|392.212392|8951|
+
+These are measured references in `sprint-balance.test.ts`, not global optimality or human evidence. Candidate100 funds left >50cr for efficient plans;75 preserves headroom differences and existing99%/99.9% objective reachability. Old reference tests continue against frozen `black-friday-v02.json`; no tests skipped.
+
+Challenge rulesVersion must equal workload balanceVersion. Ordinary ladder uses0.3; history/progress keys include `balance-0.3`, leaving old keys untouched. Old identity cannot compare/unlock new balance; never relabel old metrics as0.3.
+
+## Historical balance 0.2 specification and references
+
 ## Additive live deployment contract (#115)
 
 Live Cache/Edge deployment is a supported runtime action in the normal tycoon game. This action contract preserves v0.2 balance constants and fixed-architecture reference outputs; preparation editing remains a separate QA capability.

@@ -20,9 +20,9 @@ Start with the [documentation authority index](docs/README.md). Current normal b
 
 Asset integrity: `pnpm check:assets` verifies the pinned inventory and source/output hashes; `pnpm test:assets` exercises validation. Pending-rights warnings are intentional. The separate `pnpm check:assets:release` fails until the human rights/license gate is resolved; do not interpret a green integrity check as redistribution permission. No new external pack has been imported.
 
-Ordinary play enters through **Start Game / How to Play / About**, then a five-second countdown. Click App's next physical empty bay or Cache/Protected Edge footprints to expand during operation. Click actual Intake/Edge/SQL facilities for existing interventions or inspection. Wheel/pinch zooms, drag pans, and **Fit** restores overview; keyboard equivalents reveal on focus. Routing is automatic, and camera navigation cannot change runtime/replay/economy. Budget, demand and availability remain visible; **Learn** contains explanations. Revenue is not spendable budget. The architecture editor remains a separate QA/development experience; production never exposes it through URL parameters.
+Ordinary play uses **balance 0.3**: anticipate the next wave, protect customers, reinvest **10% of successful sales** and expand before the next attack. Start with **75 Upgrade Funds** across eight spike/attack/recovery phases in180seconds. HUD shows upcoming RPS/bots/countdown and lost legitimate sales/sec (bots excluded). Click an empty App bay or Cache/Edge footprint **once** to request construction; real activation delays still apply. Routing is automatic, camera movement changes no gameplay, and **Learn** explains tradeoffs. QA/editor remains separate on explicit legacy0.2, with old reference tests intact.
 
-The [visual-state contract](docs/RESOURCE_VISUAL_STATES.md) now distinguishes real active App servers, empty sockets and construction bays. The player world has a framed indoor production aisle, larger App/SQL facilities, pooled semantic packet textures, stronger representative pressure, floor expansion pads with cost confirmation, compact HUD/local actions and game-style results. A decorative title previews the data center without advancing gameplay. The reference image guides composition, not prices or queue semantics; this is not a pixel-identical reproduction or proof of human game feel.
+The [visual-state contract](docs/RESOURCE_VISUAL_STATES.md) distinguishes real active App servers, empty sockets and construction bays. Single-action expansion keeps guarded cost/delay semantics without a second confirmation. Short local recovery feedback follows actual activation, recovered sales or improved processing, not invented rewards. Existing art/camera work is separate from this gameplay sprint and is not proof of human game feel.
 
 The browser MVP includes separate official Azure badges, snapshot-driven processing/pressure and served-business feedback, actual objectives/events, live provisioning, pause/recovery and results. The historical manual editor, redesign/comparison and local architecture saves remain QA tools, not the normal game loop. Existing54 QA editor cases are retained alongside new tycoon tests; production tests cover real-time entry, expansion and five viewport sizes. #25 now explicitly validates unassisted world-local expansion and perceived game feel after #120; no participant results exist. GitHub Pages demo hosting is owner-authorized under the documented exception; other cloud hosting remains deferred. There is no backend or outbound product telemetry.
 
@@ -44,7 +44,7 @@ The MVP simulates Azure architecture concepts. It does **not** deploy real Azure
 
 **One fixed landscape world:** facilities no longer rearrange on narrow screens. Phone play requires landscape; portrait Start shows a rotate-device gate while title/help remain available. After Start the camera establishes the whole hall, then focuses the operating sector before the existing countdown; Fit returns to that whole map. Reduced motion skips the sweep. Fullscreen/orientation lock is best-effort, never a requirement for manual landscape play. Rotating during operation holds it until explicit Continue; a manual pause stays paused. This canonical-map foundation (#208) precedes V3 runtime asset sizing/integration.
 
-Click infrastructure directly: App's next empty bay expands capacity; Cache/Edge footprints open cost/delay confirmation; installed facilities expose inspection and existing interventions. Wheel/pinch zooms, drag pans, and **Fit** returns to architecture overview. Keyboard zoom/pan/focus controls and focus-revealed infrastructure equivalents remain available. Camera never changes gameplay/replay/economy. Physical construction follows actual ticks; results show outcome first, with full evidence/history under **Details**. No speed controls, FIFO queue, scale-in or SQL scaling were added.
+Click infrastructure directly: empty App bay and Cache/Edge footprints request expansion once; unavailable/repeated requests report their reason. Wheel/pinch/drag/Fit and keyboard equivalents remain unchanged. Follow the next-wave indicator and lost-sales counter; only10% of successful revenue adds funds. Physical construction still follows actual ticks. Results retain full evidence under **Details**. Balance0.3 records/progress use new namespaces, leaving old saved data untouched. No speed controls, FIFO, scale-in or SQL scaling were added.
 
 The world is the dominant player surface. Area percentages are design guidance, not an aesthetic score. Final technical evidence is recorded in the implementation PRs and #195; actual participant game-feel/replay review remains outstanding. Earlier test counts and performance paragraphs below are historical revision measurements, not claims for every later build.
 
@@ -71,7 +71,7 @@ docs/
   README.md              Current authority index
   PRD.md                 Product requirements v1.0
   GAMEPLAY_SPEC.md       Current gameplay v1.0 and QA appendix
-  SIMULATION_SPEC.md     Simulation specification v0.2
+  SIMULATION_SPEC.md     Current balance0.3 and preserved historical0.2 references
   TECHNICAL_DESIGN.md    Implemented architecture v1.0
   VISUAL_DIRECTION.md    Visual direction v0.6 / Production Art V3
   PRODUCT_ROADMAP.md     Future work, not implementation evidence
@@ -109,7 +109,7 @@ Use Node 22.22.0 and pnpm 10.32.1. Verification commands and limits are document
 
 - [Product Requirements Document](docs/PRD.md) — Current scope versus planned diversity (v1.0).
 - [Gameplay Specification](docs/GAMEPLAY_SPEC.md) — Current player flow and separate QA editor appendix (v1.0).
-- [Simulation Specification](docs/SIMULATION_SPEC.md) — Corrected simulation rules, authoritative values, and arithmetic reference matrix (v0.2).
+- [Simulation Specification](docs/SIMULATION_SPEC.md) — Current0.3 reinvestment/waves and measured strategies, with explicit historical0.2 arithmetic regression.
 - [Technical Design](docs/TECHNICAL_DESIGN.md) — Actual controller/renderer/UI and browser-local deployment boundary (v1.0).
 - [Visual Direction](docs/VISUAL_DIRECTION.md) — Shipped game-first interactions and Production Art V3 direction (v0.6).
 - [Historical Tycoon Reframe](docs/archive/TYCOON_REFRAME_IMPLEMENTATION_PLAN.md) — Archived presentation plan, not current authority.

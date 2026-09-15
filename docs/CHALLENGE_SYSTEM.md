@@ -2,6 +2,8 @@
 
 Version: 0.4. #153 implements challenge identity; #154 measures live strategies; #155 adds the owner-approved three-objective ladder; #156 adds bounded local records. Profiles, modifiers and daily challenges remain separate work. This document is not approval of example numeric modifiers.
 
+Current #212 update: ordinary challenge rulesVersion/workload balanceVersion are0.3 and must match. Three existing objectives remain unchanged; the new waves/funds are measured in SIMULATION_SPEC. Rules0.2 remain valid only for explicit legacy replay/editor use; `sameChallenge` rejects cross-balance comparison. Current progress key is `stack-and-survive.progress.balance-0.3.v1` (the old key below is historical and untouched). Profiles/results are implemented; modifiers/daily are retired current scope. No new challenge system was added.
+
 ## Responsibilities (current versus planned)
 
 | Concept | Responsibility |

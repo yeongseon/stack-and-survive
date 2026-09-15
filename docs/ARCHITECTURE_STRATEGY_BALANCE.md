@@ -1,6 +1,6 @@
 # Architecture strategy balance
 
-Version: 0.2. Existing fixed-architecture references and measured live-action evidence are distinguished below. [Simulation Specification](SIMULATION_SPEC.md) and executable `packages/simulation/src/reference.test.ts` own canonical values; `strategy-evidence.test.ts` pins the additional live schedules. No balance constants were changed.
+Version: 0.3. Current economy/waves and five measured live strategies are in [Simulation Specification](SIMULATION_SPEC.md) and `sprint-balance.test.ts`: initial75 Upgrade Funds,10% successful-revenue reinvestment and eight attack/recovery phases. Cache-scale A16/C17/A57/A102 completes at100% with26.473067 funds; prepared layers A16/C17/E57/A57 at99.620116% with26.159026; early maximum C0/E0/A0/A8/A16 leaves2.565605. These are request ticks with unchanged activation delays, not globally optimal strategy claims. **The tables below are historical0.2**, still covered by `reference.test.ts`/`strategy-evidence.test.ts` against explicit legacy fixtures, not current balance estimates.
 
 ## Existing Black Friday evidence
 
