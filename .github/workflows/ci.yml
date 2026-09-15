@@ -21,6 +21,8 @@ jobs:
       - run: node --test scripts/work-item-format.test.mjs
       - run: pnpm test:assets
       - run: pnpm check:assets
+      - run: pnpm test:art
+      - run: pnpm check:assets:v3
       - run: pnpm lint
       - run: pnpm typecheck
       - run: pnpm test
