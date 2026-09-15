@@ -26,6 +26,7 @@ import { PacketSprites } from './packet-sprites';
 import { v3, v3Images } from './art-v3';
 import { V3Sprites } from './v3-sprites';
 import { facilityBays } from './facility-bays';
+import { generateHallBackground, generateForegroundLayer } from './hall-background';
 
 export function utilizationLabel(u: number | null): string {
   return u === null ? 'READY' : compare(u, 1) > 0 ? '! OVERLOADED' : compare(u, .7) > 0 ? 'WARNING' : 'HEALTHY';
@@ -76,6 +77,8 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
     packets!: PacketSprites;
     lighting!: FacilityLighting;
     heroSprites!: V3Sprites;
+    hallBackground: Phaser.GameObjects.Image | null = null;
+    hallForeground: Phaser.GameObjects.Image | null = null;
     preload() {
       for (const asset of v3 ? v3Images : [...Object.values(buildingAssets), moduleAsset]) {
         this.load.image(asset.texture, asset.src);
@@ -97,8 +100,16 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
       this.packets = new PacketSprites(this);
       this.lighting = new FacilityLighting(this);
       this.heroSprites = new V3Sprites(this);
+      if (v3) {
+        const hallCanvas = generateHallBackground();
+        this.textures.addCanvas('hall-background', hallCanvas);
+        this.hallBackground = this.add.image(0, 0, 'hall-background').setOrigin(0, 0).setDepth(-1);
+        const fgCanvas = generateForegroundLayer();
+        this.textures.addCanvas('hall-foreground', fgCanvas);
+        this.hallForeground = this.add.image(0, 0, 'hall-foreground').setOrigin(0, 0).setDepth(buildingLayers.effects + 0.5);
+      }
       this.trafficGraphics.setDepth(buildingLayers.traffic); this.effectsGraphics.setDepth(buildingLayers.effects);
-      this.events.once('shutdown', () => { this.sprites.destroy(); this.packets.destroy(); this.lighting.destroy(); this.heroSprites.destroy(); });
+      this.events.once('shutdown', () => { this.sprites.destroy(); this.packets.destroy(); this.lighting.destroy(); this.heroSprites.destroy(); if (this.hallBackground) this.hallBackground.destroy(); if (this.hallForeground) this.hallForeground.destroy(); });
       this.captions = Array.from({ length: 5 }, () => this.add.text(0, 0, '', {
         fontFamily: 'Trebuchet MS, sans-serif', fontSize: '13px', fontStyle: 'bold', color: '#f2faff', align: 'center', backgroundColor: '#234253', padding: { x: 8, y: 5 },
       }).setOrigin(.5, 0).setDepth(buildingLayers.labels));
@@ -207,8 +218,17 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
         });
         let g = this.graphics;
         if (this.backgroundSize !== `${width}:${height}`) {
-          const environment = drawEnvironment(this.environment.clear(), width, height, view.playerMode); this.backgroundSize = `${width}:${height}`;
-          if (diagnosticsEnabled) host.dataset.environment = JSON.stringify(environment);
+          if (v3 && view.playerMode && this.hallBackground) {
+            this.environment.clear();
+            this.hallBackground.setVisible(true);
+            if (this.hallForeground) this.hallForeground.setVisible(true);
+          } else {
+            if (this.hallBackground) this.hallBackground.setVisible(false);
+            if (this.hallForeground) this.hallForeground.setVisible(false);
+            const environment = drawEnvironment(this.environment.clear(), width, height, view.playerMode);
+            if (diagnosticsEnabled) host.dataset.environment = JSON.stringify(environment);
+          }
+          this.backgroundSize = `${width}:${height}`;
         }
         const lanes = processingLanes(architecture, requests ?? null);
         const signature = JSON.stringify([width, height, architecture, camera, view.selected, view.connectionSource, view.preview, view.building, appU, sqlU, requests?.cache.utilization, view.state.runtime.scaleDue, view.state.runtime.preparationScaleDue, lanes, view.playerMode ? facilityStateKey(visualState) : null]);

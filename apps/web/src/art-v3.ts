@@ -7,7 +7,8 @@ export const v3 = localReview && typeof __V3_REVIEW__ !== 'undefined' ? __V3_REV
 export const v3Unit = .3;
 export function v3Texture(name: string) { return `v3-${name}`; }
 const source = (name: string) => localReview ? `/__art-v3/${name}.png` : assetUrl(`assets/v3/${name}.png`);
-export const v3Images = v3?.records.map(record => ({ texture: v3Texture(record.name), src: source(record.name) })) ?? [];
+const allV3Images = v3?.records.map(record => ({ texture: v3Texture(record.name), src: source(record.name), name: record.name })) ?? [];
+export const v3Images = allV3Images.filter(img => !img.name.startsWith('env-'));
 const records = new Map(v3?.records.map(record => [record.name, record]));
 export function v3Asset(name: string) {
   const record = records.get(name);
