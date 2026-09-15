@@ -14,9 +14,10 @@ test('production V3 renders approved art and physical builds without review endp
   await expect(page.getByRole('button', { name: 'Ⅱ Pause', exact: true })).toBeEnabled();
   await page.getByRole('button', { name: 'Skip guide', exact: true }).click();
   await expect(page.locator('.hero-art-review')).toHaveCount(1);
-  expect(loaded.size).toBe(61);
+  // 41 hero assets preloaded (env-* scenery is baked into hall background, not loaded as individual textures)
+  expect(loaded.size).toBe(41);
   expect([...loaded]).toContain('/assets/v3/app-module.png');
-  expect([...loaded]).toContain('/assets/v3/env-rack-c.png');
+  expect([...loaded].some(p => p.includes('/env-'))).toBe(false);
   const canvas = page.locator('canvas');
   const bounds = (await canvas.boundingBox())!;
   const scale = Math.min(bounds.width / 2400, bounds.height / 1350) * 1.45;
