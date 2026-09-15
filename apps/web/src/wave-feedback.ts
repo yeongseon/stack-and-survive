@@ -13,7 +13,13 @@ export function upcomingWave(view: View) {
   if (view.result) return null;
   const next=scenario.traffic.find(phase=>phase.start>view.state.runtime.time);
   if(!next)return null;
+  const current=scenario.traffic.find(phase=>phase.start<=view.state.runtime.time&&phase.end>view.state.runtime.time);
+  const label=next===scenario.traffic.at(-1)?'FINAL WAVE'
+    : current&&next.rps<current.rps&&next.rps*next.botRatio<=current.rps*current.botRatio?'Recovery window'
+    : current&&next.rps*next.botRatio>current.rps*current.botRatio?'Bot attack'
+    : current&&next.rps>current.rps?'Traffic spike':'Traffic change';
   return { seconds:next.start-view.state.runtime.time, rps:next.rps, bots:next.botRatio,
+    label,
     imminent:next.start-view.state.runtime.time<=5 && view.state.runtime.status==='RUNNING' && !view.error };
 }
 export type Recovery = { time:number; kind:'compute'|'cache'|'edge'|'internet'; text:string };

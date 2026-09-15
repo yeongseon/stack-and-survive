@@ -19,6 +19,6 @@ export function GameHUD({ view }: { view: View }) {
     <div className="hud-reading"><span aria-hidden="true">✓</span><div><small>Availability</small><strong data-testid="availability">{availability === undefined ? '—' : `${(availability * 100).toFixed(1)}%`}</strong><meter aria-label="Current availability" min={0} max={1} value={availability ?? 0} /></div></div>
     <p className={`hud-pressure${pressure.urgent ? ' urgent' : ''}`} role="status"><span aria-hidden="true">{pressure.urgent ? '⚠' : '◇'}</span>{paused ? 'Paused · ' : view.result ? 'Final · ' : ''}{pressure.label}</p>
     <div className="hud-sales"><small>{paused?'Paused · ':view.result?'Final · ':''}Lost sales / sec</small><strong data-testid="lost-sales">{loss===null?'—':loss.toFixed(2)} <small>cr/s</small></strong></div>
-    {next && <div className={`hud-wave${next.imminent?' imminent':''}`} data-testid="next-wave"><small>{paused?'Paused · ':''}Next wave in <b>{next.seconds}s</b></small><strong>{next.rps} <small>req/s</small>{next.bots>0&&<span> · Bots {Math.round(next.bots*100)}%</span>}</strong></div>}
+    {next && <div className={`hud-wave${next.imminent?' imminent':''}`} data-testid="next-wave"><small>{paused?'Paused · ':''}{next.label} in <b>{next.seconds}s</b></small><strong>{next.rps} <small>req/s</small>{next.bots>0&&<span> · Bots {Math.round(next.bots*100)}%</span>}</strong></div>}
   </section>;
 }

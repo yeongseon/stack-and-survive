@@ -24,7 +24,7 @@ test('living operation expands real capacity and activates Cache and Edge only a
   expect(accepted.snapshot.requests.edge.active).toBe(false);
   expect(accepted.state.runtime.architecture.resources.find((r: {kind:string}) => r.kind === 'compute').instances).toBe(1);
   await expect(page.getByTestId('slot-cache')).toContainText('Provisioning 5s');
-  await page.getByRole('button', { name: 'Ⅱ Pause', exact: true }).click();
+  await page.getByRole('button', { name: 'Ⅱ Pause', exact: true }).click(); await page.getByRole('button', { name: 'Inspect paused world', exact: true }).click();
   const frozen = await state(); await step.click(); expect((await state()).state).toEqual(frozen.state);
   await page.getByRole('button', { name: '▶ Resume', exact: true }).click();
   for (let i = 0; i < 5; i++) await step.click();
@@ -36,7 +36,8 @@ test('living operation expands real capacity and activates Cache and Edge only a
   expect((await state()).state.runtime.architecture.resources.find((r: {kind:string}) => r.kind === 'compute').instances).toBe(2);
   await page.evaluate(() => window.scrollTo(0,0));
   await page.screenshot({ path: info.outputPath('tycoon-expanded.png') });
-  await expect(page.getByTestId('business-feedback')).toContainText('Orders served');
+  await expect(page.getByTestId('business-feedback')).toHaveCount(0);
+  await expect(page.getByTestId('budget')).toBeVisible();
   while (Number(await page.getByTestId('elapsed').textContent()) < 76) await step.click();
   const bots = await state();
   expect(bots.snapshot.requests.edge.filtered.bot).toBeGreaterThan(0);
@@ -46,7 +47,7 @@ test('living operation expands real capacity and activates Cache and Edge only a
   await step.click(); await step.click();
   expect((await state()).snapshot.requests.edge.filtered.bot).toBeGreaterThan(bots.snapshot.requests.edge.filtered.bot);
   await page.getByRole('button', { name: 'Close resource', exact: true }).click();
-  await page.getByRole('button', { name: 'Ⅱ Pause', exact: true }).click();
+  await page.getByRole('button', { name: 'Ⅱ Pause', exact: true }).click(); await page.getByRole('button', { name: 'Inspect paused world', exact: true }).click();
   await expect(page.getByTestId('business-feedback')).toHaveCount(0);
 });
 

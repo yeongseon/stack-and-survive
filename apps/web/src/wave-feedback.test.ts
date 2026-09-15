@@ -29,10 +29,21 @@ it('reports zero-loss recovery and efficiency improvement, not a mere incoming-d
 it('uses authoritative phase time, warns only when live, then selects next phase at boundary',()=>{
   const c=createController({start:()=>()=>{}},undefined,true);c.start();
   while(c.getSnapshot().state.runtime.time<20)c.inspectNextTick();
-  expect(upcomingWave(c.getSnapshot())).toEqual({seconds:5,rps:260,bots:0,imminent:true});
+  expect(upcomingWave(c.getSnapshot())).toEqual({seconds:5,rps:260,bots:0,label:'Traffic spike',imminent:true});
   c.pause();expect(upcomingWave(c.getSnapshot())?.imminent).toBe(false);c.resume();
   while(c.getSnapshot().state.runtime.time<25)c.inspectNextTick();
   expect(upcomingWave(c.getSnapshot())?.seconds).toBe(25);c.destroy();
+});
+it('describes recovery, attack and final phase without treating every phase as a spike',()=>{
+  const c=createController({start:()=>()=>{}},undefined,true);
+  const view=c.getSnapshot();
+  const phaseAt=(time:number)=>upcomingWave({...view,state:{...view.state,runtime:{...view.state.runtime,time,status:'RUNNING'}}});
+  expect(phaseAt(45)).toMatchObject({label:'Recovery window',seconds:5,rps:160});
+  expect(phaseAt(60)).toMatchObject({label:'Bot attack',seconds:5,bots:.35});
+  expect(phaseAt(90)).toMatchObject({label:'Recovery window',rps:200});
+  expect(phaseAt(140)).toMatchObject({label:'Recovery window',rps:240});
+  expect(phaseAt(155)).toMatchObject({label:'FINAL WAVE',seconds:5,rps:600,bots:.45});
+  c.destroy();
 });
 it('deduplicates snapshots and only rewards actual activation without counting pause as recovery',()=>{
   const c=createController({start:()=>()=>{}},undefined,true);c.start();c.queueAction({type:'SCALE_OUT'});

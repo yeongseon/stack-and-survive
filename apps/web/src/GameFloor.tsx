@@ -4,11 +4,10 @@ import { mountWorld } from './world';
 import { tycoonPositions } from './tycoon-layout';
 import { type PlayerNavigation } from './player-navigation';
 import { definitions } from '@stack-and-survive/cloud-domain';
-import { businessFeedback } from './business-feedback';
 import type { WorldTarget } from './world-interaction';
 import { resourceVisualState } from './resource-visual-state';
 import { playerBuildingScale, resourceArtBounds } from './building-assets';
-import { recoveryFeedback, reinvestedThisTick, type Recovery } from './wave-feedback';
+import { recoveryFeedback, type Recovery } from './wave-feedback';
 
 function LocalAction({ controller, action, children }: { controller: Controller; action: ActionRequest; children: React.ReactNode }) {
   const reason = controller.actionReason(action);
@@ -67,7 +66,6 @@ export function GameFloor({ controller, view, navigation, onReady, blocked = fal
   const runtime = view.state.runtime;
   const app = runtime.architecture.resources.find(r => r.kind === 'compute')!;
   const visual = resourceVisualState(view);
-  const feedback = businessFeedback(view);
   const selected = runtime.architecture.resources.find(r => r.id === view.selected);
   const localPosition = (kind: keyof typeof tycoonPositions) => {
     const p = projection.resourceScreen(kind);
@@ -147,6 +145,5 @@ export function GameFloor({ controller, view, navigation, onReady, blocked = fal
         {selected.kind === 'database' && <><p className="resource-state">Reads: {visual.sql.readPressure}<br/>Writes: {visual.sql.writePressure}</p><small>Capacity and routing explained in Learn</small></>}
       </section>}
     </div>
-    {feedback && <div key={feedback.tick} className="business-feedback" data-testid="business-feedback">✓ Orders served · {feedback.orders.toFixed(1)}/s <span>+{feedback.revenue.toFixed(2)} cr sales · +{reinvestedThisTick(view).toFixed(2)} Upgrade Funds ({view.challenge?.rulesVersion==='0.3'?'10%':'0% legacy'})</span></div>}
   </div>;
 }
