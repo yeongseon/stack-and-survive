@@ -54,7 +54,9 @@ The parent orchestrates renderer-ready Fit→operational opening before calling 
 
 Navigation-only state is excluded from geometry/texture regeneration signatures. Frame effects are separate from transformed world effects; input listeners/captures are disposed with the world. `construction-art` projects accepted remaining/due ticks into scaffold/boot/progress marks without owning timers or active capacity. Environment plinths add decorative depth only. GameResult's first layer shows outcome and replay; native Details retains prior analytical evidence and record semantics.
 
-Environment redraws on viewport change; structures/lanes use a meaningful signature cache. Original building PNGs have measured alpha anchors/bounds and procedural fallback. `resourceVisualState` separates installation/pressure/activity. Active servers, empty sockets and construction are distinct, never extra capacity.
+Production uses the original V3 facilities registered in `art/v3/runtime-inventory.json`, with bounds/module offsets derived from their exported source. V3 constructs the fixed hall's 72 decorative equipment images once, grouping cooling, racks and power equipment rather than repeating uniform rows. Camera-only changes do not rebuild these objects. Structures/lanes retain meaningful signature caches. QA/editor keeps the earlier PNG/procedural fallback path; missing required V3 textures stop the player renderer with a recoverable error rather than inventing partial capacity. `resourceVisualState` separates installation/pressure/activity.
+
+`V3Sprites` displays only real active App modules, independent empty/queued/construction layers, tick-derived construction progress, measured per-bank SQL warnings and actual hit/filter activity. Duplicate generic effects are not painted over V3 layers. Activation cues use the newly active App bay, remain deduplicated and static under reduced motion. Selected local-action panels prefer space beside the projected building and clamp to the viewport; their cost/delay/eligibility still come from controller contracts.
 
 `PacketSprites` builds reusable class/endpoint textures and pools at most 200 images. Flow sampling stays bounded; packets are not requests. Do not re-tessellate rounded geometry per packet per frame. Preserve Cache/Edge/loss provenance, dynamic reduced-motion preferences and offscreen render-only culling. Dispose observers/subscriptions/timers/containers on shutdown. Phaser owns packet animation, not a React-per-frame layout loop.
 
@@ -62,7 +64,7 @@ TitleWorld is bounded decorative SVG/CSS without controller calls; unmount remov
 
 ## Assets
 
-Editable originals: `art/buildings/*.svg` and `bounds.json`. Export: `scripts/export-building-sprites.mjs`. Official Azure SVG import is pinned/hash checked; badges remain separate and unchanged. [Attribution](../apps/web/public/assets/ATTRIBUTION.md) records actual provenance; [Asset Strategy](ASSET_STRATEGY.md) defines future sourcing. No blanket code license covers third-party assets.
+Editable V3 generators and exported SVG sources live under `art/v3/`; approved production PNGs live under `apps/web/public/assets/v3/`. `check:assets:v3` verifies source/PNG/manifest/geometry identity. The old `art/buildings` sources remain for QA/editor compatibility. Official Azure SVG import is pinned/hash checked; badges stay separate and unchanged. [Attribution](../apps/web/public/assets/ATTRIBUTION.md) and [V3 provenance](../art/v3/PROVENANCE.md) record original authorship and the explicitly expanded, exact-inventory Pages demo exception. General rights remain unresolved; no blanket code license covers third-party assets.
 
 ## Verification/tooling
 
