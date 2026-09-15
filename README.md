@@ -4,7 +4,9 @@
 
 > **Same workload. Different architectures. Different outcomes.**
 
-**[Play the browser demo](https://yeongseon.dev/stack-and-survive/)** · GitHub Pages production build, no real Azure deployment.
+**[Play the browser demo](https://yeongseon.github.io/stack-and-survive/)** · Project GitHub Pages production build, no real Azure deployment.
+
+The project has no custom-domain/CNAME configuration. GitHub currently redirects this default project URL to an inherited account-domain URL; changing this link does not remove that platform redirect or authorize changes to the account website.
 
 Pages is owner-directed under an [exact-inventory demo exception, explicitly extended to original V3 art](docs/PAGES_DEMO_EXCEPTION.md). Asset rights remain pending; this is not a general license or release clearance. The project-path build is verified with `pnpm build:pages` and `pnpm test:pages`; deployment follows successful main-branch Quality CI.
 

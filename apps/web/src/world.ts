@@ -25,6 +25,7 @@ import { drawIntake, packetPalette } from './workload-art';
 import { PacketSprites } from './packet-sprites';
 import { v3, v3Images } from './art-v3';
 import { V3Sprites } from './v3-sprites';
+import { facilityBays } from './facility-bays';
 
 export function utilizationLabel(u: number | null): string {
   return u === null ? 'READY' : compare(u, 1) > 0 ? '! OVERLOADED' : compare(u, .7) > 0 ? 'WARNING' : 'HEALTHY';
@@ -331,7 +332,7 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
         }
         for (const effect of effects) {
           const index = resources.findIndex(r => r.kind === effect.resource);
-          if (index >= 0) drawEffect(fx, effect, positions[index], time, effectMotion(view, reducedMotion));
+          if (index >= 0 && !v3) drawEffect(fx, effect, positions[index], time, effectMotion(view, reducedMotion));
         }
         for (const [kind, until] of completions) {
           if (animationTime >= until) { completions.delete(kind); continue; }
@@ -339,7 +340,17 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
           if (p) {
             if (undrawnCompletions.delete(kind)) drawnCompletions++;
             const progress = reducedMotion ? .5 : 1 - (until - animationTime) / 1400;
-            fx.lineStyle(3, 0xd6ffe5, 1 - progress); fx.strokeEllipse(p.x, p.y + 8, 80 + progress * 60, 28 + progress * 22);
+            if(v3){
+              const resource=resources.find(r=>r.kind===kind)!;
+              const scale=playerBuildingScale(resource.kind);
+              const bay=kind==='compute'?facilityBays[Math.max(0,resource.instances-1)]:{x:0,y:0};
+              const x=p.x+bay.x*scale,y=p.y+bay.y*scale;
+              fx.lineStyle(3,0xc8ffed,(1-progress)*.8);fx.strokeEllipse(x,y+14,100*scale*(.7+progress*.4),40*scale*(.7+progress*.4));
+              for(let i=0;i<4;i++){
+                const dx=(i-1.5)*14*scale;
+                fx.lineStyle(2,0xc8ffed,(1-progress)*.65);fx.lineBetween(x+dx,y-progress*65*scale,x+dx,y-progress*65*scale-8);
+              }
+            }else{fx.lineStyle(3, 0xd6ffe5, 1 - progress); fx.strokeEllipse(p.x, p.y + 8, 80 + progress * 60, 28 + progress * 22);}
           }
         }
         if (diagnosticsEnabled) {
