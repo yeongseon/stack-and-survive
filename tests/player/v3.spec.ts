@@ -1,0 +1,50 @@
+import { expect, test } from '@playwright/test';
+
+test('production V3 renders approved art and physical builds without review endpoints', async ({ page }, info) => {
+  const loaded = new Set<string>(), failures: string[] = [];
+  page.on('response', response => {
+    if (response.url().includes('/assets/v3/')) loaded.add(new URL(response.url()).pathname);
+    if (response.status() >= 400) failures.push(response.url());
+  });
+  page.on('pageerror', error => failures.push(error.message));
+  page.on('requestfailed', request => failures.push(request.url()));
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/?tycoon&mode=art-preview');
+  await page.getByRole('button', { name: 'Start Game', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Ⅱ Pause', exact: true })).toBeEnabled();
+  await page.getByRole('button', { name: 'Skip guide', exact: true }).click();
+  await expect(page.locator('.hero-art-review')).toHaveCount(1);
+  expect(loaded.size).toBe(61);
+  expect([...loaded]).toContain('/assets/v3/app-module.png');
+  expect([...loaded]).toContain('/assets/v3/env-rack-c.png');
+  const canvas = page.locator('canvas');
+  const bounds = (await canvas.boundingBox())!;
+  const scale = Math.min(bounds.width / 2400, bounds.height / 1350) * 1.45;
+  const at = (x: number, y: number) => ({ x: bounds.width / 2 + (x - 1210) * scale, y: bounds.height / 2 + (y - 620) * scale });
+  await page.screenshot({ path: info.outputPath('v3-production-baseline.png') });
+  await canvas.click({ position: at(1510, 600) });
+  await expect(page.getByRole('region', { name: 'CACHE expansion' })).toBeVisible();
+  await page.getByRole('button', { name: 'Confirm expansion', exact: true }).click();
+  await expect(page.getByTestId('slot-cache')).toContainText('Provisioning');
+  await canvas.click({ position: at(875, 725) });
+  await page.getByRole('button', { name: 'Confirm expansion', exact: true }).click();
+  // The next bay is a source-defined 76-unit diagonal from the first bay, not an HTML button.
+  const bayX = (6 + 32.5 - (-70 + 32.5)) * 1.35 * .3 * 2.5;
+  const bayY = ((6 + 32.5 + -70 + 32.5) * .65 - 24) * .3 * 2.5;
+  await canvas.click({ position: at(1190 + bayX, 790 + bayY) });
+  await expect(page.getByRole('region', { name: 'APP expansion' })).toBeVisible();
+  await page.getByRole('button', { name: 'Confirm expansion', exact: true }).click();
+  await page.screenshot({ path: info.outputPath('v3-production-construction.png') });
+  await expect(page.getByRole('button', { name: '+ App capacity', exact: true })).toContainText('2/4 active', { timeout: 15000 });
+  await expect(page.getByTestId('slot-cache')).toContainText('Active');
+  await expect(page.getByTestId('slot-edge')).toContainText('Active');
+  await page.screenshot({ path: info.outputPath('v3-production-active.png') });
+  await page.getByRole('button', { name: 'Ⅱ Pause', exact: true }).click();
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.setViewportSize({ width: 844, height: 390 });
+  await page.getByRole('button', { name: 'Fit architecture', exact: true }).click();
+  await expect(page.getByRole('status', { name: 'Camera zoom' })).toHaveText('100%');
+  await page.screenshot({ path: info.outputPath('v3-production-landscape.png') });
+  await expect(page.locator('[data-v3-sprites], [data-world-targets], [data-testid="diagnostics"]')).toHaveCount(0);
+  expect(failures).toEqual([]);
+});

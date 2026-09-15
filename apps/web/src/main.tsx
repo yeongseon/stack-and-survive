@@ -17,6 +17,7 @@ import { pressureQueues } from './queue-visualization';
 import { MissionPanel } from './MissionPanel';
 import { diagnosticsEnabled } from './mode';
 import { ChallengeApplication } from './ChallengeApplication';
+import { v3 } from './art-v3';
 
 function World({ controller, generation, onInspect }: { controller: Controller; generation: number; onInspect: (open: boolean) => void }) {
   const host = useRef<HTMLDivElement>(null);
@@ -148,4 +149,4 @@ function App() {
     <footer>BUILD. SCALE. KEEP THE BUSINESS FLOWING.<span>Simplified game values, not Azure performance or pricing. Human playtesting and hosted deployment are still pending.</span></footer>
   </main>;
 }
-createRoot(document.getElementById('root')!).render(diagnosticsEnabled && !new URLSearchParams(location.search).has('tycoon') ? <App /> : <ChallengeApplication />);
+createRoot(document.getElementById('root')!).render(!v3 && diagnosticsEnabled && !new URLSearchParams(location.search).has('tycoon') ? <App /> : <ChallengeApplication />);

@@ -1,6 +1,7 @@
 import type Phaser from 'phaser';
 import { tycoonPoint, playerMap } from './tycoon-layout';
 import { playerBuildingScale, resourceArtBounds } from './building-assets';
+import { v3 } from './art-v3';
 
 type Graphics = Phaser.GameObjects.Graphics;
 type EquipmentKind = 'rack' | 'cooling' | 'cabinet';
@@ -107,7 +108,8 @@ function equipment(g: Graphics, e: Equipment, index: number) {
   }
 }
 export function drawEnvironment(g: Graphics, width: number, height: number, player = false) {
-  if (player) g.fillGradientStyle(0x152a43, 0x243d57, 0x344b60, 0x172c43);
+  if (player && v3) g.fillGradientStyle(0x071724, 0x142a3d, 0x1d3448, 0x081d2c);
+  else if (player) g.fillGradientStyle(0x152a43, 0x243d57, 0x344b60, 0x172c43);
   else g.fillGradientStyle(0x5a6b7b, 0x657989, 0x819199, 0x687f8c);
   g.fillRect(0, 0, width, height);
   const tile = width < 600 ? 38 : 56;
@@ -123,7 +125,7 @@ export function drawEnvironment(g: Graphics, width: number, height: number, play
     }
   }
   const wallHeight = width < 600 ? 60 : 84;
-  if (player) {
+  if (player && !v3) {
     for (const kind of ['compute', 'database'] as const) {
       const p = tycoonPoint(kind, width, height), scale = playerBuildingScale(kind, width);
       const half = (kind === 'compute' ? 116 : 88) * scale, depth = 48 * scale;
@@ -145,7 +147,18 @@ export function drawEnvironment(g: Graphics, width: number, height: number, play
     g.fillStyle(0xffd89a, .06); g.fillEllipse(x + 48, wallHeight + 25, 85, 60);
     g.fillStyle(0xf0d5a4, .85); g.fillRoundedRect(x + 39, 25, 17, 5, 2);
   }
-  const objects = player ? playerFacilityLayout(width, height) : facilityLayout(width, height);
+  const objects = player ? v3 ? [] : playerFacilityLayout(width, height) : facilityLayout(width, height);
+  if(player && v3){
+    for(const [x,y,w,h] of [[340,470,1680,475],[80,115,2220,350],[80,1030,2220,290]]){
+      g.fillStyle(0x071b28,.25);g.fillRoundedRect(x,y,w,h,16);
+      g.lineStyle(2,0x7597a4,.25);g.strokeRoundedRect(x,y,w,h,16);
+    }
+    for(const y of [460,990]){
+      g.lineStyle(13,0x091d2c);g.lineBetween(280,y,2120,y);
+      g.lineStyle(2,0x7cd3d8,.32);g.lineBetween(280,y-6,2120,y-6);
+      for(let x=300;x<2110;x+=135){g.lineStyle(4,0xcfb56f,.5);g.lineBetween(x,y-4,x+22,y-4);}
+    }
+  }
   if (player && width >= 900) {
     g.lineStyle(2, 0x698fa1, .3); g.lineBetween(35, height * .84, width - 35, height * .84);
     g.lineStyle(9, 0x152b40, .9); g.lineBetween(35, 163, width - 35, 163);

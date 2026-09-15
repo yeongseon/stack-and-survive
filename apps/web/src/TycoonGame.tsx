@@ -15,6 +15,7 @@ import type { Architecture } from '@stack-and-survive/schema';
 import type { RunReport } from './run-report';
 import { createPlayerNavigation } from './player-navigation';
 import { createLandscapeClock, enhanceLandscape, requiresLandscape } from './landscape-session';
+import { v3 } from './art-v3';
 import './player-console.css';
 
 export function TycoonGame({ challenge = blackFridayChallenge, titleContent, onResult, nextLevel, resultContent, runReport }: {
@@ -116,7 +117,7 @@ export function TycoonGame({ challenge = blackFridayChallenge, titleContent, onR
     if (view.result && reportedResult.current !== view.result) { reportedResult.current = view.result; onResult?.(view.result, view.state.runtime.architecture); }
     if (!view.result) reportedResult.current = null;
   }, [view.result, view.state.runtime.architecture, onResult]);
-  return <main className={`tycoon-game${entered ? ' diorama-game' : ''}`} onClick={event => { if (event.target instanceof Element && event.target.closest('button')) sound.click(); }}>
+  return <main className={`tycoon-game${entered ? ' diorama-game' : ''}${v3 ? ' hero-art-review' : ''}`} onClick={event => { if (event.target instanceof Element && event.target.closest('button')) sound.click(); }}>
     {!entered ? <section className="title-screen" inert={orientationGate} aria-label="Game introduction" data-time={diagnosticsEnabled ? runtime.time : undefined} data-budget={diagnosticsEnabled ? view.state.economy.remainingBudget : undefined}>
       <TitleWorld />
       <div className="title-heading"><p className="title-eyebrow">A REAL-TIME CLOUD INFRASTRUCTURE GAME</p>
