@@ -1,7 +1,8 @@
 import { expect, test } from '@playwright/test';
 
-for (const width of [1440, 390, 1920, 320, 1024]) test(`direct diorama operations at ${width}px`, async ({ page }, info) => {
-  await page.setViewportSize({ width, height: 900 });
+for (const width of [1440, 844, 1920, 740, 1024]) test(`direct diorama operations at ${width}px`, async ({ page }, info) => {
+  const height=width<900?390:900;
+  await page.setViewportSize({ width, height });
   await page.goto('/?tycoon');
   await page.getByRole('button', { name: 'Start Game', exact: true }).click();
   await expect(page.getByRole('button', { name: 'Ⅱ Pause', exact: true })).toBeEnabled();
@@ -37,7 +38,7 @@ for (const width of [1440, 390, 1920, 320, 1024]) test(`direct diorama operation
   await page.getByRole('button', { name: 'Ⅱ Pause', exact: true }).click();
   await page.screenshot({ path: info.outputPath(`diorama-active-${width}.png`) });
   const world = (await page.getByTestId('world').boundingBox())!;
-  expect(world.height).toBeGreaterThanOrEqual(890);
+  expect(world.height).toBeGreaterThanOrEqual(height-10);
   await page.getByRole('button', { name: 'SQL processing', exact: true }).focus();
   await expect(page.getByRole('button', { name: 'SQL processing', exact: true })).toBeInViewport();
   await page.keyboard.press('Enter');

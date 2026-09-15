@@ -20,12 +20,12 @@ it('frames the player aisle without placing scenery in installed facility or con
   for (const width of [294, 320, 390, 768, 900, 1024, 1440, 1920]) {
     const height = width < 900 ? 640 : 580;
     const props = playerFacilityLayout(width, height);
-    expect(props).toEqual(playerFacilityLayout(width, height));
-    expect(props.length, `viewport ${width}x${height}`).toBeGreaterThan(0); expect(props.length).toBeLessThanOrEqual(24);
+    expect(props).toEqual(playerFacilityLayout(2400, 1350));
+    expect(props.length, `viewport ${width}x${height}`).toBeGreaterThan(24); expect(props.length).toBeLessThanOrEqual(64);
     for (const prop of props) {
       const b = equipmentBounds(prop);
       expect(b.x).toBeGreaterThanOrEqual(20); expect(b.y).toBeGreaterThanOrEqual(6);
-      expect(b.x+b.width).toBeLessThanOrEqual(width-16); expect(b.y+b.height).toBeLessThanOrEqual(height-28);
+      expect(b.x+b.width).toBeLessThanOrEqual(2400-16); expect(b.y+b.height).toBeLessThanOrEqual(1350-28);
       for (const p of playerProtectedAreas(width,height)) expect(b.x < p.x+p.width && b.x+b.width>p.x && b.y<p.y+p.height && b.y+b.height>p.y).toBe(false);
     }
   }

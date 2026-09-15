@@ -2,11 +2,10 @@ import { expect, test } from '@playwright/test';
 
 type Camera = { centerX: number; centerY: number; userZoom: number };
 function fitBounds(width: number, height: number) {
-  const zoom = Math.min(width / 1440, height / 900);
-  return { width: width / zoom, height: height / zoom };
+  return { width:2400, height:1350, fitZoom:Math.min(width/2400,height/1350), viewportWidth:width, viewportHeight:height };
 }
-function clampCenter(value: number, length: number, zoom: number) {
-  const inset = length / zoom * .4;
+function clampCenter(value: number, length: number, visible: number) {
+  const inset = visible * .4;
   return inset >= length / 2 ? length / 2 : Math.max(inset, Math.min(length - inset, value));
 }
 
@@ -17,6 +16,7 @@ test('zoomed camera survives resize pause and renderer recovery but resets on a 
   await expect(page.getByRole('button', { name: 'Ⅱ Pause', exact: true })).toBeEnabled();
   await page.getByRole('button', { name: 'Ⅱ Pause', exact: true }).click();
   await page.getByRole('button', { name: 'Skip guide', exact: true }).click();
+  await page.getByRole('button', { name: 'Fit architecture', exact: true }).click();
   const surface = page.locator('[data-renderer="ready"]');
   const zoom = page.getByRole('status', { name: 'Camera zoom' });
   const camera = async (): Promise<Camera> => JSON.parse((await surface.getAttribute('data-player-camera'))!);
@@ -44,17 +44,16 @@ test('zoomed camera survives resize pause and renderer recovery but resets on a 
   await expect.poll(async () => (await camera()).centerY).toBeGreaterThan(beforePause.centerY);
   await page.locator('.player-camera-controls > details > summary').click();
   const panned = await camera();
-  const oldSize = await canvasSize(), landscape = fitBounds(oldSize.width, oldSize.height);
   await page.emulateMedia({ reducedMotion: 'reduce' });
-  await page.setViewportSize({ width: 390, height: 844 });
+  await page.setViewportSize({ width: 844, height: 390 });
   await expect(zoom).toHaveText('150%');
-  await expect.poll(async () => page.locator('canvas').evaluate(c => c.clientWidth)).toBeLessThan(400);
+  await expect.poll(async () => page.locator('canvas').evaluate(c => c.clientWidth)).toBe(844);
   await expect(surface).toHaveAttribute('data-reduced-motion', 'true');
-  await expect.poll(async () => (await canvasSize()).height).toBe(844);
+  await expect.poll(async () => (await canvasSize()).height).toBe(390);
   const newSize = await canvasSize(), portrait = fitBounds(newSize.width, newSize.height);
   const resized: Camera = {
-    centerX: clampCenter(panned.centerX / landscape.width * portrait.width, portrait.width, 1.5),
-    centerY: clampCenter(panned.centerY / landscape.height * portrait.height, portrait.height, 1.5), userZoom: 1.5,
+    centerX: clampCenter(panned.centerX, portrait.width, newSize.width/(portrait.fitZoom*1.5)),
+    centerY: clampCenter(panned.centerY, portrait.height, newSize.height/(portrait.fitZoom*1.5)), userZoom: 1.5,
   };
   await expect.poll(async () => Math.abs((await camera()).centerX - resized.centerX)).toBeLessThan(1e-6);
   await expect.poll(async () => Math.abs((await camera()).centerY - resized.centerY)).toBeLessThan(1e-6);
@@ -66,8 +65,8 @@ test('zoomed camera survives resize pause and renderer recovery but resets on a 
   await page.locator('.player-camera-controls > details > summary').click();
   const beforeFocus = await camera();
   await page.getByRole('button', { name: 'Focus selected', exact: true }).click();
-  const sql = { x: portrait.width * .76, y: portrait.height * .79 };
-  const focused: Camera = { centerX: clampCenter(sql.x, portrait.width, 1.5), centerY: clampCenter(sql.y, portrait.height, 1.5), userZoom: 1.5 };
+  const sql = { x: 1830, y: 825 };
+  const focused: Camera = { centerX: clampCenter(sql.x, portrait.width, newSize.width/(portrait.fitZoom*1.5)), centerY: clampCenter(sql.y, portrait.height, newSize.height/(portrait.fitZoom*1.5)), userZoom: 1.5 };
   await expect.poll(async () => Math.abs((await camera()).centerX - focused.centerX)).toBeLessThan(1e-6);
   await expect.poll(async () => Math.abs((await camera()).centerY - focused.centerY)).toBeLessThan(1e-6);
   const afterFocus = await camera();
@@ -95,7 +94,8 @@ test('zoomed camera survives resize pause and renderer recovery but resets on a 
   await page.getByRole('button', { name: 'ⓘ Learn', exact: true }).click();
   await page.getByRole('button', { name: 'Return to title / restart', exact: true }).click();
   await page.getByRole('button', { name: 'Start Game', exact: true }).click();
-  await expect(zoom).toHaveText('100%');
   await expect(page.getByRole('button', { name: 'Ⅱ Pause', exact: true })).toBeEnabled();
-  await expect.poll(camera).toEqual({ centerX: portrait.width / 2, centerY: portrait.height / 2, userZoom: 1 });
+  await expect.poll(camera).toEqual({ centerX:1210, centerY:620, userZoom:1.45 });
+  await page.getByRole('button', { name: 'Fit architecture', exact: true }).click();
+  await expect.poll(camera).toEqual({ centerX:1200, centerY:675, userZoom:1 });
 });

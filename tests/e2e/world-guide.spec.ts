@@ -43,7 +43,7 @@ test('guide responds to actual pressure without acting and persists only explici
 });
 
 test('guide can be opted out before play and storage failure does not block local dismissal', async ({ page }) => {
-  await page.setViewportSize({ width: 320, height: 740 });
+  await page.setViewportSize({ width: 740, height: 390 });
   await page.addInitScript(() => { Storage.prototype.setItem = () => { throw new Error('storage blocked'); }; });
   await page.goto('/?tycoon'); await page.getByRole('button', { name: 'How to Play', exact: true }).click();
   await page.getByRole('button', { name: 'Skip world guide', exact: true }).click();

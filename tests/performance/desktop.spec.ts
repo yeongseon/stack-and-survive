@@ -40,6 +40,10 @@ for (const mode of ['editor', 'tycoon-fit', 'tycoon-close']) test(`measure a rea
   await page.getByRole('button', { name: tycoon ? 'Ⅱ Pause' : 'Pause operation', exact: true }).click();
   await page.getByRole('button', { name: tycoon ? '▶ Resume' : 'Resume operation', exact: true }).click();
   await surface.scrollIntoViewIfNeeded();
+  if (tycoon) {
+    await page.getByRole('button', { name: 'Fit architecture', exact: true }).click();
+    await expect(page.getByRole('status', { name: 'Camera zoom' })).toHaveText('100%');
+  }
   if (mode === 'tycoon-close') {
     await page.getByRole('button', { name: 'Zoom in', exact: true }).click();
     await page.getByRole('button', { name: 'Zoom in', exact: true }).click();

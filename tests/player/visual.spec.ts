@@ -21,6 +21,13 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 1920, height: 108
     }
     await page.screenshot({ path: info.outputPath(`title-${viewport.width}.png`) });
     await page.getByRole('button', { name: 'Start Game' }).click();
+    if(viewport.width<900){
+      await expect(page.getByRole('dialog',{name:'Landscape play required'})).toContainText('Rotate your device');
+      await expect(page.locator('canvas')).toHaveCount(0);
+      await page.screenshot({path:info.outputPath(`rotate-${viewport.width}.png`)});
+      await page.setViewportSize({width:viewport.height,height:viewport.width});
+      await page.getByRole('button',{name:'Continue in landscape',exact:true}).click();
+    }
     const surface = page.locator('[data-renderer="ready"]');
     await expect(surface).toHaveCount(1);
     await expect(page.getByRole('button', { name: 'Step one tick' })).toHaveCount(0);

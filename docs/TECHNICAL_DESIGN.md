@@ -10,7 +10,7 @@ main.tsx — compile-time normal / QA boundary
  │ └ TycoonGame
  │  ├ TitleWorld (decorative SVG/CSS)
  │  ├ GameHUD
- │  ├ GameFloor (Phaser mount, navigation store, projected local actions and keyboard equivalents)
+ │  ├ GameFloor (Phaser mount, shared navigation consumer, projected local actions and keyboard equivalents)
  │  ├ LearnDialog (help/metrics/concepts, explicit view and callbacks)
  │  ├ GameResult
  │  └ controller (external store, lifecycle, action intent)
@@ -48,7 +48,9 @@ Normal player disables architecture persistence/manual edits. The QA shell is a 
 
 ## Renderer and coordinates
 
-`world.ts` asynchronously mounts Phaser, subscribes to views, forwards permitted input and returns cleanup. **Camera is presentation state, not runtime state.** GameFloor owns one player-navigation external store shared with Phaser. Native camera transforms existing Fit-plane geometry exactly once; plaques/badges use the same fitToScreen transform and hits use screenToFit. World-target derivation reads actual resources/bays, and release-only taps resolve through existing controller contracts. Pan/pinch/cancel cannot create actions. QA retains its original viewportCamera/project/unproject input path. No distance changes latency/throughput.
+`world.ts` asynchronously mounts Phaser, subscribes to views, forwards permitted input and returns cleanup. **Camera is presentation state, not runtime state.** TycoonGame owns one player-navigation external store shared by GameFloor and Phaser. Native camera applies effectiveZoom/canonical center to fixed2400×1350 geometry exactly once; plaques/badges use the same worldToScreen transform and hits use screenToWorld. Viewport changes do not reflow facilities, art scale or environment. World-target derivation reads actual resources/bays; release-only taps resolve through existing controller contracts. Pan/pinch/cancel cannot create actions. QA retains its original viewportCamera/project/unproject path. No distance changes throughput/latency.
+
+The parent orchestrates renderer-ready Fit→operational opening before calling existing beginGame/countdown. A presentation Clock adapter holds startup callbacks during hidden PREPARATION or portrait gate; orientation pauses RUNNING through the existing controller and remembers whether it interrupted gameplay. Continue never undoes a prior manual Pause. Fullscreen/landscape lock is best-effort user-gesture enhancement; stale completions are invalidated on restart/unmount. See [implemented camera lifecycle](PLAYER_CAMERA.md). Engine state/actions/scoring remain unchanged.
 
 Navigation-only state is excluded from geometry/texture regeneration signatures. Frame effects are separate from transformed world effects; input listeners/captures are disposed with the world. `construction-art` projects accepted remaining/due ticks into scaffold/boot/progress marks without owning timers or active capacity. Environment plinths add decorative depth only. GameResult's first layer shows outcome and replay; native Details retains prior analytical evidence and record semantics.
 

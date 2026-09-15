@@ -40,6 +40,8 @@ The MVP simulates Azure architecture concepts. It does **not** deploy real Azure
 
 ### Game-first controls
 
+**One fixed landscape world:** facilities no longer rearrange on narrow screens. Phone play requires landscape; portrait Start shows a rotate-device gate while title/help remain available. After Start the camera establishes the whole hall, then focuses the operating sector before the existing countdown; Fit returns to that whole map. Reduced motion skips the sweep. Fullscreen/orientation lock is best-effort, never a requirement for manual landscape play. Rotating during operation holds it until explicit Continue; a manual pause stays paused. This canonical-map foundation (#208) precedes V3 runtime asset sizing/integration.
+
 Click infrastructure directly: App's next empty bay expands capacity; Cache/Edge footprints open cost/delay confirmation; installed facilities expose inspection and existing interventions. Wheel/pinch zooms, drag pans, and **Fit** returns to architecture overview. Keyboard zoom/pan/focus controls and focus-revealed infrastructure equivalents remain available. Camera never changes gameplay/replay/economy. Physical construction follows actual ticks; results show outcome first, with full evidence/history under **Details**. No speed controls, FIFO queue, scale-in or SQL scaling were added.
 
 The world is the dominant player surface. Area percentages are design guidance, not an aesthetic score. Final technical evidence is recorded in the implementation PRs and #195; actual participant game-feel/replay review remains outstanding. Earlier test counts and performance paragraphs below are historical revision measurements, not claims for every later build.

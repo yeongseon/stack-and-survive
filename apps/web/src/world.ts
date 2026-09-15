@@ -13,7 +13,7 @@ import { pressureLosses, pressurePositions, pressureQueues } from './queue-visua
 import { activeEffects, completedResources, drawEffect, effectMotion } from './effects';
 import { diagnosticsEnabled } from './mode';
 import { placeCaptions } from './annotations';
-import { createPlayerProjection, fitPlayerCamera } from './player-camera';
+import { tycoonPoint, playerMap } from './tycoon-layout';
 import { attachPlayerNavigation, type PlayerNavigation } from './player-navigation';
 import { hitWorldTarget, worldTargets, type WorldTarget } from './world-interaction';
 import { drawConstruction } from './construction-art';
@@ -27,7 +27,7 @@ import { PacketSprites } from './packet-sprites';
 export function utilizationLabel(u: number | null): string {
   return u === null ? 'READY' : compare(u, 1) > 0 ? '! OVERLOADED' : compare(u, .7) > 0 ? 'WARNING' : 'HEALTHY';
 }
-export async function mountWorld(host: HTMLDivElement, controller: Controller, generation: number, onInspect: () => void, navigation?: PlayerNavigation, onWorldBuild?: (target: WorldTarget) => void): Promise<() => void> {
+export async function mountWorld(host: HTMLDivElement, controller: Controller, generation: number, onInspect: () => void, navigation?: PlayerNavigation, onWorldBuild?: (target: WorldTarget) => void, onReady?: () => void): Promise<() => void> {
   const { default: Phaser } = await import('phaser');
   if (!host.isConnected) return () => {};
   let view: View = controller.getSnapshot();
@@ -45,16 +45,6 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
   let drawnCompletions = 0;
   const undrawnCompletions = new Set<string>();
   let hovered: WorldTarget | null = null;
-  let fitProjection: ReturnType<typeof createPlayerProjection> | null = null;
-  let fitSize = '';
-  const playerProjection = (width: number, height: number) => {
-    const key = `${width}:${height}`;
-    if (!fitProjection || fitSize !== key) {
-      const viewport = { width, height };
-      fitProjection = createPlayerProjection(fitPlayerCamera(viewport), viewport); fitSize = key;
-    }
-    return fitProjection;
-  };
   const unsubscribe = controller.subscribe(() => {
     const next = controller.getSnapshot();
     for (const kind of completedResources(view, next)) {
@@ -106,22 +96,25 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
       if (diagnosticsEnabled) host.dataset.textureStatus = JSON.stringify(Object.entries(buildingAssets).map(([kind, asset]) => ({ kind, loaded: this.textures.exists(asset.texture) })));
       host.dataset.renderer = 'ready';
       controller.rendererReady(generation);
+      onReady?.();
     }
     update(time: number, delta: number) {
       if (!view.error && (view.state.runtime.status === 'RUNNING' || view.state.runtime.status === 'PREPARATION')) animationTime += delta;
       try {
-        const width = this.scale.width; const height = this.scale.height;
-        navigation?.resize({ width, height });
+        const screenWidth = this.scale.width; const screenHeight = this.scale.height;
+        const width = view.playerMode ? playerMap.width : screenWidth;
+        const height = view.playerMode ? playerMap.height : screenHeight;
+        navigation?.resize({ width: screenWidth, height: screenHeight });
         const playerCamera = view.playerMode ? navigation?.getSnapshot() : undefined;
         if (playerCamera) {
-          this.cameras.main.setZoom(playerCamera.state.userZoom);
-          this.cameras.main.centerOn(playerCamera.state.centerX * playerCamera.fitZoom, playerCamera.state.centerY * playerCamera.fitZoom);
-          this.frameGraphics.setScale(1 / playerCamera.state.userZoom).setPosition(width / 2 * (1 - 1 / playerCamera.state.userZoom), height / 2 * (1 - 1 / playerCamera.state.userZoom));
+          this.cameras.main.setZoom(playerCamera.effectiveZoom);
+          this.cameras.main.centerOn(playerCamera.state.centerX, playerCamera.state.centerY);
+          this.frameGraphics.setScale(1 / playerCamera.effectiveZoom).setPosition(screenWidth / 2 * (1 - 1 / playerCamera.effectiveZoom), screenHeight / 2 * (1 - 1 / playerCamera.effectiveZoom));
         }
         const architecture = view.state.runtime.architecture;
         const resources = architecture.resources;
         const camera = viewportCamera(view.camera, width, height);
-        const positions = resources.map(r => view.playerMode ? playerProjection(width, height).resourceScreen(r.kind) : project(r, camera, width, height));
+        const positions = resources.map(r => view.playerMode ? tycoonPoint(r.kind) : project(r, camera, width, height));
         this.scene.setVisible(renderVisible);
         if (diagnosticsEnabled) {
           host.dataset.renderVisible = String(renderVisible);
@@ -168,7 +161,7 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
             }
             if (target.id === hovered?.id) {
               const b = target.bounds;
-              interaction.lineStyle(3 / (playerCamera?.state.userZoom ?? 1), 0xf4d698, .95);
+              interaction.lineStyle(3 / (playerCamera?.effectiveZoom ?? 1), 0xf4d698, .95);
               interaction.strokeRoundedRect(target.point.x+b.x-5, target.point.y+b.y-5, b.width+10, b.height+10, 6);
             }
           }
@@ -194,7 +187,7 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
           const badgeTop = point.y + resourceArtBounds(resource.kind, view.playerMode ? playerBuildingScale(resource.kind, width) : 1, view.playerMode).y;
           const p = playerCamera ? playerCamera.fitToScreen({ x: point.x, y: badgeTop }) : { x: point.x, y: badgeTop };
           const badgeY = p.y - 36;
-          badge.hidden = p.x < 16 || p.x > width - 16 || badgeY < 0 || badgeY > height - 32;
+          badge.hidden = p.x < 16 || p.x > screenWidth - 16 || badgeY < 0 || badgeY > screenHeight - 32;
           badge.style.left = `${p.x - 16}px`; badge.style.top = `${badgeY}px`;
         });
         let g = this.graphics;
@@ -341,10 +334,10 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
         const frame = this.frameGraphics.clear();
         if (view.state.runtime.status === 'FAILED' || view.state.runtime.status === 'COMPLETED') {
           frame.lineStyle(4, view.state.runtime.status === 'FAILED' ? 0xffa49b : 0x90e9c4, .8);
-          frame.strokeRoundedRect(4, 4, Math.max(1, width - 8), Math.max(1, height - 8), 12);
+          frame.strokeRoundedRect(4, 4, Math.max(1, screenWidth - 8), Math.max(1, screenHeight - 8), 12);
         } else if (view.snapshot?.critical) {
           frame.lineStyle(3, 0xffac82, effectMotion(view, reducedMotion) ? .4 + .2 * Math.sin(time / 400) : .6);
-          frame.strokeRect(2, 2, Math.max(1, width - 4), Math.max(1, height - 4));
+          frame.strokeRect(2, 2, Math.max(1, screenWidth - 4), Math.max(1, screenHeight - 4));
         }
         if (diagnosticsEnabled) host.dataset.effects = JSON.stringify(effects);
         let packetCount = 0;
@@ -381,7 +374,10 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
           host.dataset.appState = utilizationLabel(appU); host.dataset.sqlState = utilizationLabel(sqlU);
           host.dataset.tick = String(view.state.runtime.time);
           host.dataset.nodes = JSON.stringify(resources.map((r, i) => ({ id: r.id, ...(playerCamera ? playerCamera.fitToScreen(positions[i]) : positions[i]) })));
-          if (playerCamera) host.dataset.playerCamera = JSON.stringify(playerCamera.state);
+          if (playerCamera) {
+            host.dataset.playerCamera = JSON.stringify(playerCamera.state);
+            host.dataset.worldNodes = JSON.stringify(resources.map((r,i)=>({id:r.id,...positions[i]})));
+          }
         }
       } catch (error) {
         host.dataset.renderer = 'error';
@@ -398,7 +394,7 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
   const destroy = () => { resize?.disconnect(); intersection?.disconnect(); motionPreference.removeEventListener('change', updateMotion); removeInput(); removeContextHandler(); unsubscribe(); badgeLayer.remove(); badges.clear(); game?.destroy(true); };
   try {
     game = new Phaser.Game({ type: Phaser.WEBGL, parent: host, width: host.clientWidth, height: host.clientHeight,
-      backgroundColor: '#345f79', banner: false, scene: World, input: { keyboard: false, mouse: false, touch: false } });
+      backgroundColor: '#081922', banner: false, scene: World, input: { keyboard: false, mouse: false, touch: false } });
     const canvas = game.canvas; canvas.style.touchAction = 'none';
     const contextLost = (event: Event) => { event.preventDefault(); host.dataset.renderer = 'error'; controller.presentationFailed('Graphics context lost'); };
     canvas.addEventListener('webglcontextlost', contextLost);
@@ -409,7 +405,7 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
     const hitResource = (screen: Point) => {
       const p = view.playerMode && navigation ? navigation.getSnapshot().screenToFit(screen) : screen;
       return view.state.runtime.architecture.resources
-        .map(r => ({ resource: r, center: view.playerMode ? playerProjection(canvas.clientWidth, canvas.clientHeight).resourceScreen(r.kind) : project(r, camera(), canvas.clientWidth, canvas.clientHeight) }))
+        .map(r => ({ resource: r, center: view.playerMode ? tycoonPoint(r.kind) : project(r, camera(), canvas.clientWidth, canvas.clientHeight) }))
         .filter(item => {
           const bounds = resourceArtBounds(item.resource.kind, view.playerMode ? playerBuildingScale(item.resource.kind, canvas.clientWidth) : 1, view.playerMode);
           return insideBuilding(p, item.center) || (p.x >= item.center.x + bounds.x && p.x <= item.center.x + bounds.x + bounds.width
@@ -441,7 +437,7 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
     const up = (e: PointerEvent) => { if (drag?.pointer === e.pointerId) { if (canvas.hasPointerCapture(e.pointerId)) canvas.releasePointerCapture(e.pointerId); drag = null; } };
     const wheel = (e: WheelEvent) => { if (view.playerMode) return; e.preventDefault(); controller.setCamera({ ...view.camera, zoom: view.camera.zoom * Math.exp(-e.deltaY * .001) }); };
     if (view.playerMode && navigation) {
-      const targetAt = (p: Point) => hitWorldTarget(worldTargets(view, canvas.clientWidth, canvas.clientHeight), navigation.getSnapshot().screenToFit(p), navigation.getSnapshot().state.userZoom);
+      const targetAt = (p: Point) => hitWorldTarget(worldTargets(view, playerMap.width, playerMap.height), navigation.getSnapshot().screenToWorld(p), navigation.getSnapshot().effectiveZoom);
       const stopNavigation = attachPlayerNavigation(canvas, navigation, p => {
         const target = targetAt(p);
         if (target?.build && onWorldBuild) { onWorldBuild(target); return; }

@@ -57,9 +57,14 @@ test('resource anatomy follows live construction, separate SQL pressure and actu
   const frozen = await surface.getAttribute('data-facility-banks');
   await step.click(); expect(await surface.getAttribute('data-facility-banks')).toBe(frozen);
   expect((await state()).edge.showBoostEffect).toBe(false);
-  for (const width of [320, 390, 1024, 1440, 1920]) {
-    await page.setViewportSize({ width, height: 900 });
-    await expect.poll(async () => Math.round((await surface.boundingBox())!.width)).toBeLessThanOrEqual(width);
+  await page.getByRole('button', {name:'Fit architecture',exact:true}).click();
+  for (const width of [740, 844, 1024, 1440, 1920]) {
+    await page.setViewportSize({ width, height: width<900?390:900 });
+    await page.evaluate(() => window.scrollTo(0,0));
+    await expect.poll(async () => Math.round((await surface.boundingBox())!.width)).toBe(width);
+    await expect.poll(async () => Math.round((await surface.boundingBox())!.height)).toBe(width<900?390:900);
+    const frame=Number(await surface.getAttribute('data-frames'));
+    await expect.poll(async()=>Number(await surface.getAttribute('data-frames'))).toBeGreaterThan(frame);
     for (const badge of await page.locator('.world-service-badges .service-icon').all()) {
       await expect(badge).toBeVisible();
       const a = (await badge.boundingBox())!, b = (await surface.boundingBox())!;

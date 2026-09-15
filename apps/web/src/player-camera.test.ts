@@ -1,10 +1,10 @@
 import { expect, it } from 'vitest';
-import { tycoonPoint } from './tycoon-layout';
+import { tycoonPoint, playerMap } from './tycoon-layout';
 import { createPlayerProjection, fitPlayerCamera, panPlayerCamera, resizePlayerCamera, zoomPlayerCamera, focusPlayerCamera } from './player-camera';
 import { createController } from './controller';
 
 const widths = [320, 390, 1024, 1440, 1920];
-it.each(widths)('preserves existing Fit anchors and inverse projection at width %s', width => {
+it.each(widths)('preserves canonical geography and inverse projection at width %s', width => {
   const viewport = { width, height: 640 };
   const fit = fitPlayerCamera(viewport);
   for (const userZoom of [.75, 1, 1.8]) {
@@ -12,12 +12,14 @@ it.each(widths)('preserves existing Fit anchors and inverse projection at width 
     expect(projection.effectiveZoom).toBe(projection.fitZoom * userZoom);
     for (const kind of ['internet', 'edge', 'compute', 'cache', 'database'] as const) {
       const world = projection.resourceWorld(kind);
+      expect(world).toEqual(tycoonPoint(kind));
+      expect(projection.worldBounds).toEqual({x:0,y:0,...playerMap});
       const screen = projection.worldToScreen(world);
       const roundtrip = projection.screenToWorld(screen);
       expect(roundtrip.x).toBeCloseTo(world.x, 9); expect(roundtrip.y).toBeCloseTo(world.y, 9);
       if (userZoom === 1) {
-        const existing = tycoonPoint(kind, width, 640);
-        expect(screen.x).toBeCloseTo(existing.x, 9); expect(screen.y).toBeCloseTo(existing.y, 9);
+        expect(screen.x).toBeCloseTo(width/2+(world.x-playerMap.width/2)*projection.fitZoom,9);
+        expect(screen.y).toBeCloseTo(320+(world.y-playerMap.height/2)*projection.fitZoom,9);
       }
     }
   }
@@ -44,13 +46,13 @@ it('keeps pointer world point stable through zoom unless pan bounds must clamp',
   expect(moved.worldToScreen(before).x).toBeCloseTo(pointer.x + 20, 9);
   expect(moved.worldToScreen(before).y).toBeCloseTo(pointer.y - 10, 9);
 });
-it('preserves normalized center on resize and focuses a resource without changing zoom', () => {
-  const from = { width: 1440, height: 900 }, to = { width: 390, height: 844 };
-  const old = { ...fitPlayerCamera(from), userZoom: 1.5 };
+it('preserves canonical center on landscape resize and focuses without changing zoom', () => {
+  const from = { width: 1440, height: 900 }, to = { width: 844, height: 390 };
+  const old = { centerX: 1300, centerY: 750, userZoom: 1.5 };
   const resized = resizePlayerCamera(old, from, to);
   expect(resized.userZoom).toBe(1.5);
-  expect(resized.centerX).toBeCloseTo(fitPlayerCamera(to).centerX);
-  expect(resized.centerY).toBeCloseTo(fitPlayerCamera(to).centerY);
+  expect(resized.centerX).toBeCloseTo(old.centerX);
+  expect(resized.centerY).toBeCloseTo(old.centerY);
   const focused = focusPlayerCamera(resized, to, 'compute');
   expect(focused.userZoom).toBe(1.5);
   const projection = createPlayerProjection(focused, to);

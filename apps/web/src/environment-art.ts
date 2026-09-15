@@ -1,5 +1,5 @@
 import type Phaser from 'phaser';
-import { tycoonPoint } from './tycoon-layout';
+import { tycoonPoint, playerMap } from './tycoon-layout';
 import { playerBuildingScale, resourceArtBounds } from './building-assets';
 
 type Graphics = Phaser.GameObjects.Graphics;
@@ -23,6 +23,7 @@ export function playerProtectedAreas(width: number, height: number) {
 }
 export function playerFacilityLayout(width: number, height: number): Equipment[] {
   if (!Number.isFinite(width) || !Number.isFinite(height) || width < 250 || height < 300) return [];
+  width = playerMap.width; height = playerMap.height;
   const wide = width >= 900;
   const count = Math.min(15, Math.max(3, Math.floor(width / (wide ? 95 : 70))));
   const candidates: Equipment[] = [];
@@ -35,6 +36,12 @@ export function playerFacilityLayout(width: number, height: number): Equipment[]
   }
   for (let i = 0; i < 4; i++) candidates.push({ kind: i % 2 ? 'cabinet' : 'cooling', x: width - 38,
     y: 205 + i * 90, width: 24, height: 52 });
+  for (const row of [340, 1140]) for (let i=0;i<16;i++) {
+    candidates.push({kind: i%6===5?'cooling':'rack',x:250+i*122,y:row+(i%2)*12,width:64,height:100});
+  }
+  for (const x of [180, 2180]) for(let i=0;i<5;i++) {
+    candidates.push({kind:i%2?'cabinet':'cooling',x,y:500+i*115,width:78,height:104});
+  }
   const protectedAreas = playerProtectedAreas(width, height);
   return candidates.filter(e => {
     const b = equipmentBounds(e);

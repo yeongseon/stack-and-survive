@@ -1,6 +1,6 @@
 import type { Kind } from '@stack-and-survive/schema';
 import { project, unproject, type Point } from './editor';
-import { tycoonPoint } from './tycoon-layout';
+import { tycoonPoint, playerMap } from './tycoon-layout';
 
 export type PlayerViewport = Readonly<{ width: number; height: number }>;
 export type PlayerCameraState = Readonly<{ centerX: number; centerY: number; userZoom: number }>;
@@ -8,8 +8,8 @@ export const playerZoomRange = Object.freeze({ min: .75, max: 1.8 });
 const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(max, value));
 function dimensions(viewport: PlayerViewport) {
   if (![viewport.width, viewport.height].every(value => Number.isFinite(value) && value > 0)) throw new Error('Player viewport must have finite positive dimensions');
-  const fitZoom = Math.min(viewport.width / 1440, viewport.height / 900);
-  return { fitZoom, width: viewport.width / fitZoom, height: viewport.height / fitZoom };
+  const fitZoom = Math.min(viewport.width / playerMap.width, viewport.height / playerMap.height);
+  return { fitZoom, ...playerMap };
 }
 function finite(...values: number[]) {
   if (!values.every(Number.isFinite)) throw new Error('Player camera coordinates must be finite');
@@ -19,7 +19,7 @@ export function fitPlayerCamera(viewport: PlayerViewport): PlayerCameraState {
   return { centerX: bounds.width / 2, centerY: bounds.height / 2, userZoom: 1 };
 }
 
-/** The Fit plane is responsive presentation geometry, not simulation resource coordinates. */
+/** Canonical presentation coordinates are separate from persisted simulation coordinates. */
 export function createPlayerProjection(input: PlayerCameraState, viewport: PlayerViewport) {
   finite(input.centerX, input.centerY, input.userZoom);
   const bounds = dimensions(viewport);
@@ -36,14 +36,11 @@ export function createPlayerProjection(input: PlayerCameraState, viewport: Playe
   const camera = { x: -state.centerX, y: -state.centerY, zoom: effectiveZoom };
   const worldToScreen = (point: Point) => { finite(point.x, point.y); return project(point, camera, viewport.width, viewport.height); };
   const screenToWorld = (point: Point) => { finite(point.x, point.y); return unproject(point, camera, viewport.width, viewport.height); };
-  const resourceWorld = (kind: Kind) => {
-    const fitted = tycoonPoint(kind, viewport.width, viewport.height);
-    return { x: fitted.x / bounds.fitZoom, y: fitted.y / bounds.fitZoom };
-  };
+  const resourceWorld = (kind: Kind) => tycoonPoint(kind);
   return { state, fitZoom: bounds.fitZoom, effectiveZoom, worldBounds: { x: 0, y: 0, width: bounds.width, height: bounds.height },
     worldToScreen, screenToWorld, resourceWorld, resourceScreen: (kind: Kind) => worldToScreen(resourceWorld(kind)),
-    fitToScreen: (point: Point) => worldToScreen({ x: point.x / bounds.fitZoom, y: point.y / bounds.fitZoom }),
-    screenToFit: (point: Point) => { const world = screenToWorld(point); return { x: world.x * bounds.fitZoom, y: world.y * bounds.fitZoom }; },
+    fitToScreen: worldToScreen,
+    screenToFit: screenToWorld,
   };
 }
 export function zoomPlayerCamera(state: PlayerCameraState, viewport: PlayerViewport, userZoom: number, anchor: Point): PlayerCameraState {
@@ -61,10 +58,8 @@ export function panPlayerCamera(state: PlayerCameraState, viewport: PlayerViewpo
     centerY: current.state.centerY - delta.y / current.effectiveZoom }, viewport).state;
 }
 export function resizePlayerCamera(state: PlayerCameraState, from: PlayerViewport, to: PlayerViewport): PlayerCameraState {
-  const before = createPlayerProjection(state, from), after = dimensions(to);
-  return createPlayerProjection({ userZoom: before.state.userZoom,
-    centerX: before.state.centerX / before.worldBounds.width * after.width,
-    centerY: before.state.centerY / before.worldBounds.height * after.height }, to).state;
+  const before = createPlayerProjection(state, from);
+  return createPlayerProjection(before.state, to).state;
 }
 export function focusPlayerCamera(state: PlayerCameraState, viewport: PlayerViewport, kind: Kind): PlayerCameraState {
   const current = createPlayerProjection(state, viewport), target = current.resourceWorld(kind);

@@ -18,8 +18,9 @@ export const buildingAssets: Partial<Record<Kind, BuildingAsset>> = {
   compute: asset('app-service', 108), database: asset('azure-sql', 112), cache: asset('redis', 76), edge: asset('protected-edge', 104),
 };
 export const moduleAsset = asset('app-module', 27, 7);
-export function playerBuildingScale(kind: Kind, width: number) {
-  return width < 900 ? (kind === 'database' ? 1.15 : 1) : kind === 'database' ? 1.65 : kind === 'compute' ? 1.4 : 1.2;
+export function playerBuildingScale(kind: Kind, _width?: number) {
+  void _width;
+  return kind === 'database' ? 2.3 : kind === 'compute' ? 1.9 : 1.7;
 }
 export function resourceArtBounds(kind: Kind, scale = 1, player = false) {
   const art = buildingAssets[kind]?.visible;
