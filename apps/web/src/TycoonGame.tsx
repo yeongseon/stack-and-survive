@@ -50,6 +50,7 @@ export function TycoonGame({ challenge = blackFridayChallenge, titleContent, onR
     const update = () => {
       const unsuitable = requiresLandscape(innerWidth, innerHeight);
       setPortrait(unsuitable);
+      setPauseMenuVisible(false);
       if (unsuitable && opened.current && !controller.getSnapshot().result) {
         if (!gateOpen.current) interruptedRunning.current = controller.getSnapshot().state.runtime.status === 'RUNNING';
         gateOpen.current = true; clock.hold(true); controller.pause(); setOrientationGate(true);

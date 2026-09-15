@@ -283,12 +283,14 @@
   backdrop-filter: blur(6px);
   display: flex; align-items: center; justify-content: center;
   animation: pause-fade-in .2s ease-out;
+  pointer-events: none;
 }
 @keyframes pause-fade-in { from { opacity: 0; } to { opacity: 1; } }
 .pause-menu {
   background: #112a38; border: 1px solid #3a6070; border-radius: 12px;
   padding: 32px 40px; min-width: 280px; max-width: 360px;
   box-shadow: 0 20px 60px rgba(0,0,0,.5); text-align: center;
+  pointer-events: auto;
 }
 .pause-menu h2 {
   font-size: 28px; font-weight: 800; letter-spacing: .12em;
