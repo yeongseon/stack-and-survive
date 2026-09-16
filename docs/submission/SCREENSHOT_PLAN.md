@@ -1,0 +1,28 @@
+# Reproducible capture plan
+
+Run `pnpm capture:submission` from the repository root. It builds ordinary production and starts its own loopback preview/browser. Allow roughly five minutes for the unaccelerated successful run, a separate real overload run and capture overhead. Output is ignored under `test-results-submission/<timestamp>/`.
+
+The script operates the existing Start, one-click building controls and leaderboard UI. It does not modify engine state, inject metrics, add a demo mode or advance synthetic ticks. Actions are triggered by observed next-phase countdowns. Captures are actual states, but wall-clock scheduling means exact request ticks can vary slightly; the saved action history is the source of exact replay. A missed milestone must fail the capture rather than be relabeled.
+
+| File | Required observed state |
+|---|---|
+| 01-title | Fresh browser title |
+| 02-normal |100RPS operation |
+| 03-app-construction | Accepted scale-out before additional capacity |
+| 04-cache-active | Real Cache activation |
+| 05-first-spike-warning | Live countdown before260RPS phase |
+| 06-first-spike | Actual260RPS |
+| 07-edge-active | Real Edge activation; no early bot filtering claim |
+| 08-bot-attack |440RPS35%bot phase with actual traffic |
+| 09-recovery |200RPS5%bot phase |
+| 10-final-wave-warning | Actual final-wave countdown |
+| 11-result | Real objective-valid completion |
+| 12-local-leaderboard | DEMO entry from that actual run, not a participant |
+| 13-result-landscape | Same result at844×390 |
+| 14-real-overload | Separate fresh no-action run, actual first-spike customer loss |
+| 15-pause | That overloaded run genuinely paused |
+| 16-settings | Existing settings while that run stays paused |
+
+External API traffic is blocked during automated capture to avoid polluting a shared board; this pack does not prove online leaderboard service. The manifest records complete/failed status, source commit, dirty-tree status, HTML and entry-bundle hashes, and HUD readings before/after each screenshot. Actual ticks continue while a screenshot is taken; the capture brackets observations rather than pretending an atomic frame/state snapshot. `actual-run.json` preserves the completed first run's challenge, full action schedule and measured result. The second overload run is explicitly paused and incomplete. A separate leaderboard detail PNG preserves readable ranking content.
+
+Inspect PNGs for clipping, explanatory overload and truthful effects; file generation alone is not visual acceptance. `DEMO` is an automation label, not #25/#195/#159 human evidence. Never relabel the successful prepared strategy as overload; the script uses a separate actual run for that state. Rebuild captures for the final candidate instead of silently reusing old images.
