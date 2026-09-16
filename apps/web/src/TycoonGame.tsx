@@ -20,8 +20,8 @@ import { createLandscapeClock, enhanceLandscape, requiresLandscape } from './lan
 import { v3 } from './art-v3';
 import './player-console.css';
 
-export function TycoonGame({ challenge = blackFridayChallenge, titleContent, onResult, nextLevel, resultContent, runReport }: {
-  challenge?: Challenge; titleContent?: ReactNode; onResult?: (result: NonNullable<View['result']>, finalArchitecture: Architecture) => void; nextLevel?: () => void; resultContent?: ReactNode;
+export function TycoonGame({ challenge = blackFridayChallenge, titleContent, onResult, nextLevel, resultContent, leaderboardContent, runReport }: {
+  challenge?: Challenge; titleContent?: ReactNode; onResult?: (result: NonNullable<View['result']>, finalArchitecture: Architecture) => void; nextLevel?: () => void; resultContent?: ReactNode; leaderboardContent?: ReactNode;
   runReport?: { result: NonNullable<View['result']>; data: RunReport } | null;
 }) {
   const [clock] = useState(createLandscapeClock);
@@ -169,7 +169,7 @@ export function TycoonGame({ challenge = blackFridayChallenge, titleContent, onR
       {opening && !orientationGate && <div className="opening-caption" role="status" data-testid="opening-reveal"><small>YOUR DATA CENTER</small><strong>The whole hall. One living business.</strong><span>Preparing the operational sector</span></div>}
       {view.countdown !== null && <div className="welcome-countdown" role="status">{scenarioName} begins in <strong>{view.countdown}</strong></div>}
       {view.notice && diagnosticsEnabled && <p className="tycoon-notice">{view.notice}</p>}
-      {view.result && <GameResult result={view.result} architecture={runtime.architecture} report={runReport?.result === view.result ? runReport.data : null} restart={restart} review={() => open('learn')} nextLevel={view.result.objectiveMet ? nextLevel : undefined} records={resultContent} />}
+      {view.result && <GameResult result={view.result} architecture={runtime.architecture} report={runReport?.result === view.result ? runReport.data : null} restart={restart} review={() => open('learn')} nextLevel={view.result.objectiveMet ? nextLevel : undefined} records={resultContent} leaderboard={leaderboardContent} />}
       {view.error && <section role="alert" className="tycoon-result"><p>{view.error}</p><button ref={rebuildButton} type="button" onClick={() => controller.recoverRenderer()}>Rebuild graphics</button><button type="button" onClick={restart}>Return to title</button></section>}
       {diagnosticsEnabled && <details className="tycoon-qa"><summary>Tycoon QA</summary><button onClick={() => controller.inspectNextTick()}>Step one tick</button><output data-testid="elapsed">{runtime.time}</output><pre data-testid="diagnostics">{JSON.stringify(view)}</pre></details>}
     </>}

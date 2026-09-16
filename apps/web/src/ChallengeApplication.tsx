@@ -56,7 +56,8 @@ export function ChallengeApplication() {
   return <TycoonGame key={`${selected.challenge.id}:${ladder.generation}`} challenge={selected.challenge} onResult={complete}
     runReport={records.report}
     nextLevel={nextAvailable ? () => ladder.select(ladder.selected + 1) : undefined}
-    resultContent={<>{leaderboardPanel}<details className="result-records"><summary>Run records &amp; personal best</summary>{recordPanel}</details></>}
+    leaderboardContent={leaderboardPanel}
+    resultContent={<details className="result-records"><summary>Run records &amp; personal best</summary>{recordPanel}</details>}
     titleContent={<section className="challenge-select" aria-label="Challenge selection">
       <label>Challenge<select aria-label="Challenge level" value={ladder.selected} onChange={e => ladder.select(Number(e.currentTarget.value))}>
         {challengeLadder.map((level, index) => <option key={level.challenge.id} value={index} disabled={index > unlockedLevel(ladder.progress)}>{index + 1}. {level.title}{index > unlockedLevel(ladder.progress) ? ' — locked' : ladder.progress.completed.includes(level.challenge.canonical) ? ' — complete' : ''}</option>)}

@@ -33,7 +33,7 @@ export function LeaderboardPanel({ entries, currentRank, nickname, hasValidNickn
         {error && draft.length > 0 && <small className="leaderboard-error">{error}</small>}
       </form> : <span>
         <strong>{nickname}</strong>
-        <button type="button" className="leaderboard-edit" onClick={() => { setDraft(nickname); setEditing(true); }}>Edit name</button>
+        <button type="button" className="leaderboard-edit" onClick={() => { setDraft(nickname); setEditing(true); }}>Edit for future runs</button>
       </span>}
     </div>}
 
