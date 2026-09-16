@@ -1,0 +1,121 @@
+# Leaderboard Architecture
+
+## Overview
+
+Stack & Survive uses a **server-verified leaderboard** where the browser never sends a trusted score. The server replays the player's infrastructure decisions using the same deterministic simulation engine that powers the game.
+
+## Flow
+
+```
+Browser                          Server (leaderboard-api)
+  |                                |
+  |  Player completes a run        |
+  |  Score shown locally           |
+  |                                |
+  |  POST /api/leaderboard         |
+  |  {                             |
+  |    nickname,                   |
+  |    challengeContentHash,       |
+  |    actions: [                  |
+  |      { type, time, sequence }  |
+  |    ]                           |
+  |  }                             |
+  |  ----------------------------→ |
+  |                                |  1. Validate nickname
+  |                                |  2. Resolve supported challenge
+  |                                |  3. Load canonical start architecture
+  |                                |  4. Validate action schedule
+  |                                |  5. Deterministic simulation replay
+  |                                |  6. Calculate authoritative score
+  |                                |  7. Require objective completion
+  |                                |  8. Persist verified entry
+  |                                |  9. Calculate rank
+  |  ←---------------------------- |
+  |  { rank, score, top: [...] }   |
+  |                                |
+  |  Display global leaderboard    |
+```
+
+## Trust Boundary
+
+The server does NOT trust:
+- Score submitted by the browser
+- Availability, NBV, or any computed metric
+- Final architecture state
+- Objective completion claim
+
+The server trusts only:
+- Challenge identity (verified by content hash against supported list)
+- Action schedule (validated types, time bounds, sequence, count limit)
+
+Everything else is computed by replaying the action schedule from the canonical starting architecture through the deterministic simulation.
+
+## Deterministic Replay
+
+The replay verifier (`packages/simulation/src/replay.ts`) runs the same simulation code used during gameplay:
+
+1. Load the canonical player starting architecture (`canonicalPlayerStart()`)
+2. Initialize simulation state with the challenge's workload scenario
+3. Apply each action at its declared simulation second
+4. Run until completion or failure
+5. Calculate score using the same formula as gameplay
+
+The same verifier is used by:
+- **Browser run history** — validates saved runs can be reproduced
+- **Leaderboard API** — produces authoritative scores from action provenance
+
+## Canonical Starting Architecture
+
+The server never accepts a client-provided starting architecture. Both browser and server import `canonicalPlayerStart()` from `@stack-and-survive/cloud-domain`, ensuring:
+
+- No pre-existing Cache or Protected Edge
+- No extra App instances at t=0
+- No moved or modified resources
+- Exact resource positions matching player mode
+
+## Challenge Identity
+
+Challenges are identified by their content hash (`contentHash`), which includes:
+- Schema version, challenge ID, version, rules version
+- Seed algorithm and seed value
+- Full workload specification (duration, budget, traffic phases, targets)
+- Objective definition
+
+Balance version 0.2 and 0.3 runs are naturally separated because the content hash includes `rulesVersion`.
+
+## Ranking
+
+Entries are ranked by:
+1. **Score** (descending) — 0 to 10,000
+2. **Availability** (descending) — tie-break
+3. **Submission time** (ascending) — second tie-break (earlier wins)
+
+Only `COMPLETED` runs that meet the challenge objective qualify.
+
+## Local Fallback
+
+The browser maintains a localStorage-based local leaderboard that:
+- Works offline
+- Shows results immediately without waiting for the server
+- Falls back when the global API is unavailable
+- Uses the same ranking rules as the server
+
+When both are available, the global leaderboard takes visual priority with the local board as fallback.
+
+## Privacy and Data
+
+The server stores only:
+- Self-reported nickname (2-16 alphanumeric characters)
+- Verified score and availability
+- Submission timestamp
+- Challenge identity hash
+- Action digest (for deduplication, not full replay data)
+
+No authentication, user accounts, device IDs, IP addresses, or personal data beyond the chosen nickname.
+
+## Limitations
+
+- **In-memory storage**: MVP uses `InMemoryStorage`; data is lost on server restart. Upgradeable to Azure Table Storage.
+- **No authentication**: Nicknames are not unique or verified. Different players can use the same nickname.
+- **No anti-cheat beyond replay**: The server verifies that submitted actions produce the claimed outcome, but cannot prevent automated play or action optimization outside the game.
+- **Rate limiting**: Basic body size limits only in MVP.
