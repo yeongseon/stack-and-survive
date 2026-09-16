@@ -15,7 +15,7 @@ test('ordinary production game cannot expose debug controls and follows real tim
   await expect(page.locator('[data-frames],[data-nodes],[data-effects]')).toHaveCount(0);
   for (const name of ['Start operation', 'Connect resources', 'Build & connections', 'Save architecture']) await expect(page.getByRole('button', { name, exact: true })).toHaveCount(0);
   await expect(page.getByTestId('traffic')).toContainText('100', { timeout: 20000 });
-  await page.getByRole('button', { name: 'Ⅱ Pause', exact: true }).click();
+  await page.getByRole('button', { name: 'Ⅱ Pause', exact: true }).click(); await page.getByRole('button', { name: 'Inspect paused world', exact: true }).click();
   const paused = await page.getByTestId('budget').textContent();
   await page.waitForTimeout(1200); expect(await page.getByTestId('budget').textContent()).toBe(paused);
   await page.getByRole('button', { name: '▶ Resume', exact: true }).click();

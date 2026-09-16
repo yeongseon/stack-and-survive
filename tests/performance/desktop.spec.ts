@@ -38,6 +38,7 @@ for (const mode of ['editor', 'tycoon-fit', 'tycoon-close']) test(`measure a rea
   }
   while (Number(await page.getByTestId('elapsed').textContent()) < 121) await page.getByRole('button', { name: 'Step one tick', exact: true }).click();
   await page.getByRole('button', { name: tycoon ? 'Ⅱ Pause' : 'Pause operation', exact: true }).click();
+  if (tycoon) await page.getByRole('button', { name: 'Inspect paused world', exact: true }).click();
   await page.getByRole('button', { name: tycoon ? '▶ Resume' : 'Resume operation', exact: true }).click();
   await surface.scrollIntoViewIfNeeded();
   if (tycoon) {

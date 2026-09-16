@@ -13,7 +13,7 @@ test('single keyboard action requests deployment and duplicate or paused request
   await expect(cache).toHaveAttribute('aria-disabled','true');
   await page.getByRole('button',{name:'Step one tick',exact:true}).click();
   await expect(page.getByTestId('slot-cache')).toContainText('Provisioning');
-  await page.getByRole('button',{name:'Ⅱ Pause',exact:true}).click();
+  await page.getByRole('button', { name: 'Ⅱ Pause', exact: true }).click(); await page.getByRole('button', { name: 'Inspect paused world', exact: true }).click();
   const edge=page.getByRole('button',{name:'Add Protected Edge',exact:true});await edge.focus();await edge.press('Enter');
   expect(JSON.parse((await state())!).queuedActions).toHaveLength(0);
   await expect(edge).toHaveAttribute('aria-disabled','true');

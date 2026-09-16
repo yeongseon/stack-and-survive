@@ -24,7 +24,7 @@ test('project-path Pages build loads real facilities and never exposes QA', asyn
   }
   await expect(page.getByTestId('diagnostics')).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Step one tick', exact: true })).toHaveCount(0);
-  await page.getByRole('button', { name: 'Ⅱ Pause', exact: true }).click();
+  await page.getByRole('button', { name: 'Ⅱ Pause', exact: true }).click(); await page.getByRole('button', { name: 'Inspect paused world', exact: true }).click();
   await page.screenshot({ path: info.outputPath('pages-game.png') });
   expect(errors).toEqual([]); expect(failures).toEqual([]);
 });
