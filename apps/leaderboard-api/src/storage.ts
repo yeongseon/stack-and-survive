@@ -22,7 +22,7 @@ export type RankContext = {
 export type AddResult = { added: true } | { added: false; reason: 'duplicate'; existing: StoredEntry };
 
 function sortEntries(entries: StoredEntry[]): StoredEntry[] {
-  return entries.sort((a, b) => b.score - a.score || b.availability - a.availability || a.submittedAt - b.submittedAt);
+  return entries.sort((a, b) => b.score - a.score || b.availability - a.availability || a.submittedAt - b.submittedAt || a.id.localeCompare(b.id));
 }
 
 export function computeRankContext(all: StoredEntry[], entry: StoredEntry): RankContext {

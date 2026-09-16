@@ -66,7 +66,7 @@ export function createLeaderboardServer(options: ServerOptions = {}): {
 
     try {
       if (req.method === 'GET' && url.pathname === '/api/leaderboard') {
-        if (!getLimiter.check(ip)) { res.writeHead(429, { 'Content-Type': 'application/json' }); res.end(JSON.stringify({ error: 'Too many requests. Try again shortly.' })); return; }
+        if (!getLimiter.check(ip)) { console.warn(`Rate limited GET from ${ip}`); res.writeHead(429, { 'Content-Type': 'application/json' }); res.end(JSON.stringify({ error: 'Too many requests. Try again shortly.' })); return; }
         const challengeHash = url.searchParams.get('challenge');
         if (!challengeHash) { res.writeHead(400, { 'Content-Type': 'application/json' }); res.end(JSON.stringify({ error: 'Missing challenge parameter' })); return; }
         const result = await handleGetTop(storage, challengeHash);
@@ -76,7 +76,7 @@ export function createLeaderboardServer(options: ServerOptions = {}): {
       }
 
       if (req.method === 'POST' && url.pathname === '/api/leaderboard') {
-        if (!submitLimiter.check(ip)) { res.writeHead(429, { 'Content-Type': 'application/json' }); res.end(JSON.stringify({ error: 'Too many submissions. Try again in a minute.' })); return; }
+        if (!submitLimiter.check(ip)) { console.warn(`Rate limited POST from ${ip}`); res.writeHead(429, { 'Content-Type': 'application/json' }); res.end(JSON.stringify({ error: 'Too many submissions. Try again in a minute.' })); return; }
         const chunks: Buffer[] = [];
         let size = 0;
         for await (const chunk of req) {
