@@ -118,3 +118,14 @@
   margin-left: auto; white-space: nowrap;
 }
 .leaderboard-retry button:hover { background: #4a3030; border-color: #c08060; }
+
+.operation-report .leaderboard-panel { padding-inline:32px; min-width:0; }
+.leaderboard-panel button, .leaderboard-panel input { min-height:44px; }
+.leaderboard-nickname > span { display:flex; flex-wrap:wrap; align-items:center; gap:8px; }
+.leaderboard-name { min-width:0; }
+.leaderboard-panel button:focus-visible, .leaderboard-panel input:focus-visible { outline:3px solid #f4c477; outline-offset:2px; }
+@media(max-width:700px) {
+  .operation-report .leaderboard-panel { padding-inline:16px; }
+  .leaderboard-retry, .leaderboard-footer { flex-wrap:wrap; }
+  .leaderboard-entry { gap:5px; padding-inline:5px; }
+}
