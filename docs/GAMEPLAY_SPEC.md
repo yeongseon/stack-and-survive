@@ -54,15 +54,21 @@ Cache/Edge lifecycle is exclusive: absent pad, provisioning construction, or ins
 
 HUD: Upgrade Funds, demand, availability, pressure, lost legitimate sales/sec and next-wave countdown/RPS/bot share. Balance0.3 starts at75 funds and reinvests10% of successful sales. Last5 seconds of the next-wave countdown are highlighted only while RUNNING; pause freezes it. No future income is credited. Final/no-next phase hides the panel. Lost sales excludes bots and labels paused/final readings.
 
+Upcoming labels describe the phase: FINAL WAVE for the last scheduled phase; Recovery window when RPS falls and bot RPS does not increase; Bot attack when bot RPS increases; Traffic spike for another RPS increase; otherwise Traffic change. These are descriptions of the existing schedule, not changed rules or a promise of recovery for every design.
+
 Local recovery cues derive from a new authoritative snapshot: actual activation; sales loss returning to zero from >.02cr/s; or throughput increasing at least15% and15requests/s with at least5percentage-point availability improvement. They do not assert counterfactual causation or add money. Cues last2.2s, minimum4ticks apart, clear outside RUNNING and do not repeat a snapshot. Request acknowledgements last2.6s. Money comes only from the economic model.
 
 Resource cards prioritize state/action while retaining cost and false-positive tradeoffs. Learn contains actual objectives/events, pressure explanation, capacities, accounting and glossary. Production has no persistent Build/Manage, initial-instance form, save/reset architecture controls, standalone command console or developer inspector.
 
-Business feedback shows actual served orders, sales and their versioned reinvestment share; rendering it does not credit funds again. Optional original synthesized sound/vibration stays default-off and gesture-enabled; [audio/manual acceptance](AUDIO_FEEDBACK.md) remains separate. The [world guide](WORLD_GUIDE.md) provides skippable Observe/Decide/Compare hints without acting or pausing for the player. Tips are not a comprehension score.
+The routine Orders served banner is removed; HUD funds and loss readings remain, while local request/activation/recovery cues retain emphasis. No economic calculation changed. Optional synthesized sound/vibration stays default-off and gesture-enabled; [audio/manual acceptance](AUDIO_FEEDBACK.md) remains separate. The [world guide](WORLD_GUIDE.md) provides skippable tips without acting or pausing for the player.
 
 ## 6. Pause, errors and results
 
 Pause freezes authoritative time, accepted countdowns and costs; inspection remains available, new live actions do not. Errors stop advancement; renderer rebuild reconstructs from existing state. Countdown recovery resumes its remaining time safely. Normal restart from pause/error returns to clean title/baseline and invalidates stale callbacks.
+
+The merged #219 PauseMenu/SettingsPanel remain the shell. Title Settings reveals existing sound/volume/vibration, guide and display controls; Escape closes it and restores the Settings button. Pause or Escape in an active run opens a modal Pause menu with Resume, Settings, How to Play, Inspect paused world and Return to Title. Settings Escape returns to Pause; Pause Escape resumes exactly once. Inspect closes the menu but remains paused, and Escape can reopen it. Tab stays within visible menu controls. Resource-card Escape only closes the card, not the paused run.
+
+Fullscreen is progressive enhancement: the settings button follows fullscreenchange and reports rejection without blocking windowed play. A menu interrupted by portrait rotation restores after explicit landscape Continue without undoing manual Pause. Nested help returns to Pause; renderer errors dismiss menus/help and focus Rebuild graphics. Closing settings/help never silently resumes. Short landscape menus scroll internally; reduced motion disables the menu fade. Preferences reuse existing storage; no new gameplay state is added.
 
 At completion/failure preserve the stopped world. First show actual outcome/cause/score, availability, challenge and architecture. Details preserves all [operation report](OPERATION_REPORT.md) NBV/cost/profile/evidence/comparisons/records. Survival and objective attainment remain distinct. Eligible Next level receives focus; otherwise Try another architecture (accessible name Play again) is primary. Actions stay visible as Details scrolls; background guide/camera/resource controls are hidden. Review opens Learn with focus return.
 
