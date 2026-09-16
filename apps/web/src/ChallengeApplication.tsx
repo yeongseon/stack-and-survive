@@ -78,6 +78,8 @@ export function ChallengeApplication() {
     globalEntries={matchingGlobal ? global.globalEntries : null}
     globalRankContext={matchingGlobal ? global.globalRankContext : null}
     globalLoading={global.loading}
+    hasPending={global.hasPending}
+    onRetry={global.retryPending}
     challengeName={scenarioName}
     score={currentRun?.score}
     availability={currentRun?.availability}

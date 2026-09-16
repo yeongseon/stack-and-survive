@@ -34,14 +34,14 @@ export async function fetchGlobalTop(challenge: Challenge): Promise<GlobalEntry[
   } catch { return null; }
 }
 
-export function formatShareText(result: { score: number; availability: number; challenge: string; rank?: number; nickname?: string }): string {
+export function formatShareText(result: { score: number; availability: number; challenge: string; rank?: number; globalRank?: boolean; nickname?: string }): string {
   const lines = [
     'Stack & Survive',
     result.challenge,
     `Score: ${result.score} / 10,000`,
     `Availability: ${(result.availability * 100).toFixed(2)}%`,
   ];
-  if (result.rank) lines.push(`Rank: #${result.rank}`);
+  if (result.rank) lines.push(`${result.globalRank ? 'Global Rank' : 'Personal Score'}: #${result.rank}`);
   lines.push('', 'Same workload.', 'Different architectures.', 'Different outcomes.');
   return lines.join('\n');
 }
@@ -49,4 +49,34 @@ export function formatShareText(result: { score: number; availability: number; c
 export async function copyToClipboard(text: string): Promise<boolean> {
   try { await navigator.clipboard.writeText(text); return true; }
   catch { return false; }
+}
+
+// --- Pending submission retry ---
+const PENDING_KEY = 'stack-and-survive.pending-global-submission';
+
+export type PendingSubmission = {
+  nickname: string;
+  challengeContentHash: string;
+  clientRunId: string;
+  actions: Action[];
+};
+
+export function savePendingSubmission(pending: PendingSubmission): void {
+  try { localStorage.setItem(PENDING_KEY, JSON.stringify(pending)); } catch { /* ignore */ }
+}
+
+export function loadPendingSubmission(): PendingSubmission | null {
+  try {
+    const raw = localStorage.getItem(PENDING_KEY);
+    if (!raw) return null;
+    const data = JSON.parse(raw);
+    if (typeof data.nickname === 'string' && typeof data.clientRunId === 'string'
+      && typeof data.challengeContentHash === 'string' && Array.isArray(data.actions))
+      return data as PendingSubmission;
+  } catch { /* ignore */ }
+  return null;
+}
+
+export function clearPendingSubmission(): void {
+  try { localStorage.removeItem(PENDING_KEY); } catch { /* ignore */ }
 }

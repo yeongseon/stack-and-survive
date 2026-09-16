@@ -4,7 +4,7 @@ import { formatShareText, copyToClipboard } from './global-leaderboard';
 import type { GlobalEntry, GlobalRankContext } from './global-leaderboard';
 import './leaderboard.css';
 
-export function LeaderboardPanel({ entries, currentRank, nickname, hasValidNickname, onNicknameChange, onSubmit, personalBest, qualified, globalAvailable, globalEntries, globalRankContext, globalLoading, challengeName, score, availability }: {
+export function LeaderboardPanel({ entries, currentRank, nickname, hasValidNickname, onNicknameChange, onSubmit, personalBest, qualified, globalAvailable, globalEntries, globalRankContext, globalLoading, hasPending, onRetry, challengeName, score, availability }: {
   entries: LeaderboardEntry[];
   currentRank: RankResult | null;
   nickname: string;
@@ -17,6 +17,8 @@ export function LeaderboardPanel({ entries, currentRank, nickname, hasValidNickn
   globalEntries?: GlobalEntry[] | null;
   globalRankContext?: GlobalRankContext | null;
   globalLoading?: boolean;
+  hasPending?: boolean;
+  onRetry?: () => void;
   challengeName?: string;
   score?: number;
   availability?: number;
@@ -43,6 +45,7 @@ export function LeaderboardPanel({ entries, currentRank, nickname, hasValidNickn
       availability: availability ?? currentRank?.entry.availability ?? 0,
       challenge: challengeName ?? 'Black Friday',
       rank: displayRank ?? undefined,
+      globalRank: isGlobal && !!globalRankContext,
       nickname: nickname || undefined,
     });
     const ok = await copyToClipboard(text);
@@ -96,6 +99,10 @@ export function LeaderboardPanel({ entries, currentRank, nickname, hasValidNickn
       })}
     </ol> : !needsName && !globalLoading && <p className="leaderboard-empty">{isGlobal ? 'No verified scores yet. Be the first.' : 'No entries yet. Be the first on the leaderboard.'}</p>}
 
+    {hasPending && onRetry && <div className="leaderboard-retry">
+      <small>Previous score not yet verified.</small>
+      <button type="button" onClick={onRetry}>Retry server submission</button>
+    </div>}
     <div className="leaderboard-footer">
       <small className="leaderboard-device">{isGlobal ? 'Verified server replay' : 'This device · Local scores'}</small>
       {qualified && <button type="button" className="leaderboard-share" onClick={handleShare}>{copied ? 'Copied!' : 'Copy result'}</button>}
