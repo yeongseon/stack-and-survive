@@ -7,11 +7,14 @@ import assert from 'node:assert/strict';
 
 const root = fileURLToPath(new URL('../../../../', import.meta.url));
 const experiment = fileURLToPath(new URL('../', import.meta.url));
+const iteration = process.env.ART_ITERATION;
+assert.ok(iteration === undefined || /^\d{2}$/.test(iteration), 'ART_ITERATION must be two digits');
+const output = iteration ? `${experiment}iterations/${iteration}/` : experiment;
 const require = createRequire(`${root}apps/web/package.json`);
 const { createServer } = await import(require.resolve('vite'));
 const sha = bytes => createHash('sha256').update(bytes).digest('hex');
-for (const directory of ['current', 'proposed', 'side-by-side']) await mkdir(`${experiment}comparison/${directory}`, { recursive: true });
-const overlay = await readFile(`${experiment}renders/environment/external-overlay.png`);
+for (const directory of ['current', 'proposed', 'side-by-side']) await mkdir(`${output}comparison/${directory}`, { recursive: true });
+const overlay = await readFile(iteration ? `${output}environment.png` : `${experiment}renders/environment/external-overlay.png`);
 const server = await createServer({ root: `${root}apps/web`, server: { host: '127.0.0.1', port: 0 }, plugins: [{
   name: 'isolated-spike-scene-access',
   enforce: 'pre',
@@ -50,6 +53,7 @@ try {
       await page.waitForFunction(() => document.querySelector('[data-resource-states]') && JSON.parse(document.querySelector('[data-resource-states]').dataset.resourceStates).live);
       await page.getByText('Tycoon QA', { exact: true }).click();
       await step.click();
+      if (await skip.isVisible()) await skip.click();
       await page.waitForFunction(() => !!document.querySelector('[data-resource-states]')?.dataset.resourceStates);
       await page.evaluate(async data => {
         const image = new Image(); image.src = `data:image/png;base64,${data}`; await image.decode();
@@ -66,7 +70,7 @@ try {
       if (name === 'construction') assert.equal(visual.cache.lifecycle, 'provisioning');
       if (name === 'cache-edge-active') { assert.equal(visual.cache.lifecycle, 'active'); assert.equal(visual.edge.lifecycle, 'active'); }
       const filename = `${viewport.width}-${name}.png`;
-      const current = await page.screenshot({ path: `${experiment}comparison/current/current-${filename}` });
+      const current = await page.screenshot({ path: `${output}comparison/current/current-${filename}` });
       await page.evaluate(() => {
         const scene = globalThis.__spikeScene;
         const texture = scene.textures.get('hall-background');
@@ -76,7 +80,7 @@ try {
         texture.source[0].update();
       });
       await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
-      const proposed = await page.screenshot({ path: `${experiment}comparison/proposed/proposal-${filename}` });
+      const proposed = await page.screenshot({ path: `${output}comparison/proposed/proposal-${filename}` });
       const after = await state();
       assert.equal(after.tick, before.tick, 'No simulation tick may advance within a pair');
       assert.equal(after.resourceStates, before.resourceStates);
@@ -91,8 +95,8 @@ try {
       records.push({ name, viewport, current: `current/current-${filename}`, proposed: `proposed/proposal-${filename}`,
         currentSha256: sha(current), proposedSha256: sha(proposed), before, after,
         sourceUrl: url, capturedAt: new Date().toISOString(), renderPath: 'live Phaser; QA manual-step reduced-motion; browser-memory environment canvas overlay only',
-        baseCommit: '7e2f145a5458ea1de77e2cf5b0b09550cce9dee4', overlaySha256: sha(overlay), errors });
-      await writeFile(`${experiment}comparison/captures.json`, JSON.stringify(records, null, 2) + '\n');
+        baseCommit: '7e2f145a5458ea1de77e2cf5b0b09550cce9dee4', iteration: iteration ?? '01', overlaySha256: sha(overlay), errors });
+      await writeFile(`${output}comparison/captures.json`, JSON.stringify(records, null, 2) + '\n');
     }
     async function build(id) {
       const targets = JSON.parse(await surface.getAttribute('data-world-targets'));
