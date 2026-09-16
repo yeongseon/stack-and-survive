@@ -113,9 +113,35 @@ The server stores only:
 
 No authentication, user accounts, device IDs, IP addresses, or personal data beyond the chosen nickname.
 
+## Duplicate Prevention
+
+Runs are deduplicated by `challengeContentHash + clientRunId`. The browser generates a UUID for each completed run. This means:
+
+- The same player retrying submission of a completed run is rejected (same clientRunId)
+- Two different players who happen to make identical infrastructure decisions are both accepted (different clientRunIds)
+- `actionDigest` is retained as provenance metadata but is NOT the duplicate key
+
+## Deployment
+
+```
+# Development (in-memory, non-persistent)
+cd apps/leaderboard-api
+pnpm dev
+
+# Production build
+pnpm build
+LEADERBOARD_STORAGE=file node dist/server.js
+
+# Docker
+docker build -f apps/leaderboard-api/Dockerfile -t leaderboard-api .
+docker run -p 3001:3001 -v leaderboard-data:/app/data leaderboard-api
+```
+
+Environment variables: see `apps/leaderboard-api/.env.example`
+
 ## Limitations
 
-- **In-memory storage**: MVP uses `InMemoryStorage`; data is lost on server restart. Upgradeable to Azure Table Storage.
+- **File-based storage**: Production uses JSON file persistence. Suitable for hackathon scale. Azure Table Storage can be added later.
 - **No authentication**: Nicknames are not unique or verified. Different players can use the same nickname.
 - **No anti-cheat beyond replay**: The server verifies that submitted actions produce the claimed outcome, but cannot prevent automated play or action optimization outside the game.
-- **Rate limiting**: Basic body size limits only in MVP.
+- **Rate limiting**: 10 submissions/min and 60 reads/min per IP. `TRUST_PROXY=true` required behind reverse proxy.
