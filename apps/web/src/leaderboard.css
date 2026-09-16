@@ -90,7 +90,20 @@
 .leaderboard-unqualified {
   font-size: 12px; color: #8a7a60; padding: 8px 0; text-align: center; font-style: italic;
 }
+.leaderboard-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  padding-top: 10px; gap: 8px;
+}
 .leaderboard-device {
-  display: block; text-align: center; font-size: 11px; color: #506068;
-  padding-top: 10px; letter-spacing: .03em;
+  font-size: 11px; color: #506068; letter-spacing: .03em;
+}
+.leaderboard-share {
+  padding: 5px 12px; background: #1a3848; border: 1px solid #3a6070;
+  border-radius: 4px; color: #a8c8d0; font-size: 11px; cursor: pointer;
+  white-space: nowrap;
+}
+.leaderboard-share:hover { background: #224858; border-color: #5aadbe; }
+.leaderboard-loading {
+  font-size: 12px; color: #6a9aa8; text-align: center; padding: 6px 0;
+  font-style: italic;
 }
