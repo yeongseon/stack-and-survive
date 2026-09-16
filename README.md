@@ -119,7 +119,7 @@ Use Node 22.22.0 and pnpm 10.32.1. Verification commands and limits are document
 
 `LEADERBOARD_API_URL` feeds the Pages build-time API setting. Verify the actual build and the backend's `/api/health` plus an approved replay submission before saying the public leaderboard is online. An unavailable/unconfigured API leaves the local leaderboard; do not label local entries as server verified. Deployment may be skipped when main advances before Quality finishes—check the actual **deploy job**, not only the workflow conclusion.
 
-The external-art experiment [PR #245](https://github.com/yeongseon/stack-and-survive/pull/245) reported a negative visual result and proposed **no runtime adoption**. It remains separate experiment evidence, not a new game art pack or expanded rights grant.
+The external-art experiment [PR #245](https://github.com/yeongseon/stack-and-survive/pull/245) has progressed to **Iteration04, awaiting owner review**. Earlier rejected candidates remain historical evidence; no automatic merge or runtime adoption is authorized. It is not a new game art pack or expanded rights grant.
 
 ## Release verification and captures
 
