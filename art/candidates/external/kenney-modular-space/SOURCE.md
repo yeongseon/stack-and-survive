@@ -6,7 +6,9 @@ Original source: https://kenney.nl/assets/modular-space-kit
 
 Download: https://kenney.nl/media/pages/assets/modular-space-kit/8261428a47-1771146076/kenney_modular-space-kit_1.0.zip
 
-Checked: 2026-09-16 UTC. Archive SHA-256: `f394f7fd9eaf29c9de7e090e55b69926f699841af33b0b116f5cc0088de8a4dc`. Bytes: 6966606.
+Local archive SHA-256 verified at: 2026-09-16T08:02:41.266075+00:00. This run does not recheck the website.
+
+Archive SHA-256: `f394f7fd9eaf29c9de7e090e55b69926f699841af33b0b116f5cc0088de8a4dc`. Bytes: 6966606.
 
 License: **CC0-1.0**, CC0 1.0 Universal; bundled LICENSE.txt retained byte-for-byte.
 License reference: https://creativecommons.org/publicdomain/zero/1.0/

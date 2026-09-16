@@ -1,5 +1,29 @@
 # Executed verification
 
+## PR #245 review follow-up
+
+Four Copilot findings were reproduced and fixed without changing model, texture,
+render or screenshot bytes. Five isolated regression cases failed before the
+fix and pass afterward: colormap corruption, wrong overlay dimensions with
+repinned hashes, stale screenshot hashes under optimized Python, wrong viewport
+under optimized Python, and a controlled future acquisition clock.
+
+`ART_ARCHIVE_DIR=/tmp/opencode node --test art/experiments/external-art-spike/source/regression.test.mjs art/experiments/external-art-spike/source/verify.mjs`
+passes **9 tests** (five regressions plus four evidence checks). Selected Ruff
+syntax/undefined-name checks also pass. Node child-test context is cleared so the
+real child verifier executes rather than silently skipping nested test runners.
+
+Acquisition now emits actual local verification time in `source/acquisition.json`
+and candidate source records, explicitly not a network/license recheck. The
+historical official license-page check remains 2026-09-16. The three colormap
+archive-member hashes and byte counts are in `source/textures.json`. PNG signature,
+IHDR and actual dimensions are checked, not inferred from layout metadata.
+Protected-zone testing proves placement anchors only, not complete rendered bounds.
+
+Below are the original prototype's historical validation results. Capture metrics
+retain the original candidate-folder byte count; later provenance text additions
+are not a rerender or a new image/performance measurement.
+
 2026-09-16 UTC, isolated branch/worktree, Node22.22.0/pnpm10.32.1.
 
 | Command / check | Result |

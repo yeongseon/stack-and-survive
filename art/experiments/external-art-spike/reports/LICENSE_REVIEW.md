@@ -21,6 +21,11 @@ the complete archive SHA-256 before extracting only named files. Unmodified
 colormaps are included because exported GLBs may reference them; upstream
 previews are evaluation evidence, not claimed project renders.
 
+Follow-up: `source/textures.json` pins each of the three colormap archive members,
+SHA-256 and byte count independently. `source/acquisition.json` records the actual
+UTC local archive verification run. This does not repeat or change the original
+2026-09-16 official website/license check or the existing screenshot timestamps.
+
 Modifications to derivative render: common orthographic view; object scale/position;
 roughness .8; metallic .25; saturation .12; value .42; emission removed; warm key,
 cool fill; shadow catcher; PNG export. Source models and previews are unchanged.

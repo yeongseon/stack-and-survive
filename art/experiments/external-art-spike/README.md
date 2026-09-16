@@ -69,9 +69,16 @@ blender --background --factory-startup --python art/experiments/external-art-spi
 node art/experiments/external-art-spike/source/capture.mjs
 uv run art/experiments/external-art-spike/source/evidence.py
 node --test art/experiments/external-art-spike/source/verify.mjs
+ART_ARCHIVE_DIR=/tmp/opencode node --test art/experiments/external-art-spike/source/regression.test.mjs
 ```
 
 Capture takes several minutes on software WebGL; allow at least ten minutes.
+The regression suite needs the three pinned ZIPs in `ART_ARCHIVE_DIR` and `uv`;
+it mutates only unique temporary copies, never the recorded evidence.
+Acquisition writes `source/acquisition.json` with the actual UTC local archive
+verification time and `source/textures.json` with the three colormap member hashes.
+The original official source/license check was 2026-09-16; rerunning acquisition
+does not imply another website/license check. Original capture dates stay unchanged.
 It starts an ephemeral localhost Vite server and closes server/browser in `finally`.
 Its two explicit experiment-only transforms expose the scene and select the
 existing approved V3 inventory; no source files are rewritten. Do not deploy this

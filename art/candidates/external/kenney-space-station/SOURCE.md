@@ -6,7 +6,9 @@ Original source: https://kenney.nl/assets/space-station-kit
 
 Download: https://kenney.nl/media/pages/assets/space-station-kit/6475288f2e-1712749919/kenney_space-station-kit.zip
 
-Checked: 2026-09-16 UTC. Archive SHA-256: `215e79bd5415cff93665183390f0343ed9acf87780306331013b78520170c6d8`. Bytes: 1835875.
+Local archive SHA-256 verified at: 2026-09-16T08:02:41.266075+00:00. This run does not recheck the website.
+
+Archive SHA-256: `215e79bd5415cff93665183390f0343ed9acf87780306331013b78520170c6d8`. Bytes: 1835875.
 
 License: **CC0-1.0**, CC0 1.0 Universal; bundled LICENSE.txt retained byte-for-byte.
 License reference: https://creativecommons.org/publicdomain/zero/1.0/
