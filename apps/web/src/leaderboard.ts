@@ -25,6 +25,7 @@ export type RankResult = {
   entry: LeaderboardEntry;
   isPersonalBest: boolean;
   pointsToNextRank: number | null;
+  tieBreakReason: 'availability' | 'timestamp' | null;
   totalEntries: number;
 };
 
@@ -36,16 +37,18 @@ export function validateNickname(name: string): string | null {
   return null;
 }
 
+export function normalizeNickname(name: string): string { return name.trim(); }
+
 export function loadNickname(): string {
   try {
     const stored = localStorage.getItem(nicknameKey);
-    if (stored && !validateNickname(stored)) return stored;
+    if (stored) { const n = normalizeNickname(stored); if (!validateNickname(n)) return n; }
   } catch { /* ignore */ }
   return '';
 }
 
 export function saveNickname(name: string): void {
-  try { localStorage.setItem(nicknameKey, name); } catch { /* ignore */ }
+  try { localStorage.setItem(nicknameKey, normalizeNickname(name)); } catch { /* ignore */ }
 }
 
 export function emptyLeaderboard(): Leaderboard {
@@ -62,7 +65,9 @@ export function parseLeaderboard(raw: string | null): Leaderboard {
       if (typeof e.nickname !== 'string' || typeof e.score !== 'number' || typeof e.availability !== 'number'
         || typeof e.timestamp !== 'number' || typeof e.runId !== 'string' || typeof e.challengeCanonical !== 'string') continue;
       if (e.score < 0 || e.score > 10000 || e.availability < 0 || e.availability > 1) continue;
-      entries.push({ nickname: e.nickname, score: e.score, availability: e.availability, timestamp: e.timestamp, runId: e.runId, challengeCanonical: e.challengeCanonical });
+      const nn = normalizeNickname(e.nickname);
+      if (nn && validateNickname(nn)) continue;
+      entries.push({ nickname: nn || e.nickname, score: e.score, availability: e.availability, timestamp: e.timestamp, runId: e.runId, challengeCanonical: e.challengeCanonical });
     }
     return { version: 1, entries };
   } catch { return emptyLeaderboard(); }
@@ -96,8 +101,9 @@ export function qualifiesForLeaderboard(run: RunSummary): boolean {
 }
 
 export function entryFromRun(run: RunSummary, nickname: string): LeaderboardEntry {
+  const normalized = normalizeNickname(nickname);
   return {
-    nickname: nickname || 'Anonymous',
+    nickname: (normalized && !validateNickname(normalized)) ? normalized : 'Anonymous',
     score: run.score,
     availability: run.availability,
     timestamp: Date.now(),
@@ -136,7 +142,13 @@ export function rankRun(board: Leaderboard, run: RunSummary, nickname: string): 
   const personalEntries = unique.filter(e => e.nickname === entry.nickname);
   const isPersonalBest = personalEntries.length === 0 || personalEntries[0].runId === entry.runId;
   const pointsToNextRank = rank > 1 ? unique[rank - 2].score - entry.score : null;
-  return { rank, entry, isPersonalBest, pointsToNextRank, totalEntries: unique.length };
+  let tieBreakReason: RankResult['tieBreakReason'] = null;
+  if (rank > 1 && pointsToNextRank === 0) {
+    const above = unique[rank - 2];
+    if (compare(above.availability, entry.availability) > 0) tieBreakReason = 'availability';
+    else tieBreakReason = 'timestamp';
+  }
+  return { rank, entry, isPersonalBest, pointsToNextRank, tieBreakReason, totalEntries: unique.length };
 }
 
 export function personalBest(board: Leaderboard, challenge: Challenge, nickname: string): LeaderboardEntry | null {
