@@ -1,0 +1,153 @@
+{
+  "pairs": [
+    {
+      "name": "normal",
+      "width": 1440,
+      "height": 900,
+      "changedPixelRatioThreshold8": 0.05435108024691358,
+      "tick": "2",
+      "sameState": true
+    },
+    {
+      "name": "fit",
+      "width": 1440,
+      "height": 900,
+      "changedPixelRatioThreshold8": 0.06860416666666666,
+      "tick": "2",
+      "sameState": true
+    },
+    {
+      "name": "close",
+      "width": 1440,
+      "height": 900,
+      "changedPixelRatioThreshold8": 0.07407716049382716,
+      "tick": "2",
+      "sameState": true
+    },
+    {
+      "name": "construction",
+      "width": 1440,
+      "height": 900,
+      "changedPixelRatioThreshold8": 0.063875,
+      "tick": "4",
+      "sameState": true
+    },
+    {
+      "name": "cache-edge-active",
+      "width": 1440,
+      "height": 900,
+      "changedPixelRatioThreshold8": 0.05435108024691358,
+      "tick": "14",
+      "sameState": true
+    },
+    {
+      "name": "pressure",
+      "width": 1440,
+      "height": 900,
+      "changedPixelRatioThreshold8": 0.05411651234567901,
+      "tick": "33",
+      "sameState": true
+    },
+    {
+      "name": "normal",
+      "width": 1920,
+      "height": 1080,
+      "changedPixelRatioThreshold8": 0.038001543209876545,
+      "tick": "4",
+      "sameState": true
+    },
+    {
+      "name": "fit",
+      "width": 1920,
+      "height": 1080,
+      "changedPixelRatioThreshold8": 0.07491222993827161,
+      "tick": "4",
+      "sameState": true
+    },
+    {
+      "name": "close",
+      "width": 1920,
+      "height": 1080,
+      "changedPixelRatioThreshold8": 0.059118441358024694,
+      "tick": "4",
+      "sameState": true
+    },
+    {
+      "name": "construction",
+      "width": 1920,
+      "height": 1080,
+      "changedPixelRatioThreshold8": 0.038001543209876545,
+      "tick": "4",
+      "sameState": true
+    },
+    {
+      "name": "cache-edge-active",
+      "width": 1920,
+      "height": 1080,
+      "changedPixelRatioThreshold8": 0.038001543209876545,
+      "tick": "14",
+      "sameState": true
+    },
+    {
+      "name": "pressure",
+      "width": 1920,
+      "height": 1080,
+      "changedPixelRatioThreshold8": 0.037546778549382716,
+      "tick": "35",
+      "sameState": true
+    },
+    {
+      "name": "normal",
+      "width": 844,
+      "height": 390,
+      "changedPixelRatioThreshold8": 0.027679547940211446,
+      "tick": "1",
+      "sameState": true
+    },
+    {
+      "name": "fit",
+      "width": 844,
+      "height": 390,
+      "changedPixelRatioThreshold8": 0.055596062705067444,
+      "tick": "1",
+      "sameState": true
+    },
+    {
+      "name": "close",
+      "width": 844,
+      "height": 390,
+      "changedPixelRatioThreshold8": 0.05944829262364807,
+      "tick": "1",
+      "sameState": true
+    },
+    {
+      "name": "construction",
+      "width": 844,
+      "height": 390,
+      "changedPixelRatioThreshold8": 0.027679547940211446,
+      "tick": "2",
+      "sameState": true
+    },
+    {
+      "name": "cache-edge-active",
+      "width": 844,
+      "height": 390,
+      "changedPixelRatioThreshold8": 0.029162109612346578,
+      "tick": "12",
+      "sameState": true
+    },
+    {
+      "name": "pressure",
+      "width": 844,
+      "height": 390,
+      "changedPixelRatioThreshold8": 0.0250364564345607,
+      "tick": "32",
+      "sameState": true
+    }
+  ],
+  "candidateBytes": 371261,
+  "selectedModelBytes": 271636,
+  "overlayBytes": 1563595,
+  "overlayRGBA8Bytes": 12960000,
+  "productionRuntimeNewTextures": 0
+}
