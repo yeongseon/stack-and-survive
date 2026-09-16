@@ -1,0 +1,19 @@
+{
+  "name": "@stack-and-survive/leaderboard-api",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node --import tsx src/server.ts",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@stack-and-survive/schema": "workspace:*",
+    "@stack-and-survive/cloud-domain": "workspace:*",
+    "@stack-and-survive/scenarios": "workspace:*",
+    "@stack-and-survive/simulation": "workspace:*"
+  },
+  "devDependencies": {
+    "tsx": "^4.0.0"
+  }
+}
