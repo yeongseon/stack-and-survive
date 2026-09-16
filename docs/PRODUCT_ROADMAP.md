@@ -1,6 +1,6 @@
 # Product roadmap
 
-Version: 1.2. Reviewed main `aa2f826`, including test-only review fixes in #201. [Gameplay](GAMEPLAY_SPEC.md) owns current behavior; [#7](https://github.com/yeongseon/stack-and-survive/issues/7) is the live execution tracker. Plans do not approve new balance rules or establish human acceptance.
+Version: 1.3. Reviewed main `9421e74`, including client release/submission preparation in #253. [Gameplay](GAMEPLAY_SPEC.md) owns current behavior; [#7](https://github.com/yeongseon/stack-and-survive/issues/7), including its latest updates, is the live execution tracker. See the [release checkpoint](submission/RELEASE_CHECKPOINT.md) for dated evidence. Plans do not approve new balance rules or establish human acceptance.
 
 ## Delivered and retired
 
@@ -10,10 +10,12 @@ Version: 1.2. Reviewed main `aa2f826`, including test-only review fixes in #201.
 - #123 and #142 closed completed as historical software epics; no further implementation belongs there. Manual audio remains #149.
 - #151 closed not planned: independent pre-change baseline was never gathered. Do not fabricate or reconstruct it through an obsolete-build experiment.
 - Public Pages demo and technical security safeguards delivered; public source is not licensed OSS or blanket third-party rights clearance.
+- Canonical map/V3 runtime and refinements #209/#210/#211; original V3 art #202–#205; baked hall #213/#214 and balance0.3 reinvestment/waves/direct expansion #212/#217.
+- Settings/Pause #216 and #253 metadata/local-status/layout/capture/submission pack, including completed #248 technical links.
 
-## Current P0: Production Art V3 #202
+## Delivered history: Production Art V3 #202
 
-The interaction architecture is sufficient. The next quality gain is cohesive production art, not more systems. **Make the already-game-like interaction look like a polished management game.**
+The grouped original-art work below is implemented and integrated, not current P0 development. Preserve its reproducible sources and truthful runtime states; only observed blockers justify changes during final submission preparation.
 
 | Group | Issue | Deliverable |
 |---|---|---|
@@ -21,33 +23,37 @@ The interaction architecture is sufficient. The next quality gain is cohesive pr
 | ART PR B | #204 | Cohesive racks/cooling/electrical/walls/doors/floors/grates/vents/trays/conduits/rails/decals/lights/pipes |
 | ART PR C | #205 | Lighting/semantic traffic/plaques/local actions/HUD micro-art integration; B/C may combine for two total PRs |
 
-Stylized-realistic indoor2.5D industrial art, not SaaS illustration, pixel art, cinematic3D or unrelated packs. No outdoors/plants/logistics clutter. Original/custom first, CC0 second, verified CC-BY only when useful, no paid dependencies. Raster sprites encouraged; source/master/runtime/state overlays stay reproducible and attributable. Record manifest/provenance before runtime import. The previous Pages exception pins old asset bytes: review new inventory/public-distribution scope with #164 instead of silently changing approval.
+The delivered direction is stylized-realistic indoor2.5D industrial art. Source/master/runtime/state overlays remain reproducible and attributable. The [Pages demo exception](PAGES_DEMO_EXCEPTION.md) was explicitly extended to the exact original V3 inventory; it is not general rights clearance. New image bytes still require provenance and applicable approval. The separate #245 environment experiment has progressed to Iteration04 and awaits owner review; earlier rejected iterations are history, not a verdict on its current candidate. No automatic merge or runtime adoption is authorized.
 
-Iterate at1440x900 with affected unit/renderer smoke and actual screenshot inspection; then390/1920. Full lint/types/unit/player/QA/Pages/assets once per complete grouped PR; allfive widths and relevant hardware performance at final integration. Do not rewrite unrelated docs or refactor unaffected systems.
+For any observed visual defect, use affected smoke checks and inspect real screenshots before full integrated verification. Do not reopen completed art groups, rewrite unrelated systems or treat automation as final aesthetic acceptance.
+
+## Current P0: final validation and submission
+
+Client implementation, reproducible captures and submission guidance are delivered. Verify the exact deployed revision and preserve local-only fallback. Backend-owned [#260](https://github.com/yeongseon/stack-and-survive/issues/260) blocks browser leaderboard access from the inherited `https://yeongseon.dev` origin despite API health200; no client/backend deployment changes are implied by this roadmap. Actual recording/rehearsal, participant/audio sessions and rights decisions remain unperformed.
 
 ## Parallel manual and release gates
 
 - **#164:** code/original-art licenses; Azure asset treatment and applicable terms; employer/IP/Hackathon/public-distribution and attribution/redistribution decisions. Never blanket-license Microsoft materials. Art production can proceed while distribution conditions are unresolved; unreviewed runtime imports cannot.
 - **#149:** one focused manual cue/volume/mute/spam/pause/resume and actual supported-device haptic check. Software complete; redesign only if a real defect is heard. Report unsupported devices honestly.
 
-## One human session after finished V3
+## One human session on the delivered game
 
 Keep #25, #195 and #159 open with distinct criteria. Show title without explaining controls; observe traffic/pressure/navigation/actions and physical expansion; then record answers verbatim about App/Cache/Edge, budget/no-FIFO, game-vs-dashboard and next strategy. **Do not prompt another run.** Observe whether retry is voluntary, whether decisions change and what tradeoff they explain. A declined/prompted replay does not pass #159.
 
 #186 remains open only for #195; V3 is not new scope inside #186. #152 remains open for #159, with P0 software checked complete. No AI participant/quality scores or fabricated prior baseline.
 
-## Frozen future, not active development
+## Retired Hackathon scope, not active development
 
 | Issues | Gate |
 |---|---|
-| #160 objectives/modifiers | FUTURE / BLOCKED BY #159; no implementation now |
-| #161 workload families/bosses | FUTURE / BLOCKED BY #159; Flash Sale/Bot Attack/Read Storm/Order Rush are candidates only |
-| #162 daily challenges | FUTURE / BLOCKED; no daily seeds/UTC/local-daily work now |
-| #163 discoveries | FUTURE / BLOCKED; no collection before proven replay motivation |
-| #132 runtime scale-in | Design evaluation only, NOT AUTHORIZED; after V3 + human tests + observed need + explicitly approved exact semantics |
+| #160 objectives/modifiers | Closed not planned; no implementation now |
+| #161 workload families/bosses | Closed not planned; named workloads remain ideas only |
+| #162 daily challenges | Closed not planned; no daily seeds/UTC/local-daily work now |
+| #163 discoveries | Closed not planned; no collection system now |
+| #132 runtime scale-in | Closed not planned; design evaluation is not implementation authorization |
 
-No fake draining FIFO, arbitrary cooldown/cost, SQL scaling, routing/score/capacity changes or permanent bonuses. Strict test-first contract discipline remains for any separately approved simulation change. Owner must explicitly revise a gate to reprioritize frozen work.
+No fake draining FIFO, arbitrary cooldown/cost, SQL scaling, routing/score/capacity changes or permanent bonuses. Strict test-first contract discipline remains for any separately approved simulation change. Human acceptance does not automatically reopen these issues; new scope requires an explicit owner decision.
 
 ## Submission polish
 
-After art and observed human blockers: fix only observed issues, collect title/gameplay/overload/construction/success evidence, rehearse an honest2minute demo, refine README/Hackathon pitch and architecture explanation, disclose limitations and recovery fallback. Avoid major new gameplay during submission preparation. Preserve historical issues; close completed or explicitly retired work without deleting implementation history.
+The [submission pack](submission/README.md) contains the script, screenshot plan, fallback, judge Q&A, limitations and human worksheet. Existing real-run captures are preparation with their own source revision, not proof of the current deployed artifact or completed human acceptance. Remaining work is actual rehearsal/recording, observed blocker fixes and final review. Label a two-minute edit honestly rather than presenting it as a continuous180-second run. Avoid major new gameplay; preserve completed/retired implementation history.
