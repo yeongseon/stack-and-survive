@@ -2,7 +2,7 @@ import { challengeLadder } from '@stack-and-survive/scenarios/ladder';
 import { TycoonGame } from './TycoonGame';
 import { useChallengeLadder } from './useChallengeLadder';
 import { unlockedLevel } from './ladder-progress';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import type { Architecture } from '@stack-and-survive/schema';
 import type { View } from './controller';
 import { useRunHistory } from './useRunHistory';
@@ -21,6 +21,14 @@ export function ChallengeApplication() {
   const [currentRank, setCurrentRank] = useState<RankResult | null>(null);
   const [currentRun, setCurrentRun] = useState<RunSummary | null>(null);
   const submittedRef = useRef<string | null>(null);
+  const selected = challengeLadder[ladder.selected];
+
+  // Fetch global Top 10 when challenge changes or on mount
+  useEffect(() => {
+    global.fetchTop(selected.challenge);
+    global.clearRun();
+  }, [selected.challenge.contentHash]);
+
   const complete = useCallback((result: NonNullable<View['result']>, architecture: Architecture) => {
     ladder.complete(result); records.complete(result, architecture);
     try {
@@ -28,15 +36,17 @@ export function ChallengeApplication() {
       setCurrentRun(run);
       setCurrentRank(null);
       submittedRef.current = null;
+      // Fetch latest global Top 10 on result
+      global.fetchTop(run.challenge);
       if (leaderboard.hasValidNickname && qualifiesForLeaderboard(run)) {
         const rank = leaderboard.submit(run);
         setCurrentRank(rank);
         submittedRef.current = run.id;
-        // Submit to global asynchronously — never blocks result screen
-        global.submitGlobal(leaderboard.nickname, run.challenge, run.actions);
+        global.submitGlobal(leaderboard.nickname, run.challenge, run.actions, run.id);
       }
     } catch { setCurrentRun(null); }
   }, [ladder.complete, records.complete, leaderboard, global]);
+
   const submitCurrent = useCallback((nicknameOverride?: string) => {
     if (!currentRun || submittedRef.current === currentRun.id) return;
     const rank = leaderboard.submit(currentRun, nicknameOverride);
@@ -44,14 +54,17 @@ export function ChallengeApplication() {
     if (rank) {
       submittedRef.current = currentRun.id;
       const name = nicknameOverride ?? leaderboard.nickname;
-      if (name) global.submitGlobal(name, currentRun.challenge, currentRun.actions);
+      if (name) global.submitGlobal(name, currentRun.challenge, currentRun.actions, currentRun.id);
     }
   }, [currentRun, leaderboard, global]);
-  const selected = challengeLadder[ladder.selected];
+
   const nextAvailable = ladder.selected + 1 < challengeLadder.length && unlockedLevel(ladder.progress) > ladder.selected;
   const recordPanel = <RunHistoryPanel history={records.history} challenge={selected.challenge} message={records.message} clear={records.clear} retrySave={records.retrySave} needsSave={records.needsSave} />;
   const qualified = currentRun ? qualifiesForLeaderboard(currentRun) : false;
   const scenarioName = selected.challenge.workload.id === 'black-friday' ? 'Black Friday' : selected.challenge.workload.id;
+
+  // Only show global entries if they match the current challenge
+  const matchingGlobal = global.challengeHash === selected.challenge.contentHash;
   const leaderboardPanel = <LeaderboardPanel
     entries={leaderboard.getEntries(selected.challenge)}
     currentRank={currentRank}
@@ -61,8 +74,9 @@ export function ChallengeApplication() {
     onSubmit={submitCurrent}
     personalBest={leaderboard.getBest(selected.challenge)}
     qualified={qualified}
-    globalEntries={global.globalEntries}
-    globalRank={global.globalRank}
+    globalAvailable={matchingGlobal && global.available}
+    globalEntries={matchingGlobal ? global.globalEntries : null}
+    globalRankContext={matchingGlobal ? global.globalRankContext : null}
     globalLoading={global.loading}
     challengeName={scenarioName}
     score={currentRun?.score}

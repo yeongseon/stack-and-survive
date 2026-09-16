@@ -4,16 +4,17 @@ import type { Challenge } from '@stack-and-survive/scenarios/challenge';
 const API_BASE = import.meta.env?.VITE_LEADERBOARD_API ?? '';
 
 export type GlobalEntry = { rank: number; nickname: string; score: number; availability: number; submittedAt: number };
-export type GlobalSubmitResult = { accepted: true; rank: number; score: number; availability: number; objectiveMet: boolean; top: GlobalEntry[] };
-export type GlobalTopResult = { challengeHash: string; entries: GlobalEntry[] };
+export type GlobalRankContext = { rank: number; totalEntries: number; score: number; availability: number; nextRank: { rank: number; score: number; availability: number } | null; pointsToNextRank: number | null; tieBreakReason: 'availability' | 'timestamp' | null };
+export type GlobalSubmitResult = { accepted: true; rankContext: GlobalRankContext; top: GlobalEntry[] };
+export type GlobalTopResult = { challengeHash: string; available: true; entries: GlobalEntry[] };
 
-export async function submitToGlobal(nickname: string, challenge: Challenge, actions: Action[]): Promise<GlobalSubmitResult | null> {
+export async function submitToGlobal(nickname: string, challenge: Challenge, actions: Action[], clientRunId: string): Promise<GlobalSubmitResult | null> {
   if (!API_BASE) return null;
   try {
     const response = await fetch(`${API_BASE}/api/leaderboard`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ nickname, challengeContentHash: challenge.contentHash, actions }),
+      body: JSON.stringify({ nickname, clientRunId, challengeContentHash: challenge.contentHash, actions }),
       signal: AbortSignal.timeout(10000),
     });
     if (!response.ok) return null;
