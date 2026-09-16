@@ -4,7 +4,7 @@ import { canonicalPlayerStart } from '@stack-and-survive/cloud-domain';
 import { replayRun } from '@stack-and-survive/simulation/replay';
 import { validateActionSchedule, type Action } from '@stack-and-survive/simulation/runtime';
 import { array, integer, number, record, text } from '@stack-and-survive/schema';
-import type { LeaderboardStorage, StoredEntry } from './storage';
+import type { LeaderboardStorage, RankContext, StoredEntry } from './storage';
 
 const MAX_ACTIONS = 500;
 const MAX_BODY_SIZE = 200_000;
@@ -16,6 +16,12 @@ function validateNickname(name: string): string {
   if (trimmed.length < 2 || trimmed.length > 16) throw new Error('Nickname must be 2-16 characters');
   if (!/^[a-zA-Z0-9_-]+$/.test(trimmed)) throw new Error('Nickname: only letters, numbers, hyphens, underscores');
   return trimmed;
+}
+
+function validateClientRunId(id: unknown): string {
+  const value = text(id, 'clientRunId');
+  if (value.length < 8 || value.length > 64 || !/^[a-zA-Z0-9_-]+$/.test(value)) throw new Error('Invalid clientRunId');
+  return value;
 }
 
 function parseActions(raw: unknown[]): Action[] {
@@ -39,45 +45,45 @@ function actionDigest(challengeHash: string, actions: Action[]): string {
   return hash.toString(16).padStart(16, '0');
 }
 
-export type SubmitRequest = {
-  nickname: string;
-  challengeContentHash: string;
-  actions: unknown[];
-  clientRunId?: string;
-};
-
 export type SubmitResponse = {
   accepted: true;
-  rank: number;
-  score: number;
-  availability: number;
-  objectiveMet: boolean;
+  rankContext: RankContext;
   top: { rank: number; nickname: string; score: number; availability: number; submittedAt: number }[];
 };
 
 export type TopResponse = {
   challengeHash: string;
+  available: true;
   entries: { rank: number; nickname: string; score: number; availability: number; submittedAt: number }[];
 };
 
-export function handleGetTop(storage: LeaderboardStorage, challengeHash: string): TopResponse {
-  const entries = storage.getTop(challengeHash, 10);
+export class ApiError extends Error {
+  constructor(message: string, public statusCode: number) { super(message); }
+}
+
+export async function handleGetTop(storage: LeaderboardStorage, challengeHash: string): Promise<TopResponse> {
+  const entries = await storage.getTop(challengeHash, 10);
   return {
     challengeHash,
+    available: true,
     entries: entries.map((e, i) => ({ rank: i + 1, nickname: e.nickname, score: e.score, availability: e.availability, submittedAt: e.submittedAt })),
   };
 }
 
-export function handleSubmit(storage: LeaderboardStorage, body: string): SubmitResponse {
-  if (body.length > MAX_BODY_SIZE) throw new Error('Request body too large');
+export async function handleSubmit(storage: LeaderboardStorage, body: string): Promise<SubmitResponse> {
+  if (body.length > MAX_BODY_SIZE) throw new ApiError('Request body too large', 413);
 
-  const raw = record(JSON.parse(body), 'submission');
-  const nickname = validateNickname(text(raw.nickname, 'nickname'));
-  const challengeHash = text(raw.challengeContentHash, 'challengeContentHash');
-  const rawActions = array(raw.actions, 'actions');
+  let parsed: Record<string, unknown>;
+  try { parsed = record(JSON.parse(body), 'submission'); }
+  catch { throw new ApiError('Invalid JSON', 400); }
+
+  const nickname = validateNickname(text(parsed.nickname, 'nickname'));
+  const clientRunId = validateClientRunId(parsed.clientRunId);
+  const challengeHash = text(parsed.challengeContentHash, 'challengeContentHash');
+  const rawActions = array(parsed.actions, 'actions');
 
   const challenge = supportedChallenges.get(challengeHash);
-  if (!challenge) throw new Error('Unsupported challenge');
+  if (!challenge) throw new ApiError('Unsupported challenge', 400);
 
   const actions = parseActions(rawActions);
   validateActionSchedule(actions, challenge.workload.duration);
@@ -85,12 +91,13 @@ export function handleSubmit(storage: LeaderboardStorage, body: string): SubmitR
   const initialArchitecture = canonicalPlayerStart();
   const result = replayRun({ challenge, initialArchitecture, actions });
 
-  if (!result.objectiveMet) throw new Error('Objective not met; only qualifying runs are accepted');
+  if (!result.objectiveMet) throw new ApiError('Objective not met; only qualifying runs are accepted', 400);
 
   const digest = actionDigest(challengeHash, actions);
   const now = Date.now();
   const entry: StoredEntry = {
     id: `${challengeHash.slice(0, 8)}-${now}-${Math.random().toString(36).slice(2, 8)}`,
+    clientRunId,
     nickname,
     score: result.score,
     availability: result.availability,
@@ -99,18 +106,15 @@ export function handleSubmit(storage: LeaderboardStorage, body: string): SubmitR
     actionDigest: digest,
   };
 
-  const added = storage.add(entry);
-  if (!added) throw new Error('Duplicate run submission');
+  const addResult = await storage.add(entry);
+  if (!addResult.added) throw new ApiError('Duplicate run submission', 409);
 
-  const rank = storage.getRank(challengeHash, result.score, result.availability, now);
-  const top = storage.getTop(challengeHash, 10);
+  const rankContext = await storage.getRankContext(challengeHash, entry);
+  const top = await storage.getTop(challengeHash, 10);
 
   return {
     accepted: true,
-    rank,
-    score: result.score,
-    availability: result.availability,
-    objectiveMet: result.objectiveMet,
+    rankContext,
     top: top.map((e, i) => ({ rank: i + 1, nickname: e.nickname, score: e.score, availability: e.availability, submittedAt: e.submittedAt })),
   };
 }
