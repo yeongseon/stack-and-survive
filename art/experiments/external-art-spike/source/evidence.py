@@ -17,10 +17,13 @@ metrics = []
 for capture in captures:
     current = root / "comparison" / capture["current"]
     proposed = root / "comparison" / capture["proposed"]
-    assert hashlib.sha256(current.read_bytes()).hexdigest() == capture["currentSha256"]
-    assert hashlib.sha256(proposed.read_bytes()).hexdigest() == capture["proposedSha256"]
+    if hashlib.sha256(current.read_bytes()).hexdigest() != capture["currentSha256"]:
+        raise RuntimeError(f"Screenshot hash mismatch: {current}")
+    if hashlib.sha256(proposed.read_bytes()).hexdigest() != capture["proposedSha256"]:
+        raise RuntimeError(f"Screenshot hash mismatch: {proposed}")
     with Image.open(current) as left, Image.open(proposed) as right:
-        assert left.size == right.size == (capture["viewport"]["width"], capture["viewport"]["height"])
+        if not left.size == right.size == (capture["viewport"]["width"], capture["viewport"]["height"]):
+            raise RuntimeError(f"Screenshot dimension mismatch: {current}, {proposed}")
         width, height = left.size
         sheet = Image.new("RGB", (width * 2, height + 32), "#101e28")
         sheet.paste(left, (0, 32))

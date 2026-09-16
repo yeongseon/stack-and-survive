@@ -1,0 +1,18 @@
+{
+  "verifiedAt": "2026-09-16T08:02:41.266075+00:00",
+  "verification": "local-archive-sha256",
+  "archives": [
+    {
+      "pack": "kenney-space-station",
+      "sha256": "215e79bd5415cff93665183390f0343ed9acf87780306331013b78520170c6d8"
+    },
+    {
+      "pack": "kenney-modular-space",
+      "sha256": "f394f7fd9eaf29c9de7e090e55b69926f699841af33b0b116f5cc0088de8a4dc"
+    },
+    {
+      "pack": "kenney-factory",
+      "sha256": "7e31fb2308e90304672bd15cd18fa9d9f02c03731a8cbc57a8e3e1c181dfb0a7"
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+[
+  {
+    "pack": "kenney-space-station",
+    "path": "Textures/colormap.png",
+    "archiveMember": "Models/GLB format/Textures/colormap.png",
+    "sha256": "6ca023be9f12e8c2358fcf94320c8a894b4c05a3dd0bad1f5c268312053caca1",
+    "bytes": 7440
+  },
+  {
+    "pack": "kenney-modular-space",
+    "path": "Textures/colormap.png",
+    "archiveMember": "Models/GLB format/Textures/colormap.png",
+    "sha256": "5aa7d186416e85310d99308c8e5510ededda181f3354ba9f4887cd56273f2b1e",
+    "bytes": 33547
+  },
+  {
+    "pack": "kenney-factory",
+    "path": "Textures/colormap.png",
+    "archiveMember": "Models/GLB format/Textures/colormap.png",
+    "sha256": "35d7bd6900dde0208429eeaec87fa17fbf024ed59f3f4eab54bc92802eba9dd7",
+    "bytes": 11813
+  }
+]

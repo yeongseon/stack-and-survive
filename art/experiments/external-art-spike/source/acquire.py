@@ -9,6 +9,7 @@ from __future__ import annotations
 import hashlib
 import json
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Final, TypedDict
 from zipfile import ZipFile
@@ -33,6 +34,8 @@ EXPERIMENT: Final = Path(__file__).resolve().parents[1]
 def main() -> None:
     packs: list[Pack] = json.loads(Path(__file__).with_name("packs.json").read_text())
     records = []
+    textures = []
+    verified_at = datetime.now(timezone.utc).isoformat()
     for pack in packs:
         archive = Path(sys.argv[1]) / pack["archive"]
         digest = hashlib.sha256(archive.read_bytes()).hexdigest()
@@ -53,13 +56,18 @@ def main() -> None:
                     "bytes": len(content), "review": "candidate", "runtime": None})
             texture = "Models/GLB format/Textures/colormap.png"
             (target / "selected" / "Textures").mkdir(exist_ok=True)
-            (target / "selected" / "Textures" / "colormap.png").write_bytes(source.read(texture))
+            texture_bytes = source.read(texture)
+            (target / "selected" / "Textures" / "colormap.png").write_bytes(texture_bytes)
+            textures.append({"pack": pack["id"], "path": "Textures/colormap.png",
+                "archiveMember": texture, "sha256": hashlib.sha256(texture_bytes).hexdigest(),
+                "bytes": len(texture_bytes)})
             for name in pack["selected"] | pack["rejected"]:
                 (target / "previews" / f"{name}.png").write_bytes(source.read(f"Previews/{name}.png"))
         (target / "SOURCE.md").write_text(
             f"# {pack['name']} — source record\n\nAuthor: Kenney. Pack version: {pack['version']}.\n\n"
             f"Original source: {pack['source']}\n\nDownload: {pack['url']}\n\n"
-            f"Checked: 2026-09-16 UTC. Archive SHA-256: `{digest}`. Bytes: {archive.stat().st_size}.\n\n"
+            f"Local archive SHA-256 verified at: {verified_at}. This run does not recheck the website.\n\n"
+            f"Archive SHA-256: `{digest}`. Bytes: {archive.stat().st_size}.\n\n"
             "License: **CC0-1.0**, CC0 1.0 Universal; bundled LICENSE.txt retained byte-for-byte.\n"
             "License reference: https://creativecommons.org/publicdomain/zero/1.0/\n\n"
             "CC0 permits copying, redistribution and modification, including commercial use; attribution is not required. "
@@ -75,6 +83,10 @@ def main() -> None:
         (target / "originals" / "README.md").write_text("# Original archive\n\nArchive intentionally not stored in Git. "
             "The exact URL, SHA-256 and size are in ../SOURCE.md. Download outside the checkout and run the experiment's source/acquire.py.\n")
     (EXPERIMENT / "source" / "selection.json").write_text(json.dumps(records, indent=2) + "\n")
+    (EXPERIMENT / "source" / "textures.json").write_text(json.dumps(textures, indent=2) + "\n")
+    receipt = {"verifiedAt": verified_at, "verification": "local-archive-sha256",
+        "archives": [{"pack": pack["id"], "sha256": pack["sha256"]} for pack in packs]}
+    (EXPERIMENT / "source" / "acquisition.json").write_text(json.dumps(receipt, indent=2) + "\n")
     print(f"Extracted {len(records)} selected models; runtime untouched")
 
 
