@@ -7,16 +7,18 @@ import { canonicalPlayerStart } from '@stack-and-survive/cloud-domain';
 
 const challengeHash = blackFridayChallenge.contentHash;
 
-// Find a set of actions that produces a qualifying run (objective met)
-// Scale out early to help survive the full scenario
+// Measured balance 0.3 cache-scale and prepared-layer schedules, from sprint-balance.test.ts.
 const qualifyingActions = [
-  { type: 'SCALE_OUT' as const, time: 5, sequence: 0 },
-  { type: 'SCALE_OUT' as const, time: 15, sequence: 1 },
+  { type: 'SCALE_OUT' as const, time: 16, sequence: 0 },
+  { type: 'DEPLOY_RESOURCE' as const, kind: 'cache' as const, x: 190, y: -100, time: 17, sequence: 1 },
+  { type: 'SCALE_OUT' as const, time: 57, sequence: 2 },
+  { type: 'SCALE_OUT' as const, time: 102, sequence: 3 },
 ];
-
-// Verify our qualifying actions actually produce an objective-met result
-const qualifyingResult = replayRun({ challenge: blackFridayChallenge, initialArchitecture: canonicalPlayerStart(), actions: qualifyingActions });
-const qualifies = qualifyingResult.objectiveMet;
+const protectedActions = [
+  ...qualifyingActions.slice(0, 2),
+  { type: 'DEPLOY_RESOURCE' as const, kind: 'edge' as const, x: -210, y: 0, time: 57, sequence: 2 },
+  { type: 'SCALE_OUT' as const, time: 57, sequence: 3 },
+];
 
 function validSubmission(overrides: Record<string, unknown> = {}) {
   return JSON.stringify({
@@ -31,7 +33,9 @@ describe('handleSubmit', () => {
   let storage: InMemoryStorage;
   beforeEach(() => { storage = new InMemoryStorage(); });
 
-  (qualifies ? it : it.skip)('accepts a qualifying run and returns rank', () => {
+  it('accepts a qualifying run and returns rank', () => {
+    const qualifyingResult = replayRun({ challenge: blackFridayChallenge, initialArchitecture: canonicalPlayerStart(), actions: qualifyingActions });
+    expect(qualifyingResult.objectiveMet).toBe(true);
     const result = handleSubmit(storage, validSubmission());
     expect(result.accepted).toBe(true);
     expect(result.rank).toBe(1);
@@ -74,28 +78,29 @@ describe('handleSubmit', () => {
   });
 
   it('rejects objective-missed runs', () => {
-    // No actions → likely budget failure → objective not met
     const noActionResult = replayRun({ challenge: blackFridayChallenge, initialArchitecture: canonicalPlayerStart(), actions: [] });
-    if (!noActionResult.objectiveMet) {
-      expect(() => handleSubmit(storage, validSubmission({ actions: [] }))).toThrow('Objective not met');
-    }
+    expect(noActionResult.objectiveMet).toBe(false);
+    expect(() => handleSubmit(storage, validSubmission({ actions: [] }))).toThrow('Objective not met');
   });
 
-  (qualifies ? it : it.skip)('prevents duplicate submissions', () => {
+  it('prevents duplicate submissions', () => {
     const body = validSubmission();
     handleSubmit(storage, body);
     expect(() => handleSubmit(storage, body)).toThrow('Duplicate');
   });
 
-  (qualifies ? it : it.skip)('ranks multiple submissions correctly', () => {
+  it('ranks multiple submissions correctly', () => {
     handleSubmit(storage, validSubmission({ nickname: 'Player1' }));
     handleSubmit(storage, validSubmission({
       nickname: 'Player2',
-      actions: [{ type: 'SCALE_OUT', time: 8, sequence: 0 }],
+      actions: protectedActions,
     }));
     const top = handleGetTop(storage, challengeHash);
     expect(top.entries.length).toBe(2);
-    expect(top.entries[0].score).toBeGreaterThanOrEqual(top.entries[1].score);
+    expect(top.entries[0].nickname).toBe('Player2');
+    expect(top.entries[0].score).toBe(9474);
+    expect(top.entries[1].nickname).toBe('Player1');
+    expect(top.entries[1].score).toBe(8500);
   });
 });
 
@@ -108,7 +113,7 @@ describe('handleGetTop', () => {
     expect(result.entries).toEqual([]);
   });
 
-  (qualifies ? it : it.skip)('returns entries after submission', () => {
+  it('returns entries after submission', () => {
     handleSubmit(storage, validSubmission({ nickname: 'AA' }));
     const result = handleGetTop(storage, challengeHash);
     expect(result.entries.length).toBe(1);
