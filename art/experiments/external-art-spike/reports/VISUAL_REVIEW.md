@@ -1,5 +1,8 @@
 # Visual review — Stage 1 FAIL / no integration
 
+**Historical iteration01 review.** Later iteration03 passes the visual-direction
+gate; see `ITERATION_REVIEW.md`. This original negative result is retained, not rewritten.
+
 **Does this proposal make Stack & Survive meaningfully more game-like? NO —
 current custom art is more coherent.** This rejects this specific selection,
 normalization and additive composition, not all future uses of external assets.

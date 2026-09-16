@@ -1,7 +1,9 @@
 # External asset art spike — Stage 1
 
-**Decision: NO — current custom art is more coherent than this proposal. Do not integrate.**
-This is a real, reproducible negative experiment, not a concept image or production art release.
+**Latest decision: iteration 03 PASSES the Stage 1 visual-direction gate — YES, but only selected environment assets.**
+See [iteration review](reports/ITERATION_REVIEW.md) and [separate integration plan](reports/INTEGRATION_PLAN.md).
+The original iteration 01 below remains a documented FAIL; iteration 02 required revision.
+No production integration, human acceptance or rights approval is implied by this visual PASS.
 
 ## Scope and baseline
 
@@ -111,6 +113,18 @@ scale standard. No human playtest, hardware FPS/GPU trace, bot-filter-specific
 capture, hover/selection audit, non-reduced-motion review, or final release rights
 approval occurred. An accepted future proposal needs all those checks.
 
-**Stage 2 is closed.** No integration plan is authored as an executable change,
-and no runtime integration is performed. A narrower pipe/rail study or a verified
-data-center-specific pack would be a new experiment, not implied approval here.
+**Original iteration 01 closed Stage 2.** The later iteration 03 passes visual direction
+and now has a separate gated integration plan. Runtime integration is still not performed.
+
+## Reproduce the accepted iteration
+
+```sh
+ART_ITERATION=03 blender --background --factory-startup --python art/experiments/external-art-spike/source/blender/utility_render.py
+ART_ITERATION=03 uv run art/experiments/external-art-spike/source/compose_hall.py
+ART_ITERATION=03 node art/experiments/external-art-spike/source/capture.mjs
+uv run art/experiments/external-art-spike/source/iteration_evidence.py 03
+```
+
+Use `02` for the intermediate geometry/composition. Iteration 01 commands above
+remain valid. Iteration outputs are isolated from each other and from production.
+These are real model renders used as background material, not AI concept images.

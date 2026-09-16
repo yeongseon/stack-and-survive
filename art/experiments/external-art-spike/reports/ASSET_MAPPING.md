@@ -1,5 +1,10 @@
 # Exact asset mapping
 
+This table records iteration01's evaluated set. The accepted iteration03 uses
+only `pipe` (Space Station) and `pipe-large-valve` (Factory) as external geometry,
+with existing V3 rack/cooling/electrical/light sprites. Exact transformations and
+new composition are in `ITERATION_REVIEW.md` and `source/blender/utility_render.py`.
+
 All members are `Models/GLB format/<name>.glb`. Selected source bytes and hashes
 are in `../source/selection.json`; originals are unchanged. Each pack's colormap
 and unmodified upstream previews are retained. No output is a runtime asset.
