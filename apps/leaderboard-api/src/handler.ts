@@ -13,14 +13,14 @@ for (const level of challengeLadder) supportedChallenges.set(level.challenge.con
 
 function validateNickname(name: string): string {
   const trimmed = name.trim();
-  if (trimmed.length < 2 || trimmed.length > 16) throw new Error('Nickname must be 2-16 characters');
-  if (!/^[a-zA-Z0-9_-]+$/.test(trimmed)) throw new Error('Nickname: only letters, numbers, hyphens, underscores');
+  if (trimmed.length < 2 || trimmed.length > 16) throw new ApiError('Nickname must be 2-16 characters', 400);
+  if (!/^[a-zA-Z0-9_-]+$/.test(trimmed)) throw new ApiError('Nickname: only letters, numbers, hyphens, underscores', 400);
   return trimmed;
 }
 
 function validateClientRunId(id: unknown): string {
   const value = text(id, 'clientRunId');
-  if (value.length < 8 || value.length > 64 || !/^[a-zA-Z0-9_-]+$/.test(value)) throw new Error('Invalid clientRunId');
+  if (value.length < 8 || value.length > 64 || !/^[a-zA-Z0-9_-]+$/.test(value)) throw new ApiError('Invalid clientRunId', 400);
   return value;
 }
 
