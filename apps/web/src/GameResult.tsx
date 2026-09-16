@@ -10,9 +10,9 @@ function delta(value: number, unit: string) {
   return `${Math.abs(value) < .005 ? '0.00' : `${value > 0 ? '+' : ''}${value.toFixed(2)}`} ${unit}`;
 }
 
-export function GameResult({ result, architecture, report, restart, review, nextLevel, records }: {
+export function GameResult({ result, architecture, report, restart, review, nextLevel, records, leaderboard }: {
   result: NonNullable<View['result']>; architecture: Architecture; report: RunReport | null;
-  restart: () => void; review: () => void; nextLevel?: () => void; records?: ReactNode;
+  restart: () => void; review: () => void; nextLevel?: () => void; records?: ReactNode; leaderboard?: ReactNode;
 }) {
   const completed = result.status === 'COMPLETED';
   const primary = useRef<HTMLButtonElement>(null);
@@ -38,6 +38,7 @@ export function GameResult({ result, architecture, report, restart, review, next
     </div>
     <div className="outcome-summary"><strong>{(result.metrics.availability * 100).toFixed(2)}% <span>availability</span></strong>{run && <p>{architectureSummary(run)}</p>}</div>
     {result.challenge && <p className="report-objective" data-testid="challenge-outcome">{result.challenge.id} · {result.challenge.objective.kind === 'survive' ? 'Complete the operation' : `Availability ≥ ${result.challenge.objective.target * 100}%`} — {result.objectiveMet ? 'met' : 'not met'}</p>}
+    {leaderboard}
     <details className="outcome-details"><summary>Details · decisions, tradeoffs &amp; records</summary>
     <div className="report-metrics">
       <div><span>Business value</span><strong>{result.economy.netBusinessValue.toFixed(1)} <small>cr</small></strong></div>

@@ -2,24 +2,61 @@ import { challengeLadder } from '@stack-and-survive/scenarios/ladder';
 import { TycoonGame } from './TycoonGame';
 import { useChallengeLadder } from './useChallengeLadder';
 import { unlockedLevel } from './ladder-progress';
-import { useCallback } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import type { Architecture } from '@stack-and-survive/schema';
 import type { View } from './controller';
 import { useRunHistory } from './useRunHistory';
 import { RunHistoryPanel } from './RunHistoryPanel';
+import { useLeaderboard } from './useLeaderboard';
+import { LeaderboardPanel } from './LeaderboardPanel';
+import { qualifiesForLeaderboard, type RankResult } from './leaderboard';
+import { summarizeRun, type RunSummary } from './run-history';
 
 export function ChallengeApplication() {
   const ladder = useChallengeLadder();
   const records = useRunHistory();
+  const leaderboard = useLeaderboard();
+  const [currentRank, setCurrentRank] = useState<RankResult | null>(null);
+  const [currentRun, setCurrentRun] = useState<RunSummary | null>(null);
+  const submittedRef = useRef<string | null>(null);
   const complete = useCallback((result: NonNullable<View['result']>, architecture: Architecture) => {
     ladder.complete(result); records.complete(result, architecture);
-  }, [ladder.complete, records.complete]);
+    try {
+      const run = summarizeRun(result, architecture, crypto.randomUUID());
+      setCurrentRun(run);
+      setCurrentRank(null);
+      submittedRef.current = null;
+      if (leaderboard.hasValidNickname && qualifiesForLeaderboard(run)) {
+        const rank = leaderboard.submit(run);
+        setCurrentRank(rank);
+        submittedRef.current = run.id;
+      }
+    } catch { setCurrentRun(null); }
+  }, [ladder.complete, records.complete, leaderboard]);
+  const submitCurrent = useCallback((nicknameOverride?: string) => {
+    if (!currentRun || submittedRef.current === currentRun.id) return;
+    const rank = leaderboard.submit(currentRun, nicknameOverride);
+    setCurrentRank(rank);
+    if (rank) submittedRef.current = currentRun.id;
+  }, [currentRun, leaderboard]);
   const selected = challengeLadder[ladder.selected];
   const nextAvailable = ladder.selected + 1 < challengeLadder.length && unlockedLevel(ladder.progress) > ladder.selected;
   const recordPanel = <RunHistoryPanel history={records.history} challenge={selected.challenge} message={records.message} clear={records.clear} retrySave={records.retrySave} needsSave={records.needsSave} />;
+  const qualified = currentRun ? qualifiesForLeaderboard(currentRun) : false;
+  const leaderboardPanel = <LeaderboardPanel
+    entries={leaderboard.getEntries(selected.challenge)}
+    currentRank={currentRank}
+    nickname={leaderboard.nickname}
+    hasValidNickname={leaderboard.hasValidNickname}
+    onNicknameChange={leaderboard.setNickname}
+    onSubmit={submitCurrent}
+    personalBest={leaderboard.getBest(selected.challenge)}
+    qualified={qualified}
+  />;
   return <TycoonGame key={`${selected.challenge.id}:${ladder.generation}`} challenge={selected.challenge} onResult={complete}
     runReport={records.report}
     nextLevel={nextAvailable ? () => ladder.select(ladder.selected + 1) : undefined}
+    leaderboardContent={leaderboardPanel}
     resultContent={<details className="result-records"><summary>Run records &amp; personal best</summary>{recordPanel}</details>}
     titleContent={<section className="challenge-select" aria-label="Challenge selection">
       <label>Challenge<select aria-label="Challenge level" value={ladder.selected} onChange={e => ladder.select(Number(e.currentTarget.value))}>

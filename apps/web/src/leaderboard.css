@@ -1,0 +1,96 @@
+.leaderboard-panel {
+  padding: 16px 0; color: #d8eaee;
+}
+.leaderboard-title {
+  font-size: 14px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+  color: #8aadb8; margin: 0 0 12px;
+}
+.leaderboard-nickname {
+  margin-bottom: 12px; font-size: 13px;
+}
+.leaderboard-nickname form {
+  display: flex; flex-wrap: wrap; gap: 6px; align-items: center;
+}
+.leaderboard-nickname input {
+  padding: 6px 10px; background: #0c1e29; border: 1px solid #3a6070;
+  border-radius: 4px; color: #d8eaee; font-size: 13px; width: 140px;
+}
+.leaderboard-nickname button, .leaderboard-edit {
+  padding: 5px 12px; background: #1a3848; border: 1px solid #3a6070;
+  border-radius: 4px; color: #a8c8d0; font-size: 12px; cursor: pointer;
+}
+.leaderboard-nickname button:hover, .leaderboard-edit:hover {
+  background: #224858; border-color: #5aadbe;
+}
+.leaderboard-error { color: #e8a070; font-size: 11px; flex-basis: 100%; }
+
+.leaderboard-current {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
+  padding: 10px 14px; margin-bottom: 10px;
+  background: #0e2838; border: 1px solid #2a6878; border-radius: 8px;
+}
+.leaderboard-rank-badge {
+  font-size: 22px; font-weight: 800; color: #f4c477;
+}
+.leaderboard-rank-score {
+  font-size: 16px; font-weight: 700; color: #e8f2f4;
+}
+.leaderboard-pb {
+  font-size: 11px; font-weight: 700; letter-spacing: .06em;
+  color: #80e8d0; background: #1a4040; padding: 3px 8px; border-radius: 4px;
+}
+.leaderboard-gap {
+  font-size: 12px; color: #8aadb8; margin-left: auto;
+}
+
+.leaderboard-best {
+  font-size: 12px; color: #8aadb8; margin-bottom: 10px; padding: 6px 0;
+}
+
+.leaderboard-list {
+  list-style: none; padding: 0; margin: 0;
+}
+.leaderboard-entry {
+  display: flex; align-items: center; gap: 8px;
+  padding: 7px 10px; border-bottom: 1px solid #1a3040;
+  font-size: 13px;
+}
+.leaderboard-entry:last-child { border-bottom: none; }
+.leaderboard-you {
+  background: #122a38; border-radius: 4px;
+  border-bottom-color: #2a5868;
+}
+.leaderboard-pos {
+  width: 28px; font-weight: 700; color: #8aadb8; font-size: 12px;
+}
+.leaderboard-entry:nth-child(1) .leaderboard-pos { color: #f4c477; }
+.leaderboard-entry:nth-child(2) .leaderboard-pos { color: #c0d0d8; }
+.leaderboard-entry:nth-child(3) .leaderboard-pos { color: #c0a070; }
+.leaderboard-name {
+  flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  color: #d0e0e8;
+}
+.leaderboard-score {
+  font-weight: 700; color: #e8f2f4; min-width: 50px; text-align: right;
+}
+.leaderboard-avail {
+  font-size: 11px; color: #7a9aa8; min-width: 48px; text-align: right;
+}
+.leaderboard-empty {
+  font-size: 13px; color: #6a8898; padding: 16px 0; text-align: center;
+}
+.leaderboard-join {
+  text-align: center; padding: 10px 0 14px; font-size: 13px; color: #a8c8d0;
+}
+.leaderboard-join button {
+  margin-top: 6px; padding: 8px 18px; background: #1a4848; border: 1px solid #3a8878;
+  border-radius: 6px; color: #80e8d0; font-size: 13px; font-weight: 600; cursor: pointer;
+}
+.leaderboard-join button:hover { background: #224858; border-color: #60d0b0; }
+.leaderboard-unqualified {
+  font-size: 12px; color: #8a7a60; padding: 8px 0; text-align: center; font-style: italic;
+}
+.leaderboard-device {
+  display: block; text-align: center; font-size: 11px; color: #506068;
+  padding-top: 10px; letter-spacing: .03em;
+}
