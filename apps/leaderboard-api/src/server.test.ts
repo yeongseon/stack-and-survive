@@ -283,6 +283,80 @@ describe('Rate limiting', () => {
   });
 });
 
+describe('TRUST_PROXY / X-Forwarded-For', () => {
+  it('uses X-Forwarded-For first value when trustProxy is true', async () => {
+    const proxyApp = createLeaderboardServer({
+      port: 0,
+      corsOrigins: ['https://test.example'],
+      trustProxy: true,
+    });
+    await new Promise<void>(resolve => { proxyApp.server.listen(0, resolve); });
+    const addr = proxyApp.server.address();
+    const port = typeof addr === 'object' && addr ? addr.port : 0;
+    const url = `http://127.0.0.1:${port}`;
+
+    try {
+      // Exhaust POST rate limit for a forwarded IP
+      for (let i = 0; i < 10; i++) {
+        await fetch(`${url}/api/leaderboard`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'X-Forwarded-For': '10.0.0.1, 192.168.1.1' },
+          body: '{}',
+        });
+      }
+      // 11th from same forwarded IP should be rate limited
+      const limited = await fetch(`${url}/api/leaderboard`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Forwarded-For': '10.0.0.1' },
+        body: '{}',
+      });
+      expect(limited.status).toBe(429);
+
+      // Different forwarded IP should still work
+      const other = await fetch(`${url}/api/leaderboard`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Forwarded-For': '10.0.0.2' },
+        body: '{}',
+      });
+      expect(other.status).not.toBe(429);
+    } finally {
+      await proxyApp.stop();
+    }
+  });
+
+  it('ignores X-Forwarded-For when trustProxy is false', async () => {
+    const noProxyApp = createLeaderboardServer({
+      port: 0,
+      corsOrigins: ['https://test.example'],
+      trustProxy: false,
+    });
+    await new Promise<void>(resolve => { noProxyApp.server.listen(0, resolve); });
+    const addr = noProxyApp.server.address();
+    const port = typeof addr === 'object' && addr ? addr.port : 0;
+    const url = `http://127.0.0.1:${port}`;
+
+    try {
+      // Even with different X-Forwarded-For, all requests come from same socket IP
+      for (let i = 0; i < 10; i++) {
+        await fetch(`${url}/api/leaderboard`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'X-Forwarded-For': `10.0.0.${i}` },
+          body: '{}',
+        });
+      }
+      // Should be rate limited based on socket IP, not forwarded header
+      const limited = await fetch(`${url}/api/leaderboard`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Forwarded-For': '10.0.0.99' },
+        body: '{}',
+      });
+      expect(limited.status).toBe(429);
+    } finally {
+      await noProxyApp.stop();
+    }
+  });
+});
+
 describe('Internal failure', () => {
   it('storage failure returns safe 500', async () => {
     // Create a server with a broken storage
