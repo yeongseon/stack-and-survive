@@ -4,7 +4,7 @@ for (const width of [1440, 844, 1920, 740, 1024]) test(`player navigation keeps 
   await page.setViewportSize({ width, height: width < 900 ? 390 : 900 });
   await page.goto('/?tycoon');
   await page.getByRole('button', { name: 'Start Game', exact: true }).click();
-  await page.getByRole('button', { name: 'Ⅱ Pause', exact: true }).click();
+  await page.getByRole('button', { name: 'Ⅱ Pause', exact: true }).click(); await page.getByRole('button', { name: 'Inspect paused world', exact: true }).click();
   await page.getByRole('button', { name: 'Skip guide', exact: true }).click();
   await page.getByRole('button', { name: 'Fit architecture', exact: true }).click();
   const surface = page.locator('[data-renderer="ready"]');
@@ -65,7 +65,7 @@ test('touch navigation cancels taps and 100 camera inputs preserve held simulati
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/?tycoon');
   await page.getByRole('button', { name: 'Start Game', exact: true }).click();
-  await page.getByRole('button', { name: 'Ⅱ Pause', exact: true }).click();
+  await page.getByRole('button', { name: 'Ⅱ Pause', exact: true }).click(); await page.getByRole('button', { name: 'Inspect paused world', exact: true }).click();
   if (await page.getByRole('button', { name: 'Skip guide', exact: true }).isVisible()) await page.getByRole('button', { name: 'Skip guide', exact: true }).click();
   await page.getByRole('button', { name: 'Fit architecture', exact: true }).click();
   const surface = page.locator('[data-renderer="ready"]');

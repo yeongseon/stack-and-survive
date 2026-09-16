@@ -6,7 +6,7 @@ for (const width of [740, 844, 1024, 1440, 1920]) {
     await page.goto('/?tycoon');
     await page.getByRole('button', { name: 'Start Game', exact: true }).click();
     await expect(page.getByRole('button', { name: 'Ⅱ Pause', exact: true })).toBeEnabled();
-    await page.getByRole('button', { name: 'Ⅱ Pause', exact: true }).click();
+    await page.getByRole('button', { name: 'Ⅱ Pause', exact: true }).click(); await page.getByRole('button', { name: 'Inspect paused world', exact: true }).click();
     await page.getByRole('button', { name: 'Skip guide', exact: true }).click();
     await page.getByRole('button', { name: 'Fit architecture', exact: true }).click();
     const surface = page.locator('[data-renderer="ready"]');

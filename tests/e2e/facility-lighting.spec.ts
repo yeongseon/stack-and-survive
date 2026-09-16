@@ -20,7 +20,7 @@ test('light pools follow installed capacity and real pressure without illuminati
   const snapshot = await lights();
   expect(snapshot.every((light: {glowDepth: number; shadowDepth: number}) => light.glowDepth < 100 && light.shadowDepth < 100)).toBe(true);
   await page.emulateMedia({ reducedMotion: 'reduce' });
-  await page.getByRole('button', { name: 'Ⅱ Pause', exact: true }).click();
+  await page.getByRole('button', { name: 'Ⅱ Pause', exact: true }).click(); await page.getByRole('button', { name: 'Inspect paused world', exact: true }).click();
   await expect.poll(async () => (await lights()).find((light: {id: string}) => light.id === 'compute')?.mode).toBe('critical');
   await page.evaluate(() => window.scrollTo(0, 0)); await page.screenshot({ path: info.outputPath('real-pressure-lighting.png') });
 });

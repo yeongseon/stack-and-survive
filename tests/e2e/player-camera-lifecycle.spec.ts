@@ -14,7 +14,7 @@ test('zoomed camera survives resize pause and renderer recovery but resets on a 
   await page.goto('/?tycoon');
   await page.getByRole('button', { name: 'Start Game', exact: true }).click();
   await expect(page.getByRole('button', { name: 'Ⅱ Pause', exact: true })).toBeEnabled();
-  await page.getByRole('button', { name: 'Ⅱ Pause', exact: true }).click();
+  await page.getByRole('button', { name: 'Ⅱ Pause', exact: true }).click(); await page.getByRole('button', { name: 'Inspect paused world', exact: true }).click();
   await page.getByRole('button', { name: 'Skip guide', exact: true }).click();
   await page.getByRole('button', { name: 'Fit architecture', exact: true }).click();
   const surface = page.locator('[data-renderer="ready"]');
@@ -32,7 +32,7 @@ test('zoomed camera survives resize pause and renderer recovery but resets on a 
   const beforePause = await camera();
   await page.getByRole('button', { name: '▶ Resume', exact: true }).click();
   await expect.poll(tick).toBeGreaterThan(initialTick);
-  await page.getByRole('button', { name: 'Ⅱ Pause', exact: true }).click();
+  await page.getByRole('button', { name: 'Ⅱ Pause', exact: true }).click(); await page.getByRole('button', { name: 'Inspect paused world', exact: true }).click();
   expect(await camera()).toEqual(beforePause);
   const resumedTick = await tick();
   expect(resumedTick).toBeGreaterThan(initialTick);

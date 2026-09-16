@@ -24,7 +24,7 @@ test('working facilities animate only active capacity and keep static equivalent
   await expect(surface).toHaveAttribute('data-reduced-motion', 'true');
   await expect.poll(async () => (await activity()).pose.phase).toBe(.25);
   await expect.poll(serverCount).toBe(2);
-  await page.getByRole('button', { name: 'Ⅱ Pause', exact: true }).click();
+  await page.getByRole('button', { name: 'Ⅱ Pause', exact: true }).click(); await page.getByRole('button', { name: 'Inspect paused world', exact: true }).click();
   await expect.poll(async () => (await activity()).items).toEqual([]);
   expect(await surface.getAttribute('data-drawn-completions')).toBe(completions);
   await page.getByRole('button', { name: '▶ Resume', exact: true }).click();

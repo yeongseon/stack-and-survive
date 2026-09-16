@@ -46,12 +46,16 @@ export function TycoonGame({ challenge = blackFridayChallenge, titleContent, onR
   const [entered, setEntered] = useState(false);
   const [titleSettings, setTitleSettings] = useState(false);
   const [pauseMenuVisible, setPauseMenuVisible] = useState(false);
+  const pauseOpen = useRef(false);
+  const restorePause = useRef(false);
+  const helpFromPause = useRef(false);
   useEffect(() => {
     const update = () => {
       const unsuitable = requiresLandscape(innerWidth, innerHeight);
       setPortrait(unsuitable);
-      setPauseMenuVisible(false);
       if (unsuitable && opened.current && !controller.getSnapshot().result) {
+        if (!gateOpen.current) restorePause.current = pauseOpen.current || helpFromPause.current;
+        pauseOpen.current = false; setPauseMenuVisible(false); helpFromPause.current = false; dialog.current?.close();
         if (!gateOpen.current) interruptedRunning.current = controller.getSnapshot().state.runtime.status === 'RUNNING';
         gateOpen.current = true; clock.hold(true); controller.pause(); setOrientationGate(true);
       }
@@ -63,11 +67,11 @@ export function TycoonGame({ challenge = blackFridayChallenge, titleContent, onR
     const motion = matchMedia('(prefers-reduced-motion: reduce)');
     const updateMotion = () => setReducedMotion(motion.matches);
     const keydown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && opened.current && !dialog.current?.open && !gateOpen.current) {
+      if (e.defaultPrevented || pauseOpen.current || (e.target instanceof Element && e.target.closest('input,textarea,select,[contenteditable="true"],.resource-action-card,.title-settings-panel'))) return;
+      if (e.key === 'Escape' && opened.current && !dialog.current?.open && !gateOpen.current && !controller.getSnapshot().error) {
         e.preventDefault();
         const snap = controller.getSnapshot();
-        if (snap.state.runtime.status === 'RUNNING') { controller.pause(); setPauseMenuVisible(true); }
-        else if (snap.state.runtime.status === 'PAUSED') { controller.resume(); setPauseMenuVisible(false); }
+        if (snap.state.runtime.status === 'RUNNING' || snap.state.runtime.status === 'PAUSED') { controller.pause(); pauseOpen.current = true; setPauseMenuVisible(true); }
       }
     };
     window.addEventListener('resize', update); document.addEventListener('visibilitychange', visibility); motion.addEventListener('change', updateMotion); window.addEventListener('keydown', keydown);
@@ -97,6 +101,15 @@ export function TycoonGame({ challenge = blackFridayChallenge, titleContent, onR
   const dialogOpener = useRef<HTMLElement | null>(null);
   const startButton = useRef<HTMLButtonElement>(null);
   const learnButton = useRef<HTMLButtonElement>(null);
+  const pauseButton = useRef<HTMLButtonElement>(null);
+  const settingsButton = useRef<HTMLButtonElement>(null);
+  const titlePanel = useRef<HTMLDivElement>(null);
+  const rebuildButton = useRef<HTMLButtonElement>(null);
+  useEffect(() => { if (titleSettings) titlePanel.current?.querySelector<HTMLButtonElement>('button')?.focus(); }, [titleSettings]);
+  useEffect(() => {
+    if (view.error || view.result) { pauseOpen.current = false; helpFromPause.current = false; restorePause.current = false; setPauseMenuVisible(false); dialog.current?.close(); }
+    if (view.error) rebuildButton.current?.focus();
+  }, [view.error, view.result]);
   useEffect(() => { if (!entered) startButton.current?.focus(); else learnButton.current?.focus(); }, [entered]);
   useEffect(() => () => { enhancementGeneration.current++; controller.destroy(); }, [controller]);
   useEffect(() => { if (orientationGate) gateRef.current?.querySelector<HTMLButtonElement>('button')?.focus(); }, [orientationGate, portrait]);
@@ -122,9 +135,12 @@ export function TycoonGame({ challenge = blackFridayChallenge, titleContent, onR
     if (requiresLandscape(innerWidth, innerHeight)) return;
     gateOpen.current = false; setOrientationGate(false); clock.hold(false);
     if (!entered) start(false); else if (!opening && interruptedRunning.current && controller.getSnapshot().state.runtime.status === 'PAUSED') controller.resume();
+    else if (restorePause.current && !controller.getSnapshot().error) { pauseOpen.current = true; setPauseMenuVisible(true); }
+    restorePause.current = false;
     interruptedRunning.current = false;
   };
-  const restart = () => { enhancementGeneration.current++; setEnhancementMessage(null); opened.current = false; gateOpen.current = false; interruptedRunning.current = false; clock.hold(false); controller.reset(); navigation.fit(); setOpening(false); setWorldReady(false); setOrientationGate(false); setEntered(false); };
+  const hidePause = () => { pauseOpen.current = false; setPauseMenuVisible(false); pauseButton.current?.focus({preventScroll:true}); };
+  const restart = () => { pauseOpen.current = false; restorePause.current = false; helpFromPause.current = false; setPauseMenuVisible(false); setTitleSettings(false); enhancementGeneration.current++; setEnhancementMessage(null); opened.current = false; gateOpen.current = false; interruptedRunning.current = false; clock.hold(false); controller.reset(); navigation.fit(); setOpening(false); setWorldReady(false); setOrientationGate(false); setEntered(false); };
   const reportedResult = useRef<View['result']>(null);
   useEffect(() => {
     if (view.result && reportedResult.current !== view.result) { reportedResult.current = view.result; onResult?.(view.result, view.state.runtime.architecture); }
@@ -141,12 +157,12 @@ export function TycoonGame({ challenge = blackFridayChallenge, titleContent, onR
         <button type="button" aria-label="How to Play" onClick={() => open('how')}>How to Play<small>Learn the basics</small></button>
         <button ref={startButton} type="button" aria-label="Start Game" className="start-game" onClick={() => start()}>▶ Start Game<small>One business. {currentChallenge.workload.duration === 180 ? 'Three minutes.' : `${currentChallenge.workload.duration} seconds.`}</small></button>
         <button type="button" aria-label="About" onClick={() => open('about')}>About<small>The idea &amp; the technology</small></button>
-      </nav><button type="button" className="title-settings-btn" aria-label="Settings" onClick={() => setTitleSettings(!titleSettings)}>&#9881; Settings</button>
-      {titleSettings && <div className="title-settings-panel"><SettingsPanel sound={sound} guide={guide} /></div>}
+      </nav><button ref={settingsButton} type="button" className="title-settings-btn" aria-label="Settings" aria-expanded={titleSettings} onClick={() => setTitleSettings(!titleSettings)}>&#9881; Settings</button>
+      {titleSettings && <div ref={titlePanel} className="title-settings-panel" role="region" aria-label="Player settings" onKeyDown={event=>{if(event.key==='Escape'){event.preventDefault();setTitleSettings(false);settingsButton.current?.focus();}}}><SettingsPanel sound={sound} guide={guide} /><button type="button" onClick={()=>{setTitleSettings(false);settingsButton.current?.focus();}}>Close settings</button></div>}
       <p className="title-footnote">SAME WORKLOAD. DIFFERENT ARCHITECTURES. DIFFERENT OUTCOMES.</p></div>
     </section> : <>
-      <header className="tycoon-header" inert={!!view.result || opening || orientationGate}><h1>STACK <em>&amp;</em> SURVIVE</h1><nav aria-label="Game controls"><button ref={learnButton} type="button" onClick={() => open('learn')}>ⓘ Learn</button><button type="button" disabled={runtime.status !== 'RUNNING' && runtime.status !== 'PAUSED'} onClick={() => { if (runtime.status === 'PAUSED') { controller.resume(); setPauseMenuVisible(false); } else { controller.pause(); setPauseMenuVisible(true); } }}>{runtime.status === 'PAUSED' ? '▶ Resume' : 'Ⅱ Pause'}</button></nav></header>
-      {pauseMenuVisible && runtime.status === 'PAUSED' && !view.result && <PauseMenu sound={sound} guide={guide} onResume={() => { controller.resume(); setPauseMenuVisible(false); }} onHowToPlay={() => { setPauseMenuVisible(false); open('how'); }} onReturnToTitle={() => { setPauseMenuVisible(false); restart(); }} />}
+      <header className="tycoon-header" inert={!!view.result || opening || orientationGate}><h1>STACK <em>&amp;</em> SURVIVE</h1><nav aria-label="Game controls"><button ref={learnButton} type="button" onClick={() => open('learn')}>ⓘ Learn</button><button ref={pauseButton} type="button" disabled={runtime.status !== 'RUNNING' && runtime.status !== 'PAUSED'} onClick={() => { if (runtime.status === 'PAUSED') { controller.resume(); hidePause(); } else { controller.pause(); pauseOpen.current=true; setPauseMenuVisible(true); } }}>{runtime.status === 'PAUSED' ? '▶ Resume' : 'Ⅱ Pause'}</button></nav></header>
+      {pauseMenuVisible && runtime.status === 'PAUSED' && !view.result && !view.error && !orientationGate && <PauseMenu sound={sound} guide={guide} onResume={() => { hidePause(); if(!gateOpen.current&&!controller.getSnapshot().error)controller.resume(); }} onInspect={hidePause} onHowToPlay={() => { helpFromPause.current=true; hidePause(); open('how'); }} onReturnToTitle={restart} />}
       <GameHUD view={view} />
       <WorldGuide view={view} guide={guide} returnFocus={() => learnButton.current?.focus()} />
       <GameFloor controller={controller} view={view} navigation={navigation} onReady={ready} blocked={opening || orientationGate} guideTarget={guide.visible ? guideHint(view, guide.stage).target : null} />
@@ -154,7 +170,7 @@ export function TycoonGame({ challenge = blackFridayChallenge, titleContent, onR
       {view.countdown !== null && <div className="welcome-countdown" role="status">{scenarioName} begins in <strong>{view.countdown}</strong></div>}
       {view.notice && diagnosticsEnabled && <p className="tycoon-notice">{view.notice}</p>}
       {view.result && <GameResult result={view.result} architecture={runtime.architecture} report={runReport?.result === view.result ? runReport.data : null} restart={restart} review={() => open('learn')} nextLevel={view.result.objectiveMet ? nextLevel : undefined} records={resultContent} />}
-      {view.error && <section role="alert" className="tycoon-result"><p>{view.error}</p><button type="button" onClick={() => controller.recoverRenderer()}>Rebuild graphics</button><button type="button" onClick={restart}>Return to title</button></section>}
+      {view.error && <section role="alert" className="tycoon-result"><p>{view.error}</p><button ref={rebuildButton} type="button" onClick={() => controller.recoverRenderer()}>Rebuild graphics</button><button type="button" onClick={restart}>Return to title</button></section>}
       {diagnosticsEnabled && <details className="tycoon-qa"><summary>Tycoon QA</summary><button onClick={() => controller.inspectNextTick()}>Step one tick</button><output data-testid="elapsed">{runtime.time}</output><pre data-testid="diagnostics">{JSON.stringify(view)}</pre></details>}
     </>}
     {orientationGate && <section ref={gateRef} className="landscape-gate" role="dialog" aria-modal="true" aria-label="Landscape play required" onKeyDown={event => {
@@ -165,6 +181,6 @@ export function TycoonGame({ challenge = blackFridayChallenge, titleContent, onR
       if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
       else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
     }}><div><span className="rotate-device" aria-hidden="true">↻</span><h2>{portrait ? 'Rotate your device' : 'Ready for landscape play'}</h2><p>Designed for landscape play. One data center, one fixed geography.</p><p>{entered ? 'Your operation is held. Continue when you are ready.' : 'The operation has not started. No budget or time has been spent.'}</p>{enhancementMessage && <p role="status">{enhancementMessage}</p>}<button type="button" onClick={continueLandscape}>{portrait ? 'Try landscape / fullscreen' : 'Continue in landscape'}</button><button type="button" onClick={restart}>Return to title</button></div></section>}
-    <LearnDialog guide={guide} sound={sound} dialogRef={dialog} page={page} view={view} restart={restart} onClose={() => { if (dialogOpener.current?.isConnected) dialogOpener.current.focus(); else startButton.current?.focus(); }} />
+    <LearnDialog guide={guide} sound={sound} dialogRef={dialog} page={page} view={view} restart={restart} onClose={() => { if(gateOpen.current)gateRef.current?.querySelector<HTMLButtonElement>('button')?.focus();else if(controller.getSnapshot().error)rebuildButton.current?.focus();else if(helpFromPause.current){helpFromPause.current=false;pauseOpen.current=true;setPauseMenuVisible(true);}else if (dialogOpener.current?.isConnected) dialogOpener.current.focus(); else startButton.current?.focus(); }} />
   </main>;
 }

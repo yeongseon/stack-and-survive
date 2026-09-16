@@ -6,7 +6,7 @@ test('Learn restart preserves focus and tears down only the old player world', a
   const surface = page.locator('[data-renderer="ready"]');
   await expect(surface).toHaveCount(1);
   await expect(page.getByRole('button', { name: 'Ⅱ Pause', exact: true })).toBeEnabled({ timeout: 20000 });
-  await page.getByRole('button', { name: 'Ⅱ Pause', exact: true }).click();
+  await page.getByRole('button', { name: 'Ⅱ Pause', exact: true }).click(); await page.getByRole('button', { name: 'Inspect paused world', exact: true }).click();
   const canvas = await page.locator('canvas').elementHandle();
   for (let i = 0; i < 2; i++) {
     await page.getByRole('button', { name: 'ⓘ Learn', exact: true }).click();
