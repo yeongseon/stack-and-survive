@@ -5,13 +5,14 @@ import { computeRankContext, type LeaderboardStorage, type StoredEntry, type Add
 function isValidEntry(e: unknown): e is StoredEntry {
   if (!e || typeof e !== 'object') return false;
   const o = e as Record<string, unknown>;
-  return typeof o.id === 'string' && typeof o.clientRunId === 'string'
-    && typeof o.nickname === 'string' && o.nickname.length >= 2
+  return typeof o.id === 'string' && o.id.length > 0
+    && typeof o.clientRunId === 'string' && o.clientRunId.length >= 8 && o.clientRunId.length <= 64
+    && typeof o.nickname === 'string' && o.nickname.length >= 2 && o.nickname.length <= 16
     && typeof o.score === 'number' && Number.isFinite(o.score) && o.score >= 0 && o.score <= 10000
     && typeof o.availability === 'number' && Number.isFinite(o.availability) && o.availability >= 0 && o.availability <= 1
-    && typeof o.submittedAt === 'number' && Number.isFinite(o.submittedAt)
+    && typeof o.submittedAt === 'number' && Number.isFinite(o.submittedAt) && o.submittedAt > 0
     && typeof o.challengeHash === 'string' && o.challengeHash.length > 0
-    && typeof o.actionDigest === 'string';
+    && typeof o.actionDigest === 'string' && o.actionDigest.length > 0;
 }
 
 export class FileStorage implements LeaderboardStorage {
@@ -52,7 +53,7 @@ export class FileStorage implements LeaderboardStorage {
 
   async getTop(challengeHash: string, limit: number): Promise<StoredEntry[]> {
     const filtered = this.data.filter(e => e.challengeHash === challengeHash);
-    return filtered.sort((a, b) => b.score - a.score || b.availability - a.availability || a.submittedAt - b.submittedAt).slice(0, limit);
+    return filtered.sort((a, b) => b.score - a.score || b.availability - a.availability || a.submittedAt - b.submittedAt || a.id.localeCompare(b.id)).slice(0, limit);
   }
 
   async add(entry: StoredEntry): Promise<AddResult> {
