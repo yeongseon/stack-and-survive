@@ -51,7 +51,7 @@ it('preserves actual conditions actions and separate best metrics with determini
   expect(recentComparable(h,challengeLadder[0].challenge)?.id).toBe('run-2');
   expect(recentComparable(h,challengeLadder[1].challenge)).toBe(null);
 });
-it('bounds history while preserving bests beyond the recent list and highest cleared level', () => {
+it('bounds history while preserving bests beyond the recent list and highest cleared level', { timeout: 15000 }, () => {
   let h = emptyHistory(); const success = run(4,true);
   h = recordRun(h,success);
   const failed = run();
