@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test';
 
 test('demo readiness: empty board → first entry → second run updates rank → refresh persists', async ({ page }) => {
+  test.setTimeout(540000);
   // Clean state
   await page.goto('/');
   await page.evaluate(() => {
@@ -9,22 +10,37 @@ test('demo readiness: empty board → first entry → second run updates rank �
     localStorage.removeItem('stack-and-survive.history.balance-0.3.v1');
   });
 
-  // --- Run 1: first entry on empty board ---
+  const play = async (protectedIngress: boolean) => {
+    await page.getByRole('button', { name: 'Start Game', exact: true }).click();
+    await expect(page.getByRole('button', { name: 'Ⅱ Pause', exact: true })).toBeEnabled();
+    const skip = page.getByRole('button', { name: 'Skip guide', exact: true });
+    if (await skip.isVisible()) await skip.click();
+    const build = async (name: string) => {
+      const button = page.getByRole('button', { name, exact: true });
+      await button.focus(); await button.press('Enter');
+    };
+    await build('Add Cache');
+    if (protectedIngress) await build('Add Protected Edge');
+    const instances = protectedIngress ? 3 : 4;
+    for (let active = 2; active <= instances; active++) {
+      await build('+ App capacity');
+      await expect(page.getByRole('button', { name: '+ App capacity', exact: true })).toContainText(`${active}/4 active`, { timeout: 15000 });
+    }
+    await expect(page.getByRole('region', { name: 'Business result' })).toBeVisible({ timeout: 200000 });
+    await expect(page.locator('.report-heading h2')).toHaveText('CHALLENGE CLEAR');
+  };
+
+  // Two real, unaccelerated completions exercise both manual and automatic submission.
   await page.goto('/');
-  await page.getByRole('button', { name: 'Start Game' }).click();
-  await expect(page.locator('[data-renderer="ready"]')).toHaveCount(1, { timeout: 20000 });
-  await expect(page.getByRole('region', { name: 'Business result' })).toBeVisible({ timeout: 200000 });
+  await play(false);
 
   const leaderboard = page.locator('[aria-label="Leaderboard"]');
   await expect(leaderboard).toBeVisible();
 
-  const heading = await page.locator('.report-heading h2').textContent();
-  const objectiveMet = heading === 'CHALLENGE CLEAR';
   const score1 = Number(await page.locator('.result-score strong').textContent());
-
-  if (objectiveMet) {
-    // Enter nickname and join
-    await leaderboard.getByRole('button', { name: 'Enter name' }).click();
+  expect(score1).toBe(8500);
+  const enterName = leaderboard.getByRole('button', { name: 'Enter name', exact: true });
+  if (await enterName.isVisible()) await enterName.click();
     await leaderboard.getByRole('textbox', { name: 'Nickname' }).fill('DEMO');
     await leaderboard.getByRole('button', { name: 'Join' }).click();
 
@@ -38,39 +54,23 @@ test('demo readiness: empty board → first entry → second run updates rank �
     await expect(leaderboard.getByRole('button', { name: 'Copy result' })).toBeVisible();
 
     // Verify device disclaimer
-    await expect(leaderboard.getByText('Local scores')).toBeVisible();
-  }
+    await expect(leaderboard.getByText('This device · Local scores', { exact: true })).toBeVisible();
 
   // --- Run 2: second entry changes rank ---
   await page.getByRole('button', { name: 'Play again' }).click();
-  await page.getByRole('button', { name: 'Start Game' }).click();
-  await expect(page.locator('[data-renderer="ready"]')).toHaveCount(1, { timeout: 20000 });
-  await expect(page.getByRole('region', { name: 'Business result' })).toBeVisible({ timeout: 200000 });
+  await play(true);
 
   const board2 = page.locator('[aria-label="Leaderboard"]');
   await expect(board2).toBeVisible();
   const score2 = Number(await page.locator('.result-score strong').textContent());
-  const heading2 = await page.locator('.report-heading h2').textContent();
-  const met2 = heading2 === 'CHALLENGE CLEAR';
-
-  if (objectiveMet && met2) {
-    // Should have 2 entries now (or 1 if duplicate prevention)
-    const entryCount = await board2.locator('.leaderboard-entry').count();
-    expect(entryCount).toBeGreaterThanOrEqual(1);
-    expect(entryCount).toBeLessThanOrEqual(2);
-
-    // If scores differ, ranking should reflect it
-    if (entryCount === 2) {
+  expect(score2).toBeGreaterThan(score1);
+  await expect(board2.locator('.leaderboard-entry')).toHaveCount(2);
       const firstScore = Number(await board2.locator('.leaderboard-score').first().textContent());
       const secondScore = Number(await board2.locator('.leaderboard-score').nth(1).textContent());
-      expect(firstScore).toBeGreaterThanOrEqual(secondScore);
-    }
-
-    // Check PB status
-    if (score2 > score1) {
+      expect(firstScore).toBe(score2);
+      expect(secondScore).toBe(score1);
+      await expect(board2.locator('.leaderboard-rank-badge')).toHaveText('#1');
       await expect(board2.getByText('NEW PERSONAL BEST')).toBeVisible();
-    }
-  }
 
   // --- Refresh persistence ---
   await page.reload();
@@ -78,15 +78,15 @@ test('demo readiness: empty board → first entry → second run updates rank �
 
   // Verify nickname persisted
   const storedNick = await page.evaluate(() => localStorage.getItem('stack-and-survive.nickname'));
-  if (objectiveMet) expect(storedNick).toBe('DEMO');
+  expect(storedNick).toBe('DEMO');
 
   // Verify leaderboard data persisted
   const storedBoard = await page.evaluate(() => localStorage.getItem('stack-and-survive.leaderboard.v1'));
-  if (objectiveMet) {
     expect(storedBoard).toBeTruthy();
     const parsed = JSON.parse(storedBoard!);
-    expect(parsed.entries.length).toBeGreaterThanOrEqual(1);
-  }
+    expect(parsed.entries).toHaveLength(2);
+    expect(parsed.entries.map((entry: {score: number}) => entry.score)).toEqual([score2, score1]);
+    expect(new Set(parsed.entries.map((entry: {runId: string}) => entry.runId)).size).toBe(2);
 });
 
 for (const viewport of [{ width: 1440, height: 900 }, { width: 844, height: 390 }]) {
