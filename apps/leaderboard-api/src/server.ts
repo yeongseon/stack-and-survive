@@ -84,6 +84,13 @@ const server = createServer(async (req, res) => {
       return;
     }
 
+    // 405 for known routes with wrong method
+    if (url.pathname === '/api/leaderboard') {
+      res.writeHead(405, { 'Content-Type': 'application/json', 'Allow': 'GET, POST, OPTIONS' });
+      res.end(JSON.stringify({ error: 'Method not allowed' }));
+      return;
+    }
+
     res.writeHead(404, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ error: 'Not found' }));
   } catch (err) {
@@ -91,9 +98,9 @@ const server = createServer(async (req, res) => {
       res.writeHead(err.statusCode, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: err.message }));
     } else {
-      const message = err instanceof Error ? err.message : 'Internal error';
+      console.error('Unexpected error:', err);
       res.writeHead(500, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ error: message }));
+      res.end(JSON.stringify({ error: 'Internal server error' }));
     }
   }
 });
