@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { submitToGlobal, fetchGlobalTop, savePendingSubmission, loadPendingSubmission, clearPendingSubmission, type GlobalEntry, type GlobalRankContext, type PendingSubmission } from './global-leaderboard';
+import { globalLeaderboardConfigured, submitToGlobal, fetchGlobalTop, savePendingSubmission, loadPendingSubmission, clearPendingSubmission, type GlobalEntry, type GlobalRankContext, type PendingSubmission } from './global-leaderboard';
 import type { Challenge } from '@stack-and-survive/scenarios/challenge';
 import type { Action } from '@stack-and-survive/simulation/runtime';
 
@@ -27,6 +27,7 @@ export function useGlobalLeaderboard(): GlobalState {
   useEffect(() => () => { mounted.current = false; }, []);
 
   const doSubmit = useCallback((pending: PendingSubmission, challenge: Challenge) => {
+    if (!globalLeaderboardConfigured) return;
     setLoading(true);
     setChallengeHash(challenge.contentHash);
     submitToGlobal(pending.nickname, challenge, pending.actions, pending.clientRunId).then(result => {
@@ -52,6 +53,7 @@ export function useGlobalLeaderboard(): GlobalState {
   }, [doSubmit]);
 
   const retryPending = useCallback(() => {
+    if (!globalLeaderboardConfigured) return;
     const pending = loadPendingSubmission();
     if (!pending) return;
     // We need to find the challenge — import supported challenges

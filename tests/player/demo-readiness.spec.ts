@@ -55,6 +55,8 @@ test('demo readiness: empty board → first entry → second run updates rank �
 
     // Verify device disclaimer
     await expect(leaderboard.getByText('This device · Local scores', { exact: true })).toBeVisible();
+    await expect(leaderboard.getByRole('button', { name: 'Retry server submission' })).toHaveCount(0);
+    expect(await page.evaluate(() => localStorage.getItem('stack-and-survive.pending-global-submission'))).toBeNull();
 
   // --- Run 2: second entry changes rank ---
   await page.getByRole('button', { name: 'Play again' }).click();

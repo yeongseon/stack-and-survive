@@ -2,6 +2,7 @@ import type { Action } from '@stack-and-survive/simulation/runtime';
 import type { Challenge } from '@stack-and-survive/scenarios/challenge';
 
 const API_BASE = import.meta.env?.VITE_LEADERBOARD_API ?? '';
+export const globalLeaderboardConfigured = API_BASE.trim().length > 0;
 
 export type GlobalEntry = { rank: number; nickname: string; score: number; availability: number; submittedAt: number };
 export type GlobalRankContext = { rank: number; totalEntries: number; score: number; availability: number; nextRank: { rank: number; score: number; availability: number } | null; pointsToNextRank: number | null; tieBreakReason: 'availability' | 'timestamp' | null };

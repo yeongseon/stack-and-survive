@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { validateNickname, type LeaderboardEntry, type RankResult } from './leaderboard';
-import { formatShareText, copyToClipboard } from './global-leaderboard';
+import { globalLeaderboardConfigured, formatShareText, copyToClipboard } from './global-leaderboard';
 import type { GlobalEntry, GlobalRankContext } from './global-leaderboard';
 import './leaderboard.css';
 
@@ -100,8 +100,8 @@ export function LeaderboardPanel({ entries, currentRank, nickname, hasValidNickn
     </ol> : !needsName && !globalLoading && <p className="leaderboard-empty">{isGlobal ? 'No verified scores yet. Be the first.' : 'No entries yet. Be the first on the leaderboard.'}</p>}
 
     {hasPending && onRetry && <div className="leaderboard-retry">
-      <small>Previous score not yet verified.</small>
-      <button type="button" onClick={onRetry}>Retry server submission</button>
+      <small>{globalLeaderboardConfigured ? 'Previous score not yet verified.' : 'Saved submission preserved. Server verification is not configured for this build.'}</small>
+      <button type="button" disabled={!globalLeaderboardConfigured} onClick={onRetry}>Retry server submission</button>
     </div>}
     <div className="leaderboard-footer">
       <small className="leaderboard-device">{isGlobal ? 'Verified server replay' : 'This device · Local scores'}</small>
