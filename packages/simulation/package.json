@@ -1,5 +1,5 @@
 {
   "name":"@stack-and-survive/simulation","version":"0.0.0","private":true,"type":"module",
-  "exports": { ".": "./src/index.ts", "./results": "./src/results.ts", "./runtime": "./src/runtime.ts", "./economy": "./src/economy.ts" },
+  "exports": { ".": "./src/index.ts", "./results": "./src/results.ts", "./runtime": "./src/runtime.ts", "./economy": "./src/economy.ts", "./replay": "./src/replay.ts" },
   "dependencies":{"@stack-and-survive/schema":"workspace:*","@stack-and-survive/cloud-domain":"workspace:*","@stack-and-survive/scenarios":"workspace:*"}
 }

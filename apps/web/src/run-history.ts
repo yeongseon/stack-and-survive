@@ -2,8 +2,8 @@ import { array, integer, number, record, text, type Architecture } from '@stack-
 import { parseArchitecture } from '@stack-and-survive/cloud-domain';
 import { parseChallenge, sameChallenge, evaluateObjective, type Challenge } from '@stack-and-survive/scenarios/challenge';
 import { challengeLadder } from '@stack-and-survive/scenarios/ladder';
-import { startRuntime, validateActionSchedule, type Action, type ActionOutcome } from '@stack-and-survive/simulation/runtime';
-import { advanceSimulation, createSimulation, simulationResult } from '@stack-and-survive/simulation/results';
+import { validateActionSchedule, type Action, type ActionOutcome } from '@stack-and-survive/simulation/runtime';
+import { verifyReplay } from '@stack-and-survive/simulation/replay';
 import { compare } from '@stack-and-survive/simulation/economy';
 import type { View } from './controller';
 
@@ -65,21 +65,12 @@ function parseRun(input: unknown): RunSummary {
 }
 
 function verifyRun(run: RunSummary) {
-  let state = createSimulation(run.initialArchitecture, run.challenge.workload);
-  state.runtime = startRuntime(state.runtime);
-  const schedule = new Map<number, Action[]>();
-  for (const action of run.actions) schedule.set(action.time, [...(schedule.get(action.time) ?? []), action]);
-  while (state.runtime.status === 'RUNNING') state = advanceSimulation(state, run.challenge.workload, schedule.get(state.runtime.time) ?? []).nextState;
-  const actual = simulationResult(state, run.challenge.workload);
-  if (actual.status !== run.status || actual.elapsedTime !== run.elapsed || actual.score !== run.score
-    || JSON.stringify(parseArchitecture(state.runtime.architecture)) !== JSON.stringify(run.finalArchitecture)
-    || JSON.stringify(state.runtime.actionLog) !== JSON.stringify(run.actionLog)) throw new Error('Saved run provenance does not reproduce its result');
-  const values = [
-    [actual.metrics.availability, run.availability], [actual.metrics.offered, run.offered], [actual.metrics.successful, run.served],
-    [actual.economy.infrastructureCost, run.cost], [actual.economy.emergencyCost, run.emergencyCost], [actual.economy.netBusinessValue, run.nbv],
-    [actual.attribution.peaks.app, run.peaks.app], [actual.attribution.peaks.sqlRead, run.peaks.sqlRead], [actual.attribution.peaks.sqlWrite, run.peaks.sqlWrite],
-  ];
-  if (values.some(([a, b]) => compare(a, b) !== 0)) throw new Error('Saved metrics do not match replay');
+  verifyReplay(
+    { challenge: run.challenge, initialArchitecture: run.initialArchitecture, actions: run.actions },
+    { status: run.status, elapsed: run.elapsed, score: run.score, availability: run.availability,
+      offered: run.offered, served: run.served, cost: run.cost, emergencyCost: run.emergencyCost,
+      nbv: run.nbv, peaks: run.peaks, finalArchitecture: run.finalArchitecture, actionLog: run.actionLog }
+  );
   return run;
 }
 
