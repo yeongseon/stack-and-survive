@@ -78,15 +78,18 @@ async function main() {
       }
     } catch (e) { assert(false, `Submit failed: ${e.message}`); }
 
-    // 5. Duplicate submission
-    console.log('\n5. Duplicate rejection');
+    // 5. Idempotent retry (same clientRunId returns 200, not 409)
+    console.log('\n5. Idempotent retry');
     try {
       const res = await fetch(`${API}/api/leaderboard`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(submission),
       });
-      assert(res.status === 409, `Duplicate → ${res.status}`);
-    } catch (e) { assert(false, `Duplicate test failed: ${e.message}`); }
+      const retryData = await res.json();
+      assert(res.status === 200, `Retry → ${res.status} (idempotent)`);
+      assert(retryData.accepted === true, 'Retry accepted: true');
+      assert(retryData.rankContext?.score > 0, `Retry same score: ${retryData.rankContext?.score}`);
+    } catch (e) { assert(false, `Retry test failed: ${e.message}`); }
 
     // 6. Verify entry in GET
     console.log('\n6. Verify entry persisted');

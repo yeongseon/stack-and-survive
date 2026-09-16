@@ -96,6 +96,10 @@ LEADERBOARD_API=http://localhost:3001 SMOKE_MUTATE=true node scripts/smoke-leade
 2. Leaderboard data in the file/volume is preserved across deploys
 3. If data is corrupted, delete `leaderboard.json` — server starts with empty board
 
+## Scaling
+
+**Run exactly ONE API replica.** File-based storage is not safe for concurrent multi-instance writes. If multiple replicas are needed, migrate to a concurrency-safe backend (Azure Table Storage, Cosmos DB, or PostgreSQL) first.
+
 ## Security notes
 
 - Never commit storage credentials or connection strings

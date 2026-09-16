@@ -83,10 +83,17 @@ describe('handleSubmit', () => {
     }
   });
 
-  (qualifies ? it : it.skip)('same clientRunId twice is rejected as duplicate', async () => {
+  (qualifies ? it : it.skip)('same clientRunId retry returns existing rank idempotently', async () => {
     const runId = nextRunId();
-    await handleSubmit(storage, validSubmission({ clientRunId: runId }));
-    await expect(handleSubmit(storage, validSubmission({ clientRunId: runId }))).rejects.toThrow('Duplicate');
+    const first = await handleSubmit(storage, validSubmission({ clientRunId: runId }));
+    const retry = await handleSubmit(storage, validSubmission({ clientRunId: runId }));
+    expect(retry.accepted).toBe(true);
+    expect(retry.rankContext.score).toBe(first.rankContext.score);
+    expect(retry.rankContext.rank).toBe(first.rankContext.rank);
+    // Storage should still have exactly one entry
+    const top = await storage.getTop(challengeHash, 100);
+    const matching = top.filter(e => e.clientRunId === runId);
+    expect(matching).toHaveLength(1);
   });
 
   (qualifies ? it : it.skip)('different clientRunId with identical actions are both accepted', async () => {

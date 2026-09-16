@@ -107,7 +107,17 @@ export async function handleSubmit(storage: LeaderboardStorage, body: string): P
   };
 
   const addResult = await storage.add(entry);
-  if (!addResult.added) throw new ApiError('Duplicate run submission', 409);
+  if (!addResult.added) {
+    // Idempotent retry: return existing entry's rank context (not 409)
+    const existing = addResult.existing;
+    const existingRank = await storage.getRankContext(challengeHash, existing);
+    const top = await storage.getTop(challengeHash, 10);
+    return {
+      accepted: true,
+      rankContext: existingRank,
+      top: top.map((e, i) => ({ rank: i + 1, nickname: e.nickname, score: e.score, availability: e.availability, submittedAt: e.submittedAt })),
+    };
+  }
 
   const rankContext = await storage.getRankContext(challengeHash, entry);
   const top = await storage.getTop(challengeHash, 10);
