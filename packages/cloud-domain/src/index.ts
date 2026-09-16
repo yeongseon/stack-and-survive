@@ -60,3 +60,13 @@ export function baseline(instances = 1, cache = false, edge = false): Architectu
   return { version: 1, resources: kinds.map((kind, i) => ({ id: kind, kind, x: i * 160, y: i % 2 * 80, instances: kind === 'compute' ? instances : 1, remaining: 0 })),
     connections: [...(edge ? [{ from: 'internet', to: 'edge' }, { from: 'edge', to: 'compute' }] : [{ from: 'internet', to: 'compute' }]), { from: 'compute', to: 'database' }, ...(cache ? [{ from: 'compute', to: 'cache' }, { from: 'cache', to: 'database' }] : [])] };
 }
+
+const playerPositions: Record<Kind, { x: number; y: number }> = {
+  internet: { x: -400, y: 0 }, edge: { x: -210, y: 0 },
+  compute: { x: 0, y: 0 }, cache: { x: 190, y: -100 }, database: { x: 390, y: 20 },
+};
+export function canonicalPlayerStart(): Architecture {
+  const architecture = baseline();
+  for (const resource of architecture.resources) Object.assign(resource, playerPositions[resource.kind]);
+  return architecture;
+}

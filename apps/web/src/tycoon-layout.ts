@@ -1,4 +1,4 @@
-import { baseline } from '@stack-and-survive/cloud-domain';
+import { canonicalPlayerStart } from '@stack-and-survive/cloud-domain';
 import type { Architecture, Kind } from '@stack-and-survive/schema';
 import type { Runtime } from '@stack-and-survive/simulation/runtime';
 
@@ -16,9 +16,7 @@ export function tycoonPoint(kind: Kind, _width?: number, _height?: number) { voi
 export type TycoonSlot = 'edge' | 'cache' | 'app-2' | 'app-3' | 'app-4';
 export type SlotState = 'empty' | 'provisioning' | 'active';
 export function tycoonArchitecture(): Architecture {
-  const architecture = baseline();
-  for (const resource of architecture.resources) Object.assign(resource, tycoonPositions[resource.kind]);
-  return architecture;
+  return canonicalPlayerStart();
 }
 export function slotState(runtime: Runtime, slot: TycoonSlot): SlotState {
   if (slot === 'edge' || slot === 'cache') {
