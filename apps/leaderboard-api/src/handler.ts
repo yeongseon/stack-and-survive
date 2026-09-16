@@ -62,6 +62,7 @@ export class ApiError extends Error {
 }
 
 export async function handleGetTop(storage: LeaderboardStorage, challengeHash: string): Promise<TopResponse> {
+  if (!supportedChallenges.has(challengeHash)) throw new ApiError('Unsupported challenge', 400);
   const entries = await storage.getTop(challengeHash, 10);
   return {
     challengeHash,
@@ -77,16 +78,22 @@ export async function handleSubmit(storage: LeaderboardStorage, body: string): P
   try { parsed = record(JSON.parse(body), 'submission'); }
   catch { throw new ApiError('Invalid JSON', 400); }
 
-  const nickname = validateNickname(text(parsed.nickname, 'nickname'));
-  const clientRunId = validateClientRunId(parsed.clientRunId);
-  const challengeHash = text(parsed.challengeContentHash, 'challengeContentHash');
-  const rawActions = array(parsed.actions, 'actions');
+  let nickname: string, clientRunId: string, challengeHash: string, actions: Action[];
+  try {
+    nickname = validateNickname(text(parsed.nickname, 'nickname'));
+    clientRunId = validateClientRunId(parsed.clientRunId);
+    challengeHash = text(parsed.challengeContentHash, 'challengeContentHash');
+    const rawActions = array(parsed.actions, 'actions');
+    const challenge = supportedChallenges.get(challengeHash);
+    if (!challenge) throw new ApiError('Unsupported challenge', 400);
+    actions = parseActions(rawActions);
+    validateActionSchedule(actions, challenge.workload.duration);
+  } catch (err) {
+    if (err instanceof ApiError) throw err;
+    throw new ApiError(err instanceof Error ? err.message : 'Invalid request', 400);
+  }
 
-  const challenge = supportedChallenges.get(challengeHash);
-  if (!challenge) throw new ApiError('Unsupported challenge', 400);
-
-  const actions = parseActions(rawActions);
-  validateActionSchedule(actions, challenge.workload.duration);
+  const challenge = supportedChallenges.get(challengeHash)!;
 
   const initialArchitecture = canonicalPlayerStart();
   const result = replayRun({ challenge, initialArchitecture, actions });
@@ -108,8 +115,11 @@ export async function handleSubmit(storage: LeaderboardStorage, body: string): P
 
   const addResult = await storage.add(entry);
   if (!addResult.added) {
-    // Idempotent retry: return existing entry's rank context (not 409)
     const existing = addResult.existing;
+    // Idempotent retry: only if same submission (matching digest + nickname)
+    if (existing.actionDigest !== digest || existing.nickname !== nickname) {
+      throw new ApiError('clientRunId already used for a different submission', 409);
+    }
     const existingRank = await storage.getRankContext(challengeHash, existing);
     const top = await storage.getTop(challengeHash, 10);
     return {
