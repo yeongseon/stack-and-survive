@@ -45,6 +45,8 @@ jobs:
         run: pnpm check:assets:demo
       - if: steps.current.outputs.current == 'true'
         run: pnpm build:pages
+        env:
+          VITE_LEADERBOARD_API: ${{ vars.LEADERBOARD_API_URL }}
       - uses: actions/upload-pages-artifact@v3
         if: steps.current.outputs.current == 'true'
         with:
