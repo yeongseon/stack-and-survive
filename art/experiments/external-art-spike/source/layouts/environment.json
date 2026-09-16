@@ -1,0 +1,26 @@
+{
+  "canvas": [2400, 1350],
+  "groundSlope": 0.55,
+  "pixelsPerUnit": 100,
+  "protectedMidground": [320, 390, 2140, 1030],
+  "placements": [
+    ["kenney-space-station", "wall", 430, 170, 115, 0],
+    ["kenney-space-station", "wall", 660, 170, 115, 0],
+    ["kenney-modular-space", "template-wall-half", 1930, 165, 100, 0],
+    ["kenney-space-station", "display-wall", 1720, 180, 70, 0],
+    ["kenney-space-station", "computer-system", 460, 350, 115, 0],
+    ["kenney-space-station", "computer-system", 610, 350, 115, 0],
+    ["kenney-space-station", "computer-wide", 790, 345, 95, 0],
+    ["kenney-space-station", "computer-wide", 1000, 345, 95, 0],
+    ["kenney-factory", "machine-connection-pipe", 150, 620, 125, 0],
+    ["kenney-factory", "machine-window", 160, 830, 120, 0],
+    ["kenney-factory", "machine", 2250, 760, 125, 0],
+    ["kenney-space-station", "floor-panel", 550, 1160, 100, 0],
+    ["kenney-modular-space", "template-floor", 720, 1160, 100, 0],
+    ["kenney-modular-space", "cables", 930, 1180, 140, 0],
+    ["kenney-space-station", "pipe", 1110, 1210, 130, 0],
+    ["kenney-space-station", "pipe-bend", 1290, 1210, 110, 0],
+    ["kenney-factory", "pipe-large-valve", 1550, 1220, 130, 0],
+    ["kenney-space-station", "rail", 1870, 1240, 130, 0]
+  ]
+}
