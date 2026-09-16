@@ -1,5 +1,10 @@
 # Separate Stage 2 integration plan — gated, not executed
 
+**ON HOLD: owner review of Iteration04 is required first.** Iteration03 was rejected
+as final-quality art by the owner. The earlier plan below is historical; any future
+integration must use the owner-accepted version and fresh current-main evidence,
+not assume iteration03 or an automated04 verdict is owner approval.
+
 Iteration03 passes the visual-direction gate. This document does not approve asset
 rights, expand the Pages demo exception or authorize a main merge.
 

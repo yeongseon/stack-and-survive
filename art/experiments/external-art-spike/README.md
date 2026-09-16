@@ -1,6 +1,13 @@
 # External asset art spike — Stage 1
 
-**Latest decision: iteration 03 PASSES the Stage 1 visual-direction gate — YES, but only selected environment assets.**
+**Latest: Iteration 04 owner-requested environment quality pass is ready for owner review.**
+The owner rejected iteration03 as final-quality art despite its intermediate
+directional PASS. See [Iteration04 review](reports/ITERATION_04_REVIEW.md): three
+real whole-room Blender candidates, selected/refined04C,18fresh comparison pairs,
+and independent aesthetic/integrity PASS. **Owner approval pending; do not merge
+or integrate into production.**
+
+**Historical decision: iteration 03 PASSED the earlier Stage 1 direction-only gate.**
 See [iteration review](reports/ITERATION_REVIEW.md) and [separate integration plan](reports/INTEGRATION_PLAN.md).
 The original iteration 01 below remains a documented FAIL; iteration 02 required revision.
 No production integration, human acceptance or rights approval is implied by this visual PASS.
