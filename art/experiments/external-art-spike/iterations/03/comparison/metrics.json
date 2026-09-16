@@ -1,0 +1,171 @@
+{
+  "iteration": "03",
+  "environmentSha256": "51397a1bd2c237eabd5a532cc3bc01a606b6a686196748b25e3d75494b589790",
+  "environmentBytes": 581978,
+  "rgba8Bytes": 12960000,
+  "runtimeTexturesAdded": 0,
+  "pairs": [
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "name": "normal",
+      "changedRatioThreshold8": 0.5124398148148148,
+      "stateMatched": true
+    },
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "name": "fit",
+      "changedRatioThreshold8": 0.509954475308642,
+      "stateMatched": true
+    },
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "name": "close",
+      "changedRatioThreshold8": 0.5449483024691358,
+      "stateMatched": true
+    },
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "name": "construction",
+      "changedRatioThreshold8": 0.48948842592592595,
+      "stateMatched": true
+    },
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "name": "cache-edge-active",
+      "changedRatioThreshold8": 0.48531327160493826,
+      "stateMatched": true
+    },
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "name": "pressure",
+      "changedRatioThreshold8": 0.5040316358024691,
+      "stateMatched": true
+    },
+    {
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "name": "normal",
+      "changedRatioThreshold8": 0.4829591049382716,
+      "stateMatched": true
+    },
+    {
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "name": "fit",
+      "changedRatioThreshold8": 0.5631288580246914,
+      "stateMatched": true
+    },
+    {
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "name": "close",
+      "changedRatioThreshold8": 0.5147685185185186,
+      "stateMatched": true
+    },
+    {
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "name": "construction",
+      "changedRatioThreshold8": 0.45754002700617286,
+      "stateMatched": true
+    },
+    {
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "name": "cache-edge-active",
+      "changedRatioThreshold8": 0.4529195601851852,
+      "stateMatched": true
+    },
+    {
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "name": "pressure",
+      "changedRatioThreshold8": 0.47682725694444444,
+      "stateMatched": true
+    },
+    {
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "name": "normal",
+      "changedRatioThreshold8": 0.3796724996961964,
+      "stateMatched": true
+    },
+    {
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "name": "fit",
+      "changedRatioThreshold8": 0.4042289464090412,
+      "stateMatched": true
+    },
+    {
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "name": "close",
+      "changedRatioThreshold8": 0.4111526309393608,
+      "stateMatched": true
+    },
+    {
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "name": "construction",
+      "changedRatioThreshold8": 0.33591262607850286,
+      "stateMatched": true
+    },
+    {
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "name": "cache-edge-active",
+      "changedRatioThreshold8": 0.34484141450966094,
+      "stateMatched": true
+    },
+    {
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "name": "pressure",
+      "changedRatioThreshold8": 0.36976546360432616,
+      "stateMatched": true
+    }
+  ]
+}
