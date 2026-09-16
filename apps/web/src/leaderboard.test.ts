@@ -42,6 +42,16 @@ describe('leaderboard parsing', () => {
   it('rejects oversized input', () => {
     expect(parseLeaderboard('x'.repeat(500001))).toEqual(emptyLeaderboard());
   });
+  it('filters entries with empty or whitespace-only nicknames', () => {
+    const data = { version: 1, entries: [
+      fakeEntry({ nickname: '', runId: 'r1' }),
+      fakeEntry({ nickname: '   ', runId: 'r2' }),
+      fakeEntry({ nickname: 'Valid', runId: 'r3' }),
+    ] };
+    const board = parseLeaderboard(JSON.stringify(data));
+    expect(board.entries).toHaveLength(1);
+    expect(board.entries[0].nickname).toBe('Valid');
+  });
 });
 
 describe('entry management', () => {

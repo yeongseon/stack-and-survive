@@ -33,9 +33,9 @@ export function ChallengeApplication() {
       }
     } catch { setCurrentRun(null); }
   }, [ladder.complete, records.complete, leaderboard]);
-  const submitCurrent = useCallback(() => {
+  const submitCurrent = useCallback((nicknameOverride?: string) => {
     if (!currentRun || submittedRef.current === currentRun.id) return;
-    const rank = leaderboard.submit(currentRun);
+    const rank = leaderboard.submit(currentRun, nicknameOverride);
     setCurrentRank(rank);
     if (rank) submittedRef.current = currentRun.id;
   }, [currentRun, leaderboard]);

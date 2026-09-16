@@ -8,7 +8,7 @@ export function LeaderboardPanel({ entries, currentRank, nickname, hasValidNickn
   nickname: string;
   hasValidNickname: boolean;
   onNicknameChange: (name: string) => void;
-  onSubmit?: () => void;
+  onSubmit?: (nicknameOverride?: string) => void;
   personalBest: LeaderboardEntry | null;
   qualified: boolean;
 }) {
@@ -26,7 +26,7 @@ export function LeaderboardPanel({ entries, currentRank, nickname, hasValidNickn
       <p>Enter your name to join the leaderboard</p>
       <button type="button" onClick={() => { setDraft(''); setEditing(true); }}>Enter name</button>
     </div> : <div className="leaderboard-nickname">
-      {editing ? <form onSubmit={e => { e.preventDefault(); if (!error) { onNicknameChange(draft); setEditing(false); onSubmit?.(); } }}>
+      {editing ? <form onSubmit={e => { e.preventDefault(); if (!error) { onNicknameChange(draft.trim()); setEditing(false); onSubmit?.(draft.trim()); } }}>
         <input type="text" value={draft} onChange={e => setDraft(e.target.value)} maxLength={16} autoFocus aria-label="Nickname" placeholder="Enter nickname" />
         <button type="submit" disabled={!!error}>{needsName ? 'Join' : 'Save'}</button>
         {hasValidNickname && <button type="button" onClick={() => { setDraft(nickname); setEditing(false); }}>Cancel</button>}

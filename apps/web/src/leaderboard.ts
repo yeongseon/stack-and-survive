@@ -66,7 +66,7 @@ export function parseLeaderboard(raw: string | null): Leaderboard {
         || typeof e.timestamp !== 'number' || typeof e.runId !== 'string' || typeof e.challengeCanonical !== 'string') continue;
       if (e.score < 0 || e.score > 10000 || e.availability < 0 || e.availability > 1) continue;
       const nn = normalizeNickname(e.nickname);
-      if (nn && validateNickname(nn)) continue;
+      if (validateNickname(nn)) continue;
       entries.push({ nickname: nn || e.nickname, score: e.score, availability: e.availability, timestamp: e.timestamp, runId: e.runId, challengeCanonical: e.challengeCanonical });
     }
     return { version: 1, entries };

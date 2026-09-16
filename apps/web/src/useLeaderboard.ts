@@ -15,14 +15,19 @@ export function useLeaderboard() {
 
   const hasValidNickname = !validateNickname(nickname);
 
-  const submit = useCallback((run: RunSummary) => {
-    if (!qualifiesForLeaderboard(run) || !hasValidNickname) return null;
-    const entry = entryFromRun(run, nickname);
+  const submit = useCallback((run: RunSummary, nicknameOverride?: string) => {
+    const name = normalizeNickname(nicknameOverride ?? nickname);
+    if (!qualifiesForLeaderboard(run) || validateNickname(name)) return null;
+    if (nicknameOverride !== undefined) {
+      setNicknameState(name);
+      saveNickname(name);
+    }
+    const entry = entryFromRun(run, name);
     const updated = addEntry(board, entry);
     setBoard(updated);
     saveLeaderboard(updated);
-    return rankRun(updated, run, nickname);
-  }, [board, nickname, hasValidNickname]);
+    return rankRun(updated, run, name);
+  }, [board, nickname]);
 
   const getRank = useCallback((run: RunSummary) => rankRun(board, run, nickname), [board, nickname]);
 
