@@ -24,7 +24,8 @@ export function GameResult({ result, architecture, report, restart, review, next
   const comparison = report?.previous;
   return <section className={`game-result operation-report${completed ? ' success' : ''}`} aria-label="Business result" onKeyDown={event => {
     if (event.key !== 'Tab') return;
-    const controls = [...event.currentTarget.querySelectorAll<HTMLElement>('button:not(:disabled), summary, [tabindex="0"]')].filter(element => element.checkVisibility());
+    const controls = [...event.currentTarget.querySelectorAll<HTMLElement>('button, input, select, textarea, a[href], summary, [tabindex]')]
+      .filter(element => element.tabIndex >= 0 && !element.matches(':disabled') && !element.closest('[inert]') && element.checkVisibility());
     const first = controls[0], last = controls.at(-1);
     if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
     else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
