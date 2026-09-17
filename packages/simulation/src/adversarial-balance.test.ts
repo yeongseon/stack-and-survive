@@ -125,7 +125,12 @@ describe('strategy results — Black Friday', () => {
     expect(results.cacheScale.metrics.availability).not.toBe(results.edgeScale.metrics.availability);
   });
 
-  it('cache+scale completes but edgeScale fails — cache is nearly mandatory for Black Friday', () => {
+  // Characterization (current tuning, not a permanent engine contract):
+  // Cache is nearly mandatory for the current Black Friday scenario due to SQL read saturation.
+  // If balance changes, these observations may legitimately change.
+  it('characterization: cacheScale currently completes, edgeScale currently fails', () => {
+    // Log for visibility — if this fails, it means balance changed, not necessarily a bug
+    console.log(`cacheScale: ${results.cacheScale.status}, edgeScale: ${results.edgeScale.status}`);
     expect(results.cacheScale.status).toBe('COMPLETED');
     expect(results.edgeScale.status).toBe('FAILED');
   });
