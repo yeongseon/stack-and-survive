@@ -3,7 +3,7 @@
 ## Architecture
 
 ```
-Frontend (GitHub Pages / yeongseon.dev)
+Frontend (GitHub Pages)
         |
         v
   nickname + challenge identity + action schedule
@@ -57,12 +57,12 @@ Azure App Service Leaderboard API
 
 | Property | Value |
 |---|---|
-| Frontend | GitHub Pages (`yeongseon.github.io` / `yeongseon.dev`) |
+| Frontend | GitHub Pages (`yeongseon.github.io`) |
 | API | Azure App Service (`stack-survive-leaderboard.azurewebsites.net`) |
 | Runtime | Node 22 LTS |
 | Storage | FileStorage at `/home/data/leaderboard.json` |
 | Persistence | Azure App Service `/home/` (survives restarts) |
-| CORS | `https://yeongseon.github.io`, `https://yeongseon.dev` |
+| CORS | `https://yeongseon.github.io` |
 | Rate limits | 10 POST/min, 60 GET/min per IP |
 | Replicas | Single instance |
 

@@ -25,7 +25,7 @@ No tsx required in production.
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `PORT` | `3001` | HTTP port |
-| `CORS_ORIGINS` | `http://localhost:5173,...,https://yeongseon.github.io,https://yeongseon.dev` | Comma-separated allowed origins |
+| `CORS_ORIGINS` | `http://localhost:5173,...,https://yeongseon.github.io` | Comma-separated allowed origins |
 | `LEADERBOARD_STORAGE` | `memory` | `memory` or `file` |
 | `LEADERBOARD_FILE_PATH` | `./data/leaderboard.json` | Path for file storage |
 | `TRUST_PROXY` | `false` | Set `true` behind reverse proxy to trust X-Forwarded-For |
@@ -37,18 +37,13 @@ The game is served from GitHub Pages at:
 
     https://yeongseon.github.io/stack-and-survive/
 
-which may redirect via custom domain to:
-
-    https://yeongseon.dev/stack-and-survive/
-
 CORS `Origin` headers contain only the scheme + host (no path), so the
-required allowed origins are:
+required allowed origin is:
 
     https://yeongseon.github.io
-    https://yeongseon.dev
 
-Both must be in `CORS_ORIGINS`. Omitting either will block browser
-leaderboard requests from that origin.
+This must be in `CORS_ORIGINS`. If a custom domain is added later,
+its origin must also be included.
 
 ## Docker deployment
 
@@ -59,7 +54,7 @@ docker build -f apps/leaderboard-api/Dockerfile -t leaderboard-api .
 # Run with persistent storage
 docker run -p 3001:3001 \
   -v leaderboard-data:/app/data \
-  -e CORS_ORIGINS="https://yeongseon.github.io,https://yeongseon.dev" \
+  -e CORS_ORIGINS="https://yeongseon.github.io" \
   leaderboard-api
 ```
 
@@ -79,7 +74,7 @@ Current production deployment:
 
 1. Create an Azure App Service (Node 22 LTS)
 2. Set environment variables in Configuration -> Application settings:
-   - `CORS_ORIGINS=https://yeongseon.github.io,https://yeongseon.dev`
+   - `CORS_ORIGINS=https://yeongseon.github.io`
    - `LEADERBOARD_STORAGE=file`
    - `LEADERBOARD_FILE_PATH=/home/data/leaderboard.json`
    - `TRUST_PROXY=true`
@@ -110,9 +105,9 @@ If the variable is empty or unset, the game operates in local-only mode with no 
 curl https://stack-survive-leaderboard.azurewebsites.net/api/health
 
 # CORS verification (allowed origin)
-curl -i -H "Origin: https://yeongseon.dev" \
+curl -i -H "Origin: https://yeongseon.github.io" \
   "https://stack-survive-leaderboard.azurewebsites.net/api/leaderboard?challenge=<hash>"
-# Should include: Access-Control-Allow-Origin: https://yeongseon.dev
+# Should include: Access-Control-Allow-Origin: https://yeongseon.github.io
 
 # CORS verification (rejected origin)
 curl -i -H "Origin: https://example.invalid" \
@@ -121,7 +116,7 @@ curl -i -H "Origin: https://example.invalid" \
 
 # Full smoke test (read-only)
 LEADERBOARD_API=https://stack-survive-leaderboard.azurewebsites.net \
-  SMOKE_ORIGIN=https://yeongseon.dev \
+  SMOKE_ORIGIN=https://yeongseon.github.io \
   SMOKE_REJECT_ORIGIN=https://example.invalid \
   node scripts/smoke-leaderboard.mjs
 
@@ -178,7 +173,7 @@ curl ".../api/leaderboard?challenge=<hash>"
 ## Security notes
 
 - Never commit storage credentials or connection strings
-- CORS restricts origins to configured Pages URLs + local dev
+- CORS restricts origins to configured Pages URL + local dev
 - Rate limiting: 10 POST/min, 60 GET/min per IP
 - X-Forwarded-For only trusted when `TRUST_PROXY=true` (best-effort abuse protection; single-replica in-memory limiter, not an authentication boundary)
 - No stack traces or internal paths in error responses
