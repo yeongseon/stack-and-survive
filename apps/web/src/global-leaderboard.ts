@@ -9,6 +9,28 @@ export type GlobalRankContext = { rank: number; totalEntries: number; score: num
 export type GlobalSubmitResult = { accepted: true; rankContext: GlobalRankContext; top: GlobalEntry[] };
 export type GlobalTopResult = { challengeHash: string; available: true; entries: GlobalEntry[] };
 
+function record(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+function finite(value: unknown, min: number, max = Number.MAX_SAFE_INTEGER): value is number {
+  return typeof value === 'number' && Number.isFinite(value) && value >= min && value <= max;
+}
+function ranked(value: unknown): value is Record<string, unknown> & { rank: number; score: number; availability: number } {
+  return record(value) && finite(value.rank, 1) && Number.isSafeInteger(value.rank)
+    && finite(value.score, 0, 10000) && Number.isInteger(value.score) && finite(value.availability, 0, 1);
+}
+function entries(value: unknown): value is GlobalEntry[] {
+  return Array.isArray(value) && value.length <= 10 && value.every(item => record(item) && ranked(item)
+    && typeof item.nickname === 'string' && item.nickname.length > 0 && item.nickname.length <= 16
+    && finite(item.submittedAt, 0));
+}
+function rankContext(value: unknown): value is GlobalRankContext {
+  return record(value) && ranked(value) && finite(value.totalEntries, value.rank) && Number.isSafeInteger(value.totalEntries)
+    && (value.nextRank === null || ranked(value.nextRank))
+    && (value.pointsToNextRank === null || finite(value.pointsToNextRank, 0, 10000))
+    && (value.tieBreakReason === null || value.tieBreakReason === 'availability' || value.tieBreakReason === 'timestamp');
+}
+
 export async function submitToGlobal(nickname: string, challenge: Challenge, actions: Action[], clientRunId: string): Promise<GlobalSubmitResult | null> {
   if (!API_BASE) return null;
   try {
@@ -19,7 +41,9 @@ export async function submitToGlobal(nickname: string, challenge: Challenge, act
       signal: AbortSignal.timeout(10000),
     });
     if (!response.ok) return null;
-    return await response.json() as GlobalSubmitResult;
+    const data: unknown = await response.json();
+    return record(data) && data.accepted === true && rankContext(data.rankContext) && entries(data.top)
+      ? { accepted: true, rankContext: data.rankContext, top: data.top } : null;
   } catch { return null; }
 }
 
@@ -30,8 +54,9 @@ export async function fetchGlobalTop(challenge: Challenge): Promise<GlobalEntry[
       signal: AbortSignal.timeout(5000),
     });
     if (!response.ok) return null;
-    const data = await response.json() as GlobalTopResult;
-    return data.entries;
+    const data: unknown = await response.json();
+    return record(data) && data.available === true && data.challengeHash === challenge.contentHash && entries(data.entries)
+      ? data.entries : null;
   } catch { return null; }
 }
 
