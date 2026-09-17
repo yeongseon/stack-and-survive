@@ -44,7 +44,7 @@ export function useGlobalLeaderboard(): GlobalState {
         savePendingSubmission(pending);
         setHasPending(true);
       }
-    });
+    }).catch(() => { if (mounted.current) setLoading(false); });
   }, []);
 
   const submitGlobal = useCallback((nickname: string, challenge: Challenge, actions: Action[], clientRunId: string) => {
@@ -61,7 +61,7 @@ export function useGlobalLeaderboard(): GlobalState {
       const challenge = challengeLadder.find(l => l.challenge.contentHash === pending.challengeContentHash)?.challenge;
       if (challenge) doSubmit(pending, challenge);
       else { clearPendingSubmission(); setHasPending(false); }
-    });
+    }).catch(() => { /* dynamic import failed — retry later */ });
   }, [doSubmit]);
 
   const fetchTop = useCallback((challenge: Challenge) => {
@@ -72,7 +72,7 @@ export function useGlobalLeaderboard(): GlobalState {
         setAvailable(true);
         setGlobalEntries(entries);
       }
-    });
+    }).catch(() => { /* fetch failed gracefully */ });
   }, []);
 
   const clearRun = useCallback(() => {
