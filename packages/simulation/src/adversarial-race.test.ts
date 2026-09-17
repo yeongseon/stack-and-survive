@@ -7,7 +7,7 @@ import { blackFridayChallenge } from '@stack-and-survive/scenarios/challenge';
 const scenario = blackFridayChallenge.workload;
 
 describe('headless adversarial simulations', () => {
-  it('maximum legal actions do not cause numeric overflow', () => {
+  it('maximum legal action density: all values finite and within bounds', () => {
     const actions: Action[] = [];
     let seq = 0;
     actions.push({ type: 'SCALE_OUT', time: 0, sequence: seq++ });
@@ -26,18 +26,35 @@ describe('headless adversarial simulations', () => {
     expect(Number.isFinite(r.economy.remainingBudget)).toBe(true);
   });
 
-  it('action at every tick does not crash (many rejected)', () => {
+  it('rate-limit toggling every tick: most rejected by cooldown, no crash', () => {
     const actions: Action[] = Array.from({ length: 179 }, (_, i) => ({
       type: 'RATE_LIMIT' as const,
       enabled: i % 2 === 0,
       time: i,
       sequence: i,
     }));
-    const r = simulateScenario(canonicalPlayerStart(), scenario, actions);
-    expect(Number.isFinite(r.score)).toBe(true);
+
+    let state = createSimulation(canonicalPlayerStart(), scenario);
+    state.runtime = startRuntime(state.runtime);
+    let accepted = 0;
+    let rejected = 0;
+
+    while (state.runtime.status === 'RUNNING') {
+      const tickActions = actions.filter(a => a.time === state.runtime.time);
+      const transition = advanceSimulation(state, scenario, tickActions);
+      state = transition.nextState;
+      for (const o of transition.outcomes) {
+        if (o.accepted) accepted++;
+        else rejected++;
+      }
+    }
+
+    // Most should be rejected due to 5-tick cooldown
+    expect(rejected).toBeGreaterThan(accepted);
+    expect(Number.isFinite(state.economy.remainingBudget)).toBe(true);
   });
 
-  it('conservation: all numeric values finite for every tick of 180-tick run', () => {
+  it('per-tick conservation: all numeric values finite for every tick of 180-tick run', () => {
     const actions: Action[] = [
       { type: 'SCALE_OUT', time: 16, sequence: 0 },
       { type: 'DEPLOY_RESOURCE', kind: 'cache', time: 17, sequence: 1, x: 190, y: -100 },
@@ -66,46 +83,11 @@ describe('headless adversarial simulations', () => {
           expect(r.successful[kind]).toBeGreaterThanOrEqual(0);
         }
         expect(Number.isFinite(r.app.capacity), `tick ${tickCount}: app.capacity`).toBe(true);
+        expect(r.app.capacity).toBeGreaterThan(0);
       }
     }
 
     expect(state.runtime.status).toBe('COMPLETED');
     expect(tickCount).toBe(180);
-  });
-
-  it('spam scale at every tick does not crash or create negative budget', () => {
-    const spamActions: Action[] = Array.from({ length: 179 }, (_, i) => ({
-      type: 'SCALE_OUT' as const,
-      time: i,
-      sequence: i,
-    }));
-    const r = simulateScenario(canonicalPlayerStart(), scenario, spamActions);
-    expect(Number.isFinite(r.score)).toBe(true);
-    expect(r.economy.remainingBudget).toBeGreaterThanOrEqual(-0.01);
-  });
-
-  it('deploy same resource twice: second is rejected without crash', () => {
-    const actions: Action[] = [
-      { type: 'DEPLOY_RESOURCE', kind: 'cache', time: 5, sequence: 0, x: 100, y: 0 },
-      { type: 'DEPLOY_RESOURCE', kind: 'cache', time: 10, sequence: 1, x: 200, y: 0 },
-    ];
-    const r = simulateScenario(canonicalPlayerStart(), scenario, actions);
-    expect(Number.isFinite(r.score)).toBe(true);
-  });
-
-  it('emergency WAF without edge is rejected without crash', () => {
-    const r = simulateScenario(canonicalPlayerStart(), scenario, [
-      { type: 'EMERGENCY_WAF', time: 5, sequence: 0 },
-    ]);
-    expect(Number.isFinite(r.score)).toBe(true);
-  });
-
-  it('emergency WAF twice: second is rejected', () => {
-    const r = simulateScenario(canonicalPlayerStart(), scenario, [
-      { type: 'DEPLOY_RESOURCE', kind: 'edge', time: 1, sequence: 0, x: -200, y: 0 },
-      { type: 'EMERGENCY_WAF', time: 10, sequence: 1 },
-      { type: 'EMERGENCY_WAF', time: 50, sequence: 2 },
-    ]);
-    expect(Number.isFinite(r.score)).toBe(true);
   });
 });

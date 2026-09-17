@@ -6,7 +6,7 @@ import { blackFridayChallenge } from '@stack-and-survive/scenarios/challenge';
 
 const scenario = blackFridayChallenge.workload;
 
-describe('long-run simulation stability', () => {
+describe('full-run stability (180-tick Black Friday)', () => {
   it('action log does not grow beyond accepted+rejected actions', () => {
     const actions: Action[] = [
       { type: 'SCALE_OUT', time: 16, sequence: 0 },
