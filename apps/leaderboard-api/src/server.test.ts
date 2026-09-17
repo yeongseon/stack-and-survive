@@ -18,7 +18,7 @@ let app: ReturnType<typeof createLeaderboardServer>;
 beforeAll(async () => {
   app = createLeaderboardServer({
     port: 0, // random available port
-    corsOrigins: ['https://yeongseon.dev', 'https://yeongseon.github.io'],
+    corsOrigins: ['https://yeongseon.github.io', 'https://test.example'],
     buildSha: 'test-abc123',
   });
   await new Promise<void>(resolve => {
@@ -162,16 +162,16 @@ describe('Methods', () => {
 describe('CORS', () => {
   it('allowed origin gets Access-Control-Allow-Origin', async () => {
     const res = await fetch(`${baseUrl}/api/health`, {
-      headers: { 'Origin': 'https://yeongseon.dev' },
+      headers: { 'Origin': 'https://yeongseon.github.io' },
     });
-    expect(res.headers.get('access-control-allow-origin')).toBe('https://yeongseon.dev');
+    expect(res.headers.get('access-control-allow-origin')).toBe('https://yeongseon.github.io');
   });
 
   it('second allowed origin also works', async () => {
     const res = await fetch(`${baseUrl}/api/health`, {
-      headers: { 'Origin': 'https://yeongseon.github.io' },
+      headers: { 'Origin': 'https://test.example' },
     });
-    expect(res.headers.get('access-control-allow-origin')).toBe('https://yeongseon.github.io');
+    expect(res.headers.get('access-control-allow-origin')).toBe('https://test.example');
   });
 
   it('rejected origin does not get Access-Control-Allow-Origin', async () => {
@@ -185,13 +185,13 @@ describe('CORS', () => {
     const res = await fetch(`${baseUrl}/api/leaderboard`, {
       method: 'OPTIONS',
       headers: {
-        'Origin': 'https://yeongseon.dev',
+        'Origin': 'https://yeongseon.github.io',
         'Access-Control-Request-Method': 'POST',
         'Access-Control-Request-Headers': 'content-type',
       },
     });
     expect(res.status).toBe(204);
-    expect(res.headers.get('access-control-allow-origin')).toBe('https://yeongseon.dev');
+    expect(res.headers.get('access-control-allow-origin')).toBe('https://yeongseon.github.io');
     expect(res.headers.get('access-control-allow-methods')).toContain('POST');
     expect(res.headers.get('access-control-allow-headers')?.toLowerCase()).toContain('content-type');
   });

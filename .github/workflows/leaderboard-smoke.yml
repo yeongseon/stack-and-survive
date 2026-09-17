@@ -31,6 +31,6 @@ jobs:
         env:
           LEADERBOARD_API: https://stack-survive-leaderboard.azurewebsites.net
           SMOKE_MUTATE: ${{ inputs.mutate }}
-          SMOKE_ORIGIN: https://yeongseon.dev
+          SMOKE_ORIGIN: https://yeongseon.github.io
           SMOKE_REJECT_ORIGIN: https://example.invalid
         run: node scripts/smoke-leaderboard.mjs
