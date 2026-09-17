@@ -8,6 +8,8 @@ Audited main: `b1477176fffd566869314b3fe4d2cf487253e4d4`. Local follow-up: `chor
 
 Last verified deployment: `aec20f1e5e36863d8428e39637e3609230c0104d`, [Pages run35164605874](https://github.com/yeongseon/stack-and-survive/actions/runs/35164605874); both build and actual deploy jobs succeeded. At the final status check, [main Quality35168054887](https://github.com/yeongseon/stack-and-survive/actions/runs/35168054887) for `b147717` had completed player tests and was still running QA. Do not equate these different revisions with the local hardened candidate.
 
+Before PR delivery, upstream main `b7aa13f` was integrated without changing its backend/adversarial-test work. The newly merged Promise rejection handler was reconciled with request generations and the active-submission guard. Integrated lint/typecheck,431 unit tests and7 release-browser cases passed locally. The398-unit and earlier full-player/QA/performance evidence below describes the pre-integration candidate; remote exact-commit CI must validate the combined version. No final deployment or visual merge is implied.
+
 Backend #261 and #264 are merged. #260 is closed. The earlier `yeongseon.dev` CORS incident is historical: after the owner's separately approved parent-Pages domain removal, a fresh browser now stays at <https://yeongseon.github.io/stack-and-survive/>. DNS was not modified by this readiness audit. Browser/CDN caches can retain earlier redirects; verify the actual final URL, not only a repository setting.
 
 ## Verified

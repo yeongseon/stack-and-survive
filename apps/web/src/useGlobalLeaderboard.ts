@@ -67,7 +67,11 @@ export function useGlobalLeaderboard(): GlobalState {
           setGlobalEntries(null);
         }
       }
-    }).catch(() => { if (mounted.current) setLoading(false); });
+    }).catch(() => {
+      if (!mounted.current || request !== submissionRequest.current) return;
+      activeSubmission.current = false;
+      setLoading(false);
+    });
   }, []);
 
   const submitGlobal = useCallback((nickname: string, challenge: Challenge, actions: Action[], clientRunId: string) => {
