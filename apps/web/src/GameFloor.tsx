@@ -8,10 +8,11 @@ import type { WorldTarget } from './world-interaction';
 import { resourceVisualState } from './resource-visual-state';
 import { playerBuildingScale, resourceArtBounds } from './building-assets';
 import { recoveryFeedback, type Recovery } from './wave-feedback';
+import { formatMoney, formatMoneyRate, formatMoneyReason } from './money';
 
 function LocalAction({ controller, action, children }: { controller: Controller; action: ActionRequest; children: React.ReactNode }) {
   const reason = controller.actionReason(action);
-  return <button type="button" disabled={reason !== null} title={reason ?? undefined} onClick={() => controller.queueAction(action)}>{children}</button>;
+  return <button type="button" disabled={reason !== null} title={formatMoneyReason(reason) ?? undefined} onClick={() => controller.queueAction(action)}>{children}</button>;
 }
 
 export function GameFloor({ controller, view, navigation, onReady, blocked = false, guideTarget = null }: { controller: Controller; view: View; navigation: PlayerNavigation; onReady: () => void; blocked?: boolean; guideTarget?: string | null }) {
@@ -27,7 +28,7 @@ export function GameFloor({ controller, view, navigation, onReady, blocked = fal
     const action:ActionRequest=kind==='compute'?{type:'SCALE_OUT'}:{type:'DEPLOY_RESOURCE',kind,...tycoonPositions[kind]};
     const reason=controller.actionReason(action);
     if(!reason)controller.queueAction(action);
-    setActionFeedback({kind,rejected:!!reason,text:reason??`${kind==='compute'?'App expansion':kind==='cache'?'Cache':'Protected Edge'} requested · ${kind==='compute'?8:definitions[kind].provisioning}s to activate`});
+    setActionFeedback({kind,rejected:!!reason,text:formatMoneyReason(reason)??`${kind==='compute'?'App expansion':kind==='cache'?'Cache':'Protected Edge'} requested · ${kind==='compute'?8:definitions[kind].provisioning}s to activate`});
   }, [controller]);
   const worldBuild = useCallback((target: WorldTarget) => { if (target.kind === 'compute' || target.kind === 'cache' || target.kind === 'edge') beginBuild(target.kind); }, [beginBuild]);
   useEffect(()=>{if(!actionFeedback)return;const timer=setTimeout(()=>setActionFeedback(null),2600);return()=>clearTimeout(timer);},[actionFeedback]);
@@ -122,13 +123,13 @@ export function GameFloor({ controller, view, navigation, onReady, blocked = fal
       {(['edge', 'cache'] as const).map(kind => {
         const resource = runtime.architecture.resources.find(r => r.kind === kind);
         return <div className={`world-slot ${resource ? 'installed' : 'empty'}`} key={kind} style={at(kind)} data-testid={`slot-${kind}`}>
-          {!resource ? <button type="button" aria-label={kind === 'cache' ? 'Add Cache' : 'Add Protected Edge'} aria-disabled={controller.actionReason({ type: 'DEPLOY_RESOURCE', kind, ...tycoonPositions[kind] }) !== null} onClick={() => beginBuild(kind)}>Build {kind === 'cache' ? 'Cache' : 'Edge'}</button>
+          {!resource ? <button type="button" aria-label={kind === 'cache' ? 'Add Cache' : 'Add Protected Edge'} aria-disabled={controller.actionReason({ type: 'DEPLOY_RESOURCE', kind, ...tycoonPositions[kind] }) !== null} title={`Running: ${formatMoneyRate(definitions[kind].cost, 'min')} when active`} onClick={() => beginBuild(kind)}>Build {kind === 'cache' ? 'Cache' : 'Edge'}</button>
             : <button type="button" onClick={() => select(resource.id)}>{kind === 'cache' ? 'Cache' : 'Protected Edge'}<small>{resource.remaining > 0 ? `Provisioning ${resource.remaining}s` : 'Active'}</small></button>}
         </div>;
       })}
       <div className="world-slot app-expansion" style={at('compute')}>
         <div className="instance-slots" aria-label="App instance slots">{visual.app.bays.map((bay, i) => <span key={i} data-state={bay} aria-label={`Bay ${i+1}: ${bay}`}>{bay === 'active' ? '■' : bay === 'construction' ? '▧' : '□'}</span>)}</div>
-        {runtime.scaleDue !== null ? <span className="slot-progress">Expanding · {visual.app.scaleRemaining}s</span> : <button type="button" aria-label="+ App capacity" aria-disabled={controller.actionReason({type:'SCALE_OUT'})!==null} title={controller.actionReason({type:'SCALE_OUT'})??'8s to activate · +5 cr/min'} onClick={() => beginBuild('compute')}>Expand App<small>{app.instances}/4 active · 8s · +5 cr/min</small></button>}
+        {runtime.scaleDue !== null ? <span className="slot-progress">Expanding · {visual.app.scaleRemaining}s</span> : <button type="button" aria-label="+ App capacity" aria-disabled={controller.actionReason({type:'SCALE_OUT'})!==null} title={controller.actionReason({type:'SCALE_OUT'})??`8s to activate · +${formatMoneyRate(definitions.compute.cost, 'min')}`} onClick={() => beginBuild('compute')}>Expand App<small>{app.instances}/4 active · 8s · +{formatMoneyRate(definitions.compute.cost, 'min')}</small></button>}
       </div>
       <button type="button" className="intake-control" style={at('internet')} onClick={() => select('internet')}>Traffic intake</button>
       <button type="button" className="intake-control" style={at('database')} onClick={() => select('database')}>SQL processing</button>
@@ -138,9 +139,10 @@ export function GameFloor({ controller, view, navigation, onReady, blocked = fal
       {selected && <section className="resource-action-card" style={localPosition(selected.kind)} aria-label="Resource actions" onKeyDown={event => { if (event.key === 'Escape') closeCard(); }}>
         <button ref={cardClose} type="button" className="card-close" onClick={closeCard}>Close resource</button>
         <h2>{definitions[selected.kind].name}</h2>
+        {selected.kind !== 'internet' && <small>Running: {formatMoneyRate(definitions[selected.kind].cost * selected.instances, 'min')} when active</small>}
         {selected.kind === 'internet' && <><p className="resource-state">{visual.internet.rateLimited ? 'Intake limited' : 'Normal intake'}{visual.internet.rateTransition !== 'none' ? ` · ${visual.internet.rateTransition}` : ''}</p><LocalAction controller={controller} action={{ type: 'RATE_LIMIT', enabled: !runtime.rateLimit }}>{runtime.rateLimit ? 'Restore intake' : 'Limit intake'}</LocalAction><small>Limits 5% of all traffic, including customers.</small></>}
-        {selected.kind === 'edge' && <><p className="resource-state">{visual.edge.lifecycle === 'provisioning' ? 'Provisioning' : visual.edge.boost === 'active' ? 'Filtering boosted' : visual.edge.boost === 'scheduled' || visual.edge.boost === 'queued' ? `Boost ${visual.edge.boost}` : 'Filtering normal'}</p><LocalAction controller={controller} action={{ type: 'EMERGENCY_WAF' }}>Boost filtering · 8 cr</LocalAction><small>30s · once per run · rejects 3% of legitimate customers</small></>}
-        {selected.kind === 'compute' && <><p className="resource-state">{app.instances} active instances{visual.app.scaleRemaining !== null ? ` · expanding ${visual.app.scaleRemaining}s` : ''}</p><LocalAction controller={controller} action={{ type: 'SCALE_OUT' }}>+ App capacity · +5 cr/min</LocalAction><small>8 seconds to activate</small></>}
+        {selected.kind === 'edge' && <><p className="resource-state">{visual.edge.lifecycle === 'provisioning' ? 'Provisioning' : visual.edge.boost === 'active' ? 'Filtering boosted' : visual.edge.boost === 'scheduled' || visual.edge.boost === 'queued' ? `Boost ${visual.edge.boost}` : 'Filtering normal'}</p><LocalAction controller={controller} action={{ type: 'EMERGENCY_WAF' }}>Boost filtering · {formatMoney(8)}</LocalAction><small>30s · once per run · rejects 3% of legitimate customers</small></>}
+        {selected.kind === 'compute' && <><p className="resource-state">{app.instances} active instances{visual.app.scaleRemaining !== null ? ` · expanding ${visual.app.scaleRemaining}s` : ''}</p><LocalAction controller={controller} action={{ type: 'SCALE_OUT' }}>+ App capacity · +{formatMoneyRate(definitions.compute.cost, 'min')}</LocalAction><small>8 seconds to activate</small></>}
         {selected.kind === 'cache' && <p className="resource-state">{visual.cache.lifecycle === 'provisioning' ? `Provisioning ${visual.cache.remaining}s` : 'Active · serving eligible reads'}</p>}
         {selected.kind === 'database' && <><p className="resource-state">Reads: {visual.sql.readPressure}<br/>Writes: {visual.sql.writePressure}</p><small>Capacity and routing explained in Learn</small></>}
       </section>}

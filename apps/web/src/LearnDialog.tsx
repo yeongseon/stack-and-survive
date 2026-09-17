@@ -5,6 +5,8 @@ import { MissionPanel } from './MissionPanel';
 import { glossary } from './help';
 import type { GameSoundControls } from './useGameSound';
 import type { WorldGuideControls } from './useWorldGuide';
+import { formatMoney, formatMoneyRate, simulatedMoneyNote } from './money';
+import { definitions } from '@stack-and-survive/cloud-domain';
 
 export type LearnPage = 'how' | 'about' | 'learn';
 export function LearnDialog({ dialogRef, page, view, onClose, restart, sound, guide }: {
@@ -28,15 +30,16 @@ export function LearnDialog({ dialogRef, page, view, onClose, restart, sound, gu
       <label><input type="checkbox" checked={sound.settings.haptics} disabled={!sound.hapticsAvailable} onChange={e => sound.haptics(e.currentTarget.checked)} />Optional vibration{!sound.hapticsAvailable ? ' (unavailable on this browser)' : ''}</label>
       <p role="status">{sound.message}</p><small>All gameplay information remains visible when sound is muted.</small>
     </section>
-    {page === 'learn' && <section aria-label="Resource capacities"><h3>Resource capacities</h3><p>App: 150 requests/s per active instance, up to four. SQL: Read capacity 180/s · Write capacity 70/s. Cache handles eligible reads; Order writes remain direct to SQL. Fixed SQL has no upgrade action. New App capacity costs +5 cr/min after 8s; Cache +8 cr/min after 5s; Edge +3 cr/min after 4s.</p></section>}
+    <p>{simulatedMoneyNote}</p>
+    {page === 'learn' && <section aria-label="Resource capacities"><h3>Resource capacities</h3><p>App: 150 requests/s per active instance, up to four. SQL: Read capacity 180/s · Write capacity 70/s. Cache handles eligible reads; Order writes remain direct to SQL. Fixed SQL has no upgrade action. New App capacity costs +{formatMoneyRate(definitions.compute.cost, 'min')} after 8s; Cache +{formatMoneyRate(definitions.cache.cost, 'min')} after 5s; Edge +{formatMoneyRate(definitions.edge.cost, 'min')} after 4s.</p></section>}
     {page === 'how' ? <>
       <p>Watch traffic reach your App and SQL. When pressure builds, click the + controls on the data-center floor.</p>
       <ol><li>Add App capacity when compute is overloaded. New instances need 8 seconds.</li><li>Add Cache to reduce SQL reads. It does not remove Order writes.</li><li>Add Protected Edge to filter bots before they reach App.</li></ol>
-        <p>One click on an empty App bay or Cache/Edge footprint requests construction. Costs are running credits, not purchase prices. Under balance 0.3, 10% of successful sales replenishes Upgrade Funds. Bots earn nothing. Lost sales excludes bots. Pressure markers are not a persistent waiting queue.</p>
+        <p>One click on an empty App bay or Cache/Edge footprint requests construction. Listed per-minute costs are running expenses, not purchase prices. Under balance 0.3, 10% of successful sales replenishes Upgrade Funds. Bots earn nothing. Lost sales excludes bots. Pressure markers are not a persistent waiting queue.</p>
     </> : page === 'about' ? <p>A browser game about Azure infrastructure decisions. All capacities and costs are game assumptions, not Azure prices or specifications. The game does not deploy real resources. Official service icons identify Microsoft Azure services; no endorsement is implied.</p> : <>
       <h3>Why is this happening?</h3><p>{pressure.why}</p><p>Representative pressure markers are not a buffered queue. Dropped requests do not succeed later.</p>
       <MissionPanel view={view} /><h3>Detailed metrics</h3>
-      <dl><dt>Revenue</dt><dd>{view.state.economy.revenue.toFixed(2)}</dd><dt>Net business value</dt><dd>{view.state.economy.netBusinessValue.toFixed(2)}</dd><dt>Infrastructure cost</dt><dd>{view.state.economy.infrastructureCost.toFixed(2)}</dd><dt>Latency</dt><dd>{view.snapshot?.metrics.averageLatency?.toFixed(0) ?? '—'} ms</dd><dt>SQL reads dropped/s</dt><dd>{r?.sql.readsDropped.toFixed(1) ?? '—'}</dd><dt>SQL writes dropped/s</dt><dd>{r?.sql.writesDropped.toFixed(1) ?? '—'}</dd></dl>
+      <dl><dt>Revenue</dt><dd>{formatMoney(view.state.economy.revenue)}</dd><dt>Net business value</dt><dd>{formatMoney(view.state.economy.netBusinessValue)}</dd><dt>Infrastructure cost</dt><dd>{formatMoney(view.state.economy.infrastructureCost)}</dd><dt>Latency</dt><dd>{view.snapshot?.metrics.averageLatency?.toFixed(0) ?? '—'} ms</dd><dt>SQL reads dropped/s</dt><dd>{r?.sql.readsDropped.toFixed(1) ?? '—'}</dd><dt>SQL writes dropped/s</dt><dd>{r?.sql.writesDropped.toFixed(1) ?? '—'}</dd></dl>
       <h3>Azure concepts</h3>{glossary.map(([name, text]) => <p key={name}><strong>{name}</strong> — {text}</p>)}
       <button onClick={() => { dialogRef.current?.close(); restart(); }}>Return to title / restart</button>
     </>}

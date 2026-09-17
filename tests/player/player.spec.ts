@@ -50,8 +50,8 @@ test('ordinary player builds live infrastructure through world controls without 
   await expect(page.getByTestId('slot-edge')).toContainText('Active');
   await expect(page.getByRole('button', { name: /App capacity/ })).toContainText('2/4 active', { timeout: 10000 });
   await page.getByTestId('slot-edge').getByRole('button').focus(); await page.getByTestId('slot-edge').getByRole('button').press('Enter');
-  await page.getByRole('button', { name: 'Boost filtering · 8 cr', exact: true }).click();
-  await expect(page.getByRole('button', { name: 'Boost filtering · 8 cr', exact: true })).toBeDisabled();
+  await page.getByRole('button', { name: 'Boost filtering · $8K', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Boost filtering · $8K', exact: true })).toBeDisabled();
   await expect(page.getByTestId('diagnostics')).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Step one tick' })).toHaveCount(0);
 });

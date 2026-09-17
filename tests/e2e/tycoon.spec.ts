@@ -43,7 +43,7 @@ test('living operation expands real capacity and activates Cache and Edge only a
   expect(bots.snapshot.requests.edge.filtered.bot).toBeGreaterThan(0);
   expect(bots.snapshot.requests.cache.hits).toBeGreaterThan(0);
   await page.getByTestId('slot-edge').getByRole('button').focus(); await page.getByTestId('slot-edge').getByRole('button').press('Enter');
-  await page.getByRole('button', { name: 'Boost filtering · 8 cr', exact: true }).click();
+  await page.getByRole('button', { name: 'Boost filtering · $8K', exact: true }).click();
   await step.click(); await step.click();
   expect((await state()).snapshot.requests.edge.filtered.bot).toBeGreaterThan(bots.snapshot.requests.edge.filtered.bot);
   await page.getByRole('button', { name: 'Close resource', exact: true }).click();

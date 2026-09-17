@@ -32,7 +32,7 @@ for (const width of [1440, 844, 1920, 740, 1024]) test(`direct diorama operation
   await expect.poll(async () => JSON.parse((await surface.getAttribute('data-resource-states'))!).edge.lifecycle).toBe('active');
   await target('edge');
   await expect(page.getByRole('region', { name: 'Resource actions' })).toContainText('Filtering normal');
-  await page.getByRole('button', { name: 'Boost filtering · 8 cr', exact: true }).click();
+  await page.getByRole('button', { name: 'Boost filtering · $8K', exact: true }).click();
   await expect.poll(async () => JSON.parse((await surface.getAttribute('data-resource-states'))!).edge.boost).toBe('active');
   await page.getByRole('button', { name: 'Close resource', exact: true }).click();
   await page.getByRole('button', { name: 'Ⅱ Pause', exact: true }).click(); await page.getByRole('button', { name: 'Inspect paused world', exact: true }).click();
