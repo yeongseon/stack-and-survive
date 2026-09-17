@@ -4,7 +4,7 @@
 
 > **Same workload. Different architectures. Different outcomes.**
 
-**[Play the browser demo](https://yeongseon.github.io/stack-and-survive/)** · Project GitHub Pages production build, no real Azure deployment.
+**[Play the browser demo](https://yeongseon.github.io/stack-and-survive/)** · Project GitHub Pages game; playing never provisions real Azure resources.
 
 The project has no custom-domain/CNAME configuration. GitHub currently redirects this default project URL to an inherited account-domain URL; changing this link does not remove that platform redirect or authorize changes to the account website.
 
@@ -14,7 +14,7 @@ Stack & Survive is a real-time cloud infrastructure management game where player
 
 ## Project status
 
-**Canonical landscape diorama with original V3 hero facilities, fixed indoor environment kit, state-driven pressure/work feedback and outcome-first results. Production Art V3 is integrated under the approved demo inventory; final visual acceptance, real-player validation and manual audio/rights decisions remain pending in [#202](https://github.com/yeongseon/stack-and-survive/issues/202).**
+**Implemented:** fixed landscape hall, original V3 facilities, balance0.3 reinvestment/waves, direct expansion, Settings/Pause, result analysis and local leaderboard. The optional replay-verifying API exists in this repository; API source/configuration is not proof of a running public service. **Pending:** actual player validation, manual listening/device checks, rights decisions and final submission review. Art Epic #202 is completed implementation history.
 
 Start with the [documentation authority index](docs/README.md). Current normal behavior is in [Gameplay](docs/GAMEPLAY_SPEC.md); future work is in [Product Roadmap](docs/PRODUCT_ROADMAP.md). `docs/archive/` preserves history and must not guide new implementation. The repository is public source; no project-wide open-source license has been selected. #164 tracks license, third-party rights and security decisions.
 
@@ -24,7 +24,7 @@ Ordinary play uses **balance 0.3**: anticipate the next wave, protect customers,
 
 The [visual-state contract](docs/RESOURCE_VISUAL_STATES.md) distinguishes real active App servers, empty sockets and construction bays. Single-action expansion keeps guarded cost/delay semantics without a second confirmation. Short local recovery feedback follows actual activation, recovered sales or improved processing, not invented rewards. Existing art/camera work is separate from this gameplay sprint and is not proof of human game feel.
 
-The browser MVP includes separate official Azure badges, snapshot-driven processing/pressure and served-business feedback, actual objectives/events, live provisioning, pause/recovery and results. The historical manual editor, redesign/comparison and local architecture saves remain QA tools, not the normal game loop. Existing54 QA editor cases are retained alongside new tycoon tests; production tests cover real-time entry, expansion and five viewport sizes. #25 now explicitly validates unassisted world-local expansion and perceived game feel after #120; no participant results exist. GitHub Pages demo hosting is owner-authorized under the documented exception; other cloud hosting remains deferred. There is no backend or outbound product telemetry.
+The browser game works without an API. `apps/leaderboard-api` is an optional backend that validates submitted action provenance by replaying the shared simulation from its canonical start. When `VITE_LEADERBOARD_API` is configured at build time, eligible scores may be submitted there; otherwise results stay local. Network failure must not block play. Configuration, code existence, a healthy deployed API and a successfully verified submission are distinct evidence stages. Backend provisioning/operations belong to the backend owner; this client release does not deploy that service or add analytics.
 
 ## MVP
 
@@ -35,6 +35,7 @@ The browser MVP includes separate official Azure badges, snapshot-driven process
 - Deterministic, renderer-independent simulation with data-driven scenarios.
 - Live intervention, revenue, infrastructure cost, failure detection, and scoring.
 - Explainable results and fresh player retries; manual architecture editing, comparison and local saves in QA only.
+- Local rankings by exact challenge identity, plus optional server-replayed rankings when a configured API is available. Local scores and self-reported nicknames are not trusted identities or anti-cheat proof.
 
 The MVP simulates Azure architecture concepts. It does **not** deploy real Azure resources, use real Azure performance data, or require a backend.
 
@@ -52,7 +53,7 @@ The world is the dominant player surface. Area percentages are design guidance, 
 
 The primary player experience is demand → flow → pressure → expansion/optimization → observed business outcome. Results and redesign/replay support that loop. Better decisions can improve outcomes; more capacity alone does not guarantee more profit.
 
-The reviewed baseline includes 268 unit cases, 92 QA browser cases (including #201), seven ordinary-player cases and one Pages smoke. Real current-build comprehension/game-feel/voluntary replay will be evaluated together in #25/#195/#159 after V3. #151's missing historical comparison is retired, not fabricated. #132 and #160–#163 are frozen future work, not active implementation.
+Use the exact revision's CI and capture manifest for test totals; historical counts are not current release guarantees. Real current-build comprehension/game-feel/voluntary replay remains #25/#195/#159. #151's missing comparison is retired, not reconstructed. #132 and #160–#163 are closed not planned for this Hackathon.
 
 ```text
 Architecture Decision
@@ -84,6 +85,7 @@ docs/
 apps/
   engine-spike/          Disposable two-engine experiment and tests
   web/                   React/Phaser editor, gameplay, results and local saves
+  leaderboard-api/       Optional canonical-replay verification API; deployment is separate
 packages/
   schema/                Shared schemas and validation primitives
   cloud-domain/          Azure resource roles and architecture validation
@@ -107,6 +109,24 @@ From `apps/engine-spike/`, run `pnpm install --frozen-lockfile`, then `pnpm dev 
 
 Use Node 22.22.0 and pnpm 10.32.1. Verification commands and limits are documented in [ADR-002](docs/adr/ADR-002-GAME-ENGINE.md#reproduction-and-evidence). This is a synthetic rendering experiment, not playable Black Friday.
 
+## Technical Story
+
+- [Technical submission notes](docs/SUBMISSION_TECHNICAL_NOTES.md) — shared simulation, canonical replay and local fallback; read deployment claims alongside the status below.
+- [Leaderboard architecture](docs/LEADERBOARD_ARCHITECTURE.md) — trust boundary, challenge identity and score verification.
+- [Leaderboard deployment](docs/LEADERBOARD_DEPLOYMENT.md) — backend-owner setup and persistent-storage requirements; instructions are not deployment evidence.
+- [Rights and licensing status](docs/LICENSING_STATUS.md) — unresolved owner/third-party obligations; public source is not a license grant.
+- [Submission pack](docs/submission/README.md) — demo script, capture plan, fallback, judge Q&A and one-session human worksheet.
+
+`LEADERBOARD_API_URL` feeds the Pages build-time API setting. Verify the actual build and the backend's `/api/health` plus an approved replay submission before saying the public leaderboard is online. An unavailable/unconfigured API leaves the local leaderboard; do not label local entries as server verified. Deployment may be skipped when main advances before Quality finishes—check the actual **deploy job**, not only the workflow conclusion.
+
+The external-art experiment [PR #245](https://github.com/yeongseon/stack-and-survive/pull/245) has progressed to **Iteration04, awaiting owner review**. Earlier rejected candidates remain historical evidence; no automatic merge or runtime adoption is authorized. It is not a new game art pack or expanded rights grant.
+
+## Release verification and captures
+
+Run `pnpm capture:submission` for a production build, a real unaccelerated180-second completion and a separate no-action overload run. It captures 16 milestones including title, construction, spikes/attacks/recovery, result/local-leaderboard, overload, Pause and Settings; records source/artifact identity and before/after readouts in ignored `test-results-submission/<timestamp>/capture-manifest.json`; saves the actual completed run; and blocks external API submissions. Failed capture status is retained, not reported as success. `DEMO` is automation, not a participant. Do not represent edited excerpts as a continuous two-minute full run.
+
+Metadata is server-readable HTML (no JavaScript required), with an original inline stack favicon and the already-approved original SQL artwork as its social preview. No Microsoft icon is used as the project logo. Project-path/reload/404 recovery are checked by `pnpm test:pages`; third-party Discord/Slack/GitHub preview caches may refresh separately and require actual platform observation before claiming a rendered card is verified.
+
 ## Documents
 
 - [Product Requirements Document](docs/PRD.md) — Current scope versus planned diversity (v1.0).
@@ -120,7 +140,7 @@ Use Node 22.22.0 and pnpm 10.32.1. Verification commands and limits are document
 - [Replayability Design](docs/REPLAYABILITY_DESIGN.md), [Challenge System](docs/CHALLENGE_SYSTEM.md), [Strategy Balance](docs/ARCHITECTURE_STRATEGY_BALANCE.md) — Implemented challenge/ladder/history/profiles and measured strategies; future variety remains gated.
 - [Asset Strategy](docs/ASSET_STRATEGY.md), [Engineering Rules](docs/ENGINEERING_RULES.md), [Design References](docs/GAME_DESIGN_REFERENCES.md) — Sourcing/change discipline and text-only independent design commentary.
 
-The [current backlog (#7)](https://github.com/yeongseon/stack-and-survive/issues/7) tracks V3 art in 2–3 grouped PRs, parallel rights/manual audio checks, one combined human session and submission polish. #123/#142 are completed historical epics; #151 is not planned. Issues remain acceptance units, not a requirement for one PR per issue.
+The [current backlog (#7)](https://github.com/yeongseon/stack-and-survive/issues/7) tracks final client release/submission work, backend-owner deployment, rights/manual audio checks and one combined human session. #212/#213/#216 and V3 art are delivered; historical epics are not a request for additional systems. #151 is not planned. Issues remain acceptance units, not one-PR-per-issue requirements.
 - [ADR-002: Game Engine Selection](docs/adr/ADR-002-GAME-ENGINE.md) — Executed comparison and accepted Phaser 3.90.0 decision.
 
 `SIMULATION_SPEC.md` is the source of truth for numerical simulation behavior. `TECHNICAL_DESIGN.md` documents the architecture. The implemented local loop still requires human learning validation before demo-readiness claims; hosting requires separate authorization.

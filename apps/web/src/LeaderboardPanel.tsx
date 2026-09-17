@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { validateNickname, type LeaderboardEntry, type RankResult } from './leaderboard';
-import { formatShareText, copyToClipboard } from './global-leaderboard';
-import type { GlobalEntry } from './global-leaderboard';
+import { globalLeaderboardConfigured, formatShareText, copyToClipboard } from './global-leaderboard';
+import type { GlobalEntry, GlobalRankContext } from './global-leaderboard';
 import './leaderboard.css';
 
-export function LeaderboardPanel({ entries, currentRank, nickname, hasValidNickname, onNicknameChange, onSubmit, personalBest, qualified, globalEntries, globalRank, globalLoading, challengeName, score, availability }: {
+export function LeaderboardPanel({ entries, currentRank, nickname, hasValidNickname, onNicknameChange, onSubmit, personalBest, qualified, globalAvailable, globalEntries, globalRankContext, globalLoading, hasPending, onRetry, challengeName, score, availability }: {
   entries: LeaderboardEntry[];
   currentRank: RankResult | null;
   nickname: string;
@@ -13,9 +13,12 @@ export function LeaderboardPanel({ entries, currentRank, nickname, hasValidNickn
   onSubmit?: (nicknameOverride?: string) => void;
   personalBest: LeaderboardEntry | null;
   qualified: boolean;
+  globalAvailable?: boolean;
   globalEntries?: GlobalEntry[] | null;
-  globalRank?: number | null;
+  globalRankContext?: GlobalRankContext | null;
   globalLoading?: boolean;
+  hasPending?: boolean;
+  onRetry?: () => void;
   challengeName?: string;
   score?: number;
   availability?: number;
@@ -24,15 +27,17 @@ export function LeaderboardPanel({ entries, currentRank, nickname, hasValidNickn
   const [draft, setDraft] = useState(nickname);
   const [copied, setCopied] = useState(false);
   const error = validateNickname(draft);
-  const isGlobal = globalEntries && globalEntries.length > 0;
-  const displayEntries = isGlobal ? globalEntries : entries.slice(0, 10);
-  const displayRank = isGlobal ? globalRank : currentRank?.rank ?? null;
+  const isGlobal = !!globalAvailable;
+  const displayEntries = isGlobal && globalEntries ? globalEntries : entries.slice(0, 10);
   const currentRunId = currentRank?.entry.runId;
   const needsName = !hasValidNickname && qualified && !currentRank;
 
-  const pointsToNext = isGlobal
-    ? (globalRank && globalRank > 1 && globalEntries[globalRank - 2] ? globalEntries[globalRank - 2].score - (score ?? 0) : null)
+  // Rank display: prefer global rank context, fall back to local
+  const displayRank = isGlobal && globalRankContext ? globalRankContext.rank : currentRank?.rank ?? null;
+  const pointsToNext = isGlobal && globalRankContext ? globalRankContext.pointsToNextRank
     : currentRank?.pointsToNextRank ?? null;
+  const tieBreak = isGlobal && globalRankContext ? globalRankContext.tieBreakReason
+    : currentRank?.tieBreakReason ?? null;
 
   const handleShare = async () => {
     const text = formatShareText({
@@ -40,6 +45,7 @@ export function LeaderboardPanel({ entries, currentRank, nickname, hasValidNickn
       availability: availability ?? currentRank?.entry.availability ?? 0,
       challenge: challengeName ?? 'Black Friday',
       rank: displayRank ?? undefined,
+      globalRank: isGlobal && !!globalRankContext,
       nickname: nickname || undefined,
     });
     const ok = await copyToClipboard(text);
@@ -69,8 +75,8 @@ export function LeaderboardPanel({ entries, currentRank, nickname, hasValidNickn
       <span className="leaderboard-rank-score">{score ?? currentRank?.entry.score ?? 0} pts</span>
       {currentRank?.isPersonalBest && <span className="leaderboard-pb">NEW PERSONAL BEST</span>}
       {pointsToNext !== null && pointsToNext > 0 && <small className="leaderboard-gap">{pointsToNext} pts to #{displayRank - 1}</small>}
-      {pointsToNext === 0 && displayRank === 1 && <small className="leaderboard-gap">You're on top. Beat your own score.</small>}
-      {!isGlobal && currentRank?.tieBreakReason && <small className="leaderboard-gap">Tie-break: {currentRank.tieBreakReason === 'availability' ? 'higher availability wins' : 'earlier attempt wins'}</small>}
+      {pointsToNext === 0 && tieBreak && <small className="leaderboard-gap">Same score · {tieBreak === 'availability' ? 'improve availability' : 'earlier attempt wins'}</small>}
+      {displayRank === 1 && !pointsToNext && <small className="leaderboard-gap">You're on top. Beat your own score.</small>}
     </div>}
 
     {globalLoading && <p className="leaderboard-loading">Verifying with server...</p>}
@@ -83,7 +89,7 @@ export function LeaderboardPanel({ entries, currentRank, nickname, hasValidNickn
 
     {displayEntries.length > 0 ? <ol className="leaderboard-list">
       {displayEntries.map((entry, i) => {
-        const isYou = isGlobal ? (i + 1 === globalRank) : ('runId' in entry && entry.runId === currentRunId);
+        const isYou = isGlobal && globalRankContext ? (i + 1 === globalRankContext.rank) : ('runId' in entry && entry.runId === currentRunId);
         return <li key={isGlobal ? `g-${i}` : (entry as LeaderboardEntry).runId} className={`leaderboard-entry${isYou ? ' leaderboard-you' : ''}`}>
           <span className="leaderboard-pos">#{i + 1}</span>
           <span className="leaderboard-name">{entry.nickname}</span>
@@ -91,8 +97,12 @@ export function LeaderboardPanel({ entries, currentRank, nickname, hasValidNickn
           <span className="leaderboard-avail">{(entry.availability * 100).toFixed(1)}%</span>
         </li>;
       })}
-    </ol> : !needsName && !globalLoading && <p className="leaderboard-empty">No entries yet. Be the first on the leaderboard.</p>}
+    </ol> : !needsName && !globalLoading && <p className="leaderboard-empty">{isGlobal ? 'No verified scores yet. Be the first.' : 'No entries yet. Be the first on the leaderboard.'}</p>}
 
+    {hasPending && onRetry && <div className="leaderboard-retry">
+      <small>{globalLeaderboardConfigured ? 'Previous score not yet verified.' : 'Saved submission preserved. Server verification is not configured for this build.'}</small>
+      <button type="button" disabled={!globalLeaderboardConfigured} onClick={onRetry}>Retry server submission</button>
+    </div>}
     <div className="leaderboard-footer">
       <small className="leaderboard-device">{isGlobal ? 'Verified server replay' : 'This device · Local scores'}</small>
       {qualified && <button type="button" className="leaderboard-share" onClick={handleShare}>{copied ? 'Copied!' : 'Copy result'}</button>}

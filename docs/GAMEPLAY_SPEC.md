@@ -12,7 +12,7 @@ Title → Start Game in landscape → whole-map Fit → operating-sector reveal
  → Play again (fresh baseline) / Review business (Learn)
 ```
 
-No architecture setup precedes Start Game. Decorative TitleWorld and title help consume no gameplay time/budget and produce no results. Repeated start must not create duplicate clocks. The 180-second deterministic Black Friday schedule starts after countdown; title/review time is additional. Internal phase counters are not primary player chrome.
+No architecture setup precedes Start Game. Decorative TitleWorld and title help consume no gameplay time/budget and produce no results. Repeated start must not create duplicate clocks. The 180-second deterministic Black Friday schedule starts after countdown; title/review time is additional. Named traffic phases and the remaining mission time support the world; diagnostic tick counters remain outside ordinary play.
 
 ## 2. Initial architecture and routes
 
@@ -53,6 +53,10 @@ Cache/Edge lifecycle is exclusive: absent pad, provisioning construction, or ins
 ## 5. HUD, cards and Learn
 
 HUD: Upgrade Funds, demand, availability, pressure, lost legitimate sales/sec and next-wave countdown/RPS/bot share. Balance0.3 starts at75 funds and reinvests10% of successful sales. Last5 seconds of the next-wave countdown are highlighted only while RUNNING; pause freezes it. No future income is credited. Final/no-next phase hides the panel. Lost sales excludes bots and labels paused/final readings.
+
+The local mission-HUD follow-up (not yet deployed; see [checkpoint](submission/RELEASE_CHECKPOINT.md)) adds the remaining `mm:ss`, objective, named current phase and duration-proportional progress segments. Remaining time/progress use authoritative runtime elapsed time; the current phase uses the latest processed snapshot so it agrees with visible demand, not the next tick. The challenge determines duration, phase count and availability objective rather than hard-coded Black Friday assumptions. Current-phase/status announcements exclude the per-second countdown; reduced motion removes arrival animation, and pause/error suppress emphasis without spending time.
+
+When an actual availability/order loss streak is active, the mission shows the smaller applicable engine interruption countdown, explicitly conditional on losses continuing. This is not a forecast or a new failure rule. Pause holds the value, cleared streaks remove the corresponding risk, and results remove the risk notice. No global timer, financial reward or capacity change is introduced by these indicators.
 
 Upcoming labels describe the phase: FINAL WAVE for the last scheduled phase; Recovery window when RPS falls and bot RPS does not increase; Bot attack when bot RPS increases; Traffic spike for another RPS increase; otherwise Traffic change. These are descriptions of the existing schedule, not changed rules or a promise of recovery for every design.
 

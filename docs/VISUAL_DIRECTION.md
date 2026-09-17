@@ -1,6 +1,6 @@
 # Stack & Survive — Visual Direction
 
-Version: 0.6. Reviewed main: `aa2f826` (PR #201). **Game-first interaction is shipped** through #199/#200: camera navigation, direct facilities/bays/footprints, minimal HUD, physical construction and outcome-first results. Production Art V3 #202 is the next quality target, not another gameplay redesign. [Gameplay](GAMEPLAY_SPEC.md) owns supported controls; [camera/world interaction](PLAYER_CAMERA_AND_WORLD_INTERACTION.md) remains the cross-layer guardrail. [Resource Visual States](RESOURCE_VISUAL_STATES.md) and [Simulation](SIMULATION_SPEC.md) own truthful states and outcomes.
+Version: 0.7. Reviewed merged main: `9421e74` (PR #253). **Game-first interaction and original V3 art are delivered**, followed by balance0.3 and Settings/Pause. #202 is completed implementation history, not the next task. [Gameplay](GAMEPLAY_SPEC.md) owns supported controls; [camera/world interaction](PLAYER_CAMERA_AND_WORLD_INTERACTION.md) remains the cross-layer guardrail. [Resource Visual States](RESOURCE_VISUAL_STATES.md) and [Simulation](SIMULATION_SPEC.md) own truthful states and outcomes. The [checkpoint](submission/RELEASE_CHECKPOINT.md) separates local presentation follow-ups from deployed evidence.
 
 > The world is the primary interface.
 >
@@ -19,19 +19,19 @@ Version: 0.6. Reviewed main: `aa2f826` (PR #201). **Game-first interaction is sh
 
 These principles are implemented by the completed #197/#187–#194 sequence. Pointer play uses world targets, DOM equivalents reveal on keyboard focus, and analytical results remain under Details. #195 is actual unfamiliar-player acceptance, not missing interaction code. Keep those foundations while improving production art.
 
-## Current P0: Production Art V3
+## Delivered direction: Production Art V3
 
-Target: **stylized-realistic 2.5D isometric industrial data-center game art**. Not flat SaaS/vector-diagram styling, pixel art, cinematic3D, photorealism or unrelated sci-fi packs. #203 redesigns Intake/Edge/App facility/App module/Cache/SQL; #204 supplies one cohesive indoor kit; #205 integrates lightweight lighting, luminous semantic traffic and plaque/action/HUD micro-art. Deliver 2–3 grouped art PRs.
+Direction: **stylized-realistic 2.5D isometric industrial data-center game art**. Not flat SaaS/vector-diagram styling, pixel art, cinematic3D, photorealism or unrelated sci-fi packs. #203 facilities, #204 indoor kit and #205 integration are delivered through the original V3 runtime/refinement track. Do not reopen those groups as missing implementation.
 
 Prioritize distinguishable silhouettes, coherent materials, bright hero facilities against subordinate surroundings and truthful moving state. App retains four physical bays; SQL retains separate read/write regions; Edge is a checkpoint, Cache compact memory and Intake ingress machinery. Actual labels-hidden identification at1440x900 requires human evidence; no invented commercial-quality score.
 
-Editable source → >=512px raster master → optimized runtime PNG → Phaser plus small state overlays is encouraged, not limited to procedural SVG. Produce original/custom art first; use CC0 or verified CC-BY only when genuinely useful. Record provenance/manifest before runtime import. The old exact-inventory Pages exception does not silently extend to new bytes; review the new inventory scope alongside #164 before public runtime distribution.
+Editable source → >=512px raster master → optimized runtime PNG → Phaser plus small state overlays remains the production approach. Record provenance/manifest before runtime import. The exact-inventory Pages exception explicitly includes reviewed original V3 bytes, not arbitrary new assets. PR #245 Iteration04 is a separate environment experiment awaiting owner review, with no automatic merge or runtime adoption. Do not overlap that work with client HUD polish or silently extend approval.
 
 Fast loop: affected tests + build + inspect1440x900 + adjust, then390/1920. Run final five-width/full regression/asset checks before grouped merge; measure hardware performance after major integration, not every art tweak. No new simulation systems or unrelated refactors.
 
 ## World and facilities
 
-An indoor data-center game, not a portal, floating diagram or unrelated sci-fi collage. Desktop: Intake → Edge → central App → Cache/read branch and dominant SQL. Narrow layouts may stagger the same graph. Frame the playable aisle with subordinate racks, cooling, PDUs, vents, trays and walls; foreground utilities/cables provide depth. No outdoor roads/trees/cars/trucks/forklifts/warehouse/city scene. Props must not obscure packets, physical interaction affordances or badges.
+An indoor data-center game, not a portal, floating diagram or unrelated sci-fi collage. Intake → Edge → central App → Cache/read branch and dominant SQL keep the same canonical landscape geography on narrow screens; camera framing changes, not facility positions. Frame the playable aisle with subordinate racks, cooling, PDUs, vents, trays and walls; foreground utilities/cables provide depth. No outdoor roads/trees/cars/trucks/forklifts/warehouse/city scene. Props must not obscure packets, physical interaction affordances or badges.
 
 | Resource | Required visual grammar |
 |---|---|
@@ -77,4 +77,4 @@ Azure badges remain separate, original and unchanged: no recolor/crop/distortion
 
 Inspect real title/normal/provisioning/pressure/Cache-Edge activity/outcome scenes at 320/390/1024/1440/1920, including implemented Fit/min/max zoom, keyboard/touch, reduced motion and asset fallback. Verify exact activation, pointer hit alignment, camera invariance and representative object bounds. Record actual renderer/workload/frame measurements; software CI is not hardware FPS evidence.
 
-#195 asks an unfamiliar participant whether this looks and feels like a game before reading text, plus traffic/pressure/action/navigation/growth questions. After V3, run one session for #25 current comprehension, #195 game-first acceptance and #159 voluntary replay; retain distinct criteria and verbatim answers. Do not ask them to replay: observe the choice and record a failed criterion if they decline. Neither screenshots nor automation close human gates. #132/#160–#163 remain frozen pending evidence and explicit applicable approvals.
+#195 asks an unfamiliar participant whether this looks and feels like a game before reading text, plus traffic/pressure/action/navigation/growth questions. Use the delivered build for one session covering #25 comprehension, #195 game-first acceptance and #159 voluntary replay; retain distinct criteria and verbatim answers. Do not ask them to replay: observe the choice and record a failed criterion if they decline. Neither screenshots nor automation close human gates. #132/#160–#163 are closed not planned; future implementation requires explicit new authorization.

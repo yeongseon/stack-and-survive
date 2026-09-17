@@ -15,8 +15,14 @@ test('compact HUD and outcome preserve actual result values and narrow retry acc
   await expect(page.locator('.tycoon-header')).toHaveJSProperty('inert', true);
   await expect(page.getByTestId('world')).toHaveJSProperty('inert', true);
   await result.getByRole('button', { name: 'Review business' }).focus(); await page.keyboard.press('Tab');
-  await expect(result.locator('.outcome-details > summary')).toBeFocused();
+  await expect(result.getByRole('button', { name: 'Edit for future runs', exact: true })).toBeFocused();
   await page.keyboard.press('Shift+Tab'); await expect(result.getByRole('button', { name: 'Review business' })).toBeFocused();
+  await result.getByRole('button', { name: 'Edit for future runs', exact: true }).click();
+  const nickname = result.getByRole('textbox', { name: 'Nickname' });
+  await expect(nickname).toBeFocused();
+  await page.keyboard.press('Shift+Tab'); await expect(result.getByRole('button', { name: 'Review business' })).toBeFocused();
+  await page.keyboard.press('Tab'); await expect(nickname).toBeFocused();
+  await nickname.fill('ReviewUser'); await result.getByRole('button', { name: 'Save', exact: true }).click();
   const state = JSON.parse((await page.getByTestId('diagnostics').textContent())!);
   await expect(result.getByRole('region', { name: 'Architecture profile' })).toHaveCount(0);
   await result.getByText('Details · decisions, tradeoffs & records', { exact: true }).click();
