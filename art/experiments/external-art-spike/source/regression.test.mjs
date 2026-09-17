@@ -27,6 +27,24 @@ test('modified colormap bytes fail the real provenance verifier', async t => {
   assert.notEqual(result.status, 0, result.stdout + result.stderr);
 });
 
+test('wrong capture height fails even when PNG headers and hashes match metadata', async t => {
+  const root = await fixture(t);
+  const metadata = join(root.experiment, 'comparison/captures.json');
+  const captures = JSON.parse(await readFile(metadata, 'utf8'));
+  const capture = captures[0];
+  capture.viewport.height += 1;
+  for (const side of ['current', 'proposed']) {
+    const path = join(root.experiment, 'comparison', capture[side]);
+    const bytes = await readFile(path);
+    bytes.writeUInt32BE(capture.viewport.height, 20);
+    await writeFile(path, bytes);
+    capture[`${side}Sha256`] = sha(bytes);
+  }
+  await writeFile(metadata, JSON.stringify(captures));
+  const result = runVerifier(root);
+  assert.notEqual(result.status, 0, result.stdout + result.stderr);
+});
+
 test('wrong overlay dimensions fail even when overlay hashes are repinned', async t => {
   const root = await fixture(t);
   const path = join(root.experiment, 'renders/environment/external-overlay.png');

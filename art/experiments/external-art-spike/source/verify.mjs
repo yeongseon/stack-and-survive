@@ -38,7 +38,10 @@ test('all selected pack colormaps match pinned archive member hashes', async () 
 test('all screenshot pairs prove unchanged operating state and valid dimensions', async () => {
   const captures = await json('comparison/captures.json');
   assert.equal(captures.length, 18);
-  assert.equal(new Set(captures.map(item => `${item.viewport.width}-${item.name}`)).size, 18);
+  const scenes = ['normal', 'fit', 'close', 'construction', 'cache-edge-active', 'pressure'];
+  const expected = [[1440, 900], [1920, 1080], [844, 390]]
+    .flatMap(([width, height]) => scenes.map(name => `${width}x${height}-${name}`));
+  assert.deepEqual(captures.map(item => `${item.viewport.width}x${item.viewport.height}-${item.name}`).sort(), expected.sort());
   for (const item of captures) {
     assert.ok(Number(item.before.tick) > 0);
     for (const field of ['tick', 'resourceStates', 'playerCamera', 'worldNodes', 'worldTargets', 'flows']) {
