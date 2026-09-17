@@ -23,12 +23,11 @@ test('first-time player joins leaderboard after objective-valid completion', asy
 
   if (objectiveMet) {
     // No nickname set yet — should show Join prompt
-    await expect(leaderboard.getByText('Enter your name')).toBeVisible();
-    await leaderboard.getByRole('button', { name: 'Enter name' }).click();
+    await expect(leaderboard.getByRole('textbox', { name: 'Player name', exact: true })).toBeVisible();
 
     // Type nickname and submit
-    await leaderboard.getByRole('textbox', { name: 'Nickname' }).fill('TESTPLR');
-    await leaderboard.getByRole('button', { name: 'Join' }).click();
+    await leaderboard.getByRole('textbox', { name: 'Player name', exact: true }).fill('TESTPLR');
+    await leaderboard.getByRole('button', { name: 'Join Leaderboard', exact: true }).click();
 
     // Should immediately show rank and score
     await expect(leaderboard.locator('.leaderboard-rank-badge')).toContainText('#1');

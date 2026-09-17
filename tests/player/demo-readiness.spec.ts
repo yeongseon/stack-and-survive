@@ -39,10 +39,9 @@ test('demo readiness: empty board → first entry → second run updates rank �
 
   const score1 = Number(await page.locator('.result-score strong').textContent());
   expect(score1).toBe(8500);
-  const enterName = leaderboard.getByRole('button', { name: 'Enter name', exact: true });
-  if (await enterName.isVisible()) await enterName.click();
-    await leaderboard.getByRole('textbox', { name: 'Nickname' }).fill('DEMO');
-    await leaderboard.getByRole('button', { name: 'Join' }).click();
+   await expect(leaderboard.getByRole('textbox', { name: 'Player name', exact: true })).toBeVisible();
+     await leaderboard.getByRole('textbox', { name: 'Player name', exact: true }).fill('DEMO');
+     await leaderboard.getByRole('button', { name: 'Join Leaderboard', exact: true }).click();
 
     // Verify first entry
     await expect(leaderboard.locator('.leaderboard-rank-badge')).toContainText('#1');
@@ -67,8 +66,8 @@ test('demo readiness: empty board → first entry → second run updates rank �
   const score2 = Number(await page.locator('.result-score strong').textContent());
   expect(score2).toBeGreaterThan(score1);
   await expect(board2.locator('.leaderboard-entry')).toHaveCount(2);
-      const firstScore = Number(await board2.locator('.leaderboard-score').first().textContent());
-      const secondScore = Number(await board2.locator('.leaderboard-score').nth(1).textContent());
+      const firstScore = Number((await board2.locator('.leaderboard-score').first().innerText()).replace(/,/g, ''));
+      const secondScore = Number((await board2.locator('.leaderboard-score').nth(1).innerText()).replace(/,/g, ''));
       expect(firstScore).toBe(score2);
       expect(secondScore).toBe(score1);
       await expect(board2.locator('.leaderboard-rank-badge')).toHaveText('#1');

@@ -1,5 +1,7 @@
 import { expect, test } from '@playwright/test';
+import { formatMoney } from '../../apps/web/src/money';
 test('compact HUD and outcome preserve actual result values and narrow retry access', async ({ page }, info) => {
+  await page.addInitScript(() => localStorage.setItem('stack-and-survive.nickname', 'SavedPlayer'));
   await page.goto('/?tycoon'); await page.getByRole('button', { name: 'Start Game' }).click();
   await expect(page.getByRole('button', { name: 'Ⅱ Pause', exact: true })).toBeEnabled({ timeout: 20000 });
   const hud = page.getByRole('region', { name: 'Business status' });
@@ -15,18 +17,18 @@ test('compact HUD and outcome preserve actual result values and narrow retry acc
   await expect(page.locator('.tycoon-header')).toHaveJSProperty('inert', true);
   await expect(page.getByTestId('world')).toHaveJSProperty('inert', true);
   await result.getByRole('button', { name: 'Review business' }).focus(); await page.keyboard.press('Tab');
-  await expect(result.getByRole('button', { name: 'Edit for future runs', exact: true })).toBeFocused();
+  await expect(result.getByRole('button', { name: 'Change for future runs', exact: true })).toBeFocused();
   await page.keyboard.press('Shift+Tab'); await expect(result.getByRole('button', { name: 'Review business' })).toBeFocused();
-  await result.getByRole('button', { name: 'Edit for future runs', exact: true }).click();
-  const nickname = result.getByRole('textbox', { name: 'Nickname' });
+  await result.getByRole('button', { name: 'Change for future runs', exact: true }).click();
+  const nickname = result.getByRole('textbox', { name: 'Player name', exact: true });
   await expect(nickname).toBeFocused();
   await page.keyboard.press('Shift+Tab'); await expect(result.getByRole('button', { name: 'Review business' })).toBeFocused();
   await page.keyboard.press('Tab'); await expect(nickname).toBeFocused();
-  await nickname.fill('ReviewUser'); await result.getByRole('button', { name: 'Save', exact: true }).click();
+  await nickname.fill('ReviewUser'); await result.getByRole('button', { name: 'Save name', exact: true }).click();
   const state = JSON.parse((await page.getByTestId('diagnostics').textContent())!);
   await expect(result.getByRole('region', { name: 'Architecture profile' })).toHaveCount(0);
   await result.getByText('Details · decisions, tradeoffs & records', { exact: true }).click();
-  await expect(result).toContainText(`${state.result.economy.netBusinessValue.toFixed(1)} cr`);
+  await expect(result).toContainText(formatMoney(state.result.economy.netBusinessValue));
   await expect(result.getByRole('region', { name: 'Architecture profile' })).toBeVisible();
   await result.getByText('Details · decisions, tradeoffs & records', { exact: true }).click();
   for (const width of [320,390,1024,1440,1920]) {
