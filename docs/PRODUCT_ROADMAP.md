@@ -29,7 +29,7 @@ For any observed visual defect, use affected smoke checks and inspect real scree
 
 ## Current P0: final validation and submission
 
-Client implementation, reproducible captures and submission guidance are delivered. Verify the exact deployed revision and preserve local-only fallback. Backend-owned [#260](https://github.com/yeongseon/stack-and-survive/issues/260) blocks browser leaderboard access from the inherited `https://yeongseon.dev` origin despite API health200; no client/backend deployment changes are implied by this roadmap. Actual recording/rehearsal, participant/audio sessions and rights decisions remain unperformed.
+Client implementation, reproducible captures and submission guidance are delivered. Verify the exact deployed revision and preserve local-only fallback. Backend-owned [#260](https://github.com/yeongseon/stack-and-survive/issues/260) is closed and PR #261 merged; consult [final release readiness](submission/FINAL_RELEASE_READINESS.md) for newer browser evidence and remaining production submission/persistence gates. No client/backend deployment changes are implied by this roadmap. Participant/audio sessions and rights decisions remain separate from automated rehearsals.
 
 ## Parallel manual and release gates
 
