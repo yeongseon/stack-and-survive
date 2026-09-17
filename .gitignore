@@ -20,6 +20,8 @@ dist-qa/
 .work-item-backups/
 test-results/
 test-results-player/
+test-results-player-mission/
+test-results-player-readiness/
 test-results-performance/
 test-results-pages/
 dist-pages/

@@ -2,6 +2,16 @@ import type { View } from './controller';
 import { blackFriday } from '@stack-and-survive/scenarios';
 import { compare, value, reinvestmentRate } from '@stack-and-survive/simulation/economy';
 import type { RequestSnapshot } from '@stack-and-survive/simulation';
+import type { Scenario } from '@stack-and-survive/schema';
+
+export function trafficPhaseLabel(scenario: Scenario, index: number) {
+  if (index === scenario.traffic.length - 1) return 'FINAL WAVE';
+  if (index === 0) return 'Opening traffic';
+  const phase = scenario.traffic[index], previous = scenario.traffic[index - 1];
+  if (phase.rps < previous.rps && phase.rps * phase.botRatio <= previous.rps * previous.botRatio) return 'Recovery window';
+  if (phase.rps * phase.botRatio > previous.rps * previous.botRatio) return 'Bot attack';
+  return phase.rps > previous.rps ? 'Traffic spike' : 'Traffic change';
+}
 
 export function lostSales(requests: RequestSnapshot | null | undefined) {
   if (!requests) return null;
@@ -13,11 +23,7 @@ export function upcomingWave(view: View) {
   if (view.result) return null;
   const next=scenario.traffic.find(phase=>phase.start>view.state.runtime.time);
   if(!next)return null;
-  const current=scenario.traffic.find(phase=>phase.start<=view.state.runtime.time&&phase.end>view.state.runtime.time);
-  const label=next===scenario.traffic.at(-1)?'FINAL WAVE'
-    : current&&next.rps<current.rps&&next.rps*next.botRatio<=current.rps*current.botRatio?'Recovery window'
-    : current&&next.rps*next.botRatio>current.rps*current.botRatio?'Bot attack'
-    : current&&next.rps>current.rps?'Traffic spike':'Traffic change';
+  const label=trafficPhaseLabel(scenario,scenario.traffic.indexOf(next));
   return { seconds:next.start-view.state.runtime.time, rps:next.rps, bots:next.botRatio,
     label,
     imminent:next.start-view.state.runtime.time<=5 && view.state.runtime.status==='RUNNING' && !view.error };
