@@ -20,7 +20,7 @@ export function createLeaderboardServer(options: ServerOptions = {}): {
   stop: () => Promise<void>;
 } {
   const port = options.port ?? 3001;
-  const allowedOrigins = options.corsOrigins ?? ['http://localhost:5173', 'http://127.0.0.1:5173', 'https://yeongseon.github.io', 'https://yeongseon.dev'];
+  const allowedOrigins = options.corsOrigins ?? ['http://localhost:5173', 'http://127.0.0.1:5173', 'https://yeongseon.github.io'];
   const trustProxy = options.trustProxy ?? false;
   const storageMode = options.storageMode ?? 'memory';
   const storagePath = options.storagePath ?? './data/leaderboard.json';
@@ -151,7 +151,7 @@ const isDirectRun = process.argv[1] && (
 );
 
 if (isDirectRun) {
-  const corsOrigins = (process.env.CORS_ORIGINS ?? 'http://localhost:5173,http://127.0.0.1:5173,https://yeongseon.github.io,https://yeongseon.dev').split(',').map(s => s.trim());
+  const corsOrigins = (process.env.CORS_ORIGINS ?? 'http://localhost:5173,http://127.0.0.1:5173,https://yeongseon.github.io').split(',').map(s => s.trim());
   const app = createLeaderboardServer({
     port: Number(process.env.PORT ?? 3001),
     corsOrigins,
