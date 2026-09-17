@@ -18,7 +18,9 @@ test('three fresh starts keep one renderer, paused resources and muted settings 
     await page.getByRole('button', { name: 'Start Game', exact: true }).dblclick();
     await expect(page.getByTestId('traffic')).toContainText('100');
     await expect(page.locator('[data-renderer="ready"]')).toHaveCount(1);
-    const funds = Number.parseFloat(await page.getByTestId('budget').innerText());
+    const fundsText = await page.getByTestId('budget').innerText();
+    expect(fundsText).toMatch(/^\$[\d,.]+K$/);
+    const funds = Number(fundsText.slice(1, -1).replace(/,/g, ''));
     expect(funds).toBeGreaterThan(74); expect(funds).toBeLessThanOrEqual(75);
     await page.getByRole('button', { name: 'Ⅱ Pause', exact: true }).click();
     const paused = await page.getByTestId('budget').innerText();

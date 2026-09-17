@@ -12,6 +12,7 @@ import { LeaderboardPanel } from './LeaderboardPanel';
 import { qualifiesForLeaderboard, type RankResult } from './leaderboard';
 import { summarizeRun, type RunSummary } from './run-history';
 import { useGlobalLeaderboard } from './useGlobalLeaderboard';
+import { PlayerNameControl } from './PlayerNameControl';
 
 export function ChallengeApplication() {
   const ladder = useChallengeLadder();
@@ -37,6 +38,7 @@ export function ChallengeApplication() {
       setCurrentRank(null);
       submittedRef.current = null;
       // Fetch latest global Top 10 on result
+      global.clearRun();
       global.fetchTop(run.challenge);
       if (leaderboard.hasValidNickname && qualifiesForLeaderboard(run)) {
         const rank = leaderboard.submit(run);
@@ -66,6 +68,7 @@ export function ChallengeApplication() {
   // Only show global entries if they match the current challenge
   const matchingGlobal = global.challengeHash === selected.challenge.contentHash;
   const leaderboardPanel = <LeaderboardPanel
+    key={currentRun?.id ?? 'no-run'}
     entries={leaderboard.getEntries(selected.challenge)}
     currentRank={currentRank}
     nickname={leaderboard.nickname}
@@ -92,7 +95,9 @@ export function ChallengeApplication() {
     titleContent={<section className="challenge-select" aria-label="Challenge selection">
       <label>Challenge<select aria-label="Challenge level" value={ladder.selected} onChange={e => ladder.select(Number(e.currentTarget.value))}>
         {challengeLadder.map((level, index) => <option key={level.challenge.id} value={index} disabled={index > unlockedLevel(ladder.progress)}>{index + 1}. {level.title}{index > unlockedLevel(ladder.progress) ? ' — locked' : ladder.progress.completed.includes(level.challenge.canonical) ? ' — complete' : ''}</option>)}
-      </select></label><p>{selected.description}</p><small>Balance 0.3 · 10% sales reinvestment. Records and unlocks are separate from earlier balance versions.</small>
+      </select></label><p>{selected.description}</p>
+      <PlayerNameControl nickname={leaderboard.nickname} onSave={leaderboard.setNickname} optional />
+      <small>Balance 0.3 · 10% sales reinvestment. Records and unlocks are separate from earlier balance versions.</small>
       {unlockedLevel(ladder.progress) !== ladder.selected && <button type="button" onClick={() => ladder.select(unlockedLevel(ladder.progress))}>Continue challenge</button>}
       {ladder.message && <p role="status">{ladder.message}</p>}
       <details><summary>Progress settings</summary><button type="button" onClick={ladder.reset}>Reset challenge progress</button></details>

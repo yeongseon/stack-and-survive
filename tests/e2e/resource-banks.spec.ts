@@ -39,7 +39,7 @@ test('resource anatomy follows live construction, separate SQL pressure and actu
   const measured = await state();
   expect((await banks('database')).map((b: { state: string }) => b.state)).toEqual([measured.sql.readPressure, measured.sql.writePressure]);
   await page.getByTestId('slot-edge').getByRole('button').focus(); await page.getByTestId('slot-edge').getByRole('button').press('Enter');
-  await page.getByRole('button', { name: 'Boost filtering · 8 cr', exact: true }).click();
+  await page.getByRole('button', { name: 'Boost filtering · $8K', exact: true }).click();
   await expect.poll(edgeCue).toBe('request-dots');
   await step.click(); await expect.poll(async () => (await state()).edge.boost).toBe('scheduled');
   await expect.poll(edgeCue).toBe('activation-clock');

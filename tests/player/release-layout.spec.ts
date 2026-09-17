@@ -29,8 +29,8 @@ test('test-fixture Top 10 and long nickname remain accessible at laptop and land
     await result.getByRole('button', { name: 'Play again', exact: true }).click({ trial: true });
     await result.locator('.leaderboard-entry').last().scrollIntoViewIfNeeded();
     await expect(result.locator('.leaderboard-name').last()).toHaveText('LongPlayerName09');
-    await result.getByRole('button', { name: 'Edit for future runs', exact: true }).click();
-    const input = result.getByRole('textbox', { name: 'Nickname' });
+    await result.getByRole('button', { name: 'Change for future runs', exact: true }).click();
+    const input = result.getByRole('textbox', { name: 'Player name', exact: true });
     await expect(input).toBeFocused(); await input.fill('SixteenCharsName');
     await page.keyboard.press('Shift+Tab');
     await expect(result.getByRole('button', { name: 'Review business', exact: true })).toBeFocused();

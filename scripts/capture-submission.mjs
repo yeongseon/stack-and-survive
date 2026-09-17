@@ -91,10 +91,8 @@ try {
   assert.equal(await page.locator('.report-heading h2').textContent(), 'CHALLENGE CLEAR', 'Capture strategy must actually complete');
   await shot('11-result', 'Actual completed run; score and objective unmodified');
   const board = page.locator('[aria-label="Leaderboard"]');
-  const enter = board.getByRole('button', { name: 'Enter name', exact: true });
-  if (await enter.isVisible()) await enter.click();
-  await board.getByRole('textbox', { name: 'Nickname' }).fill('DEMO');
-  await board.getByRole('button', { name: 'Join', exact: true }).click();
+  await board.getByRole('textbox', { name: 'Player name', exact: true }).fill('DEMO');
+  await board.getByRole('button', { name: 'Join Leaderboard', exact: true }).click();
   await board.locator('.leaderboard-rank-badge').waitFor();
   if (manifest.blockedExternalRequests === 0) assert.equal(await board.getByRole('button', { name: 'Retry server submission' }).count(), 0, 'Unconfigured local mode must not claim a failed server submission');
   await board.scrollIntoViewIfNeeded();
@@ -116,7 +114,7 @@ try {
   await page.getByRole('button', { name: 'Play again', exact: true }).click();
   await page.getByRole('button', { name: 'Start Game', exact: true }).click();
   await page.waitForFunction(() => !document.querySelector('.tycoon-header button:last-child')?.disabled);
-  await page.waitForFunction(() => Number.parseFloat(document.querySelector('[data-testid="lost-sales"]')?.textContent ?? '0') > 0, null, { timeout: 45000 });
+  await page.waitForFunction(() => Number.parseFloat((document.querySelector('[data-testid="lost-sales"]')?.textContent ?? '0').replace(/[$,]/g, '')) > 0, null, { timeout: 45000 });
   await shot('14-real-overload', 'Separate fresh no-action run: actual customer loss at the first spike, not the earlier winning architecture', 260);
   await page.getByRole('button', { name: 'Ⅱ Pause', exact: true }).click();
   const pause = page.getByRole('dialog', { name: 'Game paused', exact: true });

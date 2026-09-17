@@ -3,6 +3,7 @@ import { primaryPressure } from './primary-pressure';
 import { blackFriday } from '@stack-and-survive/scenarios';
 import { lostSales, upcomingWave } from './wave-feedback';
 import { missionStatus } from './mission-status';
+import { formatMoney, formatMoneyRate } from './money';
 import './gameplay-hud.css';
 
 export function GameHUD({ view }: { view: View }) {
@@ -27,11 +28,11 @@ export function GameHUD({ view }: { view: View }) {
       {mission.riskSeconds !== null && <p className="mission-risk" data-testid="mission-risk"><span aria-hidden="true">⚠ </span>Service at risk · {mission.riskSeconds}s to interruption if losses continue</p>}
     </section>
     <section className="game-hud" aria-label="Business status">
-    <div className="hud-reading"><span aria-hidden="true">◈</span><div><small>Upgrade Funds</small><strong data-testid="budget">{budget.toFixed(1)} <small>cr</small></strong><meter aria-label="Remaining upgrade funds" min={0} max={Math.max(scenario.budget,budget)} value={Math.max(0, budget)} /></div></div>
+    <div className="hud-reading"><span aria-hidden="true">◈</span><div><small>Upgrade Funds</small><strong data-testid="budget">{formatMoney(budget)}</strong><meter aria-label="Remaining upgrade funds" min={0} max={Math.max(scenario.budget,budget)} value={Math.max(0, budget)} /></div></div>
     <div className="hud-reading"><span aria-hidden="true">⇢</span><div><small>Demand</small><strong data-testid="traffic">{demand ?? '—'} <small>req/s</small></strong><meter aria-label="Demand relative to scenario peak" min={0} max={Math.max(1, ...scenario.traffic.map(p => p.rps))} value={demand ?? 0} /></div></div>
     <div className="hud-reading"><span aria-hidden="true">✓</span><div><small>Availability</small><strong data-testid="availability">{availability === undefined ? '—' : `${(availability * 100).toFixed(1)}%`}</strong><meter aria-label="Current availability" min={0} max={1} value={availability ?? 0} /></div></div>
-    <output className={`hud-pressure${pressure.urgent ? ' urgent' : ''}`}><span aria-hidden="true">{pressure.urgent ? '⚠' : '◇'}</span>{paused ? 'Paused · ' : view.result ? 'Final · ' : ''}{pressure.label}</output>
-    <div className="hud-sales"><small>{paused?'Paused · ':view.result?'Final · ':''}Lost sales / sec</small><strong data-testid="lost-sales">{loss===null?'—':loss.toFixed(2)} <small>cr/s</small></strong></div>
-    {next && <div className={`hud-wave${next.imminent?' imminent':''}`} data-testid="next-wave"><small>{paused?'Paused · ':''}{next.label} in <b>{next.seconds}s</b></small><strong>{next.rps} <small>req/s</small>{next.bots>0&&<span> · Bots {Math.round(next.bots*100)}%</span>}</strong></div>}
+    <div className="hud-pressure-reading"><small>System pressure</small><output className={`hud-pressure${pressure.urgent ? ' urgent' : ''}`}><span aria-hidden="true">{pressure.urgent ? '⚠' : '◇'}</span>{paused ? 'Paused · ' : view.result ? 'Final · ' : ''}{pressure.label}</output></div>
+    <div className="hud-sales"><small>{paused?'Paused · ':view.result?'Final · ':''}Lost sales / sec</small><strong data-testid="lost-sales">{loss===null?'—':formatMoneyRate(loss)}</strong></div>
+    {next && <div className={`hud-wave${next.imminent?' imminent':''}`} data-testid="next-wave"><span className="hud-event-label">Next</span><small>{paused?'Paused · ':''}{next.label}<span className="hud-sr-only"> in </span><span aria-hidden="true"> · </span><b>{next.seconds}s</b></small><strong>{next.rps} <small>req/s</small>{next.bots>0&&<span> · Bots {Math.round(next.bots*100)}%</span>}</strong></div>}
   </section></>;
 }

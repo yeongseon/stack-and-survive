@@ -2,6 +2,7 @@ import type { View } from './controller';
 import { blackFriday } from '@stack-and-survive/scenarios';
 import { compare } from '@stack-and-survive/simulation/economy';
 import { definitions } from '@stack-and-survive/cloud-domain';
+import { formatMoney } from './money';
 
 export type GameEvent = { key: string; sequence?: number; time: number; clock: 'prep' | 'run'; text: string };
 export function transitionEvents(previous: View, next: View): GameEvent[] {
@@ -59,8 +60,8 @@ export function objectives(view: View): Objective[] {
     { name: `Complete ${scenario.id === 'black-friday' ? 'Black Friday' : scenario.id} operation`, status: final ? final.status === 'COMPLETED' ? 'met' : 'missed' : 'pending', value: `${view.state.runtime.time} / ${scenario.duration}s` },
     { name: `Availability ≥ ${scenario.targets.availability * 100}%`, status: current(compare(totals.availability, scenario.targets.availability) >= 0, final?.targetAttainment.availability), value: totals.noDemand ? 'No demand yet' : `${(totals.availability * 100).toFixed(2)}%` },
     { name: `Latency ≤ ${scenario.targets.latencyMs} ms`, status: current(totals.averageLatency !== null && compare(totals.averageLatency, scenario.targets.latencyMs) <= 0, final?.targetAttainment.latency), value: totals.averageLatency === null ? 'No successes yet' : `${totals.averageLatency.toFixed(0)} ms` },
-    { name: 'Stay within budget', status: current(compare(view.state.economy.remainingBudget, 0) > 0, final ? compare(final.economy.remainingBudget, 0) > 0 : undefined), value: `${view.state.economy.remainingBudget.toFixed(1)} credits` },
-    { name: `Net value ≥ ${scenario.targets.netBusinessValue}`, status: current(compare(view.state.economy.netBusinessValue, scenario.targets.netBusinessValue) >= 0, final?.targetAttainment.businessValue), value: `${view.state.economy.netBusinessValue.toFixed(1)} credits` },
+    { name: 'Stay within budget', status: current(compare(view.state.economy.remainingBudget, 0) > 0, final ? compare(final.economy.remainingBudget, 0) > 0 : undefined), value: formatMoney(view.state.economy.remainingBudget) },
+    { name: `Net value ≥ ${formatMoney(scenario.targets.netBusinessValue)}`, status: current(compare(view.state.economy.netBusinessValue, scenario.targets.netBusinessValue) >= 0, final?.targetAttainment.businessValue), value: formatMoney(view.state.economy.netBusinessValue) },
   ];
   if (view.challenge?.objective.kind === 'availability') result.unshift({
     name: `Challenge objective: availability ≥ ${view.challenge.objective.target * 100}% and complete operation`,
