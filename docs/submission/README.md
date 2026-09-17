@@ -3,6 +3,7 @@
 This is preparation material, not a claim that the submission, recording, listening or human session is complete. Record the exact release SHA and Pages artifact before using it. The client/release owner maintains this pack; the backend owner maintains API deployment and its evidence.
 
 - [Two-minute demo script](DEMO_SCRIPT.md)
+- [Watch the two-minute demo and read its transcript](../DEMO_VIDEO.md)
 - [Demo fallback and recovery](DEMO_FALLBACK.md)
 - [Reproducible screenshot plan](SCREENSHOT_PLAN.md)
 - [Judge questions and honest answers](JUDGE_QA.md)

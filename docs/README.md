@@ -21,6 +21,8 @@ Update current gameplay/technical/state documentation and root README only after
 
 ## Supporting contracts
 
+- [Demo video](DEMO_VIDEO.md): two-minute real-play recording, descriptive transcript and source identity.
+
 - [Implementation plan](IMPLEMENTATION_PLAN.md): execution order and issue dependencies.
 - [Submission pack](submission/README.md): demo/fallback/capture guidance and the unperformed human worksheet.
 - [Release checkpoint](submission/RELEASE_CHECKPOINT.md): exact revision, observed deployment/API evidence and remaining owners.

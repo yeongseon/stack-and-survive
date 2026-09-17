@@ -6,7 +6,15 @@
 
 **[Play the browser demo](https://yeongseon.github.io/stack-and-survive/)** · Project GitHub Pages game; playing never provisions real Azure resources.
 
-The project has no custom-domain/CNAME configuration. GitHub currently redirects this default project URL to an inherited account-domain URL; changing this link does not remove that platform redirect or authorize changes to the account website.
+## Watch the two-minute demo
+
+[![Watch the Stack & Survive gameplay demo](docs/media/demo-preview.jpg)](https://raw.githubusercontent.com/yeongseon/stack-and-survive/main/docs/media/stack-and-survive-demo.mp4)
+
+**[Watch / download the demo (MP4, 2:00, 5.4 MiB)](https://raw.githubusercontent.com/yeongseon/stack-and-survive/main/docs/media/stack-and-survive-demo.mp4)** · [Transcript, chapter guide and recording details](docs/DEMO_VIDEO.md)
+
+Real gameplay from released build `24ca388`, edited into two minutes with an actual title screenshot. **Silent video** for presenter narration: construction, traffic spikes, bot filtering, results and Player Name. The global board shows existing verified scores; this run was not publicly submitted. The full operation lasts180seconds; this is not a continuous two-minute run.
+
+The official game URL is the GitHub Pages link above. No custom domain is required.
 
 Pages is owner-directed under an [exact-inventory demo exception, explicitly extended to original V3 art](docs/PAGES_DEMO_EXCEPTION.md). Asset rights remain pending; this is not a general license or release clearance. The project-path build is verified with `pnpm build:pages` and `pnpm test:pages`; deployment follows successful main-branch Quality CI.
 
