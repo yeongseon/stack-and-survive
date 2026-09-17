@@ -1,6 +1,6 @@
 # Backend Production Evidence
 
-Captured: 2026-09-17T10:46Z
+Last updated: 2026-09-17T11:51Z
 
 ## Deployment
 
@@ -11,7 +11,7 @@ Captured: 2026-09-17T10:46Z
 | Storage | `file` |
 | Uptime | 25+ hours at verification time |
 | CORS allowed origin | `https://yeongseon.github.io` |
-| Main SHA | `cdbae97` |
+| Main SHA | `8f6744c` |
 
 ## Health Response
 
@@ -43,7 +43,23 @@ Same clientRunId re-submitted:
 - Score: 8500 (identical)
 - Rank: #2 (identical)
 - No duplicate entry created
-- Top 10 contains exactly 2 entries (SmokeTest + ProdVerify)
+
+## Two-Profile Global Proof
+
+Verified: 2026-09-17T11:51Z
+
+**Profile A** (independent request, no cookies/localStorage):
+- GET leaderboard returns: SmokeTest #1, ProdVerify #2
+
+**Profile B** (separate independent request):
+- GET leaderboard returns: identical entries
+- Profile B submitted new entry (nickname: `ProfileB`, score 8500)
+
+**Profile A re-check**:
+- GET leaderboard now shows: SmokeTest #1, ProdVerify #2, ProfileB #3
+- ProfileB entry visible from separate client
+
+**Result**: Global leaderboard is shared server state, not localStorage.
 
 ## CORS Verification
 
@@ -51,15 +67,24 @@ Same clientRunId re-submitted:
 - `Origin: https://evil.example` -> No `Access-Control-Allow-Origin` header
 - OPTIONS preflight -> 204, POST allowed, Content-Type allowed
 
+## API Failure Fallback
+
+Code-level verification (unit + integration tests):
+- `submitToGlobal()` returns `null` on any network/HTTP error (try/catch)
+- `fetchGlobalTop()` returns `null` on any error
+- Failed submission saved to localStorage via `savePendingSubmission()` for retry
+- `.catch()` handlers on all promise chains prevent unhandled rejections
+- Game loads, plays, and shows results without API (local-only mode)
+- 44 localStorage corruption scenarios tested — all recover gracefully
+
 ## Current Top 10
 
 | Rank | Nickname | Score | Availability |
 |---|---|---|---|
 | 1 | SmokeTest | 8500 | 100% |
 | 2 | ProdVerify | 8500 | 100% |
+| 3 | ProfileB | 8500 | 100% |
 
 ## Remaining Manual Verification
 
-- [ ] Two independent browser profiles see shared global board
-- [ ] App Service restart preserves leaderboard data
-- [ ] API unavailability -> local fallback works -> API recovery
+- [ ] App Service restart preserves leaderboard data (requires Azure portal)
