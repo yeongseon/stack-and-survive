@@ -10,13 +10,15 @@ Observed 2026-09-16 UTC (2026-09-17 KST). This is a dated handoff, not perpetual
 - Entry: <https://yeongseon.github.io/stack-and-survive/>. A fresh headless Chromium browser resolved to `https://yeongseon.dev/stack-and-survive/`, returned200 and showed the updated title and introduction. Settings opened with sound, volume, vibration, guide and fullscreen controls; this interaction produced no console errors or failed requests. No audio was enabled or judged.
 - Earlier Cache activation/Pause/reload/404 smoke is recorded in [the completed release update](https://github.com/yeongseon/stack-and-survive/issues/7#issuecomment-5696372342); it is not relabeled as newly rerun evidence.
 
-## Current blocker: backend-owned #260
+## Historical blocker: backend-owned #260 (superseded)
 
-[Issue #260](https://github.com/yeongseon/stack-and-survive/issues/260) remains open and was reproduced in a fresh browser. Reading `/api/leaderboard?challenge=fnv1a64%3A94c60ed35e117b48` from the resolved `https://yeongseon.dev` origin failed with a CORS error: no `Access-Control-Allow-Origin` response header.
+This section preserves observations from the dated checkpoint, not current deployment status. Issue #260 subsequently closed and PR #261 merged at `aec20f1`. See [final release readiness](FINAL_RELEASE_READINESS.md) for newer evidence and remaining gates. The historical redirect below must not be used as the current public entry URL.
+
+[Issue #260](https://github.com/yeongseon/stack-and-survive/issues/260) was open at this checkpoint and reproduced in a fresh browser. Reading `/api/leaderboard?challenge=fnv1a64%3A94c60ed35e117b48` from the resolved `https://yeongseon.dev` origin failed with a CORS error: no `Access-Control-Allow-Origin` response header.
 
 Read-only health returned200 and `status: ok`, `storage: file`. An OPTIONS request for POST with `Content-Type` returned204, but also lacked `Access-Control-Allow-Origin`. Neither status proves successful browser access, replay verification or storage durability across restart. No public score was submitted and no backend configuration, DNS or account setting was changed.
 
-Backend owner next steps: narrowly allow the approved actual frontend origin(s), check allowed/disallowed GET and preflight behavior, verify the browser leaderboard read, then perform a separately authorized test submission and persistence check with explicit test-data handling. Do not use wildcard CORS or claim global rankings are working based on health alone. Local gameplay remains the fallback.
+The next steps recorded then were to narrowly allow approved frontend origins and check browser GET/preflight behavior. These historical read/CORS tasks are superseded by the newer readiness report. A separately authorized production test submission and persistence check remain distinct gates; do not claim global rankings are verified based on health alone. Local gameplay remains the fallback.
 
 At the follow-up review, backend PR #261 was open for this fix and operational checks. Client presentation work does not edit those files or treat an open PR as a deployed fix. Separately, environment PR #245 is now Iteration04 awaiting owner visual review; it must not be automatically merged or imported into runtime.
 

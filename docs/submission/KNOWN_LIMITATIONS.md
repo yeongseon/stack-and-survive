@@ -4,7 +4,7 @@
 - No runtime scale-in, SQL scaling, persistent FIFO or arbitrary normal-player wiring. Lost requests are not completed later.
 - Local rankings are device/browser-specific and editable. Nicknames are self-reported. Server replay checks outcome consistency, not human play or anti-automation.
 - Backend code/configuration does not establish that the API is deployed. Repository API settings may exist without a healthy endpoint. Verify health, allowed browser origin, persistence/restart and one authorized replay submission with the backend owner.
-- The [2026-09-16 UTC release checkpoint](RELEASE_CHECKPOINT.md) records healthy API responses but reproduced browser CORS failure from the inherited frontend origin (#260). This is an unresolved backend-owned blocker, not a claim that the public global leaderboard is verified.
+- The [2026-09-16 UTC release checkpoint](RELEASE_CHECKPOINT.md) records a historical browser CORS failure. Issue #260 is now closed and PR #261 merged; see [final release readiness](FINAL_RELEASE_READINESS.md) for newer browser evidence and remaining production submission/persistence gates.
 - File persistence is single-instance only; do not make unsupported multi-replica durability claims. Do not erase data to hide a failed recovery.
 - Progress/history survive only when browser storage works. In-progress runs are not restored after refresh. Versioned conditions do not mix old balance records with new scores.
 - Phone gameplay is landscape-first; fullscreen/orientation/vibration support varies. Browser emulation is not actual hardware acceptance.
