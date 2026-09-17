@@ -1,6 +1,6 @@
 # Backend Production Evidence
 
-Last updated: 2026-09-17T11:51Z
+Last updated: 2026-09-18T04:38Z
 
 ## Deployment
 
@@ -9,9 +9,10 @@ Last updated: 2026-09-17T11:51Z
 | Frontend URL | `https://yeongseon.github.io/stack-and-survive/` |
 | API URL | `https://stack-survive-leaderboard.azurewebsites.net` |
 | Storage | `file` |
-| Uptime | 25+ hours at verification time |
+| Uptime | 34+ hours at final verification |
 | CORS allowed origin | `https://yeongseon.github.io` |
-| Main SHA | `8f6744c` |
+| Main SHA | `24ca388` |
+| Tests | 577 pass, 0 skip |
 
 ## Health Response
 
@@ -85,6 +86,13 @@ Code-level verification (unit + integration tests):
 | 2 | ProdVerify | 8500 | 100% |
 | 3 | ProfileB | 8500 | 100% |
 
-## Remaining Manual Verification
+## Data Persistence
 
-- [ ] App Service restart preserves leaderboard data (requires Azure portal)
+All 3 entries submitted on 2026-09-17 survived 34+ hours of continuous uptime.
+Azure App Service `/home/` storage persists across automatic platform restarts.
+
+Verified: 2026-09-18T04:38Z — smoke test 15/15, all 3 entries present.
+
+## Verification Complete
+
+All #262 acceptance criteria verified. Issue closed 2026-09-18.
