@@ -1,6 +1,6 @@
 # Documentation authority
 
-Reviewed merged baseline: PR #253 (`9421e74`), including the game-first interaction, V3 art, balance0.3, Settings/Pause and client release/submission preparation. Camera/art implementation is delivered, not the next work item. Human/audio/rights gates and backend-owned CORS #260 remain open. See the [release checkpoint](submission/RELEASE_CHECKPOINT.md) for dated evidence and ownership. Public source visibility is not an OSS license grant or third-party rights approval.
+The [release checkpoint](submission/RELEASE_CHECKPOINT.md) records the historical PR #253 (`9421e74`) baseline, including game-first interaction, V3 art, balance0.3, Settings/Pause and client release/submission preparation. Camera/art implementation is delivered, not the next work item. Human/audio/rights gates remain open; CORS #260 is closed and PR #261 merged. Use [final release readiness](submission/FINAL_RELEASE_READINESS.md) for newer operational evidence and remaining gates. Public source visibility is not an OSS license grant or third-party rights approval.
 
 | Order | Current authority | Responsibility |
 |---|---|---|

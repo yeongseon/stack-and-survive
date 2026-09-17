@@ -78,13 +78,13 @@ Simulation/balance changes are outside a presentation-only task; #212 separately
 
 ## 6. Platform only when justified
 
-Application boundary improvements do not authorize new workspace protocol/observability packages, servers or deployment. Future shared contracts need test-first versioning; telemetry needs consent/privacy design. GitHub Pages is separately owner-authorized under the [exact-inventory demo exception](PAGES_DEMO_EXCEPTION.md). The optional API has been deployed by the backend owner; current health200/storage:file does not prove browser access or persistence across restart. Backend-owned #260 tracks the observed CORS blocker for the redirected frontend origin. Client work must not change backend operations, account DNS or public score data without separate authorization.
+Application boundary improvements do not authorize new workspace protocol/observability packages, servers or deployment. Future shared contracts need test-first versioning; telemetry needs consent/privacy design. GitHub Pages is separately owner-authorized under the [exact-inventory demo exception](PAGES_DEMO_EXCEPTION.md). The optional API has been deployed by the backend owner; health200/storage:file alone does not prove browser access or persistence across restart. Historical CORS issue #260 is closed and PR #261 merged; consult [final release readiness](submission/FINAL_RELEASE_READINESS.md) for newer browser evidence and remaining gates. Client work must not change backend operations, account DNS or public score data without separate authorization.
 
 ## 7. Current final-delivery sequence
 
 1. Preserve #253 client metadata/local-status/layout/capture work and the [submission pack](submission/README.md); #248 documentation links are complete.
 2. Recheck exact-main Quality and the actual Pages deploy job, then public client behavior. Record dated observations rather than treating a workflow conclusion or API configuration as sufficient proof.
-3. Backend owner resolves #260 with a narrow approved-origin allowlist, browser GET and POST preflight checks, disallowed-origin checks and separately authorized replay-submission evidence. The local game remains the fallback.
+3. Preserve the resolved #260 approved-origin boundary and verify remaining backend production replay-submission/persistence evidence under separate authorization, following the final release readiness report. The local game remains the fallback.
 4. Conduct actual #25/#195/#159 participant and #149 listening/device sessions; resolve #164 rights decisions. Do not substitute automation or close these gates prematurely.
 5. Fix only observed critical blockers, rehearse and record the labeled two-minute edited demo, and complete final submission review. Captures and a script are preparation, not proof that recording or submission occurred.
 
