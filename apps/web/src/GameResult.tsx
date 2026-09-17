@@ -5,6 +5,7 @@ import { classifyArchitecture } from './architecture-profile';
 import { summarizeRun } from './run-history';
 import { architectureSummary } from './RunHistoryPanel';
 import type { RunReport } from './run-report';
+import { formatMoney, formatMoneyDelta, simulatedMoneyNote } from './money';
 
 function delta(value: number, unit: string) {
   return `${Math.abs(value) < .005 ? '0.00' : `${value > 0 ? '+' : ''}${value.toFixed(2)}`} ${unit}`;
@@ -42,9 +43,9 @@ export function GameResult({ result, architecture, report, restart, review, next
     {leaderboard}
     <details className="outcome-details"><summary>Details · decisions, tradeoffs &amp; records</summary>
     <div className="report-metrics">
-      <div><span>Business value</span><strong>{result.economy.netBusinessValue.toFixed(1)} <small>cr</small></strong></div>
+      <div><span>Business value</span><strong>{formatMoney(result.economy.netBusinessValue)}</strong></div>
       <div><span>Availability</span><strong>{(result.metrics.availability * 100).toFixed(2)}<small>%</small></strong></div>
-      <div><span>Total cost</span><strong>{(result.economy.infrastructureCost + result.economy.emergencyCost).toFixed(2)} <small>cr</small></strong></div>
+      <div><span>Total cost</span><strong>{formatMoney(result.economy.infrastructureCost + result.economy.emergencyCost)}</strong></div>
     </div>
     <div className="report-columns">
       <section className="report-profile" aria-label="Architecture profile">
@@ -61,10 +62,11 @@ export function GameResult({ result, architecture, report, restart, review, next
     </div>
     <section className="report-comparison" aria-label="Run comparison">
       {comparison?.kind === 'comparable' ? <><h3>Against your previous attempt</h3><p>Same challenge · {comparison.previous.elapsed}s · {comparison.previous.status.toLowerCase()}</p>
-        <div className="report-deltas"><span>Availability <strong>{delta(comparison.availability, 'pp')}</strong></span><span>Total cost <strong>{delta(comparison.cost, 'cr')}</strong></span><span>Business value <strong>{delta(comparison.value, 'cr')}</strong></span></div></>
+        <div className="report-deltas"><span>Availability <strong>{delta(comparison.availability, 'pp')}</strong></span><span>Total cost <strong>{formatMoneyDelta(comparison.cost)}</strong></span><span>Business value <strong>{formatMoneyDelta(comparison.value)}</strong></span></div></>
         : <p>{comparison ? `Previous attempt: ${comparison.previous.elapsed}s, ${comparison.previous.status.toLowerCase()}. Different duration or outcome — no efficiency comparison.` : report ? 'No previous recorded attempt at these conditions. Try another architecture to build a comparison.' : 'Local comparison is unavailable. Your current game result is shown above.'}</p>}
       {report && <p className="report-records-note">{report.records.length ? `New personal best · ${report.records.join(' / ')}` : !result.objectiveMet ? 'Only full objective-valid completions qualify for personal bests.' : 'Existing personal bests retained. Equal results keep the earlier record.'}</p>}
-      {report?.baseline?.kind === 'comparable' && <p>Against your previous highest-value completion: {delta(report.baseline.value, 'cr')} business value · {delta(report.baseline.cost, 'cr')} cost · {delta(report.baseline.availability, 'pp')} availability.</p>}
+      {report?.baseline?.kind === 'comparable' && <p>Against your previous highest-value completion: {formatMoneyDelta(report.baseline.value)} business value · {formatMoneyDelta(report.baseline.cost)} cost · {delta(report.baseline.availability, 'pp')} availability.</p>}
+      <p>{simulatedMoneyNote}</p>
     </section>
     {records}
     </details>

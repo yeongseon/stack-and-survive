@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { formatMoneyRate } from '../../apps/web/src/money';
 
 test('next-wave anticipation, single-action construction and reinvestment form a complete run', async ({page},info)=>{
   test.setTimeout(360000);
@@ -26,7 +27,7 @@ test('next-wave anticipation, single-action construction and reinvestment form a
   await expect(page.getByTestId('next-wave')).toContainText('Traffic spike');
   await expect(page.getByTestId('next-wave')).toHaveClass(/imminent/);
   await page.evaluate(()=>window.scrollTo(0,0));await page.screenshot({path:info.outputPath('next-wave-1440.png')});
-  await advance(25);await expect(page.getByTestId('lost-sales')).toContainText('0.00');
+  await advance(25);await expect(page.getByTestId('lost-sales')).toHaveText('$0/s');
   await expect(page.getByTestId('next-wave')).toContainText('Recovery window');
   const economy=(await view()).state.economy;
   expect(economy.remainingBudget).toBeCloseTo(75+economy.revenue*.1-economy.infrastructureCost-economy.emergencyCost,9);
@@ -36,7 +37,7 @@ test('next-wave anticipation, single-action construction and reinvestment form a
   await advance(120);
   const r=(await view()).snapshot.requests;
   const loss=(r.offered.browse-r.successful.browse)*.002+(r.offered.order-r.successful.order)*.05;
-  await expect(page.getByTestId('lost-sales')).toContainText(loss.toFixed(2));
+  await expect(page.getByTestId('lost-sales')).toHaveText(formatMoneyRate(loss));
   await page.evaluate(()=>window.scrollTo(0,0));await page.screenshot({path:info.outputPath('wave-response-1440.png')});
   await page.getByRole('button', { name: 'Ⅱ Pause', exact: true }).click(); await page.getByRole('button', { name: 'Inspect paused world', exact: true }).click();
   const frozen=await page.getByTestId('next-wave').textContent();await page.waitForTimeout(1100);

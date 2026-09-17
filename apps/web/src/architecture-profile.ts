@@ -1,4 +1,5 @@
 import type { RunSummary } from './run-history';
+import { formatMoney } from './money';
 
 export type ArchitectureProfile = {
   id: 'cache-led' | 'layered' | 'cache-first' | 'emergency-bridge' | 'mixed' | 'unknown';
@@ -19,11 +20,11 @@ export function classifyArchitecture(run: RunSummary | null): ArchitectureProfil
   const boost = actions.find(a => a.type === 'EMERGENCY_WAF');
   const evidence = [
     `${run.status === 'COMPLETED' ? 'Completed' : 'Stopped at'} ${run.elapsed}s · ${(run.availability * 100).toFixed(2)}% availability.`,
-    `${app?.instances ?? 0} active App instances · ${(run.cost + run.emergencyCost).toFixed(2)} cr total cost.`,
+    `${app?.instances ?? 0} active App instances · ${formatMoney(run.cost + run.emergencyCost)} total cost.`,
   ];
   if (cache && edge && boost && run.emergencyCost > 0) return {
     id: 'emergency-bridge', title: 'Emergency bridge', summary: 'Layered infrastructure with a paid filtering boost.',
-    evidence: [...evidence, `Filtering boost accepted at ${boost.time}s · ${run.emergencyCost.toFixed(2)} cr charged.`],
+    evidence: [...evidence, `Filtering boost accepted at ${boost.time}s · ${formatMoney(run.emergencyCost)} charged.`],
     tradeoff: 'Boosted filtering rejects more bots, but also 3% of legitimate customers during its active window.',
     experiment: 'Try preparing App capacity before the last surge instead of spending on an emergency boost.',
   };
