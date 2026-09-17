@@ -1,0 +1,16 @@
+{
+  "blender": "4.5.14 LTS",
+  "engine": "Cycles CPU",
+  "samples": 16,
+  "orthographicScale": 24,
+  "elevationDegrees": 33.36701296923175,
+  "groundSlope": 0.55,
+  "pixelsPerUnit": 100,
+  "canvas": [
+    2400,
+    1350
+  ],
+  "instances": 18,
+  "transparent": true,
+  "note": "Real GLB geometry; desaturated palette, no AI image generation"
+}

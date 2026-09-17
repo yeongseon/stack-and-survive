@@ -1,0 +1,161 @@
+{
+  "candidate": "A",
+  "name": "Clean enterprise data center",
+  "full": false,
+  "blender": "4.5.14 LTS",
+  "resolution": [
+    1200,
+    675
+  ],
+  "samples": 16,
+  "projection": {
+    "slope": 0.55,
+    "orthoScale": 24
+  },
+  "importedGeometry": [
+    {
+      "pack": "kenney-space-station",
+      "model": "wall",
+      "position": [
+        2160,
+        205
+      ],
+      "dimensions": [
+        1.1,
+        0.3,
+        1.55
+      ],
+      "rotation": 45
+    },
+    {
+      "pack": "kenney-modular-space",
+      "model": "template-wall-half",
+      "position": [
+        980,
+        175
+      ],
+      "dimensions": [
+        1.3,
+        0.2,
+        0.6
+      ],
+      "rotation": 45
+    },
+    {
+      "pack": "kenney-modular-space",
+      "model": "template-floor",
+      "position": [
+        720,
+        1040
+      ],
+      "dimensions": [
+        1.5,
+        1.5,
+        0.045
+      ],
+      "rotation": 0
+    },
+    {
+      "pack": "kenney-space-station",
+      "model": "floor-panel",
+      "position": [
+        380,
+        1050
+      ],
+      "dimensions": [
+        1.15,
+        1.15,
+        0.06
+      ],
+      "rotation": 0
+    },
+    {
+      "pack": "kenney-modular-space",
+      "model": "cables",
+      "position": [
+        2000,
+        1080
+      ],
+      "dimensions": [
+        1.1,
+        0.35,
+        0.07
+      ],
+      "rotation": 0
+    },
+    {
+      "pack": "kenney-space-station",
+      "model": "rail",
+      "position": [
+        2210,
+        1290
+      ],
+      "dimensions": [
+        1.7,
+        0.12,
+        0.55
+      ],
+      "rotation": 45
+    },
+    {
+      "pack": "kenney-space-station",
+      "model": "pipe",
+      "position": [
+        190,
+        1170
+      ],
+      "dimensions": [
+        0.14,
+        2.5,
+        0.14
+      ],
+      "rotation": 0
+    },
+    {
+      "pack": "kenney-space-station",
+      "model": "pipe-bend",
+      "position": [
+        220,
+        1230
+      ],
+      "dimensions": [
+        0.3,
+        0.3,
+        0.2
+      ],
+      "rotation": 0
+    },
+    {
+      "pack": "kenney-factory",
+      "model": "pipe-large-valve",
+      "position": [
+        290,
+        1230
+      ],
+      "dimensions": [
+        0.35,
+        0.65,
+        0.35
+      ],
+      "rotation": 0
+    },
+    {
+      "pack": "kenney-factory",
+      "model": "machine-connection-pipe",
+      "position": [
+        2290,
+        1060
+      ],
+      "dimensions": [
+        0.6,
+        0.6,
+        0.7
+      ],
+      "rotation": 0
+    }
+  ],
+  "reconstructedProps": "Original 3D rack/cooling/power equivalents based on V3 roles; not imported V3 PNGs",
+  "heroBaked": false,
+  "productionChanges": 0,
+  "outputSha256": "adfc7e0823643d6c3d332d2217e4d24026b4c9f24ec09afe3263ffd6fa56207e"
+}

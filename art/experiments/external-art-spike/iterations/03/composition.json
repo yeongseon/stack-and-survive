@@ -1,0 +1,21 @@
+{
+  "iteration": 3,
+  "canvas": [
+    2400,
+    1350
+  ],
+  "external": [
+    "kenney-space-station/pipe",
+    "kenney-factory/pipe-large-valve"
+  ],
+  "existingV3": [
+    "rack-b",
+    "rack-c",
+    "cooling-a",
+    "cooling-b",
+    "electrical-cabinet",
+    "maintenance-light"
+  ],
+  "method": "existing V3 background props and procedural floor, actual Blender utility GLBs; heroes untouched",
+  "productionRuntimeChanges": 0
+}

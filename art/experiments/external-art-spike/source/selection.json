@@ -1,0 +1,152 @@
+[
+  {
+    "pack": "kenney-space-station",
+    "name": "wall",
+    "role": "Rear wall panel",
+    "archiveMember": "Models/GLB format/wall.glb",
+    "sha256": "561253375e765f825899d13031e52c07b84304d394e1d69579e0749e23fba42f",
+    "bytes": 5252,
+    "review": "candidate",
+    "runtime": null
+  },
+  {
+    "pack": "kenney-space-station",
+    "name": "floor-panel",
+    "role": "Utility access floor",
+    "archiveMember": "Models/GLB format/floor-panel.glb",
+    "sha256": "5b9f1689347a1c490b8ddbf79f8741a6fcab1140ebcf62eb5853b36fbbdab53e",
+    "bytes": 8900,
+    "review": "candidate",
+    "runtime": null
+  },
+  {
+    "pack": "kenney-space-station",
+    "name": "computer-system",
+    "role": "Equipment tower; rack surrogate, not a literal server rack",
+    "archiveMember": "Models/GLB format/computer-system.glb",
+    "sha256": "87666d5211fdce8830d1abf55fab16bc21d67714d78f9525f1399c33c4cb54bb",
+    "bytes": 17552,
+    "review": "candidate",
+    "runtime": null
+  },
+  {
+    "pack": "kenney-space-station",
+    "name": "computer-wide",
+    "role": "Wide equipment console; second rack surrogate",
+    "archiveMember": "Models/GLB format/computer-wide.glb",
+    "sha256": "62420ce928f288f91ce85e2245e80e6c9efbee9b6e91b7ea9b83d0289fa647c4",
+    "bytes": 17136,
+    "review": "candidate",
+    "runtime": null
+  },
+  {
+    "pack": "kenney-space-station",
+    "name": "pipe",
+    "role": "Utility pipe",
+    "archiveMember": "Models/GLB format/pipe.glb",
+    "sha256": "b33fe37fee9d1dfe92dc75d5af7e54877199b9d865cb988afa25f40b7bed49ef",
+    "bytes": 3536,
+    "review": "candidate",
+    "runtime": null
+  },
+  {
+    "pack": "kenney-space-station",
+    "name": "pipe-bend",
+    "role": "Utility elbow",
+    "archiveMember": "Models/GLB format/pipe-bend.glb",
+    "sha256": "dcbb380dde0687af80f74a84c8fbd22efbb5dc007b822a6522577fba0fd0e676",
+    "bytes": 6544,
+    "review": "candidate",
+    "runtime": null
+  },
+  {
+    "pack": "kenney-space-station",
+    "name": "rail",
+    "role": "Low foreground guardrail",
+    "archiveMember": "Models/GLB format/rail.glb",
+    "sha256": "fda7cd2ab910db8e251345a9b488a41bd55da2f55627ad4344653c9d6d5c088f",
+    "bytes": 9692,
+    "review": "candidate",
+    "runtime": null
+  },
+  {
+    "pack": "kenney-space-station",
+    "name": "display-wall",
+    "role": "Environmental status display",
+    "archiveMember": "Models/GLB format/display-wall.glb",
+    "sha256": "64eb414b4ae9c665b8ef95711d8bade6285b0a7f6dfb8f1f8bd51a67ab4dec89",
+    "bytes": 8776,
+    "review": "candidate",
+    "runtime": null
+  },
+  {
+    "pack": "kenney-modular-space",
+    "name": "template-floor",
+    "role": "Peripheral floor section",
+    "archiveMember": "Models/GLB format/template-floor.glb",
+    "sha256": "a8d73df13986aff68927a872f46b121c13a1b1db0877c512e4415b02faced3e7",
+    "bytes": 2092,
+    "review": "candidate",
+    "runtime": null
+  },
+  {
+    "pack": "kenney-modular-space",
+    "name": "template-wall-half",
+    "role": "Low structural wall",
+    "archiveMember": "Models/GLB format/template-wall-half.glb",
+    "sha256": "07cbcb4603635489698f30b66f748e7d13fb19d2303dc6468d787b73bf14976f",
+    "bytes": 10440,
+    "review": "candidate",
+    "runtime": null
+  },
+  {
+    "pack": "kenney-modular-space",
+    "name": "cables",
+    "role": "Cable infrastructure",
+    "archiveMember": "Models/GLB format/cables.glb",
+    "sha256": "f689e942aad71167bde86c559061aea03537bfb07f2851aeac9fb538fec72526",
+    "bytes": 42612,
+    "review": "candidate",
+    "runtime": null
+  },
+  {
+    "pack": "kenney-factory",
+    "name": "machine-connection-pipe",
+    "role": "Cooling plant surrogate",
+    "archiveMember": "Models/GLB format/machine-connection-pipe.glb",
+    "sha256": "b2893e5f6ae2484b8d5be0d4538bc90e50dba98715976ac8c82f55b413f8985f",
+    "bytes": 32068,
+    "review": "candidate",
+    "runtime": null
+  },
+  {
+    "pack": "kenney-factory",
+    "name": "machine-window",
+    "role": "Secondary cooling enclosure surrogate",
+    "archiveMember": "Models/GLB format/machine-window.glb",
+    "sha256": "1387bd337354fca7c7cb4163e6bd4bef8711373bbe23dae01ba9d42cd35681b7",
+    "bytes": 38812,
+    "review": "candidate",
+    "runtime": null
+  },
+  {
+    "pack": "kenney-factory",
+    "name": "machine",
+    "role": "Power utility cabinet surrogate",
+    "archiveMember": "Models/GLB format/machine.glb",
+    "sha256": "a39e3042bcb7789274428357383317d70e1c31906e5301c99e7d9e90ac584863",
+    "bytes": 25620,
+    "review": "candidate",
+    "runtime": null
+  },
+  {
+    "pack": "kenney-factory",
+    "name": "pipe-large-valve",
+    "role": "Low service valve",
+    "archiveMember": "Models/GLB format/pipe-large-valve.glb",
+    "sha256": "57126374dce5b172e06d5d6f8cbaab97c9cffe3e5e726060eb14c50a5bd519b6",
+    "bytes": 42604,
+    "review": "candidate",
+    "runtime": null
+  }
+]

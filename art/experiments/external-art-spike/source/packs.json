@@ -1,0 +1,26 @@
+[
+  {
+    "id": "kenney-space-station", "name": "Space Station Kit", "version": "1.0 (bundled license)",
+    "source": "https://kenney.nl/assets/space-station-kit",
+    "url": "https://kenney.nl/media/pages/assets/space-station-kit/6475288f2e-1712749919/kenney_space-station-kit.zip",
+    "archive": "kenney-space.zip", "sha256": "215e79bd5415cff93665183390f0343ed9acf87780306331013b78520170c6d8",
+    "selected": {"wall": "Rear wall panel", "floor-panel": "Utility access floor", "computer-system": "Equipment tower; rack surrogate, not a literal server rack", "computer-wide": "Wide equipment console; second rack surrogate", "pipe": "Utility pipe", "pipe-bend": "Utility elbow", "rail": "Low foreground guardrail", "display-wall": "Environmental status display"},
+    "rejected": {"table-display-planet": "Planet display reads as spacecraft", "container-tall": "Cargo clutter does not explain data-center operation"}
+  },
+  {
+    "id": "kenney-modular-space", "name": "Modular Space Kit", "version": "1.0",
+    "source": "https://kenney.nl/assets/modular-space-kit",
+    "url": "https://kenney.nl/media/pages/assets/modular-space-kit/8261428a47-1771146076/kenney_modular-space-kit_1.0.zip",
+    "archive": "kenney-modular.zip", "sha256": "f394f7fd9eaf29c9de7e090e55b69926f699841af33b0b116f5cc0088de8a4dc",
+    "selected": {"template-floor": "Peripheral floor section", "template-wall-half": "Low structural wall", "cables": "Cable infrastructure"},
+    "rejected": {"corridor": "Enclosed corridor imposes new room geography", "gate-lasers": "Military science-fiction gate conflicts with indoor data center"}
+  },
+  {
+    "id": "kenney-factory", "name": "Factory Kit", "version": "3.0",
+    "source": "https://kenney.nl/assets/factory-kit",
+    "url": "https://kenney.nl/media/pages/assets/factory-kit/edaac9d4f6-1777639602/kenney_factory-kit_3.0.zip",
+    "archive": "kenney-factory.zip", "sha256": "7e31fb2308e90304672bd15cd18fa9d9f02c03731a8cbc57a8e3e1c181dfb0a7",
+    "selected": {"machine-connection-pipe": "Cooling plant surrogate", "machine-window": "Secondary cooling enclosure surrogate", "machine": "Power utility cabinet surrogate", "pipe-large-valve": "Low service valve"},
+    "rejected": {"conveyor": "Warehouse/production-line semantics; not a traffic route"}
+  }
+]
