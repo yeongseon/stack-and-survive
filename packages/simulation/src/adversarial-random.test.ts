@@ -35,42 +35,51 @@ function generateAdversarialActions(seed: number, count: number): Action[] {
   return actions;
 }
 
-// Random-valid-player: generates actions that are likely legal based on state awareness
-function generateValidPlayerActions(seed: number, maxActions: number): Action[] {
+// Random-valid-player: generates actions using authoritative simulation state.
+// Every generated action is submitted to the real simulation and verified accepted.
+function generateValidPlayerRun(seed: number, maxActions: number) {
   const rng = mulberry32(seed);
-  const actions: Action[] = [];
-  let seq = 0;
-  let scalePending = false;
-  let instances = 1;
-  let cacheDeployed = false;
-  let edgeDeployed = false;
-  let emergencyUsed = false;
-  let lastRateToggle = -10;
-  let rateEnabled = false;
+  let state = createSimulation(canonicalPlayerStart(), scenario);
+  state.runtime = startRuntime(state.runtime);
+  const acceptedActions: Action[] = [];
+  let rejectedCount = 0;
 
-  for (let time = 0; time < 179 && actions.length < maxActions; time++) {
-    if (rng() < 0.3) continue; // Skip some ticks
+  while (state.runtime.status === 'RUNNING') {
+    const tickActions: Action[] = [];
+    if (rng() > 0.3) { // 70% chance to attempt an action this tick
+      const rt = state.runtime;
+      const app = rt.architecture.resources.find(r => r.kind === 'compute')!;
+      const hasCache = rt.architecture.resources.some(r => r.kind === 'cache');
+      const hasEdge = rt.architecture.resources.some(r => r.kind === 'edge');
+      const edgeActive = hasEdge && rt.architecture.resources.find(r => r.kind === 'edge')!.remaining === 0;
+      const seq = rt.lastSequence + 1;
+      const candidates: Action[] = [];
 
-    const candidates: Action[] = [];
-    if (!scalePending && instances < 4) candidates.push({ type: 'SCALE_OUT', time, sequence: seq });
-    if (!cacheDeployed) candidates.push({ type: 'DEPLOY_RESOURCE', kind: 'cache', time, sequence: seq, x: 190, y: -100 });
-    if (!edgeDeployed) candidates.push({ type: 'DEPLOY_RESOURCE', kind: 'edge', time, sequence: seq, x: -210, y: 0 });
-    if (time - lastRateToggle >= 5) candidates.push({ type: 'RATE_LIMIT', enabled: !rateEnabled, time, sequence: seq });
-    if (edgeDeployed && !emergencyUsed && time > 10) candidates.push({ type: 'EMERGENCY_WAF', time, sequence: seq });
+      if (rt.scaleDue === null && app.remaining === 0 && app.instances < 4)
+        candidates.push({ type: 'SCALE_OUT', time: rt.time, sequence: seq });
+      if (!hasCache)
+        candidates.push({ type: 'DEPLOY_RESOURCE', kind: 'cache', time: rt.time, sequence: seq, x: 190, y: -100 });
+      if (!hasEdge)
+        candidates.push({ type: 'DEPLOY_RESOURCE', kind: 'edge', time: rt.time, sequence: seq, x: -210, y: 0 });
+      if (!rt.rateTransition && (rt.lastRateToggle === null || rt.time - rt.lastRateToggle >= 5))
+        candidates.push({ type: 'RATE_LIMIT', enabled: !rt.rateLimit, time: rt.time, sequence: seq });
+      if (edgeActive && !rt.emergencyUsed && rt.architecture.connections.some(c => c.from === rt.architecture.resources.find(r => r.kind === 'edge')!.id))
+        candidates.push({ type: 'EMERGENCY_WAF', time: rt.time, sequence: seq });
 
-    if (candidates.length === 0) continue;
-    const chosen = candidates[Math.floor(rng() * candidates.length)];
-    actions.push(chosen);
-    seq++;
+      if (candidates.length > 0 && acceptedActions.length < maxActions) {
+        tickActions.push(candidates[Math.floor(rng() * candidates.length)]);
+      }
+    }
 
-    // Update local state model
-    if (chosen.type === 'SCALE_OUT') { scalePending = true; setTimeout(() => { scalePending = false; instances++; }, 0); }
-    if (chosen.type === 'DEPLOY_RESOURCE' && chosen.kind === 'cache') cacheDeployed = true;
-    if (chosen.type === 'DEPLOY_RESOURCE' && chosen.kind === 'edge') edgeDeployed = true;
-    if (chosen.type === 'EMERGENCY_WAF') emergencyUsed = true;
-    if (chosen.type === 'RATE_LIMIT') { lastRateToggle = time; rateEnabled = chosen.enabled; }
+    const transition = advanceSimulation(state, scenario, tickActions);
+    state = transition.nextState;
+    for (const o of transition.outcomes) {
+      if (o.accepted) acceptedActions.push(o.action);
+      else rejectedCount++;
+    }
   }
-  return actions;
+
+  return { state, acceptedActions, rejectedCount };
 }
 
 // Reusable per-tick invariant checker
@@ -159,7 +168,15 @@ describe('per-tick invariant checking across multiple seeds', () => {
 });
 
 describe('valid-player random strategy comparison', () => {
-  it('intentional cache+scale outperforms random-valid on completion rate', () => {
+  const validRuns = Array.from({ length: 20 }, (_, i) => generateValidPlayerRun(i + 200, 10));
+
+  it('valid-player generator produces zero rejected actions', () => {
+    for (let i = 0; i < validRuns.length; i++) {
+      expect(validRuns[i].rejectedCount, `seed ${i + 200}: rejected`).toBe(0);
+    }
+  });
+
+  it('intentional cache+scale outperforms random-valid median score', () => {
     const intentional = simulateScenario(canonicalPlayerStart(), scenario, [
       { type: 'SCALE_OUT', time: 16, sequence: 0 },
       { type: 'DEPLOY_RESOURCE', kind: 'cache', time: 17, sequence: 1, x: 190, y: -100 },
@@ -167,42 +184,33 @@ describe('valid-player random strategy comparison', () => {
       { type: 'SCALE_OUT', time: 102, sequence: 3 },
     ]);
 
-    const validResults = Array.from({ length: 20 }, (_, i) => {
-      const actions = generateValidPlayerActions(i + 200, 10);
-      return simulateScenario(canonicalPlayerStart(), scenario, actions);
-    });
+    const scores = validRuns.map(r => r.state.runtime.status === 'COMPLETED' || r.state.runtime.status === 'FAILED'
+      ? simulateScenario(canonicalPlayerStart(), scenario, r.acceptedActions).score : 0);
+    const completed = validRuns.filter(r => r.state.runtime.status === 'COMPLETED').length;
+    const median = [...scores].sort((a, b) => a - b)[Math.floor(scores.length / 2)];
 
-    const validScores = validResults.map(r => r.score);
-    const validCompleted = validResults.filter(r => r.status === 'COMPLETED').length;
-    const median = [...validScores].sort((a, b) => a - b)[Math.floor(validScores.length / 2)];
-
-    // Intentional strategy must complete
     expect(intentional.status).toBe('COMPLETED');
-    // Intentional score must beat median random-valid score
     expect(intentional.score).toBeGreaterThan(median);
 
-    // Analysis output (not an assertion — informational)
     console.log(`\n=== Valid-Player Random Strategy Analysis ===`);
     console.log(`Intentional: score=${intentional.score}, completed=true`);
-    console.log(`Random-valid (n=20): median=${median}, min=${Math.min(...validScores)}, max=${Math.max(...validScores)}, completed=${validCompleted}/20`);
+    console.log(`Random-valid (n=20): median=${median}, min=${Math.min(...scores)}, max=${Math.max(...scores)}, completed=${completed}/20, rejected=0`);
   });
 
-  it('do-nothing completion rate is lower than random-valid completion rate', () => {
+  it('random-valid average score exceeds do-nothing score', () => {
     const doNothing = simulateScenario(canonicalPlayerStart(), scenario, []);
     expect(doNothing.status).toBe('FAILED');
 
-    const validResults = Array.from({ length: 20 }, (_, i) => {
-      const actions = generateValidPlayerActions(i + 300, 10);
-      return simulateScenario(canonicalPlayerStart(), scenario, actions);
+    const scores = validRuns.map(r => {
+      const result = simulateScenario(canonicalPlayerStart(), scenario, r.acceptedActions);
+      return result.score;
     });
-    const validCompleted = validResults.filter(r => r.status === 'COMPLETED').length;
+    const avg = scores.reduce((a, b) => a + b, 0) / scores.length;
+    const completionRate = validRuns.filter(r => r.state.runtime.status === 'COMPLETED').length / validRuns.length;
+    const doNothingCompletionRate = 0; // do-nothing always fails
 
-    // Some random-valid strategies should complete (cache+scale combinations)
-    // Do-nothing never completes
-    expect(validCompleted).toBeGreaterThanOrEqual(0); // conservative — at least 0
-    // But average random-valid score should beat do-nothing
-    const avgValid = validResults.reduce((s, r) => s + r.score, 0) / validResults.length;
-    expect(avgValid).toBeGreaterThan(doNothing.score);
+    expect(avg).toBeGreaterThan(doNothing.score);
+    expect(completionRate).toBeGreaterThan(doNothingCompletionRate);
   });
 });
 

@@ -94,24 +94,58 @@ describe('localStorage corruption: architecture save', () => {
 });
 
 describe('localStorage corruption: pending submission', () => {
-  it.each([
-    ['broken JSON', '{bad'],
-    ['missing nickname', '{"clientRunId":"x","challengeContentHash":"y","actions":[]}'],
-    ['missing clientRunId', '{"nickname":"A","challengeContentHash":"y","actions":[]}'],
-    ['actions not array', '{"nickname":"A","clientRunId":"x","challengeContentHash":"y","actions":"bad"}'],
-    ['null', null],
-  ])('loadPendingSubmission returns null for %s', (_label, value) => {
-    // Mock localStorage
+  function withMockStorage(value: string | null, fn: () => void) {
+    let removed = false;
     const original = globalThis.localStorage;
     Object.defineProperty(globalThis, 'localStorage', {
-      value: { getItem: () => value, setItem: () => {}, removeItem: () => {} },
+      value: { getItem: () => value, setItem: () => {}, removeItem: () => { removed = true; } },
       writable: true, configurable: true,
     });
-    try {
-      expect(loadPendingSubmission()).toBeNull();
-    } finally {
+    try { fn(); } finally {
       Object.defineProperty(globalThis, 'localStorage', { value: original, writable: true, configurable: true });
     }
+    return removed;
+  }
+
+  it.each([
+    ['broken JSON', '{bad'],
+    ['null', null],
+    ['empty object', '{}'],
+    ['missing nickname', '{"clientRunId":"test-run-id","challengeContentHash":"y","actions":[]}'],
+    ['missing clientRunId', '{"nickname":"AB","challengeContentHash":"y","actions":[]}'],
+    ['actions not array', '{"nickname":"AB","clientRunId":"test-run-id","challengeContentHash":"y","actions":"bad"}'],
+    ['short nickname', '{"nickname":"A","clientRunId":"test-run-id","challengeContentHash":"y","actions":[]}'],
+    ['long nickname', `{"nickname":"${'a'.repeat(17)}","clientRunId":"test-run-id","challengeContentHash":"y","actions":[]}`],
+    ['short clientRunId', '{"nickname":"AB","clientRunId":"short","challengeContentHash":"y","actions":[]}'],
+    ['empty challengeContentHash', '{"nickname":"AB","clientRunId":"test-run-id","challengeContentHash":"","actions":[]}'],
+    ['actions [null]', '{"nickname":"AB","clientRunId":"test-run-id","challengeContentHash":"y","actions":[null]}'],
+    ['unknown action type', '{"nickname":"AB","clientRunId":"test-run-id","challengeContentHash":"y","actions":[{"type":"HACK","time":0,"sequence":0}]}'],
+    ['NaN action time', '{"nickname":"AB","clientRunId":"test-run-id","challengeContentHash":"y","actions":[{"type":"SCALE_OUT","time":"NaN","sequence":0}]}'],
+    ['negative sequence', '{"nickname":"AB","clientRunId":"test-run-id","challengeContentHash":"y","actions":[{"type":"SCALE_OUT","time":0,"sequence":-1}]}'],
+    ['Infinity coordinate', '{"nickname":"AB","clientRunId":"test-run-id","challengeContentHash":"y","actions":[{"type":"DEPLOY_RESOURCE","kind":"cache","time":0,"sequence":0,"x":1e999,"y":0}]}'],
+    ['invalid deploy kind', '{"nickname":"AB","clientRunId":"test-run-id","challengeContentHash":"y","actions":[{"type":"DEPLOY_RESOURCE","kind":"hack","time":0,"sequence":0,"x":0,"y":0}]}'],
+    ['huge action array', JSON.stringify({ nickname: 'AB', clientRunId: 'test-run-id', challengeContentHash: 'y', actions: Array(501).fill({ type: 'SCALE_OUT', time: 0, sequence: 0 }) })],
+  ])('loadPendingSubmission returns null and clears invalid data for %s', (_label, value) => {
+    const removed = withMockStorage(value, () => {
+      expect(loadPendingSubmission()).toBeNull();
+    });
+    // Invalid data should be cleared to prevent endless retry
+    if (value !== null) expect(removed).toBe(true);
+  });
+
+  it('accepts valid pending submission', () => {
+    const valid = JSON.stringify({
+      nickname: 'TestPlayer',
+      clientRunId: 'test-run-12345678',
+      challengeContentHash: 'fnv1a64:abc123',
+      actions: [{ type: 'SCALE_OUT', time: 16, sequence: 0 }],
+    });
+    withMockStorage(valid, () => {
+      const result = loadPendingSubmission();
+      expect(result).not.toBeNull();
+      expect(result!.nickname).toBe('TestPlayer');
+      expect(result!.actions).toHaveLength(1);
+    });
   });
 });
 

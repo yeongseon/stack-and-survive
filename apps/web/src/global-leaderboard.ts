@@ -91,16 +91,31 @@ export function savePendingSubmission(pending: PendingSubmission): void {
   try { localStorage.setItem(PENDING_KEY, JSON.stringify(pending)); } catch { /* ignore */ }
 }
 
+function isValidAction(a: unknown): boolean {
+  if (!a || typeof a !== 'object') return false;
+  const o = a as Record<string, unknown>;
+  if (typeof o.time !== 'number' || !Number.isFinite(o.time) || o.time < 0 || o.time > 3600) return false;
+  if (typeof o.sequence !== 'number' || !Number.isFinite(o.sequence) || o.sequence < 0) return false;
+  if (o.type === 'SCALE_OUT' || o.type === 'EMERGENCY_WAF') return true;
+  if (o.type === 'RATE_LIMIT' && typeof o.enabled === 'boolean') return true;
+  if (o.type === 'DEPLOY_RESOURCE' && (o.kind === 'cache' || o.kind === 'edge')
+    && typeof o.x === 'number' && Number.isFinite(o.x) && typeof o.y === 'number' && Number.isFinite(o.y)) return true;
+  return false;
+}
+
 export function loadPendingSubmission(): PendingSubmission | null {
   try {
     const raw = localStorage.getItem(PENDING_KEY);
-    if (!raw) return null;
+    if (!raw || raw.length > 200000) return null;
     const data = JSON.parse(raw);
-    if (typeof data.nickname === 'string' && typeof data.clientRunId === 'string'
-      && typeof data.challengeContentHash === 'string' && Array.isArray(data.actions))
-      return data as PendingSubmission;
-  } catch { /* ignore */ }
-  return null;
+    if (!data || typeof data !== 'object') return null;
+    if (typeof data.nickname !== 'string' || data.nickname.length < 2 || data.nickname.length > 16) { clearPendingSubmission(); return null; }
+    if (typeof data.clientRunId !== 'string' || data.clientRunId.length < 8 || data.clientRunId.length > 64) { clearPendingSubmission(); return null; }
+    if (typeof data.challengeContentHash !== 'string' || data.challengeContentHash.length === 0) { clearPendingSubmission(); return null; }
+    if (!Array.isArray(data.actions) || data.actions.length > 500) { clearPendingSubmission(); return null; }
+    if (!data.actions.every(isValidAction)) { clearPendingSubmission(); return null; }
+    return data as PendingSubmission;
+  } catch { clearPendingSubmission(); return null; }
 }
 
 export function clearPendingSubmission(): void {
