@@ -39,6 +39,22 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 1920, height: 108
     const skip = page.getByRole('button', { name: 'Skip guide', exact: true });
     if (await skip.isVisible()) await skip.click();
     await expectContainedHud(page, 130);
+    const command = await page.locator('.game-command-hud').evaluate(hud => {
+      const rect = (selector: string) => {
+        const r = hud.querySelector(selector)!.getBoundingClientRect();
+        return { x: r.x, y: r.y, width: r.width, height: r.height };
+      };
+      return { brand: rect('h1'), phase: rect('.mission-phase strong'), status: rect('.mission-phase small'),
+        clock: rect('.mission-clock'), controls: rect('nav'),
+        buttons: [...hud.querySelectorAll('nav button')].map(button => button.getBoundingClientRect().height) };
+    });
+    expect(command.buttons.every(height => height >= 44)).toBe(true);
+    expect(command.clock.x + command.clock.width).toBeLessThanOrEqual(command.controls.x);
+    if (viewport.width >= 1440) {
+      expect(command.brand.height).toBeGreaterThanOrEqual(20);
+      expect(command.phase.x).toBeGreaterThan(command.status.x + command.status.width);
+      expect(Math.abs(command.phase.y - command.status.y)).toBeLessThan(8);
+    }
     if (viewport.width === 1920) {
       const strip = await page.getByRole('region', { name: 'Business status' }).boundingBox();
       expect(strip!.width).toBeLessThanOrEqual(1400);
