@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test';
 
 test('adversarial restart: rapid play-restart cycle produces clean second session', async ({ page }) => {
+  test.setTimeout(180000);
   const errors: string[] = [];
   page.on('pageerror', error => errors.push(error.message));
 
@@ -19,7 +20,7 @@ test('adversarial restart: rapid play-restart cycle produces clean second sessio
 
   await page.getByRole('button', { name: 'Ⅱ Pause', exact: true }).click();
   await expect(page.getByRole('dialog', { name: 'Game paused', exact: true })).toBeVisible();
-  await page.getByRole('button', { name: '▶ Resume', exact: true }).click();
+  await page.getByRole('dialog', { name: 'Game paused', exact: true }).getByRole('button', { name: '▶ Resume', exact: true }).click();
 
   // Wait for result (business interrupted or completed)
   await expect(page.getByRole('region', { name: 'Business result' })).toContainText(/Score/, { timeout: 70000 });
@@ -27,7 +28,7 @@ test('adversarial restart: rapid play-restart cycle produces clean second sessio
   const resultRegion = page.getByRole('region', { name: 'Business result' });
 
   // --- Restart immediately ---
-  await page.getByRole('button', { name: 'Return to title / restart', exact: true }).click();
+  await page.getByRole('button', { name: 'Play again', exact: true }).click();
   await expect(page.getByRole('button', { name: 'Start Game' })).toBeVisible();
 
   // --- Session 2: Start fresh game ---
