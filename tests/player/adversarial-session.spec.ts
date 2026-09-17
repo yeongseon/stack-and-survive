@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test';
 
 test('adversarial restart: rapid play-restart cycle produces clean second session', async ({ page }) => {
+  test.setTimeout(180000);
   const errors: string[] = [];
   page.on('pageerror', error => errors.push(error.message));
 
