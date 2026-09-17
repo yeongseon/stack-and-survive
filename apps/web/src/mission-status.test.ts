@@ -54,10 +54,10 @@ it('supports a different workload duration and exact availability objective with
   const controller = createController({ start: () => () => {} }, undefined, true, challenge);
   controller.start(); controller.inspectNextTick();
   const view = controller.getSnapshot(), before = structuredClone(view);
-  expect(missionStatus(view)).toMatchObject({ clock: '00:11', duration: 12, objective: 'Finish with ≥99.9% availability', phaseIndex: 0 });
+  expect(missionStatus(view)).toMatchObject({ clock: '00:11', duration: 12, objective: 'Finish with ≥99.9% availability', phaseIndex: 0, label: 'FINAL WAVE' });
   expect(view).toEqual(before);
   while (!controller.getSnapshot().result) controller.inspectNextTick();
-  expect(missionStatus(controller.getSnapshot())).toMatchObject({ status: 'Finished', clock: '00:00', arriving: false });
+  expect(missionStatus(controller.getSnapshot())).toMatchObject({ status: 'Finished', clock: '00:00', arriving: false, label: 'FINAL WAVE' });
   controller.destroy();
 });
 

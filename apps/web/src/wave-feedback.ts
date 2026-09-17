@@ -5,9 +5,9 @@ import type { RequestSnapshot } from '@stack-and-survive/simulation';
 import type { Scenario } from '@stack-and-survive/schema';
 
 export function trafficPhaseLabel(scenario: Scenario, index: number) {
+  if (index === scenario.traffic.length - 1) return 'FINAL WAVE';
   if (index === 0) return 'Opening traffic';
   const phase = scenario.traffic[index], previous = scenario.traffic[index - 1];
-  if (index === scenario.traffic.length - 1) return 'FINAL WAVE';
   if (phase.rps < previous.rps && phase.rps * phase.botRatio <= previous.rps * previous.botRatio) return 'Recovery window';
   if (phase.rps * phase.botRatio > previous.rps * previous.botRatio) return 'Bot attack';
   return phase.rps > previous.rps ? 'Traffic spike' : 'Traffic change';
