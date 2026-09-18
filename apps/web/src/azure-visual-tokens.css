@@ -1,0 +1,38 @@
+:root {
+  color-scheme: dark;
+  --surface-canvas: #081922;
+  --surface-panel: #102634;
+  --surface-card: #153342;
+  --surface-elevated: #204759;
+  --border-default: #53798a;
+  --border-selected: #7edce8;
+  --text-primary: #eff7fa;
+  --text-secondary: #c0d6df;
+  --text-muted: #a0bcc8;
+  --accent-azure: #71baff;
+  --accent-cyan: #7edce8;
+  --status-healthy: #95dfb9;
+  --status-warning: #f5cc83;
+  --status-critical: #ffaaa4;
+  --status-offline: #aebcc6;
+  --traffic-normal: #c0d6df;
+  --traffic-read: #7edce8;
+  --traffic-write: #f5cc83;
+  --traffic-bot: #ffaaa4;
+  --focus-ring: #f5cc83;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --radius-card: 8px;
+  --console-ink: var(--text-primary);
+  --console-muted: var(--text-secondary);
+}
+.azure-experience :is(button, a, input, summary):focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 3px; }
+.azure-experience { background-color: var(--surface-canvas); color: var(--text-primary); }
+.azure-experience .game-command-hud { background: var(--surface-panel); border-color: var(--border-default); }
+.azure-experience .learn-dialog { background: var(--surface-panel); color: var(--text-primary); border-color: var(--border-default); }
+@media (prefers-reduced-motion: reduce) {
+  .azure-experience .azure-resource-node, .azure-experience .azure-tutorial, .azure-experience .azure-services-panel { animation: none; transition: none; scroll-behavior: auto; }
+}
