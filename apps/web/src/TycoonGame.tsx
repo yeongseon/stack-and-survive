@@ -19,6 +19,10 @@ import { createPlayerNavigation } from './player-navigation';
 import { createLandscapeClock, enhanceLandscape, requiresLandscape } from './landscape-session';
 import { v3 } from './art-v3';
 import './player-console.css';
+import { MissionBrief } from './MissionBrief';
+import { PhaseArrival } from './PhaseArrival';
+import { missionBrief } from './mission-brief';
+import './onboarding.css';
 
 export function TycoonGame({ challenge = blackFridayChallenge, titleContent, onResult, nextLevel, resultContent, leaderboardContent, runReport }: {
   challenge?: Challenge; titleContent?: ReactNode; onResult?: (result: NonNullable<View['result']>, finalArchitecture: Architecture) => void; nextLevel?: () => void; resultContent?: ReactNode; leaderboardContent?: ReactNode;
@@ -116,7 +120,7 @@ export function TycoonGame({ challenge = blackFridayChallenge, titleContent, onR
   const open = (next: typeof page) => { dialogOpener.current = document.activeElement instanceof HTMLElement ? document.activeElement : null; setPage(next); dialog.current?.showModal(); };
   const runtime = view.state.runtime;
   const currentChallenge = view.challenge ?? blackFridayChallenge;
-  const scenarioName = currentChallenge.workload.id === 'black-friday' ? 'Black Friday' : currentChallenge.workload.id;
+  const brief = missionBrief(currentChallenge.workload);
   const enhance = () => {
     const generation = ++enhancementGeneration.current;
     if (matchMedia('(pointer: coarse)').matches) void enhanceLandscape(document.documentElement).then(message => {
@@ -153,6 +157,7 @@ export function TycoonGame({ challenge = blackFridayChallenge, titleContent, onR
         <h1><span className="title-stack">STACK</span> <em>&amp;</em> SURVIVE</h1><p className="title-tagline">Build. Scale. Keep the business flowing.</p>
         <p className="title-description">Your customers are arriving. Make every infrastructure decision count.</p>
       </div>
+      <MissionBrief scenario={currentChallenge.workload} />
       <div className="title-bottom">{titleContent}<nav className="title-actions" aria-label="Introduction">
         <button type="button" aria-label="How to Play" onClick={() => open('how')}>How to Play<small>Learn the basics</small></button>
         <button ref={startButton} type="button" aria-label="Start Game" className="start-game" onClick={() => start()}>▶ Start Game<small>One business. {currentChallenge.workload.duration === 180 ? 'Three minutes.' : `${currentChallenge.workload.duration} seconds.`}</small></button>
@@ -167,9 +172,10 @@ export function TycoonGame({ challenge = blackFridayChallenge, titleContent, onR
       </div>
       {pauseMenuVisible && runtime.status === 'PAUSED' && !view.result && !view.error && !orientationGate && <PauseMenu sound={sound} guide={guide} onResume={() => { hidePause(); if(!gateOpen.current&&!controller.getSnapshot().error)controller.resume(); }} onInspect={hidePause} onHowToPlay={() => { helpFromPause.current=true; hidePause(); open('how'); }} onReturnToTitle={restart} />}
       <WorldGuide view={view} guide={guide} returnFocus={() => learnButton.current?.focus()} />
+      {!opening && !orientationGate && <PhaseArrival view={view} />}
       <GameFloor controller={controller} view={view} navigation={navigation} onReady={ready} blocked={opening || orientationGate} guideTarget={guide.visible ? guideHint(view, guide.stage).target : null} />
-      {opening && !orientationGate && <div className="opening-caption" role="status" data-testid="opening-reveal"><small>YOUR DATA CENTER</small><strong>The whole hall. One living business.</strong><span>Preparing the operational sector</span></div>}
-      {view.countdown !== null && <div className="welcome-countdown" role="status">{scenarioName} begins in <strong>{view.countdown}</strong></div>}
+      {opening && !orientationGate && <div className="opening-caption" role="status" data-testid="opening-reveal"><small>{brief.name}</small><strong>Protect customers for {brief.duration} seconds.</strong><span>Build App · Cache · Edge before waves arrive.</span></div>}
+      {view.countdown !== null && <div className="welcome-countdown" role="status"><span className="countdown-name">{brief.name} opens in</span><strong>{view.countdown}</strong><span className="countdown-forecast">Starting: {brief.opening} req/s<br />Final: {brief.final} req/s · {brief.bots}% bots</span></div>}
       {view.notice && diagnosticsEnabled && <p className="tycoon-notice">{view.notice}</p>}
       {view.result && <GameResult result={view.result} architecture={runtime.architecture} report={runReport?.result === view.result ? runReport.data : null} restart={restart} review={() => open('learn')} nextLevel={view.result.objectiveMet ? nextLevel : undefined} records={resultContent} leaderboard={leaderboardContent} />}
       {view.error && <section role="alert" className="tycoon-result"><p>{view.error}</p><button ref={rebuildButton} type="button" onClick={() => controller.recoverRenderer()}>Rebuild graphics</button><button type="button" onClick={restart}>Return to title</button></section>}
