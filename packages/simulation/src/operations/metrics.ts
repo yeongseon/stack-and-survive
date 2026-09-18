@@ -4,7 +4,7 @@
  *
  * Derivation formulas documented in docs/simulation-metrics.md.
  */
-import { definitions } from '@stack-and-survive/cloud-domain';
+import { definitions, appTiers, databaseTiers, readReplica, resourceTier, resourceRunningCost } from '@stack-and-survive/cloud-domain';
 import type { RequestSnapshot } from '../index';
 import type { SimulationMetrics, ResourceState, AzureResourceCategory } from './contract';
 import type { SimulationState } from '../results';
@@ -22,17 +22,18 @@ export function deriveResourceStates(state: SimulationState): ResourceState[] {
   return r.architecture.resources.map(resource => {
     const def = definitions[resource.kind];
     const offline = resource.remaining > 0;
-    const costPerMinute = offline ? 0 : def.cost * resource.instances;
+    const costPerMinute = resourceRunningCost(resource);
     let utilization = 0;
     let capacity = 0;
 
     if (resource.kind === 'compute') {
-      capacity = resource.instances * 150;
+      capacity = resource.instances * appTiers[resourceTier(resource) - 1].capacity;
       utilization = state.runtime.status === 'RUNNING' && !offline ? (state.attribution.appUtilSum / Math.max(1, state.attribution.ticks)) : 0;
     } else if (resource.kind === 'database') {
-      capacity = 180 + 70; // read + write
+      const tier = databaseTiers[resourceTier(resource) - 1];
+      capacity = tier.reads + tier.writes + (resource.readReplicas ?? 0) * readReplica.capacity;
       const ticks = state.attribution.ticks;
-      utilization = ticks > 0 ? state.attribution.peaks.sqlRead / 180 : 0;
+      utilization = ticks > 0 ? Math.max(state.attribution.peaks.sqlRead, state.attribution.peaks.sqlWrite) : 0;
     } else if (resource.kind === 'cache') {
       capacity = 500;
       utilization = state.attribution.eligibleReads > 0 ? state.attribution.cacheHits / state.attribution.eligibleReads : 0;

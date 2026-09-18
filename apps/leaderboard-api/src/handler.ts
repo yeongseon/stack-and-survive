@@ -1,4 +1,4 @@
-import { parseChallenge, type Challenge } from '@stack-and-survive/scenarios/challenge';
+import { parseChallenge, blackFridayChallengeV03, type Challenge } from '@stack-and-survive/scenarios/challenge';
 import { challengeLadder } from '@stack-and-survive/scenarios/ladder';
 import { canonicalPlayerStart } from '@stack-and-survive/cloud-domain';
 import { replayRun } from '@stack-and-survive/simulation/replay';
@@ -10,6 +10,10 @@ const MAX_ACTIONS = 500;
 const MAX_BODY_SIZE = 200_000;
 const supportedChallenges = new Map<string, Challenge>();
 for (const level of challengeLadder) supportedChallenges.set(level.challenge.contentHash, level.challenge);
+for (const level of challengeLadder) {
+  const legacy = parseChallenge({ ...blackFridayChallengeV03, id: level.challenge.id, objective: level.challenge.objective });
+  supportedChallenges.set(legacy.contentHash, legacy);
+}
 
 function validateNickname(name: string): string {
   const trimmed = name.trim();
