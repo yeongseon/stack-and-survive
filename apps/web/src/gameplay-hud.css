@@ -15,7 +15,8 @@
 .mission-phase {display:flex;align-items:baseline;gap:14px;min-width:0}
 .mission-phase small {display:block;font-size:10px;letter-spacing:.06em;color:#9db9c5;white-space:nowrap}
 .mission-phase strong {display:block;margin:0;font-size:16px;line-height:1.1;color:var(--mission-accent);white-space:nowrap}
-.mission-clock {display:flex;flex-direction:row;align-items:baseline;gap:6px}.mission-clock strong {font-size:26px;line-height:1;letter-spacing:.03em}.mission-clock small {font-size:9px;color:#9db9c5}
+.mission-clock {display:flex;flex-direction:row;align-items:baseline;gap:6px}.mission-clock strong {font-size:26px;line-height:1;letter-spacing:.03em;transition:color .3s,font-size .3s}.mission-clock small {font-size:9px;color:#9db9c5;transition:color .3s}
+.mission-clock.final-seconds strong {font-size:32px;color:#ff8a6b}.mission-clock.final-seconds small {color:#ffb493;font-weight:700;letter-spacing:.15em;font-size:10px}
 .mission-timeline {display:flex;gap:4px;margin-top:5px;height:2px}.mission-timeline>span {position:relative;flex-basis:0;background:#69849244;overflow:hidden}.mission-timeline>span.current {background:#aac4cf55}.mission-timeline i {display:block;height:100%;background:var(--mission-accent)}
 .mission-hud.service-risk{--mission-accent:#ffb493}.mission-risk{margin:3px 0 0;font-size:10px;color:#ffd0b9;line-height:1.2;white-space:nowrap}
 .mission-accessible-progress,.mission-objective,.hud-sr-only {position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);margin:0;padding:0}
@@ -25,6 +26,7 @@
 .tycoon-game.diorama-game:not(:has(.title-screen)) {padding:0}
 @keyframes mission-arrival {from{opacity:.5;translate:0 3px}to{opacity:1;translate:0 0}}
 @media(prefers-reduced-motion:reduce){.mission-hud.phase-arriving .mission-phase strong,.phase-detail{animation:none}}
+.funds-reinvest {color:#6bdf8b;font-size:9px;margin-left:6px;font-weight:600}
 .tycoon-game.diorama-game .game-command-hud .hud-reading {min-width:0;gap:0;display:block}
 .tycoon-game.diorama-game .game-command-hud .hud-reading>span {display:none}
 .tycoon-game.diorama-game .game-command-hud .hud-reading strong {display:block;font-size:20px;line-height:1.15;margin:3px 0 0}
