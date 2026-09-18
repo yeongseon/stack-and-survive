@@ -6,7 +6,7 @@ async function openSQL(page: Page) {
 }
 async function openApp(page: Page) {
   const close = page.getByRole('button', { name: 'Close resource', exact: true }); if (await close.count()) await close.click();
-  await page.locator('[data-testid="world"] canvas').click({ position: { x: 700, y: 560 } });
+  const app = page.getByRole('button', { name: 'Inspect App scaling', exact: true }); await app.focus(); await app.press('Enter');
   await expect(card(page).getByRole('heading', { name: 'Azure App Service' })).toBeVisible();
 }
 test('real 180-second architecture evolves through horizontal, vertical and read scaling', async ({ page }, info) => {

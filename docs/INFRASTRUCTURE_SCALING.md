@@ -84,7 +84,7 @@ Initial baseline597 unit tests passed before edits. Additive core preserved all5
 
 Human ten-second comprehension, new optional art delivery and broader balance tuning are not proven by automated screenshots. No live leaderboard submission or deployment is claimed.
 
-Latest local checks (before final visual-main integration):638 unit tests,3 real production scaling browser tests,11 release API/identity tests,8 QA history/ladder/resource regressions and1 player currency regression passed. Frontend typecheck/lint/production/QA builds and backend replay bundle passed. Seven original-art tests and exact demo asset inventory passed. A full evolving run completed180s at9474points; the test never posted it to a public leaderboard. Merging other main work can change test counts; rerun before release.
+Latest local checks after main8211b5a integration:650 unit tests,3 real production scaling browser tests,11 release API/identity tests,8 QA history/ladder/resource regressions and1 player currency regression passed. Frontend typecheck/lint/production/QA builds and backend replay bundle passed. Seven original-art tests and exact demo asset inventory passed. The three scaling tests were rerun after integrating mission banners/HUD and passed again; captures were refreshed. A full evolving run completed180s at9474points; the test never posted it to a public leaderboard. The separate Azure visual PR still needs main integration before release, which can change test counts.
 
 ## Captured scenes
 

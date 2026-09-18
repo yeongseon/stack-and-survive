@@ -136,6 +136,7 @@ export function GameFloor({ controller, view, navigation, onReady, blocked = fal
         {runtime.scaleDue !== null ? <span className="slot-progress">Expanding · {visual.app.scaleRemaining}s</span> : <button type="button" aria-label="+ App capacity" aria-disabled={controller.actionReason({type:'SCALE_OUT'})!==null} title={controller.actionReason({type:'SCALE_OUT'})??`${appHorizontalScaling.addDelay}s to activate · +${formatMoneyRate(appTiers[resourceTier(app)-1].cost, 'min')}`} onClick={() => { if (controller.actionReason({type:'SCALE_OUT'}) === null) beginBuild('compute'); }}>Expand App<small>{app.instances}/4 active · {appHorizontalScaling.addDelay}s · +{formatMoneyRate(appTiers[resourceTier(app)-1].cost, 'min')}</small></button>}
       </div>
       <button type="button" className="intake-control" style={at('internet')} onClick={() => select('internet')}>Traffic intake</button>
+      <button type="button" className="intake-control" style={at('compute')} onClick={() => select(app.id)}>Inspect App scaling</button>
       <button type="button" className="intake-control" style={at('database')} onClick={() => select('database')}>SQL processing</button>
       </div>
       {actionFeedback&&<div className={`action-feedback${actionFeedback.rejected?' rejected':''}`} role="status" style={messagePosition(actionFeedback.kind)}>{actionFeedback.text}</div>}

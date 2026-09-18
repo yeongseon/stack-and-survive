@@ -4,48 +4,48 @@
   "captures": [
     {
       "name": "sql-bottleneck.png",
-      "bytes": 910881,
-      "sha256": "00f4af4ef352858490054e8dc1e019596d32a5fe608b24d90c78faa8cc0d5cd4"
+      "bytes": 913768,
+      "sha256": "0d238064bfa6fefbd952f7b1d3e7786062521ab2b96700059cc0137475b6bb3c"
     },
     {
       "name": "01-initial.png",
-      "bytes": 909291,
-      "sha256": "0a69c9b7c6817c8034ca293a73817bc5c9b952d0b5696f16beff65b78da252a4"
+      "bytes": 910116,
+      "sha256": "ba1b58ddb4076611e65aabeac5fc55073c8e7b5a8af1fc98420c0259b57cf060"
     },
     {
       "name": "02-app-x4.png",
-      "bytes": 967435,
-      "sha256": "7a2e231fe394633ddcab40969f314658cb5b74af851f4b1b31cf698631a118e0"
+      "bytes": 968533,
+      "sha256": "5f2ec21269f8c6734f6e4c2ce2fbcd8fe9fe16d2b534e3ba16ed7dffff7f88ae"
     },
     {
       "name": "03-app-tier2.png",
-      "bytes": 934170,
-      "sha256": "3a9e28ae35b6fb003e35ebd4c5c46a519b8bf7ee99386c21c1e0e7bcb628cbe1"
+      "bytes": 935088,
+      "sha256": "53736939161924a04fe8da09d0d651146e98a047a0ba592732ede9a17dc44e05"
     },
     {
       "name": "04-sql-tier2.png",
-      "bytes": 934667,
-      "sha256": "5969665c99db5e81b6f2a21f54ffe1d7a226f5bdd75bc3629be8df4dd8b908b5"
+      "bytes": 935598,
+      "sha256": "e5dd4c6efc6efb30ac0538abacc93af995ceb4d75f4e2a50cac80bdf971b7ae8"
     },
     {
       "name": "05-sql-tier3.png",
-      "bytes": 933605,
-      "sha256": "896425a1877f840c3ad5ae912c0215f5bca5e9eb18c24ef342b91f67c06ce945"
+      "bytes": 934639,
+      "sha256": "42f99e049e3c561f67403c7e17d3e885cbe1710fff54b5bbb659d2dbe77d2bed"
     },
     {
       "name": "06-sql-read-replica.png",
-      "bytes": 945152,
-      "sha256": "36a62c1fdb30ee49cf0e4af6274ab9d0b926647f5c4d28fb4322c24ebc47bf2e"
+      "bytes": 946562,
+      "sha256": "34131cee2dc0674856e44ba344e010f087d1061cf923dfc6129429e36ed3f1dd"
     },
     {
       "name": "07-late-architecture.png",
-      "bytes": 937154,
-      "sha256": "52f9ff2e44558f90689f996ad7ccd0501d2b7381dd43e6aab97d623a4e17ef9a"
+      "bytes": 938535,
+      "sha256": "23932b32d29f41c483c96ea32fae12f249d0e95c19565d7534ab135599d69e89"
     },
     {
       "name": "08-result.png",
-      "bytes": 574226,
-      "sha256": "3855cd7126ef0e842454d851bc6e5059872b40fcdb834fa616cab5761f222e34"
+      "bytes": 574434,
+      "sha256": "157a04e03530c677bde32403d6d6beea26b09948d1cfb749a48f7da6437a6633"
     }
   ]
 }
