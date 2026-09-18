@@ -22,7 +22,7 @@ test('next-wave anticipation, single-action construction and reinvestment form a
   const queued=(await view()).queuedActions;expect(queued).toHaveLength(1);
   await build('+ App capacity');expect((await view()).queuedActions).toHaveLength(1);
   await expect(page.getByRole('status').filter({hasText:/already|pending|queued/i})).toBeVisible();
-  await step.click();await build('Add Cache');
+  await step.click();await build('Deploy Cache — reduces SQL reads');
   await advance(20);await expect(page.getByTestId('next-wave')).toContainText('5s');
   await expect(page.getByTestId('next-wave')).toContainText('Traffic spike');
   await expect(page.getByTestId('next-wave')).toHaveClass(/imminent/);
@@ -31,7 +31,7 @@ test('next-wave anticipation, single-action construction and reinvestment form a
   await expect(page.getByTestId('next-wave')).toContainText('Recovery window');
   const economy=(await view()).state.economy;
   expect(economy.remainingBudget).toBeCloseTo(75+economy.revenue*.1-economy.infrastructureCost-economy.emergencyCost,9);
-  await advance(57);await build('+ App capacity');await build('Add Protected Edge');
+  await advance(57);await build('+ App capacity');await build('Deploy Protected Edge — filters bots');
   await expect(page.getByTestId('next-wave')).toContainText('Bot attack');
   await advance(65);await expect(page.getByTestId('next-wave')).toContainText('200');
   await advance(120);

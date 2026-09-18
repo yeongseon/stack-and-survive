@@ -15,7 +15,7 @@ test('approved ladder unlocks sequentially from real successful runs and ends wi
     await page.getByText('Tycoon QA', { exact: true }).click();
     const step = page.getByRole('button', { name: 'Step one tick', exact: true });
     await step.click();
-    for (const name of ['Add Cache', '+ App capacity']) {
+  for (const name of ['Deploy Cache — reduces SQL reads', '+ App capacity']) {
       await page.getByRole('button', { name, exact: true }).focus();
       await page.getByRole('button', { name, exact: true }).click();
       await expect(page.getByRole('button', { name: 'Confirm expansion', exact: true })).toHaveCount(0);

@@ -7,6 +7,7 @@ import type { GameSoundControls } from './useGameSound';
 import type { WorldGuideControls } from './useWorldGuide';
 import { formatMoney, formatMoneyRate, simulatedMoneyNote } from './money';
 import { definitions } from '@stack-and-survive/cloud-domain';
+import { AzureTutorial } from './AzureTutorial';
 
 export type LearnPage = 'how' | 'about' | 'learn';
 export function LearnDialog({ dialogRef, page, view, onClose, restart, sound, guide }: {
@@ -19,6 +20,7 @@ export function LearnDialog({ dialogRef, page, view, onClose, restart, sound, gu
   return <dialog ref={dialogRef} className="learn-dialog" aria-labelledby="learn-title" onClose={onClose}>
     <form method="dialog"><button autoFocus>Close</button></form>
     <h2 id="learn-title">{page === 'how' ? 'How to Play' : page === 'about' ? 'About Stack & Survive' : 'Learn'}</h2>
+    <AzureTutorial />
     <section aria-label="World guide settings"><h3>World guide</h3><p>A short, optional guide follows your actual traffic. It does not pause the operation or choose actions for you.</p>
       <button type="button" onClick={guide.replay}>Replay world guide</button>{guide.visible && <button type="button" onClick={guide.skip}>Skip world guide</button>}
       {guide.message && <p role="status">{guide.message}</p>}

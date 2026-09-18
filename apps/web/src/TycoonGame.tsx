@@ -21,6 +21,8 @@ import { v3 } from './art-v3';
 import { OperationBanner } from './OperationBanner';
 import { createDirectorState, deriveOperationEvents, type OperationEvent } from './operations-director';
 import './player-console.css';
+import './azure-visual-tokens.css';
+import { AzureTutorial } from './AzureTutorial';
 
 export function TycoonGame({ challenge = blackFridayChallenge, titleContent, onResult, nextLevel, resultContent, leaderboardContent, runReport }: {
   challenge?: Challenge; titleContent?: ReactNode; onResult?: (result: NonNullable<View['result']>, finalArchitecture: Architecture) => void; nextLevel?: () => void; resultContent?: ReactNode; leaderboardContent?: ReactNode;
@@ -163,7 +165,7 @@ export function TycoonGame({ challenge = blackFridayChallenge, titleContent, onR
     if (view.result && reportedResult.current !== view.result) { reportedResult.current = view.result; onResult?.(view.result, view.state.runtime.architecture); }
     if (!view.result) reportedResult.current = null;
   }, [view.result, view.state.runtime.architecture, onResult]);
-  return <main className={`tycoon-game${entered ? ' diorama-game' : ''}${v3 ? ' hero-art-review' : ''}`} onClick={event => { if (event.target instanceof Element && event.target.closest('button')) sound.click(); }}>
+  return <main className={`tycoon-game azure-experience${entered ? ' diorama-game' : ''}${v3 ? ' hero-art-review' : ''}`} onClick={event => { if (event.target instanceof Element && event.target.closest('button')) sound.click(); }}>
     {!entered ? <section className="title-screen" inert={orientationGate} aria-label="Game introduction" data-time={diagnosticsEnabled ? runtime.time : undefined} data-budget={diagnosticsEnabled ? view.state.economy.remainingBudget : undefined}>
       <TitleWorld />
       <div className="title-heading"><p className="title-eyebrow">A REAL-TIME CLOUD INFRASTRUCTURE GAME</p>
@@ -184,6 +186,7 @@ export function TycoonGame({ challenge = blackFridayChallenge, titleContent, onR
         <button type="button" aria-label="About" onClick={() => open('about')}>About<small>The idea &amp; the technology</small></button>
       </nav><button ref={settingsButton} type="button" className="title-settings-btn" aria-label="Settings" aria-expanded={titleSettings} onClick={() => setTitleSettings(!titleSettings)}>&#9881; Settings</button>
       {titleSettings && <div ref={titlePanel} className="title-settings-panel" role="region" aria-label="Player settings" onKeyDown={event=>{if(event.key==='Escape'){event.preventDefault();setTitleSettings(false);settingsButton.current?.focus();}}}><SettingsPanel sound={sound} guide={guide} /><button type="button" onClick={()=>{setTitleSettings(false);settingsButton.current?.focus();}}>Close settings</button></div>}
+      <AzureTutorial compact />
       <p className="title-footnote">SAME WORKLOAD. DIFFERENT ARCHITECTURES. DIFFERENT OUTCOMES.</p></div>
     </section> : <>
       <div className="game-command-hud">
