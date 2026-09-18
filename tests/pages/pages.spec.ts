@@ -15,7 +15,7 @@ test('project-path Pages build loads real facilities and never exposes QA', asyn
   expect(expectedAssets).toHaveLength(41);
   await expect.poll(() => [...v3Assets].sort(), { message: 'All approved hero/state textures load at the project path; environment is baked by #214' }).toEqual(expectedAssets);
   await expect(page.getByRole('button', { name: 'Ⅱ Pause', exact: true })).toBeEnabled();
-  { await page.getByRole('button', { name: 'Add Cache', exact: true }).focus(); await page.getByRole('button', { name: 'Add Cache', exact: true }).press('Enter'); };
+  { await page.getByRole('button', { name: 'Deploy Cache — reduces SQL reads', exact: true }).focus(); await page.getByRole('button', { name: 'Deploy Cache — reduces SQL reads', exact: true }).press('Enter'); };
   await expect(page.getByRole('button', { name: 'Confirm expansion', exact: true })).toHaveCount(0);
   await expect(page.getByTestId('slot-cache')).toContainText('Active');
   for (const image of await page.locator('.world-service-badges img').all()) {

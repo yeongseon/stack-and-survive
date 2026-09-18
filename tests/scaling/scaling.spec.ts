@@ -73,3 +73,29 @@ test('SQL bottleneck remains distinct from App capacity and downgrade controls o
   await card(page).getByRole('button', { name: '↓ SQL tier', exact: true }).click();
   await expect(card(page)).toContainText('Tier 1 · General Purpose I');
 });
+
+test('landscape scaling card keeps downgrades and replica removal usable', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' }); await page.goto('/');
+  await page.getByRole('button', { name: 'Start Game', exact: true }).click();
+  await expect(page.getByTestId('traffic')).toContainText('100');
+  const skip = page.getByRole('button', { name: 'Skip guide', exact: true }); if (await skip.count()) await skip.click();
+  await openApp(page);
+  await expect(card(page).getByRole('button', { name: '− Instance', exact: true })).toBeDisabled();
+  await card(page).getByRole('button', { name: '↑ App tier', exact: true }).click();
+  await expect(card(page)).toContainText('Tier 2 · Standard II');
+  await page.setViewportSize({width:844,height:390});
+  await card(page).getByRole('button', { name: '↓ App tier', exact: true }).click();
+  await expect(card(page)).toContainText('Tier 1 · Standard I');
+  await openSQL(page);
+  await card(page).getByRole('button', { name: '+ Read replica', exact: true }).click();
+  await expect(card(page)).toContainText('Read replicas 1/2');
+  await card(page).getByRole('button', { name: '− Read replica', exact: true }).click();
+  await expect(card(page)).toContainText('Read replicas 0/2');
+  const bounds = (await card(page).boundingBox())!;
+  expect(bounds.x).toBeGreaterThanOrEqual(0); expect(bounds.x+bounds.width).toBeLessThanOrEqual(844);
+  expect(bounds.y+bounds.height).toBeLessThanOrEqual(390);
+  await page.getByRole('button', {name:'Ⅱ Pause',exact:true}).click();
+  await page.getByRole('button',{name:'Inspect paused world',exact:true}).click();
+  await openSQL(page);
+  await expect(card(page).getByRole('button',{name:'↑ SQL tier',exact:true})).toBeDisabled();
+});

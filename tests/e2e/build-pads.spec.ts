@@ -5,7 +5,7 @@ test('single keyboard action requests deployment and duplicate or paused request
   await page.getByRole('button',{name:'Start Game',exact:true}).click();
   await expect(page.getByRole('button',{name:'Ⅱ Pause',exact:true})).toBeEnabled();
   await page.getByText('Tycoon QA',{exact:true}).click();await page.getByRole('button',{name:'Step one tick',exact:true}).click();
-  const cache=page.getByRole('button',{name:'Add Cache',exact:true});
+  const cache=page.getByRole('button',{name:'Deploy Cache — reduces SQL reads',exact:true});
   await cache.focus();await cache.press('Enter');await cache.press('Enter');
   await expect(page.getByRole('button',{name:'Confirm expansion'})).toHaveCount(0);
   const state=()=>page.getByTestId('diagnostics').textContent();
@@ -14,7 +14,7 @@ test('single keyboard action requests deployment and duplicate or paused request
   await page.getByRole('button',{name:'Step one tick',exact:true}).click();
   await expect(page.getByTestId('slot-cache')).toContainText('Provisioning');
   await page.getByRole('button', { name: 'Ⅱ Pause', exact: true }).click(); await page.getByRole('button', { name: 'Inspect paused world', exact: true }).click();
-  const edge=page.getByRole('button',{name:'Add Protected Edge',exact:true});await edge.focus();await edge.press('Enter');
+  const edge=page.getByRole('button',{name:'Deploy Protected Edge — filters bots',exact:true});await edge.focus();await edge.press('Enter');
   expect(JSON.parse((await state())!).queuedActions).toHaveLength(0);
   await expect(edge).toHaveAttribute('aria-disabled','true');
 });

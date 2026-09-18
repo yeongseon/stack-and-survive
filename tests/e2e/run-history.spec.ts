@@ -20,7 +20,7 @@ test('real failed and successful attempts persist separately and only success se
   await expect(page.getByRole('region', { name: 'Local run records' })).toContainText('No objective-valid completion yet');
   await page.getByRole('button', { name: 'Play again', exact: true }).click();
   await start(); await step.click();
-  for (const name of ['Add Cache', '+ App capacity']) {
+  for (const name of ['Deploy Cache — reduces SQL reads', '+ App capacity']) {
     await page.getByRole('button', { name, exact: true }).focus();
     await page.getByRole('button', { name, exact: true }).click(); await expect(page.getByRole('button', { name: 'Confirm expansion', exact: true })).toHaveCount(0);
   }

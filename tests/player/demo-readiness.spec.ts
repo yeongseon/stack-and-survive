@@ -19,8 +19,8 @@ test('demo readiness: empty board → first entry → second run updates rank �
       const button = page.getByRole('button', { name, exact: true });
       await button.focus(); await button.press('Enter');
     };
-    await build('Add Cache');
-    if (protectedIngress) await build('Add Protected Edge');
+    await build('Deploy Cache — reduces SQL reads');
+    if (protectedIngress) await build('Deploy Protected Edge — filters bots');
     const instances = protectedIngress ? 3 : 4;
     for (let active = 2; active <= instances; active++) {
       await build('+ App capacity');
