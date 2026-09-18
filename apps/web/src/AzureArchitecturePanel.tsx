@@ -1,7 +1,7 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import type { Controller, View } from './controller';
 import type { PlayerNavigation } from './player-navigation';
-import { definitions } from '@stack-and-survive/cloud-domain';
+import { definitions, appTiers, databaseTiers, resourceTier, resourceRunningCost, readReplica } from '@stack-and-survive/cloud-domain';
 import { AzureResourceNode } from './AzureResourceNode';
 import { azureServices } from './azure-service-catalog';
 import { azureNodePresentations } from './azure-presentation';
@@ -29,9 +29,9 @@ export function AzureArchitecturePanel({ controller, view, navigation, onInspect
         return <div key={node.id} className="azure-catalog-item">
           <AzureResourceNode {...node} selected={view.selected === resource?.id} onSelect={resource ? () => { setOpen(false); onInspect(resource.id, trigger.current); navigation.focus(node.kind); } : undefined} actionHint={resource ? 'Inspect this resource' : 'Use the deployment action below'} />
           <p>{service.role}</p><small>{service.scope}</small>
-          <small>Running effect: {formatMoneyRate(definitions[node.kind].cost * Math.max(1, node.instances), 'min')}{resource ? ' when active' : ' after deployment'}.</small>
-          {node.kind === 'database' && <small>Capacity: 180 reads/s · 70 writes/s (game limits).</small>}
-          {node.kind === 'compute' && <small>Capacity: {150 * node.instances} requests/s when active (150 per instance).</small>}
+          <small>Running effect: {formatMoneyRate(resource ? resourceRunningCost(resource) : definitions[node.kind].cost, 'min')}{resource ? ' currently active' : ' after deployment'}.</small>
+          {node.kind === 'database' && resource && <small>Tier {resourceTier(resource)} · {databaseTiers[resourceTier(resource)-1].reads + (resource.readReplicas ?? 0)*readReplica.capacity} reads/s · {databaseTiers[resourceTier(resource)-1].writes} writes/s. Select SQL for tier/replica actions.</small>}
+          {node.kind === 'compute' && resource && <small>Tier {resourceTier(resource)} · Capacity: {appTiers[resourceTier(resource)-1].capacity * node.instances} requests/s when active. Select App for tier/instance actions.</small>}
           {node.kind === 'cache' && <small>Eligible reads only; writes stay on the SQL path.</small>}
           {action && <><button type="button" disabled={reason !== null} onClick={() => controller.queueAction(action)}>{node.kind === 'compute' ? 'Scale out App' : node.kind === 'cache' ? 'Deploy Cache' : 'Deploy Protected Edge'}</button>{reason && <small>{formatMoneyReason(reason)}</small>}</>}
         </div>;

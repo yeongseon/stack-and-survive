@@ -7,6 +7,8 @@ import { playerBuildingScale, buildingLayers, resourceArtBounds } from './buildi
 import { resourceVisualState } from './resource-visual-state';
 // tycoonPoint no longer needed — env scenery baked into hall-background
 import { resourceActivity } from './resource-activity';
+import { scalingAsset, scalingModuleAsset, replicaOffsets } from './scaling-art';
+import { resourceTier } from '@stack-and-survive/cloud-domain';
 
 export class V3Sprites {
   private images = new Map<string, Phaser.GameObjects.Image>();
@@ -36,7 +38,9 @@ export class V3Sprites {
     const moving=state.canAnimate;
     const work=resourceActivity(view);
     const pulse = moving ? .74 + Math.sin(time / 150) * .22 : .86;
-    const name=({internet:'intake',edge:'protected-edge',compute:'app-service',cache:'redis-cache',database:'azure-sql'})[resource.kind];
+    const available = (name: string) => this.scene.textures.exists(v3Texture(name));
+    const name=resource.kind === 'compute' || resource.kind === 'database' ? scalingAsset(resource, available)
+      : ({internet:'intake',edge:'protected-edge',cache:'redis-cache'})[resource.kind];
     if(resource.remaining>0&&(resource.kind==='cache'||resource.kind==='edge')){
       const duration=resource.kind==='cache'?5:4;
       const progress=1-resource.remaining/duration;
@@ -48,9 +52,9 @@ export class V3Sprites {
     const layer=(key:string,texture:string,alpha=1)=>this.image(`${resource.id}-${key}`,texture,p,scale,base+6,alpha);
     if(resource.kind==='compute') {
       state.app.bays.forEach((bay,i)=>{
-        if(bay==='active') {
+        if(bay==='active' || bay==='draining') {
           const offset=geometry.appBays[i].moduleOffset;
-          this.image(`${resource.id}-module-${i}`,'app-module',{x:p.x+offset.x*v3Unit*scale,y:p.y+offset.y*v3Unit*scale},scale,base+1+i);
+          this.image(`${resource.id}-module-${i}`,scalingModuleAsset(resource, available),{x:p.x+offset.x*v3Unit*scale,y:p.y+offset.y*v3Unit*scale},scale,base+1+i, bay === 'draining' ? .45 : 1);
           if(state.app.pressure==='overcapacity'||state.app.pressure==='warning')layer(`warning-${i}`,`app-overload-${i}`,pulse);
           const working=work.some(item=>item.resource==='compute'&&item.slot===i);
           if(working){
@@ -80,6 +84,32 @@ export class V3Sprites {
       if(state.sql.readPressure==='warning'||state.sql.readPressure==='overcapacity')layer('read','sql-read-warning',pulse);
       if(state.sql.writePressure==='warning'||state.sql.writePressure==='overcapacity')layer('write','sql-write-warning',pulse);
       if(state.sql.readPressure==='overcapacity'&&state.sql.writePressure==='overcapacity')layer('critical','sql-critical',pulse);
+      for (let i = 0; i < state.sql.readReplicas; i++) {
+        const offset = replicaOffsets[i], point = { x: p.x + offset.x * scale, y: p.y + offset.y * scale };
+        const name = available('azure-sql-replica') ? 'azure-sql-replica' : 'azure-sql';
+        this.activity.lineStyle(3, 0x7edce8, .85); this.activity.lineBetween(p.x, p.y + 20 * scale, point.x, point.y);
+        this.image(`${resource.id}-read-replica-${i}`, name, point, scale * .42, base + 7 + i);
+      }
+    }
+    if (resource.kind === 'compute' || resource.kind === 'database') {
+      const tier = resourceTier(resource);
+      const bounds = resourceArtBounds(resource.kind, scale, true);
+      const badgeY = p.y + bounds.y + 20;
+      this.activity.fillStyle(0x081c29, .96);
+      this.activity.fillRoundedRect(p.x - 38, badgeY - 10, 76, 24, 4);
+      this.activity.lineStyle(2, 0x7edce8, 1);
+      this.activity.strokeRoundedRect(p.x - 38, badgeY - 10, 76, 24, 4);
+      for (let i = 0; i < tier; i++) {
+        this.activity.fillStyle(0x7edce8, 1);
+        this.activity.fillRect(p.x - (tier * 18 - 4) / 2 + i * 18, badgeY - 4, 14, 12);
+        if (tier > 1) {
+          this.activity.lineStyle(3, 0x7edce8, .9);
+          const y = p.y + 20 * scale + i * 8;
+          this.activity.strokePoints([{x:p.x-bounds.width*.32,y},{x:p.x,y:y+26*scale},{x:p.x+bounds.width*.32,y}],false);
+        }
+      }
+      const change = resource.kind === 'compute' ? state.app.change : state.sql.change;
+      if (change) this.progress(p.x, p.y + 36 * scale, 84 * scale, (view.state.runtime.time - change.started) / (change.due - change.started));
     }
     const pressure=resource.kind==='compute'?state.app.pressure:resource.kind==='database'?state.sql.pressure:'healthy';
     if(view.selected===resource.id){

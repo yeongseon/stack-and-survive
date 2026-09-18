@@ -1,9 +1,10 @@
 import { expect, test } from '@playwright/test';
-import workload from '../../packages/scenarios/src/black-friday.json' with { type: 'json' };
+import originalWorkload from '../../packages/scenarios/src/black-friday.json' with { type: 'json' };
 
 test('test-fixture Top 10 and long nickname remain accessible at laptop and landscape sizes', async ({ page }, info) => {
   // Layout fixture only: these are not real run records or submission screenshots.
-  const canonical = JSON.stringify({ schemaVersion: 1, id: 'black-friday', version: 1, rulesVersion: workload.balanceVersion,
+  const workload = { ...originalWorkload, balanceVersion: '0.4' };
+  const canonical = JSON.stringify({ schemaVersion: 1, id: 'black-friday', version: 2, rulesVersion: workload.balanceVersion,
     seedAlgorithm: 'fixed-v1', seed: 0, workload, objective: { id: 'survive', version: 1, kind: 'survive' } });
   const entries = Array.from({ length: 10 }, (_, i) => ({ nickname: `LongPlayerName${i.toString().padStart(2, '0')}`,
     score: 9000 - i * 100, availability: .99, timestamp: i, runId: `layout-fixture-${i}`, challengeCanonical: canonical }));

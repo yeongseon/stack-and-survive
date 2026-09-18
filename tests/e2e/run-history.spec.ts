@@ -11,7 +11,7 @@ test('real failed and successful attempts persist separately and only success se
     await page.getByText('Tycoon QA', { exact: true }).click();
   };
   const step = page.getByRole('button', { name: 'Step one tick', exact: true });
-  const data = () => page.evaluate(() => JSON.parse(localStorage.getItem('stack-and-survive.history.balance-0.3.v1')!));
+  const data = () => page.evaluate(() => JSON.parse(localStorage.getItem('stack-and-survive.history.balance-0.4.v1')!));
   await start(); while (Number(await page.getByTestId('elapsed').textContent()) < 45) await step.click();
   await expect.poll(async () => (await data())?.runs.length).toBe(1);
   expect((await data()).bests).toHaveLength(0);
@@ -54,18 +54,18 @@ test('real failed and successful attempts persist separately and only success se
   expect(await records.evaluate(element => element.scrollWidth <= element.clientWidth)).toBe(true);
   await records.scrollIntoViewIfNeeded();
   await page.screenshot({ path: testInfo.outputPath('history-title-320.png') });
-  const progress = await page.evaluate(() => localStorage.getItem('stack-and-survive.progress.balance-0.3.v1'));
+  const progress = await page.evaluate(() => localStorage.getItem('stack-and-survive.progress.balance-0.4.v1'));
   await page.getByRole('button', { name: 'Clear run history', exact: true }).click();
   await expect(page.getByRole('region', { name: 'Local run records' })).toContainText('No recorded runs yet');
-  expect(await page.evaluate(() => localStorage.getItem('stack-and-survive.progress.balance-0.3.v1'))).toBe(progress);
+  expect(await page.evaluate(() => localStorage.getItem('stack-and-survive.progress.balance-0.4.v1'))).toBe(progress);
 });
 
 test('corrupt history and failed writes preserve current results and support retry saving', async ({ page }) => {
   await page.addInitScript(() => {
-    localStorage.setItem('stack-and-survive.history.balance-0.3.v1', '{broken');
+    localStorage.setItem('stack-and-survive.history.balance-0.4.v1', '{broken');
     const original = Storage.prototype.setItem;
     Object.defineProperty(window, '__restoreHistoryStorage', { value: () => { Storage.prototype.setItem = original; } });
-    Storage.prototype.setItem = function(key, value) { if (key === 'stack-and-survive.history.balance-0.3.v1') throw new Error('QuotaExceeded'); original.call(this, key, value); };
+    Storage.prototype.setItem = function(key, value) { if (key === 'stack-and-survive.history.balance-0.4.v1') throw new Error('QuotaExceeded'); original.call(this, key, value); };
   });
   await page.goto('/?tycoon'); await page.getByRole('button', { name: 'Start Game', exact: true }).click();
   await expect(page.getByRole('button', { name: 'Ⅱ Pause', exact: true })).toBeEnabled();
@@ -77,21 +77,21 @@ test('corrupt history and failed writes preserve current results and support ret
   await page.evaluate(() => { const restore = Reflect.get(window, '__restoreHistoryStorage'); if (typeof restore === 'function') restore(); });
   await page.getByRole('button', { name: 'Retry saving records', exact: true }).click();
   await expect(page.getByRole('region', { name: 'Local run records' })).not.toContainText('could not be saved');
-  expect(await page.evaluate(() => JSON.parse(localStorage.getItem('stack-and-survive.history.balance-0.3.v1')!).runs.length)).toBe(1);
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem('stack-and-survive.history.balance-0.4.v1')!).runs.length)).toBe(1);
   await page.evaluate(() => {
     const original = Storage.prototype.removeItem;
-    Storage.prototype.removeItem = function(key) { if (key === 'stack-and-survive.history.balance-0.3.v1') throw new Error('SecurityError'); original.call(this, key); };
+    Storage.prototype.removeItem = function(key) { if (key === 'stack-and-survive.history.balance-0.4.v1') throw new Error('SecurityError'); original.call(this, key); };
   });
   await page.getByRole('button', { name: 'Clear run history', exact: true }).click();
   await expect(page.getByRole('region', { name: 'Local run records' })).toContainText('Existing records were preserved');
   await expect(page.getByRole('region', { name: 'Local run records' })).toContainText('Failed · 45s');
-  expect(await page.evaluate(() => JSON.parse(localStorage.getItem('stack-and-survive.history.balance-0.3.v1')!).runs.length)).toBe(1);
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem('stack-and-survive.history.balance-0.4.v1')!).runs.length)).toBe(1);
 });
 
 test('unavailable history reads do not prevent starting the game', async ({ page }) => {
   await page.addInitScript(() => {
     const original = Storage.prototype.getItem;
-    Storage.prototype.getItem = function(key) { if (key === 'stack-and-survive.history.balance-0.3.v1') throw new Error('SecurityError'); return original.call(this, key); };
+    Storage.prototype.getItem = function(key) { if (key === 'stack-and-survive.history.balance-0.4.v1') throw new Error('SecurityError'); return original.call(this, key); };
   });
   await page.goto('/?tycoon');
   await page.getByText('Run history', { exact: true }).click();

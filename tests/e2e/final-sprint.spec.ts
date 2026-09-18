@@ -21,7 +21,8 @@ test('next-wave anticipation, single-action construction and reinvestment form a
   await advance(16);await build('+ App capacity');
   const queued=(await view()).queuedActions;expect(queued).toHaveLength(1);
   await build('+ App capacity');expect((await view()).queuedActions).toHaveLength(1);
-  await expect(page.getByRole('status').filter({hasText:/already|pending|queued/i})).toBeVisible();
+  await expect(page.getByRole('button',{name:'+ App capacity',exact:true})).toHaveAttribute('aria-disabled','true');
+  expect((await view()).queuedActions).toEqual(queued);
   await step.click();await build('Deploy Cache — reduces SQL reads');
   await advance(20);await expect(page.getByTestId('next-wave')).toContainText('5s');
   await expect(page.getByTestId('next-wave')).toContainText('Traffic spike');
@@ -47,8 +48,8 @@ test('next-wave anticipation, single-action construction and reinvestment form a
   await page.getByRole('button',{name:'▶ Resume',exact:true}).click();await step.click();
   await advance(155);await expect(page.getByTestId('next-wave')).toContainText('FINAL WAVE');
   await advance(180);await expect(page.getByTestId('challenge-outcome')).toContainText('met');
-  const result=(await view()).result;expect(result.balanceVersion).toBe('0.3');expect(result.metrics.availability).toBeGreaterThan(.99);
+  const result=(await view()).result;expect(result.balanceVersion).toBe('0.4');expect(result.metrics.availability).toBeGreaterThan(.99);
   expect(await page.evaluate(()=>localStorage.getItem('stack-and-survive.history.v1'))).toBe('legacy-record-not-to-be-overwritten');
   expect(await page.evaluate(()=>localStorage.getItem('stack-and-survive.progress.v1'))).toBe('legacy-progress-not-to-be-overwritten');
-  await expect.poll(()=>page.evaluate(()=>JSON.parse(localStorage.getItem('stack-and-survive.history.balance-0.3.v1')??'null')?.runs[0]?.challenge.rulesVersion)).toBe('0.3');
+  await expect.poll(()=>page.evaluate(()=>JSON.parse(localStorage.getItem('stack-and-survive.history.balance-0.4.v1')??'null')?.runs[0]?.challenge.rulesVersion)).toBe('0.4');
 });

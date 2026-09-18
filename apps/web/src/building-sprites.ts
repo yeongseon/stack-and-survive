@@ -58,8 +58,8 @@ export class BuildingSprites {
     entry.modules.forEach((module, i) => {
       module.setPosition(bayStates ? facilityBays[i].x : -30 + i * 20, bayStates ? facilityBays[i].y : 8);
       module.setDisplaySize(moduleAsset.width * (bayStates ? facilityModuleScale : 1), moduleAsset.height * (bayStates ? facilityModuleScale : 1));
-      module.setVisible(bayStates ? bayStates[i] === 'active' : i < state.active || (state.ghost && i === state.active));
-      module.setAlpha(i < state.active ? 1 : .28);
+      module.setVisible(bayStates ? bayStates[i] === 'active' || bayStates[i] === 'draining' : i < state.active || (state.ghost && i === state.active));
+      module.setAlpha(bayStates?.[i] === 'draining' ? .45 : i < state.active ? 1 : .28);
     });
     return true;
   }

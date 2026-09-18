@@ -1,6 +1,12 @@
 import { expect, it } from 'vitest';
 import { blackFriday } from './index';
-import { blackFridayChallenge, blackFridayChallengeV02, parseChallenge, sameChallenge } from './challenge';
+import { blackFridayChallengeV03 as blackFridayChallenge, blackFridayChallengeV02, infrastructureScalingChallenge, parseChallenge, sameChallenge } from './challenge';
+
+it('isolates scaling 0.4 from the preserved 0.3 workload identity', () => {
+  expect(infrastructureScalingChallenge.rulesVersion).toBe('0.4');
+  expect(sameChallenge(infrastructureScalingChallenge, blackFridayChallenge)).toBe(false);
+  expect(infrastructureScalingChallenge.workload.traffic).toEqual(blackFriday.traffic);
+});
 
 it('materializes the current Black Friday unchanged with frozen versioned identity', () => {
   expect(blackFridayChallenge.workload).toEqual(blackFriday);

@@ -7,7 +7,7 @@ test('demo readiness: empty board → first entry → second run updates rank �
   await page.evaluate(() => {
     localStorage.removeItem('stack-and-survive.leaderboard.v1');
     localStorage.removeItem('stack-and-survive.nickname');
-    localStorage.removeItem('stack-and-survive.history.balance-0.3.v1');
+    localStorage.removeItem('stack-and-survive.history.balance-0.4.v1');
   });
 
   const play = async (protectedIngress: boolean) => {

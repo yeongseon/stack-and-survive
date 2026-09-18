@@ -2,6 +2,6 @@
   "engine": "generic",
   "launch": { "cmd": "pnpm", "args": ["--filter", "@stack-and-survive/web", "exec", "vite", "preview", "--host", "127.0.0.1", "--port", "43889", "--strictPort"] },
   "log": { "stdout": true },
-  "sourceRoots": ["apps/web/src"],
+  "sourceRoots": ["apps/web/src", "packages/simulation/src"],
   "ready": "Local:"
 }

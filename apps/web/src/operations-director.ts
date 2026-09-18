@@ -119,7 +119,7 @@ export function deriveOperationEvents(view: View, previous: DirectorState): { ev
     events.push({
       id: `db-critical:${time}`, time, category: 'critical', priority: 9, duration: 2000,
       title: writeHeavy ? 'SQL WRITE BOTTLENECK' : 'SQL READ BOTTLENECK',
-      detail: 'Orders are being dropped',
+      detail: writeHeavy ? 'Order writes are being dropped' : 'Browse reads are being dropped',
     });
   }
   if (previous.dbCritical && !dbCrit && priority < 5) {

@@ -1,0 +1,51 @@
+{
+  "source": "Local production build, tests/scaling/scaling.spec.ts; real-time UI actions, no injected state or public score submission.",
+  "command": "pnpm build && pnpm exec playwright test --config playwright.scaling.config.ts",
+  "captures": [
+    {
+      "name": "sql-bottleneck.png",
+      "bytes": 913768,
+      "sha256": "0d238064bfa6fefbd952f7b1d3e7786062521ab2b96700059cc0137475b6bb3c"
+    },
+    {
+      "name": "01-initial.png",
+      "bytes": 910116,
+      "sha256": "ba1b58ddb4076611e65aabeac5fc55073c8e7b5a8af1fc98420c0259b57cf060"
+    },
+    {
+      "name": "02-app-x4.png",
+      "bytes": 968533,
+      "sha256": "5f2ec21269f8c6734f6e4c2ce2fbcd8fe9fe16d2b534e3ba16ed7dffff7f88ae"
+    },
+    {
+      "name": "03-app-tier2.png",
+      "bytes": 935088,
+      "sha256": "53736939161924a04fe8da09d0d651146e98a047a0ba592732ede9a17dc44e05"
+    },
+    {
+      "name": "04-sql-tier2.png",
+      "bytes": 935598,
+      "sha256": "e5dd4c6efc6efb30ac0538abacc93af995ceb4d75f4e2a50cac80bdf971b7ae8"
+    },
+    {
+      "name": "05-sql-tier3.png",
+      "bytes": 934639,
+      "sha256": "42f99e049e3c561f67403c7e17d3e885cbe1710fff54b5bbb659d2dbe77d2bed"
+    },
+    {
+      "name": "06-sql-read-replica.png",
+      "bytes": 946562,
+      "sha256": "34131cee2dc0674856e44ba344e010f087d1061cf923dfc6129429e36ed3f1dd"
+    },
+    {
+      "name": "07-late-architecture.png",
+      "bytes": 938535,
+      "sha256": "23932b32d29f41c483c96ea32fae12f249d0e95c19565d7534ab135599d69e89"
+    },
+    {
+      "name": "08-result.png",
+      "bytes": 574434,
+      "sha256": "157a04e03530c677bde32403d6d6beea26b09948d1cfb749a48f7da6437a6633"
+    }
+  ]
+}

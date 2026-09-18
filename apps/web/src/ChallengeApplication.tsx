@@ -101,7 +101,7 @@ export function ChallengeApplication() {
         })}
       </select></label><p>{selected.description} Same Black Friday workload{selected.challenge.objective.kind === 'availability' ? '; higher service objective.' : '.'}</p>
       <PlayerNameControl nickname={leaderboard.nickname} onSave={leaderboard.setNickname} optional />
-      <small>Balance 0.3 · 10% sales reinvestment. Records and unlocks are separate from earlier balance versions.</small>
+    <small>Balance 0.4 · Infrastructure scaling · 10% sales reinvestment. Earlier records and unlocks stay separate.</small>
       {unlockedLevel(ladder.progress) !== ladder.selected && <button type="button" onClick={() => ladder.select(unlockedLevel(ladder.progress))}>Continue challenge</button>}
       {ladder.message && <p role="status">{ladder.message}</p>}
       <details><summary>Progress settings</summary><button type="button" onClick={ladder.reset}>Reset challenge progress</button></details>

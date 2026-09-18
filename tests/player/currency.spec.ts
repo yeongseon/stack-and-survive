@@ -31,7 +31,7 @@ test('simulated dollars remain presentation-only through Learn, failure, history
   await page.setViewportSize({ width: 1440, height: 900 });
   const result = page.getByRole('region', { name: 'Business result' });
   await result.getByText('Details · decisions, tradeoffs & records', { exact: true }).click();
-  const run = await page.evaluate(() => JSON.parse(localStorage.getItem('stack-and-survive.history.balance-0.3.v1')!).runs[0]);
+  const run = await page.evaluate(() => JSON.parse(localStorage.getItem('stack-and-survive.history.balance-0.4.v1')!).runs[0]);
   expect(run.score).toBe(810);
   expect(run.elapsed).toBe(45);
   expect(run.cost).toBeLessThan(75);

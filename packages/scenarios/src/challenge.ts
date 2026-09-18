@@ -1,5 +1,5 @@
 import { integer, number, record, text, type Scenario } from '@stack-and-survive/schema';
-import { blackFriday, blackFridayV02, parseScenario } from './index';
+import { blackFriday, blackFridayV02, infrastructureScalingScenario, parseScenario } from './index';
 
 export type Objective = Readonly<{ id: string; version: number; kind: 'survive' } | { id: string; version: number; kind: 'availability'; target: number }>;
 export type Challenge = Readonly<{
@@ -23,7 +23,7 @@ function fingerprint(value: string) {
 export function parseChallenge(input: unknown): Challenge {
   const c = record(input, 'challenge');
   keys(c, ['schemaVersion', 'id', 'version', 'rulesVersion', 'seedAlgorithm', 'seed', 'workload', 'objective', 'canonical', 'contentHash'], 'challenge');
-  if (c.schemaVersion !== 1 || (c.rulesVersion !== '0.2' && c.rulesVersion !== '0.3') || c.seedAlgorithm !== 'fixed-v1') throw new Error('Unsupported challenge schema, rules or seed algorithm');
+  if (c.schemaVersion !== 1 || !['0.2', '0.3', '0.4'].includes(String(c.rulesVersion)) || c.seedAlgorithm !== 'fixed-v1') throw new Error('Unsupported challenge schema, rules or seed algorithm');
   const raw = record(c.workload, 'workload');
   keys(raw, ['schemaVersion', 'balanceVersion', 'id', 'duration', 'budget', 'businessMix', 'traffic', 'targets'], 'workload');
   keys(record(raw.businessMix, 'mix'), ['browse', 'order'], 'mix');
@@ -49,10 +49,12 @@ export function parseChallenge(input: unknown): Challenge {
   const canonical = JSON.stringify(condition);
   return Object.freeze({ ...condition, canonical, contentHash: fingerprint(canonical) });
 }
-export const blackFridayChallenge = parseChallenge({ schemaVersion: 1, id: 'black-friday', version: 1,
+export const blackFridayChallengeV03 = parseChallenge({ schemaVersion: 1, id: 'black-friday', version: 1,
   rulesVersion: '0.3', seedAlgorithm: 'fixed-v1', seed: 0, workload: blackFriday,
   objective: { id: 'survive', version: 1, kind: 'survive' } });
-export const blackFridayChallengeV02 = parseChallenge({ ...blackFridayChallenge, rulesVersion: '0.2', workload: blackFridayV02 });
+export const blackFridayChallengeV02 = parseChallenge({ ...blackFridayChallengeV03, rulesVersion: '0.2', workload: blackFridayV02 });
+export const infrastructureScalingChallenge = parseChallenge({ ...blackFridayChallengeV03, version: 2, rulesVersion: '0.4', workload: infrastructureScalingScenario });
+export const blackFridayChallenge = infrastructureScalingChallenge;
 
 export function sameChallenge(a: unknown, b: unknown) {
   try { return parseChallenge(a).canonical === parseChallenge(b).canonical; } catch { return false; }

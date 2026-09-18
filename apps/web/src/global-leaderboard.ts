@@ -1,4 +1,4 @@
-import type { Action } from '@stack-and-survive/simulation/runtime';
+import { parseAction, type Action } from '@stack-and-survive/simulation/runtime';
 import type { Challenge } from '@stack-and-survive/scenarios/challenge';
 
 const API_BASE = import.meta.env?.VITE_LEADERBOARD_API ?? '';
@@ -92,15 +92,7 @@ export function savePendingSubmission(pending: PendingSubmission): void {
 }
 
 function isValidAction(a: unknown): boolean {
-  if (!a || typeof a !== 'object') return false;
-  const o = a as Record<string, unknown>;
-  if (typeof o.time !== 'number' || !Number.isFinite(o.time) || o.time < 0 || o.time > 3600) return false;
-  if (typeof o.sequence !== 'number' || !Number.isFinite(o.sequence) || o.sequence < 0) return false;
-  if (o.type === 'SCALE_OUT' || o.type === 'EMERGENCY_WAF') return true;
-  if (o.type === 'RATE_LIMIT' && typeof o.enabled === 'boolean') return true;
-  if (o.type === 'DEPLOY_RESOURCE' && (o.kind === 'cache' || o.kind === 'edge')
-    && typeof o.x === 'number' && Number.isFinite(o.x) && typeof o.y === 'number' && Number.isFinite(o.y)) return true;
-  return false;
+  try { parseAction(a); return true; } catch { return false; }
 }
 
 export function loadPendingSubmission(): PendingSubmission | null {

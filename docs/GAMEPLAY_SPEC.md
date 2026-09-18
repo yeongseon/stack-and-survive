@@ -1,5 +1,11 @@
 # Stack & Survive — Gameplay Specification
 
+## Rules 0.4 infrastructure scaling update
+
+The current player challenge now uses rules0.4. Selected App exposes ±Instance and ±Tier; SQL exposes ±Tier and ±Read replica. App stays1–4 physical bays; a tier strengthens the same facility. SQL replicas add reads only, not primary writes. Old capacity/cost remain until deterministic activation: App out8s/in3s, App tier6s, SQL tier10s, replica add8s/remove3s. Existing Cache/Edge/traffic/scoring rules remain. See [complete scaling values and asset contract](INFRASTRUCTURE_SCALING.md).
+
+This update supersedes the fixed-SQL/no-live-scale-in restrictions in the historical0.3 sections below. New history/progress use separate0.4 keys; old data is not overwritten or relabeled. Final Architecture reports actual active tiers/counts/replicas. No optional art availability can affect capacity or outcome.
+
 Version: 1.3. Ordinary behavior includes balance0.3 final game-feel sprint #212. [Simulation](SIMULATION_SPEC.md) owns calculations; [Roadmap](PRODUCT_ROADMAP.md) marks future features. QA editor defaults to explicit legacy0.2 for historical numerical comparisons.
 
 ## 1. Normal-player journey

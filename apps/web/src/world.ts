@@ -4,6 +4,7 @@ import { definitions } from '@stack-and-survive/cloud-domain';
 import { positionError, project, snap, unproject, validTargets, viewportCamera, type Point } from './editor';
 import { representativeCount, visualFlows } from './traffic';
 import { createServiceBadge } from './service-icons';
+import { optionalScalingAsset, replicaOffsets } from './scaling-art';
 import { buildingPresentation, drawBuilding, insideBuilding } from './building-art';
 import { drawEnvironment } from './environment-art';
 import { buildingAssets, buildingLayers, moduleAsset, resourceArtBounds, playerBuildingScale } from './building-assets';
@@ -85,7 +86,7 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
       }
     }
     create() {
-      if(v3 && v3Images.some(asset=>!this.textures.exists(asset.texture))) {
+      if(v3 && v3Images.some(asset=>!optionalScalingAsset(asset.name) && !this.textures.exists(asset.texture))) {
         host.dataset.renderer='error'; controller.presentationFailed('V3 preview textures did not load. Re-export the local art and rebuild graphics.');
         this.scene.pause(); return;
       }
@@ -395,20 +396,31 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
         if (view.state.runtime.status === 'RUNNING' && !view.error && requests) {
           const at = (kind: string) => positions[resources.findIndex(r => r.kind === kind)];
           flows.forEach((flow, lane) => {
-            const a = at(flow.from); const b = at(flow.to);
-            if (!a || !b) return;
+           const a = at(flow.from); const b = at(flow.to);
+           if (!a || !b) return;
+           const appResource = resources.find(r => r.kind === 'compute');
+           const replicas = resources.find(r => r.kind === 'database')?.readReplicas ?? 0;
             const count = representativeCount(flow.volume); packetCount += count;
             for (let i = 0; i < count; i++) {
               const p = reducedMotion ? (i + .5) / count : (time / 3000 + i / count + lane * .07) % 1;
               const ingressRejected = flow.end === 'filtered' && flow.to === 'compute';
-              const progress = ingressRejected ? p * .25 : p;
-              const point = lanePoint(a, b, progress);
-              const length = Math.hypot(b.x - a.x, b.y - a.y) || 1;
+             const progress = ingressRejected ? p * .25 : p;
+             let destination = b;
+             if (view.playerMode && appResource && flow.to === 'compute') {
+               const bay = facilityBays[i % appResource.instances], scale = playerBuildingScale('compute');
+               destination = { x: b.x + bay.x * scale, y: b.y + bay.y * scale };
+             }
+             if (view.playerMode && flow.to === 'database' && flow.kind === 'browse' && flow.end !== 'failed' && replicas > 0 && i % (replicas + 1) > 0) {
+               const offset = replicaOffsets[i % (replicas + 1) - 1], scale = playerBuildingScale('database');
+               destination = { x: b.x + offset.x * scale, y: b.y + offset.y * scale };
+             }
+             const point = lanePoint(a, destination, progress);
+             const length = Math.hypot(destination.x - a.x, destination.y - a.y) || 1;
               const offset = (lane % 3 - 1) * 4;
-              const x = point.x - (b.y - a.y) / length * offset; const y = point.y + (b.x - a.x) / length * offset;
+             const x = point.x - (destination.y - a.y) / length * offset; const y = point.y + (destination.x - a.x) / length * offset;
               g.lineStyle(flow.kind === 'order' ? 4 : 3, packetPalette[flow.kind], v3 ? .4 : .22);
               const trail=v3?30:17;
-              g.lineBetween(x - (b.x - a.x) / length * trail, y - (b.y - a.y) / length * trail, x, y);
+             g.lineBetween(x - (destination.x - a.x) / length * trail, y - (destination.y - a.y) / length * trail, x, y);
               this.packets.draw({ x, y }, flow, p);
             }
           });
