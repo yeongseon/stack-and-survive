@@ -2,10 +2,11 @@ import type { Challenge } from '@stack-and-survive/scenarios/challenge';
 import { sameChallenge } from '@stack-and-survive/scenarios/challenge';
 import type { RunHistory, RunSummary } from './run-history';
 import { formatMoney } from './money';
+import { resourceTier } from '@stack-and-survive/cloud-domain';
 
 export function architectureSummary(run: RunSummary) {
   return run.finalArchitecture.resources.filter(resource => resource.remaining === 0 && resource.kind !== 'internet')
-    .map(resource => resource.kind === 'compute' ? `App ×${resource.instances}` : resource.kind === 'database' ? 'SQL' : resource.kind === 'cache' ? 'Cache' : 'Edge').join(' + ');
+    .map(resource => resource.kind === 'compute' ? `App ×${resource.instances}${resourceTier(resource) > 1 ? ` / T${resourceTier(resource)}` : ''}` : resource.kind === 'database' ? `SQL${resourceTier(resource) > 1 ? ` T${resourceTier(resource)}` : ''}${resource.readReplicas ? ` + ${resource.readReplicas} read replica(s)` : ''}` : resource.kind === 'cache' ? 'Cache' : 'Edge').join(' + ');
 }
 export function RunHistoryPanel({ history, challenge, message, clear, retrySave, needsSave }: {
   history: RunHistory; challenge: Challenge; message: string; clear: () => void; retrySave: () => void; needsSave: boolean;

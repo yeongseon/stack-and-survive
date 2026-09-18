@@ -1,0 +1,12 @@
+.scaling-controls { display: grid; gap: 6px; font-size: 13px; }
+.scaling-controls p { margin: 3px 0; line-height: 1.5; }
+.scaling-controls > strong { font-size: 15px; }
+.scaling-action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.tycoon-game .scaling-action-grid button { min-height: 44px; padding: 8px 6px; font-size: 14px; }
+.scaling-controls small { line-height: 1.4; }
+.facility-plaque .scaling-pending-label { font-weight: bold; }
+.tycoon-game .resource-action-card:has(.scaling-controls) { max-height: calc(100dvh - 140px); overflow-y: auto; }
+.final-scaling-architecture { display: flex; gap: 6px 16px; flex-wrap: wrap; font-size: 12px; margin: 10px 0; padding: 0 32px; }
+.final-scaling-architecture strong { display: block; width: 100%; }
+@media (max-height: 500px) { .tycoon-game .resource-action-card:has(.scaling-controls) { top: 112px !important; bottom: 8px; max-height: none; } }
+@media (prefers-reduced-motion: reduce) { .scaling-controls * { animation: none; transition: none; } }
