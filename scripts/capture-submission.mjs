@@ -72,13 +72,13 @@ try {
   await beforePhase(260, 11); await build('+ App capacity');
   await page.waitForFunction(() => document.querySelector('.slot-progress')?.textContent?.includes('Expanding'));
   await shot('03-app-construction', 'Actual accepted scale-out; one active App while next bay provisions');
-  await build('Add Cache');
+  await build('Deploy Cache — reduces SQL reads');
   await page.waitForFunction(() => document.querySelector('[data-testid="slot-cache"]')?.textContent?.includes('Active'));
   await shot('04-cache-active', 'Cache activated through normal runtime delay');
   await beforePhase(260, 5); await shot('05-first-spike-warning', 'Live countdown to customer spike');
   await page.waitForFunction(() => document.querySelector('[data-testid="traffic"]')?.textContent?.includes('260'));
   await shot('06-first-spike', 'Actual260RPS customer spike, prepared App/Cache', 260);
-  await beforePhase(440, 12); await build('+ App capacity'); await build('Add Protected Edge');
+  await beforePhase(440, 12); await build('+ App capacity'); await build('Deploy Protected Edge — filters bots');
   await page.waitForFunction(() => document.querySelector('[data-testid="slot-edge"]')?.textContent?.includes('Active'));
   await shot('07-edge-active', 'Edge is active; consult observed phase values rather than inferring that bots have already arrived');
   await page.waitForFunction(() => document.querySelector('[data-testid="traffic"]')?.textContent?.includes('440'), null, { timeout: 30000 });
