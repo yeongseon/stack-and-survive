@@ -8,7 +8,7 @@ describe('read-only Azure presentation adapter', () => {
     const nodes = azureNodePresentations(view);
     expect(JSON.stringify(view)).toBe(before);
     expect(nodes.find(n => n.kind === 'compute')).toMatchObject({ instances: 1, utilization: null, health: 'unknown' });
-    expect(nodes.find(n => n.kind === 'cache')).toMatchObject({ instances: 0, lifecycle: 'Not deployed', health: 'offline' });
+    expect(nodes.find(n => n.kind === 'cache')).toMatchObject({ instances: 0, lifecycle: 'Not deployed', health: 'unknown' });
     expect(nodes).toHaveLength(4); controller.destroy();
   });
 });

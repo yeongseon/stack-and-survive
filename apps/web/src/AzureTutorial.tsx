@@ -5,13 +5,18 @@ export function AzureTutorial({ compact = false }: { compact?: boolean }) {
   const [seen, setSeen] = useState(() => { try { return tutorialSeen(localStorage); } catch { return false; } });
   const [step, setStep] = useState<number | null>(null), [message, setMessage] = useState('');
   const trigger = useRef<HTMLButtonElement>(null), heading = useRef<HTMLHeadingElement>(null);
+  const restoreFocus = useRef(false);
   const id = useId();
-  useEffect(() => { if (step !== null) heading.current?.focus({ preventScroll: true }); }, [step]);
+  useEffect(() => {
+    if (step !== null) heading.current?.focus({ preventScroll: true });
+    else if (restoreFocus.current) { restoreFocus.current = false; trigger.current?.focus(); }
+  }, [step]);
   const finish = (status: 'completed' | 'skipped') => {
     let saved = false;
     try { saved = saveTutorial(localStorage, status); } catch { saved = false; }
+    restoreFocus.current = step !== null;
     setSeen(true); setStep(null); setMessage(saved ? '' : 'Tutorial preference could not be saved. You can still play.');
-    trigger.current?.focus();
+    if (step === null) trigger.current?.focus();
   };
   const current = step === null ? null : azureTutorialSteps[step];
   return <section className={`azure-tutorial${compact ? ' is-compact' : ''}`} aria-label="Azure architecture tutorial">
