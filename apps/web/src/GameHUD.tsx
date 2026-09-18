@@ -19,7 +19,7 @@ export function GameHUD({ view }: { view: View }) {
   return <>
     <section className={`mission-hud ${mission.tone}${mission.arriving ? ' phase-arriving' : ''}${mission.riskSeconds !== null ? ' service-risk' : ''}`} aria-label="Operation progress" data-held={mission.status !== 'Live'}>
       <div className="mission-heading">
-        <output className="mission-phase" aria-atomic="true"><small>{mission.status} · Phase {mission.phaseIndex + 1}/{mission.phases.length}</small><strong key={mission.phaseIndex}>{mission.label}</strong></output>
+        <output className="mission-phase" aria-atomic="true"><small>{mission.status} · Phase {mission.phaseIndex + 1}/{mission.phases.length}</small><strong key={mission.phaseIndex}>{mission.label}</strong>{mission.arriving && <span className="phase-detail">{mission.phaseRps} req/s{mission.phaseBots > 0 ? ` · ${mission.phaseBots}% bots` : ''}</span>}</output>
         <div className="mission-clock"><strong data-testid="mission-clock">{mission.clock}</strong><small>remaining</small></div>
       </div>
       <div className="mission-timeline" aria-hidden="true">{mission.phases.map((phase, index) => <span key={phase.start} className={index === mission.phaseIndex ? 'current' : ''} style={{ flexGrow: phase.end - phase.start }}><i style={{ width: `${phase.progress * 100}%` }} /></span>)}</div>

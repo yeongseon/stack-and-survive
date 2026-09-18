@@ -123,7 +123,7 @@ export function GameFloor({ controller, view, navigation, onReady, blocked = fal
       {(['edge', 'cache'] as const).map(kind => {
         const resource = runtime.architecture.resources.find(r => r.kind === kind);
         return <div className={`world-slot ${resource ? 'installed' : 'empty'}`} key={kind} style={at(kind)} data-testid={`slot-${kind}`}>
-          {!resource ? <button type="button" aria-label={kind === 'cache' ? 'Add Cache' : 'Add Protected Edge'} aria-disabled={controller.actionReason({ type: 'DEPLOY_RESOURCE', kind, ...tycoonPositions[kind] }) !== null} title={`Running: ${formatMoneyRate(definitions[kind].cost, 'min')} when active`} onClick={() => beginBuild(kind)}>Build {kind === 'cache' ? 'Cache' : 'Edge'}</button>
+          {!resource ? <button type="button" aria-label={kind === 'cache' ? 'Deploy Cache — reduces SQL reads' : 'Deploy Protected Edge — filters bots'} aria-disabled={controller.actionReason({ type: 'DEPLOY_RESOURCE', kind, ...tycoonPositions[kind] }) !== null} title={`${kind === 'cache' ? 'Reduces SQL reads' : 'Filters bots'} · ${definitions[kind].provisioning}s · ${formatMoneyRate(definitions[kind].cost, 'min')}`} onClick={() => beginBuild(kind)}>Build {kind === 'cache' ? 'Cache' : 'Edge'}<small>{kind === 'cache' ? 'Reads' : 'Bots'} · {definitions[kind].provisioning}s</small></button>
             : <button type="button" onClick={() => select(resource.id)}>{kind === 'cache' ? 'Cache' : 'Protected Edge'}<small>{resource.remaining > 0 ? `Provisioning ${resource.remaining}s` : 'Active'}</small></button>}
         </div>;
       })}
