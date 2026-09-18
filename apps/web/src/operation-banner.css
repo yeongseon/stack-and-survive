@@ -1,0 +1,75 @@
+.operation-banner {
+  position: fixed;
+  z-index: 20;
+  top: 120px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 10px 24px;
+  border-radius: 8px;
+  text-align: center;
+  pointer-events: none;
+  animation: banner-enter .3s ease-out;
+  max-width: calc(100% - 48px);
+  white-space: nowrap;
+}
+.operation-banner strong {
+  display: block;
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  line-height: 1.2;
+}
+.operation-banner span {
+  display: block;
+  font-size: 12px;
+  font-weight: 400;
+  margin-top: 2px;
+  opacity: .85;
+}
+
+/* Category colors */
+.operation-banner.wave {
+  background: #0a3a5cee;
+  border: 1px solid #4ac8e8;
+  color: #d4f0ff;
+}
+.operation-banner.warning {
+  background: #3a2800ee;
+  border: 1px solid #ffb347;
+  color: #ffe0a8;
+}
+.operation-banner.critical {
+  background: #3a0a0aee;
+  border: 1px solid #ff6b6b;
+  color: #ffd4d4;
+}
+.operation-banner.success {
+  background: #0a3a1aee;
+  border: 1px solid #6bdf8b;
+  color: #d4ffd8;
+}
+.operation-banner.economy {
+  background: #2a2a00ee;
+  border: 1px solid #e8d44a;
+  color: #fff8d0;
+}
+.operation-banner.countdown {
+  background: #1a1a3aee;
+  border: 1px solid #a8a8ff;
+  color: #e0e0ff;
+}
+
+@keyframes banner-enter {
+  from { opacity: 0; transform: translateX(-50%) translateY(-8px); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .operation-banner { animation: none; }
+}
+
+@media (max-width: 600px) {
+  .operation-banner { top: 115px; padding: 8px 16px; }
+  .operation-banner strong { font-size: 13px; }
+  .operation-banner span { font-size: 10px; }
+}
