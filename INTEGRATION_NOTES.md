@@ -1,5 +1,11 @@
 # Integration Notes — Azure Operations Layer
 
+## Infrastructure scaling (Computer 1 → Computer 3 art)
+
+Rules0.4 is implemented on `feat/infrastructure-scaling`; exact mechanics, server-first release requirement and optional image names are in `docs/INFRASTRUCTURE_SCALING.md`. Optional inventory record names: `app-service-tier-1/2/3`, `app-module-tier-1/2/3`, `azure-sql-tier-1/2/3`, `azure-sql-replica`. Preserve existing canvas/origin/bay geometry. Unregistered or failed optional textures fall back to original assets; no engine state depends on images. Computer1 has not edited `art/**` or public assets.
+
+The operations resource projection now reads actual tier/replica capacity and cost; SQL peak utilization remains a ratio (not divided by capacity again). Existing synthetic CPU/p95 fields are not used as measured values by scaling UI. Typed incidents for tier/draining/replica transitions can be added by the observation owner later; current runtime pending changes are authoritative and available without timers.
+
 ## For Computer 1 (Design / UI)
 
 ### Available Components

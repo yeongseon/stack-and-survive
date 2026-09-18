@@ -28,7 +28,7 @@ One pending infrastructure change per facility: horizontal App expansion conflic
 - Actions: `SCALE_IN`, `SCALE_UP_APP`, `SCALE_DOWN_APP`, `SCALE_UP_DATABASE`, `SCALE_DOWN_DATABASE`, `ADD_READ_REPLICA`, `REMOVE_READ_REPLICA`. Existing actions unchanged.
 - Shared strict `parseAction` is used for history and backend input. The deterministic scheduler owns acceptance, rejection and activation; the renderer never creates capacity.
 - New default challenge rules0.4, challenge version2 and hash. Original0.2/0.3 workload exports remain for regression; the original0.3 challenge is `blackFridayChallengeV03`.
-- History/progress keys move to `balance-0.4.v1`. Old keys remain untouched and are not silently promoted. Full action log and final tier/replica state are checked by replay. New backend accepts the supported new ladder; old public scores are not relabeled.
+- History/progress keys move to `balance-0.4.v1`. Old keys remain untouched and are not silently promoted. Full action log and final tier/replica state are checked by replay. New backend accepts the new ladder and the legacy0.3 ladder under their separate hashes, enabling a server-first rollout without breaking old clients; old public scores are not relabeled.
 
 ### Deployment boundary
 
@@ -83,3 +83,19 @@ azure-sql-replica
 Initial baseline597 unit tests passed before edits. Additive core preserved all597, then version migration tests explicitly separated legacy/current identity. New coverage includes bounds, delayed activation, costs, replica read/write separation, deterministic replay, API acceptance and optional art fallback. Real unaccelerated production browser tests completed an180s9474-score evolving run and exercised an App-healthy/SQL-read-bound attempt with SQL up/down. Final checks and screenshot locations will be recorded after review/integration.
 
 Human ten-second comprehension, new optional art delivery and broader balance tuning are not proven by automated screenshots. No live leaderboard submission or deployment is claimed.
+
+Latest local checks (before final visual-main integration):638 unit tests,3 real production scaling browser tests,11 release API/identity tests,8 QA history/ladder/resource regressions and1 player currency regression passed. Frontend typecheck/lint/production/QA builds and backend replay bundle passed. Seven original-art tests and exact demo asset inventory passed. A full evolving run completed180s at9474points; the test never posted it to a public leaderboard. Merging other main work can change test counts; rerun before release.
+
+## Captured scenes
+
+Unedited PNGs from actual UI-driven production runs are in [images/infrastructure-scaling](images/infrastructure-scaling/). `capture-provenance.json` records byte hashes; `scripts/archive-scaling-captures.mjs` archives the Playwright outputs.
+
+1. [Initial architecture](images/infrastructure-scaling/01-initial.png)
+2. [App ×4](images/infrastructure-scaling/02-app-x4.png)
+3. [App tier2 after scale-in](images/infrastructure-scaling/03-app-tier2.png)
+4. [SQL bottleneck](images/infrastructure-scaling/sql-bottleneck.png) — separate no-Cache run
+5. [SQL tier2](images/infrastructure-scaling/04-sql-tier2.png)
+6. [SQL tier3](images/infrastructure-scaling/05-sql-tier3.png)
+7. [SQL read replica](images/infrastructure-scaling/06-sql-read-replica.png)
+8. [Late architecture](images/infrastructure-scaling/07-late-architecture.png)
+9. [Actual result](images/infrastructure-scaling/08-result.png)
