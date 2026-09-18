@@ -8,6 +8,16 @@ A real-time cloud infrastructure strategy game: survive a 180-second traffic sur
 
 [**Play the game →**](https://yeongseon.github.io/stack-and-survive/) · [Illustrated guide](docs/PLAYER_GUIDE.md) · [Run locally](#run-locally) · [Development](docs/DEVELOPMENT.md) · [Contributing](CONTRIBUTING.md)
 
+## Watch the two-minute demo
+
+[![Watch the Stack & Survive gameplay demo](docs/media/demo-preview.jpg)](https://raw.githubusercontent.com/yeongseon/stack-and-survive/main/docs/media/stack-and-survive-demo.mp4)
+
+**[Watch / download the demo (MP4, 2:00, 5.9 MiB)](https://raw.githubusercontent.com/yeongseon/stack-and-survive/main/docs/media/stack-and-survive-demo.mp4)** · [Transcript, chapter guide and recording details](docs/DEMO_VIDEO.md)
+
+Real gameplay from released build `24ca388`, edited from **two separate runs**: normal traffic → overload and service risk → actual failure → retry → infrastructure expansion → successful completion → Player Name and API-failure local fallback. **Silent video** for presenter narration, with labeled title/fallback screenshots. Global rows are existing verified scores, not these runs publicly submitted. A complete operation lasts 180 seconds; this is not a continuous two-minute run.
+
+The official game URL is the GitHub Pages link above. No custom domain is required.
+
 **Presenting the project?** [Open the showcase](showcase/README.md) for an 8-slide browser deck, Korean speaker notes and PDF-print instructions.
 
 ![Stack & Survive gameplay: a unified command HUD above App, Cache, Edge and SQL facilities during a bot attack.](docs/images/gameplay.webp)

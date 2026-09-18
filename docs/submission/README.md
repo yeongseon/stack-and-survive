@@ -3,6 +3,7 @@
 These guides are preparation material, not proof that a submission, listening or human session occurred. Recording/capture completion is revision-specific and recorded in the [live checklist #7](https://github.com/yeongseon/stack-and-survive/issues/7). Record the exact release SHA and Pages artifact before using media. The client/release owner maintains this pack; the backend owner maintains API deployment and its evidence.
 
 - [Two-minute demo script](DEMO_SCRIPT.md)
+- [Watch the two-minute demo and read its transcript](../DEMO_VIDEO.md)
 - [Demo fallback and recovery](DEMO_FALLBACK.md)
 - [Reproducible screenshot plan](SCREENSHOT_PLAN.md)
 - [Judge questions and honest answers](JUDGE_QA.md)
