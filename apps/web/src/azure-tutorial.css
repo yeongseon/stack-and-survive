@@ -1,0 +1,22 @@
+.azure-tutorial { color: var(--text-primary); text-align: left; margin: var(--space-3) 0; }
+.azure-tutorial-invite { display: flex; justify-content: center; align-items: center; gap: var(--space-2); flex-wrap: wrap; }
+.azure-tutorial-invite button { max-width: 100%; white-space: normal; }
+.azure-tutorial button { min-height: 44px; padding: var(--space-2) var(--space-3); border: 1px solid var(--border-default); background: var(--surface-panel); color: var(--text-primary); border-radius: var(--radius-card); font: inherit; cursor: pointer; box-shadow: none; }
+.azure-tutorial-invite > span { color: var(--text-secondary); font-size: 12px; }
+.azure-tutorial-content { background: var(--surface-panel); border: 1px solid var(--border-selected); border-radius: var(--radius-card); padding: var(--space-4); max-width: 680px; margin: auto; }
+.azure-tutorial-content > small { color: var(--accent-cyan); letter-spacing: .08em; font-size: 11px; }
+.azure-experience .azure-tutorial h3 { color: var(--text-primary); font-size: 19px; margin: var(--space-2) 0; text-transform: none; }
+.azure-tutorial p { color: var(--text-secondary); font-size: 14px; line-height: 1.5; }
+.azure-tutorial nav { display: flex; gap: var(--space-2); flex-wrap: wrap; margin-top: var(--space-3); }
+.azure-tutorial-map { display: flex; align-items: center; gap: var(--space-2); font-size: 12px; }
+.azure-tutorial-map > span { padding: var(--space-2); border: 1px solid var(--border-default); background: var(--surface-card); }
+.azure-tutorial-map small { display: block; color: var(--text-secondary); margin-top: var(--space-1); }
+.azure-tutorial-map[data-highlight="tiers"] [data-tier] { outline: 2px solid var(--border-selected); outline-offset: 2px; font-weight: bold; }
+.azure-tutorial-map[data-highlight="traffic"] b { color: var(--traffic-read); font-size: 22px; }
+.azure-tutorial-map[data-highlight="actions"] [data-tier="app"] { border-style: dashed; border-width: 2px; }
+@media (max-height: 600px), (max-width: 700px) {
+  .title-screen .azure-tutorial-content { max-width: 680px; box-sizing: border-box; }
+  .azure-tutorial-map { flex-wrap: wrap; }
+  .azure-tutorial-map > span { flex: 1 1 70px; }
+  .azure-tutorial-invite > span { display: none; }
+}

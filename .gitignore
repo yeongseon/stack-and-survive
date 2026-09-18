@@ -21,6 +21,7 @@ dist-qa/
 test-results/
 test-results-player/
 test-results-scaling/
+test-results-azure-visual/
 test-results-player-mission/
 test-results-player-readiness/
 test-results-performance/

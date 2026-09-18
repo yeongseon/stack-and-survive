@@ -29,6 +29,7 @@ jobs:
       - run: pnpm build
       - run: pnpm exec playwright install --with-deps chromium
       - run: pnpm exec playwright test --config playwright.scaling.config.ts
+      - run: pnpm exec playwright test --config playwright.azure-visual.config.ts
       - run: pnpm test:release
       - run: pnpm test:player
       - run: pnpm build:qa

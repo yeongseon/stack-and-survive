@@ -11,6 +11,8 @@ import { recoveryFeedback, type Recovery } from './wave-feedback';
 import { formatMoney, formatMoneyRate, formatMoneyReason } from './money';
 import { ScalingControls } from './ScalingControls';
 import { appTiers, resourceTier, appHorizontalScaling } from '@stack-and-survive/cloud-domain';
+import { AzureArchitecturePanel } from './AzureArchitecturePanel';
+import { AzureTrafficKey } from './AzureTrafficKey';
 
 function LocalAction({ controller, action, children }: { controller: Controller; action: ActionRequest; children: React.ReactNode }) {
   const reason = controller.actionReason(action);
@@ -97,7 +99,7 @@ export function GameFloor({ controller, view, navigation, onReady, blocked = fal
           : kind === 'internet' ? visual.internet.rateLimited ? 'Intake limited' : 'Traffic origin'
           : kind === 'edge' ? visual.edge.boost === 'active' ? 'Filtering boosted' : 'Protected ingress' : 'Read cache';
         return <div key={kind} className={`facility-plaque${warning ? ' pressure' : ''}`} hidden={p.x < 35 || p.x > width-35 || top < 0 || top > height-50} style={{ left: p.x, top }}>
-          <strong>{({ internet: 'INTAKE', edge: 'EDGE', compute: 'APP SERVICE', cache: 'CACHE', database: 'SQL' })[kind]}</strong><span>{detail}</span>
+          <strong>{({ internet: 'INTAKE', edge: 'Azure Application Gateway', compute: 'Azure App Service', cache: 'Azure Managed Redis', database: 'Azure SQL Database' })[kind]}</strong><span>{kind === 'edge' ? `Protected Edge / WAF · ${detail}` : detail}</span>
           {pending && <span className="scaling-pending-label">{pending.type === 'SCALE_IN' ? 'DRAINING' : pending.type.includes('REPLICA') ? 'REPLICA CHANGE' : 'TIER CHANGE'} · {Math.max(0,pending.due-runtime.time)}s</span>}
         </div>;
       })}
@@ -153,5 +155,7 @@ export function GameFloor({ controller, view, navigation, onReady, blocked = fal
         {selected.kind === 'database' && view.challenge?.rulesVersion !== '0.4' && <><p className="resource-state">Reads: {visual.sql.readPressure}<br/>Writes: {visual.sql.writePressure}</p><small>Capacity and routing explained in Learn</small></>}
       </section>}
     </div>
+    <AzureArchitecturePanel controller={controller} view={view} navigation={navigation} onInspect={(id, trigger) => { opener.current = trigger; setActionFeedback(null); controller.select(id); }} />
+    <AzureTrafficKey view={view} />
   </div>;
 }
