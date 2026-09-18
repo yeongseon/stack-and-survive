@@ -17,3 +17,67 @@
 - Integration touches `TycoonGame.tsx`, `GameFloor.tsx` and `LearnDialog.tsx`. Preserve their existing control handlers when combining another workstream. New catalog actions call existing controller methods; they must not introduce unsupported resources or direct mutations.
 - Tutorial preference key is `stack-and-survive.azure-tutorial.v1`; existing guide/history/settings schemas are unchanged. The conceptual four-step tutorial remains optional and separate from adaptive World guide. Avoid mounting duplicate tutorial or service-panel entries during shell integration.
 - Semantic tokens are in `azure-visual-tokens.css`. Other workstreams can consume them without importing a second styling framework. Existing Azure SVG bytes/manifest and general rights gate #164 remain unchanged; do not add unverified official icons when integrating concept-only Front Door/WAF/Monitor/Application Insights definitions.
+## Available Azure operations layer (merged main)
+
+## For Computer 1 (Design / UI)
+
+### Available Components
+
+The operations layer provides typed data for UI integration. No UI components need to be built by Computer 2.
+
+### Importing Metrics
+
+```ts
+import { deriveMetrics, deriveResourceStates } from '@stack-and-survive/simulation/operations';
+import type { SimulationMetrics, ResourceState } from '@stack-and-survive/simulation/operations';
+```
+
+Call `deriveMetrics(simulationState, requestSnapshot)` after each tick to get current operational metrics.
+
+Call `deriveResourceStates(simulationState)` to get Azure-style resource health states.
+
+### Importing Timeline
+
+```ts
+import { buildTimeline } from '@stack-and-survive/simulation/operations';
+import type { TimelineEntry } from '@stack-and-survive/simulation/operations';
+```
+
+Pass accumulated `SimulationEvent[]` to `buildTimeline()` for an ordered incident history.
+
+### Styling
+
+All styling decisions belong to Computer 1. The operations layer provides only data and types.
+
+## For Computer 3 (Architecture Evaluation)
+
+### Available Snapshot
+
+```ts
+import { createSnapshot } from '@stack-and-survive/simulation/operations';
+import type { SimulationSnapshot, ArchitectureFinding } from '@stack-and-survive/simulation/operations';
+```
+
+Call `createSnapshot(state, requestSnapshot, events, scenarioId, seed)` at game completion to get a serializable snapshot for architecture evaluation.
+
+The `ArchitectureFinding` type is provided as a contract for Computer 3 to implement findings against.
+
+### Replay Fixture
+
+```ts
+import { createReplayFixture } from '@stack-and-survive/simulation/operations';
+```
+
+Creates a serializable fixture containing snapshot + player actions for deterministic comparison.
+
+## Required Integration Changes
+
+The operations layer is additive and does not modify existing simulation behavior. UI wiring remains optional and must honor the measurement/unknown-state boundaries above. Existing field names do not establish actual CPU instrumentation or a measured latency percentile.
+
+## Determinism Guarantee
+
+Given the same scenario, seed, and player actions, the operations layer produces identical:
+- metrics
+- alerts
+- timeline
+- snapshots
