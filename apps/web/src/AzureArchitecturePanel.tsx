@@ -9,7 +9,7 @@ import { tycoonPositions } from './tycoon-layout';
 import { formatMoneyRate, formatMoneyReason } from './money';
 import './azure-architecture.css';
 
-export function AzureArchitecturePanel({ controller, view, navigation }: { controller: Controller; view: View; navigation: PlayerNavigation }) {
+export function AzureArchitecturePanel({ controller, view, navigation, onInspect }: { controller: Controller; view: View; navigation: PlayerNavigation; onInspect: (id: string, opener: HTMLElement | null) => void }) {
   const [open, setOpen] = useState(false);
   const id = useId();
   const trigger = useRef<HTMLButtonElement>(null), close = useRef<HTMLButtonElement>(null);
@@ -27,7 +27,7 @@ export function AzureArchitecturePanel({ controller, view, navigation }: { contr
         const action = node.kind === 'compute' ? { type: 'SCALE_OUT' as const } : !resource && (node.kind === 'cache' || node.kind === 'edge') ? { type: 'DEPLOY_RESOURCE' as const, kind: node.kind, ...tycoonPositions[node.kind] } : null;
         const reason = action ? controller.actionReason(action) : null;
         return <div key={node.id} className="azure-catalog-item">
-          <AzureResourceNode {...node} selected={view.selected === resource?.id} onSelect={resource ? () => { controller.select(resource.id); navigation.focus(node.kind); dismiss(); } : undefined} actionHint={resource ? 'Inspect this resource' : 'Use the deployment action below'} />
+          <AzureResourceNode {...node} selected={view.selected === resource?.id} onSelect={resource ? () => { setOpen(false); onInspect(resource.id, trigger.current); navigation.focus(node.kind); } : undefined} actionHint={resource ? 'Inspect this resource' : 'Use the deployment action below'} />
           <p>{service.role}</p><small>{service.scope}</small>
           <small>Running effect: {formatMoneyRate(definitions[node.kind].cost * Math.max(1, node.instances), 'min')}{resource ? ' when active' : ' after deployment'}.</small>
           {node.kind === 'database' && <small>Capacity: 180 reads/s · 70 writes/s (game limits).</small>}

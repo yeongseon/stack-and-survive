@@ -31,6 +31,7 @@
 .azure-timeline-slot { border-top: 1px solid var(--border-default); padding-top: var(--space-2); }
 .azure-experience .facility-plaque { max-width: 170px; text-align: center; }
 .azure-experience .facility-plaque strong { font-size: 11px; letter-spacing: .025em; white-space: normal; }
+.azure-experience .facility-plaque span { white-space: normal; }
 @media (max-width: 899px), (max-height: 600px) {
   .azure-experience .azure-catalog { top: 118px; right: 12px; }
   .azure-services-panel { position: fixed; right: 12px; top: 116px; bottom: 72px; width: min(320px, calc(100vw - 24px)); max-height: none; margin: 0; }

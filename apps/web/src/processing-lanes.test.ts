@@ -1,7 +1,17 @@
-import { expect, it } from 'vitest';
+import { expect, it, vi } from 'vitest';
 import { baseline } from '@stack-and-survive/cloud-domain';
 import { processRequests } from '@stack-and-survive/simulation';
-import { lanePoint, processingLanes } from './processing-lanes';
+import { drawProcessingLane, lanePoint, processingLanes } from './processing-lanes';
+
+it('draws non-color crosshatches only on dropping lanes', () => {
+  const graphics = { lineStyle: vi.fn().mockReturnThis(), lineBetween: vi.fn().mockReturnThis() };
+  const lane = { from: 'app', to: 'sql', volume: 200, dropped: 0, state: 'flowing' as const };
+  drawProcessingLane(graphics, { x: 0, y: 0 }, { x: 130, y: 0 }, lane);
+  const normal = graphics.lineBetween.mock.calls.length;
+  graphics.lineBetween.mockClear();
+  drawProcessingLane(graphics, { x: 0, y: 0 }, { x: 130, y: 0 }, { ...lane, state: 'dropping', dropped: 20 });
+  expect(graphics.lineBetween.mock.calls.length).toBe(normal + 4);
+});
 
 it('draws only configured logical lanes and never invents disconnected flow', () => {
   const a = baseline(3, true, true); const before = structuredClone(a);

@@ -26,6 +26,6 @@ export function AzureResourceNode({ service, instances, health, utilization, sel
   </>;
   const className = `azure-resource-node${selected ? ' is-selected' : ''}${bottleneck ? ' is-bottleneck' : ''}`;
   return onSelect ? <button type="button" className={className} disabled={disabled || !definition.playable} aria-pressed={selected}
-    aria-label={`${definition.name}, ${instances} instances, ${statuses[health]}, ${reading === null ? 'utilization not measured' : `${Math.round(reading * 100)} percent utilization`}${bottleneck ? ', capacity constraint' : ''}${actionHint ? `, ${actionHint}` : ''}`} onClick={onSelect}>{content}</button>
+    aria-label={`${definition.name}, ${instances} ${instances === 1 ? 'instance' : 'instances'}, ${statuses[health]}, ${reading === null ? 'utilization not measured' : `${Math.round(reading * 100)} percent utilization`}${bottleneck ? ', capacity constraint' : ''}${actionHint ? `, ${actionHint}` : ''}`} onClick={onSelect}>{content}</button>
     : <div className={className} role="group" aria-label={definition.name} aria-disabled={disabled || undefined}>{content}</div>;
 }

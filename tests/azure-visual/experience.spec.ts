@@ -17,6 +17,9 @@ test('four-step tutorial completion persists and can be reopened from Help', asy
   await page.getByRole('button', { name: 'Next step', exact: true }).click();
   await page.getByRole('button', { name: 'Finish tutorial', exact: true }).click();
   expect(await page.evaluate(() => localStorage.getItem('stack-and-survive.azure-tutorial.v1'))).toBe('completed');
+  await page.getByRole('button', { name: 'How to Play', exact: true }).click();
+  await expect(page.getByRole('dialog').getByRole('button', { name: 'Replay Azure tutorial', exact: true })).toBeVisible();
+  await page.getByRole('dialog').getByRole('button', { name: 'Close', exact: true }).click();
   await page.reload(); await expect(page.getByRole('button', { name: 'Replay Azure tutorial', exact: true }).first()).toBeVisible();
   await page.getByRole('button', { name: 'How to Play', exact: true }).click();
   const help = page.getByRole('dialog');
@@ -62,6 +65,7 @@ test('resource catalog uses real status, unchanged actions and accessible keyboa
   await expect(panel).toHaveCount(0);
   await expect(page.getByRole('region', { name: 'Resource actions', exact: true })).toContainText('Azure App Service');
   await page.getByRole('button', { name: 'Close resource', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Azure services', exact: true })).toBeFocused();
   await page.getByRole('button', { name: 'Traffic key', exact: false }).click();
   await expect(page.getByRole('region', { name: 'Traffic direction and legend' })).toContainText('database writes');
   await page.getByRole('button', { name: 'Ⅱ Pause', exact: true }).click();

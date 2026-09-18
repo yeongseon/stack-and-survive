@@ -149,7 +149,7 @@ export function GameFloor({ controller, view, navigation, onReady, blocked = fal
         {selected.kind === 'database' && <><p className="resource-state">Reads: {visual.sql.readPressure}<br/>Writes: {visual.sql.writePressure}</p><small>Capacity and routing explained in Learn</small></>}
       </section>}
     </div>
-    <AzureArchitecturePanel controller={controller} view={view} navigation={navigation} />
+    <AzureArchitecturePanel controller={controller} view={view} navigation={navigation} onInspect={(id, trigger) => { opener.current = trigger; setActionFeedback(null); controller.select(id); }} />
     <AzureTrafficKey view={view} />
   </div>;
 }

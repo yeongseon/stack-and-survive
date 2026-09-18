@@ -8,6 +8,12 @@ export function AzureTutorial({ compact = false }: { compact?: boolean }) {
   const restoreFocus = useRef(false);
   const id = useId();
   useEffect(() => {
+    const sync = () => { try { setSeen(tutorialSeen(localStorage)); } catch { setSeen(false); } };
+    window.addEventListener('azure-tutorial-preference', sync);
+    window.addEventListener('storage', sync);
+    return () => { window.removeEventListener('azure-tutorial-preference', sync); window.removeEventListener('storage', sync); };
+  }, []);
+  useEffect(() => {
     if (step !== null) heading.current?.focus({ preventScroll: true });
     else if (restoreFocus.current) { restoreFocus.current = false; trigger.current?.focus(); }
   }, [step]);
@@ -16,6 +22,7 @@ export function AzureTutorial({ compact = false }: { compact?: boolean }) {
     try { saved = saveTutorial(localStorage, status); } catch { saved = false; }
     restoreFocus.current = step !== null;
     setSeen(true); setStep(null); setMessage(saved ? '' : 'Tutorial preference could not be saved. You can still play.');
+    if (saved) window.dispatchEvent(new Event('azure-tutorial-preference'));
     if (step === null) trigger.current?.focus();
   };
   const current = step === null ? null : azureTutorialSteps[step];
