@@ -90,6 +90,8 @@ Latest local checks after main8211b5a integration:650 unit tests,3 real producti
 
 Unedited PNGs from actual UI-driven production runs are in [images/infrastructure-scaling](images/infrastructure-scaling/). `capture-provenance.json` records byte hashes; `scripts/archive-scaling-captures.mjs` archives the Playwright outputs.
 
+New captures use `CAPTURE_SCALING=1 pnpm exec playwright test --config playwright.scaling.config.ts`. This opt-in mode pauses through real controls for screenshots; ordinary CI performs the same gameplay assertions without document-capture overhead. No engine ticks are injected or accelerated in either mode. A terminal game is never paused again merely to capture a late-game picture.
+
 1. [Initial architecture](images/infrastructure-scaling/01-initial.png)
 2. [App ×4](images/infrastructure-scaling/02-app-x4.png)
 3. [App tier2 after scale-in](images/infrastructure-scaling/03-app-tier2.png)

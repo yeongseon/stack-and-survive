@@ -16,7 +16,7 @@ for (const dir of await readdir(root, { withFileTypes: true })) {
 }
 await writeFile(new URL('capture-provenance.json', output), JSON.stringify({
   source: 'Local production build, tests/scaling/scaling.spec.ts; real-time UI actions, no injected state or public score submission.',
-  command: 'pnpm build && pnpm exec playwright test --config playwright.scaling.config.ts',
+  command: 'pnpm build; CAPTURE_SCALING=1 pnpm exec playwright test --config playwright.scaling.config.ts',
   captures,
 }, null, 2) + '\n');
 console.log(`Archived ${captures.length} unedited scaling captures.`);

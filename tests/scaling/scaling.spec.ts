@@ -19,6 +19,8 @@ test('real 180-second architecture evolves through horizontal, vertical and read
     await expect.poll(async () => Number(await page.getByRole('progressbar', {name:'Operation elapsed time',exact:true}).getAttribute('value')), {timeout:180000}).toBeGreaterThanOrEqual(seconds);
   };
   const shot = async (name: string) => {
+    if (process.env.CAPTURE_SCALING !== '1') return;
+    if (await page.getByRole('region', {name:'Business result',exact:true}).isVisible()) return;
     await page.getByRole('button',{name:'Ⅱ Pause',exact:true}).click();
     await page.getByRole('button',{name:'Inspect paused world',exact:true}).click();
     await page.screenshot({path:info.outputPath(name)});
@@ -56,7 +58,7 @@ test('real 180-second architecture evolves through horizontal, vertical and read
   const result = page.getByRole('region', { name: 'Business result' }); await expect(result).toBeVisible({ timeout: 25000 });
   await expect(result).toContainText('CHALLENGE CLEAR');
   await expect(result.getByRole('region', { name: 'Final Architecture' })).toContainText('Business Critical + 1 read replicas');
-  await page.screenshot({ path: info.outputPath('08-result.png') });
+  if (process.env.CAPTURE_SCALING === '1') await page.screenshot({ path: info.outputPath('08-result.png') });
   const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('stack-and-survive.history.balance-0.4.v1')!).runs[0]);
   expect(saved.elapsed).toBe(180); expect(saved.actions.some((a: { type: string }) => a.type === 'SCALE_IN')).toBe(true);
   expect(errors).toEqual([]);
@@ -74,7 +76,7 @@ test('SQL bottleneck remains distinct from App capacity and downgrade controls o
   await expect(card(page).getByRole('button', { name: '− Read replica', exact: true })).toBeDisabled();
   await expect(page.getByTestId('traffic')).toContainText('260', { timeout: 30000 });
   await expect(card(page)).toContainText('Reads: 116%');
-  await page.screenshot({ path: info.outputPath('sql-bottleneck.png') });
+  if (process.env.CAPTURE_SCALING === '1') await page.screenshot({ path: info.outputPath('sql-bottleneck.png') });
   await card(page).getByRole('button', { name: '↑ SQL tier', exact: true }).click();
   await expect(card(page)).toContainText('Tier 2 · General Purpose II');
   await card(page).getByRole('button', { name: '↓ SQL tier', exact: true }).click();
