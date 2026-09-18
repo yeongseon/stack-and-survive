@@ -2,6 +2,12 @@
 
 ## Simulation Specification
 
+## Current rules 0.4 — Infrastructure scaling
+
+[Infrastructure scaling](INFRASTRUCTURE_SCALING.md) specifies the new tier, instance and read-replica values, measured balance schedules, transition ordering and replay identity. The underlying180s workload,75 funds,10% reinvestment, fixed scoring and failure formulas remain as0.3. New actions are rejected under legacy0.2/0.3; legacy starting architectures cannot contain upgraded tiers or active read replicas. Existing0.3 sections below are preserved as historical arithmetic references, not permission to mix new actions into old scores.
+
+Due changes activate before the tick's actions and traffic. Conflicting changes on one facility serialize; App and SQL may change concurrently. In-flight scale-in retains old capacity/cost for3ticks, then removes the highest bay. Vertical updates retain old capacity/cost during their delay and do not add buildings. Read replicas add180read/s each, zero write/s. New history and leaderboard identities distinguish rules0.4.
+
 ## Current balance 0.3 — Final Hackathon sprint #212
 
 This section supersedes conflicting budget/workload/version statements in the historical v0.2 specification below. The v0.2 rules and arithmetic reference remain explicitly supported for old replay regression and the QA editor; they are not current ordinary-player balance. No scoring formula, resource capacity, delay, routing, failure streak or per-success revenue value changes in v0.3.

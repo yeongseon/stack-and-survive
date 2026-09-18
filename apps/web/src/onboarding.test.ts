@@ -2,6 +2,10 @@ import { describe, expect, it } from 'vitest';
 import { blackFridayChallenge } from '@stack-and-survive/scenarios/challenge';
 import { challengeLadder } from '@stack-and-survive/scenarios/ladder';
 import { trafficPhaseLabel } from './wave-feedback';
+import { missionStatus } from './mission-status';
+import { createSimulation, advanceSimulation } from '@stack-and-survive/simulation/results';
+import { startRuntime } from '@stack-and-survive/simulation/runtime';
+import { canonicalPlayerStart } from '@stack-and-survive/cloud-domain';
 
 const scenario = blackFridayChallenge.workload;
 
@@ -91,5 +95,87 @@ describe('phase labels derive from scenario data', () => {
     for (const idx of botAttackIndices) {
       expect(trafficPhaseLabel(scenario, idx)).toBe('Bot attack');
     }
+  });
+
+  it('recovery windows are labeled correctly', () => {
+    const recoveryIndices = scenario.traffic.map((p, i) => {
+      if (i === 0 || i === scenario.traffic.length - 1) return -1;
+      const prev = scenario.traffic[i - 1];
+      return p.rps < prev.rps && p.rps * p.botRatio <= prev.rps * prev.botRatio ? i : -1;
+    }).filter(i => i >= 0);
+
+    for (const idx of recoveryIndices) {
+      expect(trafficPhaseLabel(scenario, idx)).toBe('Recovery window');
+    }
+  });
+
+  it('every phase has a non-empty label', () => {
+    for (let i = 0; i < scenario.traffic.length; i++) {
+      const label = trafficPhaseLabel(scenario, i);
+      expect(label.length).toBeGreaterThan(0);
+    }
+  });
+});
+
+describe('mission status at phase boundaries', () => {
+  // Use a qualifying strategy so the simulation survives to the final wave
+  const qualifyingActions = [
+    { type: 'SCALE_OUT' as const, time: 16, sequence: 0 },
+    { type: 'DEPLOY_RESOURCE' as const, kind: 'cache' as const, time: 17, sequence: 1, x: 190, y: -100 },
+    { type: 'SCALE_OUT' as const, time: 57, sequence: 2 },
+    { type: 'SCALE_OUT' as const, time: 102, sequence: 3 },
+  ];
+
+  function viewAtTick(tick: number) {
+    let state = createSimulation(canonicalPlayerStart(), scenario);
+    state.runtime = startRuntime(state.runtime);
+    let snapshot = null;
+    for (let t = 0; t < tick && state.runtime.status === 'RUNNING'; t++) {
+      const tickActions = qualifyingActions.filter(a => a.time === state.runtime.time);
+      const transition = advanceSimulation(state, scenario, tickActions);
+      state = transition.nextState;
+      snapshot = transition.snapshot;
+    }
+    return { state, snapshot, result: null, challenge: blackFridayChallenge, error: null } as Parameters<typeof missionStatus>[0];
+  }
+
+  it('phase 1 at tick 0: Opening traffic', () => {
+    const view = viewAtTick(1);
+    const status = missionStatus(view);
+    expect(status.label).toBe('Opening traffic');
+    expect(status.phaseRps).toBe(100);
+    expect(status.phaseBots).toBe(0);
+    expect(status.tone).toBe('traffic');
+  });
+
+  it('final phase: FINAL WAVE with correct rps and bots', () => {
+    const finalStart = scenario.traffic.at(-1)!.start;
+    const view = viewAtTick(finalStart + 1);
+    const status = missionStatus(view);
+    expect(status.label).toBe('FINAL WAVE');
+    expect(status.phaseRps).toBe(600);
+    expect(status.phaseBots).toBe(45);
+    expect(status.tone).toBe('attack');
+  });
+
+  it('arriving flag is true during first 3 ticks of a non-opening phase', () => {
+    const phase2Start = scenario.traffic[1].start;
+    const view = viewAtTick(phase2Start + 1);
+    const status = missionStatus(view);
+    expect(status.arriving).toBe(true);
+    expect(status.phaseIndex).toBe(1);
+  });
+
+  it('clock counts down correctly', () => {
+    const view = viewAtTick(60);
+    const status = missionStatus(view);
+    expect(status.remaining).toBe(120);
+    expect(status.clock).toBe('02:00');
+  });
+
+  it('objective text matches challenge', () => {
+    const view = viewAtTick(1);
+    const status = missionStatus(view);
+    expect(status.objective).toBe('Keep the business alive');
   });
 });

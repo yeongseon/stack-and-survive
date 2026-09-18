@@ -12,9 +12,9 @@ test('living operation expands real capacity and activates Cache and Edge only a
   const step = page.getByRole('button', { name: 'Step one tick', exact: true });
   const state = async () => JSON.parse((await page.getByTestId('diagnostics').textContent())!);
   await step.click();
-  await page.getByRole('button', { name: /Add Cache/ }).focus(); await page.getByRole('button', { name: /Add Cache/ }).press('Enter');
+  await page.getByRole('button', { name: /Deploy Cache — reduces SQL reads/ }).focus(); await page.getByRole('button', { name: /Deploy Cache — reduces SQL reads/ }).press('Enter');
   await expect(page.getByRole('button', { name: 'Confirm expansion', exact: true })).toHaveCount(0);
-  { await page.getByRole('button', { name: /Add Protected Edge/ }).focus(); await page.getByRole('button', { name: /Add Protected Edge/ }).press('Enter'); };
+  { await page.getByRole('button', { name: /Deploy Protected Edge — filters bots/ }).focus(); await page.getByRole('button', { name: /Deploy Protected Edge — filters bots/ }).press('Enter'); };
   await expect(page.getByRole('button', { name: 'Confirm expansion', exact: true })).toHaveCount(0);
   { await page.getByRole('button', { name: /App capacity/ }).focus(); await page.getByRole('button', { name: /App capacity/ }).press('Enter'); };
   await expect(page.getByRole('button', { name: 'Confirm expansion', exact: true })).toHaveCount(0);
@@ -78,7 +78,8 @@ test('world-local controls stay separate and keyboard accessible on a narrow flo
   await expect(page.getByRole('button', { name: 'Ⅱ Pause', exact: true })).toBeEnabled({ timeout: 10000 });
   await page.getByRole('button', { name: 'Traffic intake', exact: true }).focus();
   const controls = page.locator('.world-keyboard-controls button');
-  await expect(controls).toHaveCount(5);
+  await expect(controls).toHaveCount(6);
+  await expect(page.getByRole('button', {name:'Inspect App scaling',exact:true})).toBeVisible();
   const boxes = await controls.evaluateAll(elements => elements.map(e => { const r = e.getBoundingClientRect(); return { x:r.x,y:r.y,w:r.width,h:r.height }; }));
   for (let i=0;i<boxes.length;i++) for (let j=i+1;j<boxes.length;j++) {
     const a=boxes[i], b=boxes[j]; expect(a.x < b.x+b.w && a.x+a.w>b.x && a.y<b.y+b.h && a.y+a.h>b.y, `controls ${i}/${j}: ${JSON.stringify([a,b])}`).toBe(false);

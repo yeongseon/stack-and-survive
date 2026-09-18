@@ -1,7 +1,7 @@
 import type { View } from './controller';
 import { primaryPressure } from './primary-pressure';
 import { blackFriday } from '@stack-and-survive/scenarios';
-import { lostSales, upcomingWave } from './wave-feedback';
+import { lostSales, upcomingWave, reinvestedThisTick } from './wave-feedback';
 import { missionStatus } from './mission-status';
 import { formatMoney, formatMoneyRate } from './money';
 import './gameplay-hud.css';
@@ -15,14 +15,14 @@ export function GameHUD({ view }: { view: View }) {
   const budget = view.state.economy.remainingBudget;
   const pressure = primaryPressure(view);
   const paused = view.state.runtime.status === 'PAUSED';
-  const next=upcomingWave(view), loss=lostSales(r);
+  const next=upcomingWave(view), loss=lostSales(r), reinvested=reinvestedThisTick(view);
   const mission = missionStatus(view);
   const arrival = phaseArrival(view);
   return <>
     <section className={`mission-hud ${mission.tone}${mission.arriving ? ' phase-arriving' : ''}${mission.riskSeconds !== null ? ' service-risk' : ''}`} aria-label="Operation progress" data-held={mission.status !== 'Live'}>
       <div className="mission-heading">
-        <output className="mission-phase" aria-label="Phase arrival" aria-live="polite" aria-atomic="true"><small>{mission.status} · Phase {mission.phaseIndex + 1}/{mission.phases.length}</small><strong key={mission.phaseIndex}>{mission.label}</strong>{arrival && <span className="phase-detail" data-testid="phase-arrival">{arrival.rps} req/s{arrival.bots > 0 ? ` · ${arrival.bots}% bots · Red packets = bots` : ''}</span>}</output>
-        <div className="mission-clock"><strong data-testid="mission-clock">{mission.clock}</strong><small>remaining</small></div>
+        <output className="mission-phase" aria-atomic="true"><small>{mission.status} · Phase {mission.phaseIndex + 1}/{mission.phases.length}</small><strong key={mission.phaseIndex}>{mission.label}</strong>{arrival && <span className="phase-detail" data-testid="phase-arrival">{arrival.rps} req/s{arrival.bots > 0 ? ` · ${arrival.bots}% bots · Red packets = bots` : ''}</span>}</output>
+        <div className={`mission-clock${mission.remaining <= 10 && mission.status === 'Live' ? ' final-seconds' : ''}`}><strong data-testid="mission-clock">{mission.clock}</strong><small>{mission.remaining <= 10 && mission.status === 'Live' ? 'SURVIVE' : mission.remaining <= 30 && mission.status === 'Live' ? mission.label : 'remaining'}</small></div>
       </div>
       <div className="mission-timeline" aria-hidden="true">{mission.phases.map((phase, index) => <span key={phase.start} className={index === mission.phaseIndex ? 'current' : ''} style={{ flexGrow: phase.end - phase.start }}><i style={{ width: `${phase.progress * 100}%` }} /></span>)}</div>
       <progress className="mission-accessible-progress" aria-label="Operation elapsed time" max={mission.duration} value={mission.elapsed} />
@@ -30,7 +30,7 @@ export function GameHUD({ view }: { view: View }) {
       {mission.riskSeconds !== null && <p className="mission-risk" data-testid="mission-risk"><span aria-hidden="true">⚠ </span>Service at risk · {mission.riskSeconds}s to interruption if losses continue</p>}
     </section>
     <section className="game-hud" aria-label="Business status">
-    <div className="hud-reading"><span aria-hidden="true">◈</span><div><small>Upgrade Funds</small><strong data-testid="budget">{formatMoney(budget)}</strong><meter aria-label="Remaining upgrade funds" min={0} max={Math.max(scenario.budget,budget)} value={Math.max(0, budget)} /></div></div>
+    <div className="hud-reading"><span aria-hidden="true">◈</span><div><small>Upgrade Funds{reinvested > 0.001 && !paused && !view.result ? <span className="funds-reinvest" aria-label="Reinvested this tick"> +{formatMoneyRate(reinvested)}</span> : ''}</small><strong data-testid="budget">{formatMoney(budget)}</strong><meter aria-label="Remaining upgrade funds" min={0} max={Math.max(scenario.budget,budget)} value={Math.max(0, budget)} /></div></div>
     <div className="hud-reading"><span aria-hidden="true">⇢</span><div><small>Demand</small><strong data-testid="traffic">{demand ?? '—'} <small>req/s</small></strong><meter aria-label="Demand relative to scenario peak" min={0} max={Math.max(1, ...scenario.traffic.map(p => p.rps))} value={demand ?? 0} /></div></div>
     <div className="hud-reading"><span aria-hidden="true">✓</span><div><small>Availability</small><strong data-testid="availability">{availability === undefined ? '—' : `${(availability * 100).toFixed(1)}%`}</strong><meter aria-label="Current availability" min={0} max={1} value={availability ?? 0} /></div></div>
     <div className="hud-pressure-reading"><small>System pressure</small><output className={`hud-pressure${pressure.urgent ? ' urgent' : ''}`}><span aria-hidden="true">{pressure.urgent ? '⚠' : '◇'}</span>{paused ? 'Paused · ' : view.result ? 'Final · ' : ''}{pressure.label}</output></div>

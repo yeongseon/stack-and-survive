@@ -2,7 +2,7 @@ import type { View } from './controller';
 import { compare } from '@stack-and-survive/simulation/economy';
 import { blackFriday } from '@stack-and-survive/scenarios';
 import { formatMoneyRate } from './money';
-import { definitions } from '@stack-and-survive/cloud-domain';
+import { definitions, appTiers, resourceTier, appHorizontalScaling } from '@stack-and-survive/cloud-domain';
 
 export type GuideStage = 'observe' | 'decide' | 'compare';
 export type GuideRecord = 'new' | 'skipped' | 'completed';
@@ -21,19 +21,19 @@ export function guideHint(view: View, stage: GuideStage): GuideHint {
   if (runtime.status === 'PAUSED') return { title: 'Time is paused', text: 'Inspect the last measured flow. Resume when you are ready; this guide never pauses or advances the game itself.', target: null };
   const r = view.snapshot?.requests;
   if (!r || runtime.status !== 'RUNNING') return { title: 'Your business is about to open', text: 'Traffic will enter at the Internet intake. No infrastructure choice is required before the countdown finishes.', target: null };
-  if (stage === 'observe') return { title: 'Traffic enters here', text: 'Internet intake → App → SQL. Watch Next in the top HUD: prepare before the traffic spike. Red packets are malicious bots.', target: 'internet' };
+  if (stage === 'observe') return { title: 'Follow the traffic', text: 'Internet intake → App → SQL. Watch Next in the top HUD: prepare before the traffic spike. Red packets are malicious bots.', target: 'internet' };
   if (stage === 'compare') return { title: 'Look for the consequence', text: 'After activation, compare the flow and pressure. Improvement is not guaranteed: more App capacity does not expand SQL.', target: null };
   const resources = runtime.architecture.resources;
   const app = resources.find(resource => resource.kind === 'compute');
   if (resources.some(resource => resource.remaining > 0) || runtime.scaleDue !== null) return { title: 'Construction is not capacity yet', text: 'The scaffold marks work in progress. Solid equipment and the online cue mean capacity is ready. Next keeps counting down while you build.', target: null };
   if (view.queuedActions.length > 0) return { title: 'Request sent', text: 'Your action is waiting for the next operation tick. A click does not instantly add capacity or filter traffic.', target: null };
   if (compare(view.state.economy.remainingBudget / (view.challenge?.workload.budget ?? blackFriday.budget), .2) < 0) return { title: 'Upgrade Funds are running low', text: 'Only 10% of successful sales returns to Upgrade Funds. Check running costs before expanding.', target: null };
-  if (compare(r.sql.writeUtilization, 1) > 0) return { title: 'Writes are pressing on SQL', text: 'Inspect the SQL write side. Cache does not remove Order writes, and adding App instances does not expand this fixed database.', target: 'database' };
-  if (compare(r.sql.readUtilization, 1) > 0 && !resources.some(resource => resource.kind === 'cache')) return { title: 'Consider reducing SQL reads', text: `Click the Cache footprint once to deploy: ${definitions.cache.provisioning}s, +${formatMoneyRate(definitions.cache.cost, 'min')}. Eligible reads can finish there; Order writes still need SQL.`, target: 'cache' };
+  if (compare(r.sql.writeUtilization, 1) > 0) return { title: 'Writes are pressing on SQL', text: view.challenge?.rulesVersion === '0.4' ? 'Inspect the SQL write side and compare a higher SQL tier. Cache and read replicas do not remove Order writes; adding App instances does not expand SQL.' : 'Inspect the SQL write side. Cache does not remove Order writes, and adding App instances does not expand this fixed database.', target: 'database' };
+  if (compare(r.sql.readUtilization, 1) > 0 && !resources.some(resource => resource.kind === 'cache')) return { title: 'Consider reducing SQL reads', text: `Click the Cache footprint once to deploy: 5s, +${formatMoneyRate(definitions.cache.cost, 'min')}. Eligible reads can finish there; Order writes still need SQL.`, target: 'cache' };
   if (compare(r.app.utilization, 1) > 0 && r.offered.bot > 0 && !resources.some(resource => resource.kind === 'edge')) return { title: 'Bots are using App capacity', text: 'Consider Protected Edge at ingress, or compare adding App capacity. Edge filtering also has a running cost and can reject some legitimate traffic.', target: 'edge' };
-  if (compare(r.app.utilization, .7) > 0 && app && app.instances < 4) return { title: 'Consider more App capacity', text: `Click the highlighted empty bay once to expand: 8s, +${formatMoneyRate(definitions.compute.cost, 'min')}. Prepare before the next wave; capacity is not instant.`, target: 'compute' };
+  if (compare(r.app.utilization, .7) > 0 && app && app.instances < 4) return { title: 'Consider more App capacity', text: `Click the highlighted empty bay to expand: takes ${appHorizontalScaling.addDelay} seconds and costs ${formatMoneyRate(appTiers[resourceTier(app)-1].cost, 'min')}. Build before the next wave arrives — construction is not instant.`, target: 'compute' };
   if (compare(r.sql.readUtilization, 1) > 0) return { title: 'SQL reads remain constrained', text: 'Cache is already installed. Inspect the SQL read side; another App server cannot increase database capacity.', target: 'database' };
   if (compare(r.app.utilization, 1) > 0) return { title: 'App is at its expansion limit', text: 'Four servers can still overload. Inspect traffic intake and its filtering trade-off; there is no fifth instance.', target: 'internet' };
   if (compare(r.cache.utilization ?? 0, 1) > 0) return { title: 'Cache is under pressure', text: 'Overflow reads still reach SQL. Inspect the downstream read pressure before adding App capacity.', target: 'database' };
-  return { title: 'Prepare before the next wave', text: 'Watch Next in the top HUD. The outlined empty App bay adds capacity after construction. Cache helps eligible reads; Protected Edge filters bots. Choose before demand arrives.', target: null };
+  return { title: 'You do not have to build yet', text: `Watch Next in the top HUD. ${app && app.instances < 4 ? 'The outlined empty App bay adds capacity after construction. ' : ''}Cache helps eligible reads; Protected Edge filters bots. Choose before demand arrives.`, target: null };
 }

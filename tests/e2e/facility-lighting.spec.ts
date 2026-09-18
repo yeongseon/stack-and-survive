@@ -10,7 +10,7 @@ test('light pools follow installed capacity and real pressure without illuminati
   await step.click();
   await expect.poll(async () => (await lights()).length).toBe(3);
   expect((await lights()).some((light: {id: string}) => light.id === 'cache' || light.id === 'edge')).toBe(false);
-  { await page.getByRole('button', { name: 'Add Cache', exact: true }).focus(); await page.getByRole('button', { name: 'Add Cache', exact: true }).press('Enter'); };
+  { await page.getByRole('button', { name: 'Deploy Cache — reduces SQL reads', exact: true }).focus(); await page.getByRole('button', { name: 'Deploy Cache — reduces SQL reads', exact: true }).press('Enter'); };
   await expect(page.getByRole('button', { name: 'Confirm expansion', exact: true })).toHaveCount(0); await step.click();
   await expect.poll(async () => (await lights()).find((light: {id: string}) => light.id === 'cache')?.mode).toBe('pending');
   for (let i = 0; i < 5; i++) await step.click();

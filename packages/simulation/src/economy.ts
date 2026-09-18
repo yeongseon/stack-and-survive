@@ -1,10 +1,10 @@
 import type { Architecture, Scenario } from '@stack-and-survive/schema';
-import { definitions } from '@stack-and-survive/cloud-domain';
+import { definitions, resourceRunningCost, resourceTier, appTiers, databaseTiers, readReplica } from '@stack-and-survive/cloud-domain';
 import { parseScenario } from '@stack-and-survive/scenarios';
 import { advanceRuntime, createPreparation, type Action, type Runtime, type TickTransition } from './runtime';
 
 export const value = Object.freeze({ browse: .002, order: .05, incident: .25 });
-export function reinvestmentRate(scenario: Scenario): number { return scenario.balanceVersion === '0.3' ? .1 : 0; }
+export function reinvestmentRate(scenario: Scenario): number { return scenario.balanceVersion !== '0.2' ? .1 : 0; }
 export function epsilon(a: number, b: number): number { return 1e-9 * Math.max(1, Math.abs(a), Math.abs(b)); }
 export function compare(a: number, b: number): -1 | 0 | 1 {
   return Math.abs(a - b) <= epsilon(a, b) ? 0 : a < b ? -1 : 1;
@@ -19,10 +19,11 @@ export function emptyEconomy(budget: number): Economy {
 }
 export function createEconomicState(architecture: Architecture, scenario: Scenario): EconomicState {
   const validated = parseScenario(scenario);
+  if (validated.balanceVersion !== '0.4' && architecture.resources.some(r => (r.tier ?? 1) !== 1 || (r.readReplicas ?? 0) > 0)) throw new Error('Infrastructure tiers require rules 0.4');
   return { runtime: createPreparation(architecture), economy: emptyEconomy(validated.budget) };
 }
 export function activeCostPerMinute(architecture: Architecture): number {
-  return architecture.resources.reduce((sum, resource) => sum + (resource.remaining === 0 ? definitions[resource.kind].cost * resource.instances : 0), 0);
+  return architecture.resources.reduce((sum, resource) => sum + resourceRunningCost(resource), 0);
 }
 export function advanceEconomy(state: EconomicState, scenario: Scenario, actions: readonly Action[]): {
   nextState: EconomicState; transition: TickTransition; budgetExhausted: boolean;
@@ -31,7 +32,14 @@ export function advanceEconomy(state: EconomicState, scenario: Scenario, actions
   const transition = advanceRuntime(state.runtime, scenario, actions, (runtime, action, charges) => {
     const remaining = previous.remainingBudget - charges;
     if (action.type === 'EMERGENCY_WAF' && compare(remaining, 8) <= 0) return 'Emergency WAF requires more than 8 remaining credits';
-    if (action.type === 'SCALE_OUT' && compare(remaining, (activeCostPerMinute(runtime.architecture) + definitions.compute.cost) / 60) < 0) {
+    const app = runtime.architecture.resources.find(r => r.kind === 'compute')!;
+    const sql = runtime.architecture.resources.find(r => r.kind === 'database')!;
+    let additional = 0;
+    if (action.type === 'SCALE_OUT') additional = appTiers[resourceTier(app) - 1].cost;
+    if (action.type === 'SCALE_UP_APP') additional = (appTiers[Math.min(2, resourceTier(app))].cost - appTiers[resourceTier(app) - 1].cost) * app.instances;
+    if (action.type === 'SCALE_UP_DATABASE') additional = databaseTiers[Math.min(2, resourceTier(sql))].cost - databaseTiers[resourceTier(sql) - 1].cost;
+    if (action.type === 'ADD_READ_REPLICA') additional = readReplica.cost;
+    if (additional > 0 && compare(remaining, (activeCostPerMinute(runtime.architecture) + additional) / 60) < 0) {
       return 'Insufficient budget for one post-scale infrastructure tick';
     }
     if (action.type === 'DEPLOY_RESOURCE' && compare(remaining, (activeCostPerMinute(runtime.architecture) + definitions[action.kind].cost) / 60) < 0) return 'Insufficient budget for one post-deployment infrastructure tick';

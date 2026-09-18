@@ -9,7 +9,7 @@
 .title-bottom .challenge-select {margin-bottom:12px}
 .challenge-select .ladder-explainer {flex-basis:100%;color:#cce5ef}
 .welcome-countdown .countdown-forecast {display:block;font-size:14px;line-height:1.6;color:#cce5ef}
-.welcome-countdown .countdown-name {text-transform:uppercase;letter-spacing:.08em}
+.welcome-countdown .countdown-name {display:block;color:#efc985;font-size:12px;text-transform:uppercase;letter-spacing:.08em}
 .mission-phase:has(.phase-detail) {flex-wrap:wrap;gap:2px 14px}
 .mission-phase .phase-detail {flex-basis:100%;font-size:11px;line-height:1.2}
 @media(max-height:500px) and (orientation:landscape){

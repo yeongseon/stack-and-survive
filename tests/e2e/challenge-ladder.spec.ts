@@ -15,7 +15,7 @@ test('approved ladder unlocks sequentially from real successful runs and ends wi
     await page.getByText('Tycoon QA', { exact: true }).click();
     const step = page.getByRole('button', { name: 'Step one tick', exact: true });
     await step.click();
-    for (const name of ['Add Cache', '+ App capacity']) {
+    for (const name of ['Deploy Cache — reduces SQL reads', '+ App capacity']) {
       await page.getByRole('button', { name, exact: true }).focus();
       await page.getByRole('button', { name, exact: true }).click();
       await expect(page.getByRole('button', { name: 'Confirm expansion', exact: true })).toHaveCount(0);
@@ -51,7 +51,7 @@ test('approved ladder unlocks sequentially from real successful runs and ends wi
 
 test('corrupt or unavailable progression storage does not unlock levels or block play', async ({ page }) => {
   await page.addInitScript(() => {
-    localStorage.setItem('stack-and-survive.progress.balance-0.3.v1', '{corrupt');
+    localStorage.setItem('stack-and-survive.progress.balance-0.4.v1', '{corrupt');
     Storage.prototype.setItem = () => { throw new Error('storage blocked'); };
   });
   await page.goto('/?tycoon');

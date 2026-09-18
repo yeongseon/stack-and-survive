@@ -1,16 +1,17 @@
 import type { Kind, Resource } from '@stack-and-survive/schema';
 import { compare } from '@stack-and-survive/simulation/economy';
 import type { View } from './controller';
+import { resourceTier } from '@stack-and-survive/cloud-domain';
 
-export type BayState = 'active' | 'available' | 'locked' | 'queued' | 'construction';
+export type BayState = 'active' | 'available' | 'locked' | 'queued' | 'construction' | 'draining';
 export type PressureState = 'unmeasured' | 'healthy' | 'warning' | 'overcapacity';
 export function pressureState(utilization: number | null): PressureState {
   return utilization === null || !Number.isFinite(utilization) ? 'unmeasured'
     : compare(utilization, 1) > 0 ? 'overcapacity' : compare(utilization, .7) > 0 ? 'warning' : 'healthy';
 }
-export function appBays(resource: Resource | undefined, pending: boolean, queued = false): BayState[] {
+export function appBays(resource: Resource | undefined, pending: boolean, queued = false, draining = false): BayState[] {
   const count = resource?.kind === 'compute' && resource.remaining === 0 ? resource.instances : 0;
-  return Array.from({ length: 4 }, (_, i) => i < count ? 'active'
+  return Array.from({ length: 4 }, (_, i) => i < count ? draining && i === count - 1 ? 'draining' : 'active'
     : i === count && count > 0 ? pending ? 'construction' : queued ? 'queued' : 'available' : 'locked');
 }
 export type ResourceVisualState = {
@@ -45,11 +46,15 @@ export function resourceVisualState(view: View, reducedMotion = false) {
   const boostActive = !!boost && !!view.snapshot && view.snapshot.time >= boost.start && view.snapshot.time < boost.end;
   const edgeOnPath = installed('edge') && !!request?.edge.active;
   const cacheOnPath = installed('cache') && !!request?.cache.active;
+  const appChange = runtime.infrastructureChanges.find(change => change.kind === 'compute');
+  const sqlChange = runtime.infrastructureChanges.find(change => change.kind === 'database');
   return {
     live, canAnimate, reading: !view.snapshot ? 'unmeasured' : live ? 'current-tick' : 'last-tick',
     app: {
       ...base('compute', request?.app.utilization ?? null),
-      bays: appBays(get('compute'), scaleDue !== null, view.queuedActions.some(a => a.type === 'SCALE_OUT')),
+      bays: appBays(get('compute'), scaleDue !== null, view.queuedActions.some(a => a.type === 'SCALE_OUT'), appChange?.type === 'SCALE_IN'),
+      tier: get('compute') ? resourceTier(get('compute')!) : 1,
+      change: appChange ?? null,
       scaleRemaining: scaleDue === null ? null : Math.max(0, scaleDue - clock),
     },
     cache: {
@@ -70,6 +75,9 @@ export function resourceVisualState(view: View, reducedMotion = false) {
     },
     sql: {
       ...base('database', request ? Math.max(request.sql.readUtilization, request.sql.writeUtilization) : null),
+      tier: get('database') ? resourceTier(get('database')!) : 1,
+      readReplicas: get('database')?.readReplicas ?? 0,
+      change: sqlChange ?? null,
       readPressure: pressureState(request?.sql.readUtilization ?? null),
       writePressure: pressureState(request?.sql.writeUtilization ?? null),
       readsDropped: request?.sql.readsDropped ?? 0, writesDropped: request?.sql.writesDropped ?? 0,

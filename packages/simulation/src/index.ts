@@ -1,5 +1,5 @@
 import { number, type Architecture } from '@stack-and-survive/schema';
-import { parseArchitecture, validateStart } from '@stack-and-survive/cloud-domain';
+import { parseArchitecture, validateStart, appTiers, databaseTiers, resourceTier, readReplica } from '@stack-and-survive/cloud-domain';
 
 export type Traffic = Readonly<{ browse: number; order: number; bot: number }>;
 export const capacity = Object.freeze({ appPerInstance: 150, sqlRead: 180, sqlWrite: 70, cache: 500 });
@@ -44,7 +44,12 @@ export function processRequests(architecture: Architecture, traffic: Traffic, co
   const rejected = { browse: passed.browse * (controls.rateLimit ? .05 : 0), order: passed.order * (controls.rateLimit ? .05 : 0), bot: passed.bot * (controls.rateLimit ? .05 : 0) };
   const admitted = { browse: passed.browse - rejected.browse, order: passed.order - rejected.order, bot: passed.bot - rejected.bot };
   const incoming = admitted.browse + admitted.order + admitted.bot;
-  const appCapacity = a.resources.find(r => r.kind === 'compute')!.instances * capacity.appPerInstance;
+  const app = a.resources.find(r => r.kind === 'compute')!;
+  const sql = a.resources.find(r => r.kind === 'database')!;
+  const appCapacity = app.instances * appTiers[resourceTier(app) - 1].capacity;
+  const sqlTier = databaseTiers[resourceTier(sql) - 1];
+  const readCapacity = sqlTier.reads + (sql.readReplicas ?? 0) * readReplica.capacity;
+  const writeCapacity = sqlTier.writes;
   const ratio = incoming === 0 ? 1 : Math.min(1, appCapacity / incoming);
   const accepted = { browse: admitted.browse * ratio, order: admitted.order * ratio, bot: admitted.bot * ratio };
   const dropped = { browse: admitted.browse - accepted.browse, order: admitted.order - accepted.order, bot: admitted.bot - accepted.bot };
@@ -55,15 +60,15 @@ export function processRequests(architecture: Architecture, traffic: Traffic, co
   const misses = processed - hits;
   const overflow = eligible - processed;
   const readDemand = cacheActive ? misses + overflow : accepted.browse;
-  const readsAccepted = Math.min(readDemand, capacity.sqlRead);
-  const writesAccepted = Math.min(accepted.order, capacity.sqlWrite);
+  const readsAccepted = Math.min(readDemand, readCapacity);
+  const writesAccepted = Math.min(accepted.order, writeCapacity);
   return {
     offered, app: { capacity: appCapacity, incoming, utilization: incoming / appCapacity, accepted, dropped },
     edge: { active: edgeActive, filtered, passed },
     rateLimit: { active: controls.rateLimit, rejected, passed: admitted },
     cache: { active: cacheActive, eligible, processed, hits, misses, overflow, utilization: cacheActive ? eligible / capacity.cache : null, hitRatio: eligible > 0 ? hits / eligible : null },
-    sql: { readDemand, writeDemand: accepted.order, readCapacity: capacity.sqlRead, writeCapacity: capacity.sqlWrite,
-      readUtilization: readDemand / capacity.sqlRead, writeUtilization: accepted.order / capacity.sqlWrite,
+    sql: { readDemand, writeDemand: accepted.order, readCapacity, writeCapacity,
+      readUtilization: readDemand / readCapacity, writeUtilization: accepted.order / writeCapacity,
       readsAccepted, writesAccepted, readsDropped: readDemand - readsAccepted, writesDropped: accepted.order - writesAccepted },
     successful: { browse: hits + readsAccepted, order: writesAccepted },
   };

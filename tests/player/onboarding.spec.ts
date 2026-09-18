@@ -34,7 +34,7 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 1920, height: 108
     await expect(guide).toContainText('Next');
     await page.screenshot({ path: info.outputPath('guide.png') });
     await guide.getByRole('button', { name: 'Skip guide', exact: true }).click();
-    for (const name of ['Add Cache', 'Add Protected Edge', '+ App capacity']) {
+    for (const name of ['Deploy Cache — reduces SQL reads', 'Deploy Protected Edge — filters bots', '+ App capacity']) {
       const button = page.getByRole('button', { name, exact: true });
       await button.focus(); await button.press('Enter');
     }
@@ -44,7 +44,7 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 1920, height: 108
     await expect(notice).toContainText('260 req/s', { timeout: 30000 });
     await expect(page.locator('.mission-phase')).toContainText('Traffic spike');
     await expect(notice).toContainText('260 req/s');
-    const announcement = page.getByRole('status', { name: 'Phase arrival', exact: true });
+    const announcement = page.getByTestId('operation-banner');
     await expect(announcement).toHaveCount(1);
     await expect(announcement).toHaveAttribute('aria-live', 'polite');
     await expect(announcement.locator('button, a, input, [tabindex]')).toHaveCount(0);

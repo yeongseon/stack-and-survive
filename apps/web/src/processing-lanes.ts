@@ -20,7 +20,7 @@ export function lanePoint(from: Point, to: Point, progress: number): Point {
   const p = Math.max(0, Math.min(1, progress));
   return { x: from.x + (to.x - from.x) * p, y: from.y + (to.y - from.y) * p };
 }
-export function drawProcessingLane(g: Phaser.GameObjects.Graphics, from: Point, to: Point, lane: ProcessingLane) {
+export function drawProcessingLane(g: Pick<Phaser.GameObjects.Graphics, 'lineStyle' | 'lineBetween'>, from: Point, to: Point, lane: ProcessingLane) {
   const length = Math.hypot(to.x - from.x, to.y - from.y);
   if (!Number.isFinite(length) || length === 0) return;
   const normal = { x: -(to.y - from.y) / length, y: (to.x - from.x) / length };
@@ -40,5 +40,10 @@ export function drawProcessingLane(g: Phaser.GameObjects.Graphics, from: Point, 
     g.lineStyle(2, color, .8);
     g.lineBetween(p.x, p.y, p.x - Math.cos(angle - .5) * 7, p.y - Math.sin(angle - .5) * 7);
     g.lineBetween(p.x, p.y, p.x - Math.cos(angle + .5) * 7, p.y - Math.sin(angle + .5) * 7);
+    if (lane.state === 'dropping') {
+      g.lineStyle(3, color, 1);
+      g.lineBetween(p.x + normal.x * 6, p.y + normal.y * 6, p.x + normal.x * 13, p.y + normal.y * 13);
+      g.lineBetween(p.x - normal.x * 6, p.y - normal.y * 6, p.x - normal.x * 13, p.y - normal.y * 13);
+    }
   }
 }

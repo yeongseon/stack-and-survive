@@ -2,6 +2,8 @@ import { useEffect, useMemo, useRef, type ReactNode } from 'react';
 import type { Architecture } from '@stack-and-survive/schema';
 import type { View } from './controller';
 import { classifyArchitecture } from './architecture-profile';
+import { appTiers, databaseTiers, resourceTier } from '@stack-and-survive/cloud-domain';
+import './scaling-controls.css';
 import { summarizeRun } from './run-history';
 import { architectureSummary } from './RunHistoryPanel';
 import type { RunReport } from './run-report';
@@ -39,6 +41,11 @@ export function GameResult({ result, architecture, report, restart, review, next
       <div className="result-score"><small>Score </small><strong>{result.score}</strong><span>/ 10,000</span></div>
     </div>
     <div className="outcome-summary"><strong>{(result.metrics.availability * 100).toFixed(2)}% <span>availability</span></strong>{run && <p>{architectureSummary(run)}</p>}</div>
+    {result.challenge?.rulesVersion === '0.4' && <section className="final-scaling-architecture" aria-label="Final Architecture"><strong>FINAL ARCHITECTURE</strong>
+      {architecture.resources.filter(r => r.kind !== 'internet').map(resource => <span key={resource.id}>{resource.kind === 'compute' ? `App · ${appTiers[resourceTier(resource)-1].name} × ${resource.instances}`
+        : resource.kind === 'database' ? `SQL · ${databaseTiers[resourceTier(resource)-1].name} + ${resource.readReplicas ?? 0} read replicas`
+        : `${resource.kind === 'cache' ? 'Cache' : 'Protected Edge'} · ${resource.remaining ? 'still provisioning' : 'Active'}`}</span>)}
+    </section>}
     {result.challenge && <p className="report-objective" data-testid="challenge-outcome">{result.challenge.id} · {result.challenge.objective.kind === 'survive' ? 'Complete the operation' : `Availability ≥ ${result.challenge.objective.target * 100}%`} — {result.objectiveMet ? 'met' : 'not met'}</p>}
     {leaderboard}
     <details className="outcome-details"><summary>Details · decisions, tradeoffs &amp; records</summary>

@@ -2,13 +2,13 @@ import { array, integer, number, record, text, type Architecture } from '@stack-
 import { parseArchitecture } from '@stack-and-survive/cloud-domain';
 import { parseChallenge, sameChallenge, evaluateObjective, type Challenge } from '@stack-and-survive/scenarios/challenge';
 import { challengeLadder } from '@stack-and-survive/scenarios/ladder';
-import { validateActionSchedule, type Action, type ActionOutcome } from '@stack-and-survive/simulation/runtime';
+import { validateActionSchedule, parseAction, type Action, type ActionOutcome } from '@stack-and-survive/simulation/runtime';
 import { verifyReplay } from '@stack-and-survive/simulation/replay';
 import { compare } from '@stack-and-survive/simulation/economy';
 import type { View } from './controller';
 
 export const HISTORY_LIMIT = 20;
-export const historyKey = 'stack-and-survive.history.balance-0.3.v1';
+export const historyKey = 'stack-and-survive.history.balance-0.4.v1';
 export type RunSummary = {
   id: string; challenge: Challenge; status: 'FAILED' | 'COMPLETED'; elapsed: number; objectiveMet: boolean;
   availability: number; cost: number; emergencyCost: number; nbv: number; score: number;
@@ -41,11 +41,9 @@ function parseRun(input: unknown): RunSummary {
   const initialArchitecture = parseArchitecture(r.initialArchitecture), finalArchitecture = parseArchitecture(r.finalArchitecture);
   const actions = array(r.actions, 'actions'); if (actions.length > 1000) throw new Error('Too many actions');
   const parsedActions: Action[] = actions.map(raw => {
-    const a = record(raw, 'action'); const time = integer(a.time, 'action time', 0, elapsed - 1), sequence = integer(a.sequence, 'sequence', 0, Number.MAX_SAFE_INTEGER);
-    if (a.type === 'SCALE_OUT' || a.type === 'EMERGENCY_WAF') return { type: a.type, time, sequence };
-    if (a.type === 'RATE_LIMIT' && typeof a.enabled === 'boolean') return { type: 'RATE_LIMIT', time, sequence, enabled: a.enabled };
-    if (a.type === 'DEPLOY_RESOURCE' && (a.kind === 'cache' || a.kind === 'edge')) return { type: 'DEPLOY_RESOURCE', time, sequence, kind: a.kind, x: number(a.x, 'x', -900, 900), y: number(a.y, 'y', -600, 600) };
-    throw new Error('Unsupported saved action');
+    const action = parseAction(raw);
+    integer(action.time, 'action time', 0, elapsed - 1);
+    return action;
   });
   validateActionSchedule(parsedActions, challenge.workload.duration);
   const rawLog = array(r.actionLog, 'action log');

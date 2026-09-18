@@ -18,10 +18,14 @@ import type { RunReport } from './run-report';
 import { createPlayerNavigation } from './player-navigation';
 import { createLandscapeClock, enhanceLandscape, requiresLandscape } from './landscape-session';
 import { v3 } from './art-v3';
+import { OperationBanner } from './OperationBanner';
+import { createDirectorState, deriveOperationEvents, type OperationEvent } from './operations-director';
 import './player-console.css';
 import { MissionBrief } from './MissionBrief';
 import { missionBrief } from './mission-brief';
 import './onboarding.css';
+import './azure-visual-tokens.css';
+import { AzureTutorial } from './AzureTutorial';
 
 export function TycoonGame({ challenge = blackFridayChallenge, titleContent, onResult, nextLevel, resultContent, leaderboardContent, runReport }: {
   challenge?: Challenge; titleContent?: ReactNode; onResult?: (result: NonNullable<View['result']>, finalArchitecture: Architecture) => void; nextLevel?: () => void; resultContent?: ReactNode; leaderboardContent?: ReactNode;
@@ -46,6 +50,21 @@ export function TycoonGame({ challenge = blackFridayChallenge, titleContent, onR
   const view = useSyncExternalStore(controller.subscribe, controller.getSnapshot);
   const sound = useGameSound(controller);
   const guide = useWorldGuide();
+  const directorRef = useRef(createDirectorState());
+  const [bannerEvent, setBannerEvent] = useState<OperationEvent | null>(null);
+  const prevViewRef = useRef(view);
+  useEffect(() => {
+    if (view.state.runtime.status === 'RUNNING' && !view.error && view.snapshot !== prevViewRef.current.snapshot) {
+      const { events, next } = deriveOperationEvents(view, directorRef.current);
+      directorRef.current = next;
+      if (events.length > 0) setBannerEvent(events[0]);
+    }
+    if (view.state.runtime.status === 'PREPARATION' && prevViewRef.current.state.runtime.status !== 'PREPARATION') {
+      directorRef.current = createDirectorState();
+      setBannerEvent(null);
+    }
+    prevViewRef.current = view;
+  }, [view]);
   const [entered, setEntered] = useState(false);
   const [titleSettings, setTitleSettings] = useState(false);
   const [pauseMenuVisible, setPauseMenuVisible] = useState(false);
@@ -149,7 +168,7 @@ export function TycoonGame({ challenge = blackFridayChallenge, titleContent, onR
     if (view.result && reportedResult.current !== view.result) { reportedResult.current = view.result; onResult?.(view.result, view.state.runtime.architecture); }
     if (!view.result) reportedResult.current = null;
   }, [view.result, view.state.runtime.architecture, onResult]);
-  return <main className={`tycoon-game${entered ? ' diorama-game' : ''}${v3 ? ' hero-art-review' : ''}`} onClick={event => { if (event.target instanceof Element && event.target.closest('button')) sound.click(); }}>
+  return <main className={`tycoon-game azure-experience${entered ? ' diorama-game' : ''}${v3 ? ' hero-art-review' : ''}`} onClick={event => { if (event.target instanceof Element && event.target.closest('button')) sound.click(); }}>
     {!entered ? <section className="title-screen" inert={orientationGate} aria-label="Game introduction" data-time={diagnosticsEnabled ? runtime.time : undefined} data-budget={diagnosticsEnabled ? view.state.economy.remainingBudget : undefined}>
       <TitleWorld />
       <div className="title-heading"><p className="title-eyebrow">A REAL-TIME CLOUD INFRASTRUCTURE GAME</p>
@@ -163,6 +182,7 @@ export function TycoonGame({ challenge = blackFridayChallenge, titleContent, onR
         <button type="button" aria-label="About" onClick={() => open('about')}>About<small>The idea &amp; the technology</small></button>
       </nav><button ref={settingsButton} type="button" className="title-settings-btn" aria-label="Settings" aria-expanded={titleSettings} onClick={() => setTitleSettings(!titleSettings)}>&#9881; Settings</button>
       {titleSettings && <div ref={titlePanel} className="title-settings-panel" role="region" aria-label="Player settings" onKeyDown={event=>{if(event.key==='Escape'){event.preventDefault();setTitleSettings(false);settingsButton.current?.focus();}}}><SettingsPanel sound={sound} guide={guide} /><button type="button" onClick={()=>{setTitleSettings(false);settingsButton.current?.focus();}}>Close settings</button></div>}
+      <AzureTutorial compact />
       <p className="title-footnote">SAME WORKLOAD. DIFFERENT ARCHITECTURES. DIFFERENT OUTCOMES.</p></div>
     </section> : <>
       <div className="game-command-hud">
@@ -170,9 +190,10 @@ export function TycoonGame({ challenge = blackFridayChallenge, titleContent, onR
         <GameHUD view={view} />
       </div>
       {pauseMenuVisible && runtime.status === 'PAUSED' && !view.result && !view.error && !orientationGate && <PauseMenu sound={sound} guide={guide} onResume={() => { hidePause(); if(!gateOpen.current&&!controller.getSnapshot().error)controller.resume(); }} onInspect={hidePause} onHowToPlay={() => { helpFromPause.current=true; hidePause(); open('how'); }} onReturnToTitle={restart} />}
+      {entered && !opening && !view.result && <OperationBanner event={bannerEvent} />}
       <WorldGuide view={view} guide={guide} returnFocus={() => learnButton.current?.focus()} />
       <GameFloor controller={controller} view={view} navigation={navigation} onReady={ready} blocked={opening || orientationGate} guideTarget={guide.visible ? guideHint(view, guide.stage).target : null} />
-      {opening && !orientationGate && <div className="opening-caption" role="status" data-testid="opening-reveal"><small>{brief.name}</small><strong>Protect customers for {brief.duration} seconds.</strong><span>Build App · Cache · Edge before waves arrive.</span></div>}
+      {opening && !orientationGate && <div className="opening-caption" role="status" data-testid="opening-reveal"><small>{brief.name}</small><strong>Protect customers for {brief.duration} seconds.</strong><span>Traffic enters left. Flows through App, Cache, SQL. Build before waves arrive.</span></div>}
       {view.countdown !== null && <div className="welcome-countdown" role="status"><span className="countdown-name">{brief.name} opens in</span><strong>{view.countdown}</strong><span className="countdown-forecast">Starting: {brief.opening} req/s<br />Final: {brief.final} req/s · {brief.bots}% bots</span></div>}
       {view.notice && diagnosticsEnabled && <p className="tycoon-notice">{view.notice}</p>}
       {view.result && <GameResult result={view.result} architecture={runtime.architecture} report={runReport?.result === view.result ? runReport.data : null} restart={restart} review={() => open('learn')} nextLevel={view.result.objectiveMet ? nextLevel : undefined} records={resultContent} leaderboard={leaderboardContent} />}
