@@ -88,7 +88,7 @@ export function GameFloor({ controller, view, navigation, onReady, blocked = fal
         const top = p.y + (resource ? art.y : -24) * projection.effectiveZoom - (kind === 'internet' || !resource ? 38 : 76);
         const pressure = kind === 'compute' ? visual.app.pressure : kind === 'database' ? visual.sql.pressure : kind === 'cache' ? visual.cache.pressure : null;
         const warning = pressure === 'warning' || pressure === 'overcapacity';
-        const detail = !resource ? 'Build here +' : resource.remaining > 0 ? `Construction · ${resource.remaining}s`
+        const detail = !resource ? kind === 'cache' ? `Helps reads · Ready in ${definitions.cache.provisioning}s` : kind === 'edge' ? `Filters bots · Ready in ${definitions.edge.provisioning}s` : 'Build here +' : resource.remaining > 0 ? `Construction · ${resource.remaining}s`
           : kind === 'compute' ? `${app.instances}/4 active${warning ? ' · ! pressure' : ''}`
           : kind === 'database' ? visual.sql.writePressure === 'overcapacity' || visual.sql.writePressure === 'warning' ? '! Write pressure' : visual.sql.readPressure === 'overcapacity' || visual.sql.readPressure === 'warning' ? '! Read pressure' : 'Read / write core'
           : kind === 'internet' ? visual.internet.rateLimited ? 'Intake limited' : 'Traffic origin'
@@ -123,13 +123,13 @@ export function GameFloor({ controller, view, navigation, onReady, blocked = fal
       {(['edge', 'cache'] as const).map(kind => {
         const resource = runtime.architecture.resources.find(r => r.kind === kind);
         return <div className={`world-slot ${resource ? 'installed' : 'empty'}`} key={kind} style={at(kind)} data-testid={`slot-${kind}`}>
-          {!resource ? <button type="button" aria-label={kind === 'cache' ? 'Add Cache' : 'Add Protected Edge'} aria-disabled={controller.actionReason({ type: 'DEPLOY_RESOURCE', kind, ...tycoonPositions[kind] }) !== null} title={`Running: ${formatMoneyRate(definitions[kind].cost, 'min')} when active`} onClick={() => beginBuild(kind)}>Build {kind === 'cache' ? 'Cache' : 'Edge'}</button>
+          {!resource ? <button type="button" aria-label={kind === 'cache' ? 'Add Cache' : 'Add Protected Edge'} aria-disabled={controller.actionReason({ type: 'DEPLOY_RESOURCE', kind, ...tycoonPositions[kind] }) !== null} title={`${kind === 'cache' ? 'Helps eligible reads' : 'Filters bots'} · Ready in ${definitions[kind].provisioning}s · Running: ${formatMoneyRate(definitions[kind].cost, 'min')} when active`} onClick={() => beginBuild(kind)}>Deploy {kind === 'cache' ? 'Cache' : 'Edge'}<small>{kind === 'cache' ? 'Helps eligible reads' : 'Filters bots'} · Ready in {definitions[kind].provisioning}s</small></button>
             : <button type="button" onClick={() => select(resource.id)}>{kind === 'cache' ? 'Cache' : 'Protected Edge'}<small>{resource.remaining > 0 ? `Provisioning ${resource.remaining}s` : 'Active'}</small></button>}
         </div>;
       })}
       <div className="world-slot app-expansion" style={at('compute')}>
         <div className="instance-slots" aria-label="App instance slots">{visual.app.bays.map((bay, i) => <span key={i} data-state={bay} aria-label={`Bay ${i+1}: ${bay}`}>{bay === 'active' ? '■' : bay === 'construction' ? '▧' : '□'}</span>)}</div>
-        {runtime.scaleDue !== null ? <span className="slot-progress">Expanding · {visual.app.scaleRemaining}s</span> : <button type="button" aria-label="+ App capacity" aria-disabled={controller.actionReason({type:'SCALE_OUT'})!==null} title={controller.actionReason({type:'SCALE_OUT'})??`8s to activate · +${formatMoneyRate(definitions.compute.cost, 'min')}`} onClick={() => beginBuild('compute')}>Expand App<small>{app.instances}/4 active · 8s · +{formatMoneyRate(definitions.compute.cost, 'min')}</small></button>}
+        {runtime.scaleDue !== null ? <span className="slot-progress">Expanding · {visual.app.scaleRemaining}s</span> : <button type="button" aria-label="+ App capacity" aria-disabled={controller.actionReason({type:'SCALE_OUT'})!==null} title={controller.actionReason({type:'SCALE_OUT'})??`8s to activate · +${formatMoneyRate(definitions.compute.cost, 'min')}`} onClick={() => beginBuild('compute')}>Add App capacity<small>{app.instances}/4 active · Ready in 8s · +{formatMoneyRate(definitions.compute.cost, 'min')}</small></button>}
       </div>
       <button type="button" className="intake-control" style={at('internet')} onClick={() => select('internet')}>Traffic intake</button>
       <button type="button" className="intake-control" style={at('database')} onClick={() => select('database')}>SQL processing</button>
