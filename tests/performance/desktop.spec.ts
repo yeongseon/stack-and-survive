@@ -23,9 +23,9 @@ for (const mode of ['editor', 'tycoon-fit', 'tycoon-close']) test(`measure a rea
     await expect(page.getByRole('button', { name: 'Ⅱ Pause', exact: true })).toBeEnabled({ timeout: 10000 });
     await page.getByText('Tycoon QA', { exact: true }).click();
     await page.getByRole('button', { name: 'Step one tick', exact: true }).click();
-    await page.getByRole('button', { name: /Add Cache/ }).focus(); await page.getByRole('button', { name: /Add Cache/ }).press('Enter');
+  await page.getByRole('button', { name: /Deploy Cache — reduces SQL reads/ }).focus(); await page.getByRole('button', { name: /Deploy Cache — reduces SQL reads/ }).press('Enter');
     await expect(page.getByRole('button', { name: 'Confirm expansion', exact: true })).toHaveCount(0);
-    { await page.getByRole('button', { name: /Add Protected Edge/ }).focus(); await page.getByRole('button', { name: /Add Protected Edge/ }).press('Enter'); };
+  { await page.getByRole('button', { name: /Deploy Protected Edge — filters bots/ }).focus(); await page.getByRole('button', { name: /Deploy Protected Edge — filters bots/ }).press('Enter'); };
     await expect(page.getByRole('button', { name: 'Confirm expansion', exact: true })).toHaveCount(0);
     { await page.getByRole('button', { name: /App capacity/ }).focus(); await page.getByRole('button', { name: /App capacity/ }).press('Enter'); };
     await expect(page.getByRole('button', { name: 'Confirm expansion', exact: true })).toHaveCount(0);

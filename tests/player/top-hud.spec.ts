@@ -74,7 +74,7 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 1920, height: 108
     await pause.getByRole('button', { name: '▶ Resume', exact: true }).click();
     if (viewport.width === 1440) {
       const build = async (name: string) => { const button = page.getByRole('button', { name, exact: true }); await button.focus(); await button.press('Enter'); };
-      await build('Add Cache'); await build('Add Protected Edge'); await build('+ App capacity');
+  await build('Deploy Cache — reduces SQL reads'); await build('Deploy Protected Edge — filters bots'); await build('+ App capacity');
       await expect(page.getByTestId('next-wave')).toHaveClass(/imminent/, { timeout: 30000 });
       await expectContainedHud(page, 130);
       await page.screenshot({ path: info.outputPath('imminent.png') });

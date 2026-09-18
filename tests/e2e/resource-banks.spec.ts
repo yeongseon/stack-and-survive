@@ -13,7 +13,7 @@ test('resource anatomy follows live construction, separate SQL pressure and actu
   await step.click();
   await expect.poll(async () => (await state()).cache.lifecycle).toBe('absent');
   expect(await banks('cache')).toEqual([]);
-  for (const name of ['Add Cache', 'Add Protected Edge', '+ App capacity']) {
+  for (const name of ['Deploy Cache — reduces SQL reads', 'Deploy Protected Edge — filters bots', '+ App capacity']) {
     await page.getByRole('button', { name, exact: true }).focus();
     await page.getByRole('button', { name, exact: true }).click();
     await expect(page.getByRole('button', { name: 'Confirm expansion', exact: true })).toHaveCount(0);
@@ -21,7 +21,7 @@ test('resource anatomy follows live construction, separate SQL pressure and actu
   await step.click();
   await expect.poll(async () => (await state()).cache.lifecycle).toBe('provisioning');
   expect(await banks('cache')).toEqual([]);
-  await expect(page.getByRole('button', { name: 'Add Cache', exact: true })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Deploy Cache — reduces SQL reads', exact: true })).toHaveCount(0);
   await page.evaluate(() => window.scrollTo(0, 0)); await page.screenshot({ path: info.outputPath('resource-construction.png') });
   for (let i = 0; i < 8; i++) await step.click();
   await expect.poll(async () => (await state()).cache.lifecycle).toBe('active');

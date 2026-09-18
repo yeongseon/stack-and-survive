@@ -10,8 +10,8 @@ test('simulated dollars remain presentation-only through Learn, failure, history
   await expect(page.getByTestId('traffic')).toContainText('100');
   await expect(page.getByTestId('budget')).toHaveText(/^\$74\.\d{1,2}K$/);
   await expect(page.getByTestId('lost-sales')).toHaveText('$0/s');
-  await expect(page.getByRole('button', { name: 'Add Cache', exact: true })).toHaveAttribute('title', 'Running: $8K/min when active');
-  await expect(page.getByRole('button', { name: 'Add Protected Edge', exact: true })).toHaveAttribute('title', 'Running: $3K/min when active');
+  await expect(page.getByRole('button', { name: 'Deploy Cache — reduces SQL reads', exact: true })).toHaveAttribute('title', 'Reduces SQL reads · 5s · $8K/min');
+  await expect(page.getByRole('button', { name: 'Deploy Protected Edge — filters bots', exact: true })).toHaveAttribute('title', 'Filters bots · 4s · $3K/min');
   await expect(page.getByRole('button', { name: '+ App capacity', exact: true })).toContainText('$5K/min');
   await page.screenshot({ path: info.outputPath('money-normal.png') });
   await page.getByRole('button', { name: 'ⓘ Learn', exact: true }).click();

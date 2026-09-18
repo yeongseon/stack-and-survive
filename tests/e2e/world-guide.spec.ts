@@ -51,5 +51,5 @@ test('guide can be opted out before play and storage failure does not block loca
   await page.keyboard.press('Escape'); await page.getByRole('button', { name: 'Start Game', exact: true }).click();
   await expect(page.getByRole('button', { name: 'Ⅱ Pause', exact: true })).toBeEnabled({ timeout: 20000 });
   await expect(page.getByRole('region', { name: 'World guide', exact: true })).toHaveCount(0);
-  await expect(page.getByRole('button', { name: 'Add Cache', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Deploy Cache — reduces SQL reads', exact: true })).toBeVisible();
 });
