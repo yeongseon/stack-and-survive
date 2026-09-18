@@ -1,5 +1,11 @@
 # Stack & Survive — Technical Design
 
+## Infrastructure scaling integration (rules 0.4)
+
+The existing shared runtime now supports deterministic App shrink/tier changes, SQL tier changes and SQL read replicas; [details](INFRASTRUCTURE_SCALING.md). Optional additive resource tier/replica fields survive parse/replay/history. One strict action parser is shared by runtime validation, saved action parsing, pending-submission validation and backend submission. Current challenge identity is version2/rules0.4; old rules retain distinct exports and storage keys.
+
+Rendering reads pending changes and active resource state only. Optional tier textures are discovered through the existing V3 inventory and fall back to required base textures. Computer3 owns image sources/exports; Computer1 does not modify `art/**` or public assets. The backend replay build must be updated before releasing the new frontend to avoid unsupported-challenge responses from a0.3 API.
+
 Version: 1.1. Browser-local TypeScript/React/Phaser, with an owner-authorized static GitHub Pages demo. No game backend or outbound product telemetry. Public source and demo hosting do not imply general release rights approval.
 
 ## Architecture

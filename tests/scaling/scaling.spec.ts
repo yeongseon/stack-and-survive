@@ -1,0 +1,75 @@
+import { expect, test, type Page } from '@playwright/test';
+const card = (page: Page) => page.getByRole('region', { name: 'Resource actions', exact: true });
+async function openSQL(page: Page) {
+  const close = page.getByRole('button', { name: 'Close resource', exact: true }); if (await close.count()) await close.click();
+  const button = page.getByRole('button', { name: 'SQL processing', exact: true }); await button.focus(); await button.press('Enter');
+}
+async function openApp(page: Page) {
+  const close = page.getByRole('button', { name: 'Close resource', exact: true }); if (await close.count()) await close.click();
+  await page.locator('[data-testid="world"] canvas').click({ position: { x: 700, y: 560 } });
+  await expect(card(page).getByRole('heading', { name: 'Azure App Service' })).toBeVisible();
+}
+test('real 180-second architecture evolves through horizontal, vertical and read scaling', async ({ page }, info) => {
+  const errors: string[] = []; page.on('pageerror', e => errors.push(e.message));
+  await page.emulateMedia({ reducedMotion: 'reduce' }); await page.goto('/');
+  await page.getByRole('button', { name: 'Start Game', exact: true }).click();
+  await expect(page.getByTestId('traffic')).toContainText('100');
+  const skip = page.getByRole('button', { name: 'Skip guide', exact: true }); if (await skip.count()) await skip.click();
+  const started = Date.now();
+  const at = async (seconds: number) => { const remaining = started + seconds * 1000 - Date.now(); if (remaining > 0) await page.waitForTimeout(remaining); };
+  await page.screenshot({ path: info.outputPath('01-initial.png') });
+  await at(15);
+  const expand = page.getByRole('button', { name: '+ App capacity', exact: true }); await expand.focus(); await expand.press('Enter');
+  await at(16);
+  const cache = page.getByRole('button', { name: 'Deploy Cache — reduces SQL reads', exact: true }); await cache.focus(); await cache.press('Enter');
+  await at(56);
+  const edge = page.getByRole('button', { name: 'Deploy Protected Edge — filters bots', exact: true }); await edge.focus(); await edge.press('Enter');
+  await expand.focus(); await expand.press('Enter');
+  await at(104); await expand.focus(); await expand.press('Enter');
+  await expect(page.locator('.facility-plaques')).toContainText('4/4 active');
+  await page.screenshot({ path: info.outputPath('02-app-x4.png') });
+  await at(114); await openApp(page);
+  await card(page).getByRole('button', { name: '− Instance', exact: true }).click();
+  await expect(card(page)).toContainText('Draining last App bay');
+  await expect(card(page)).toContainText('3/4 instances');
+  await at(124); await card(page).getByRole('button', { name: '↑ App tier', exact: true }).click();
+  await expect(card(page)).toContainText('Tier 2 · Standard II');
+  await page.screenshot({ path: info.outputPath('03-app-tier2.png') });
+  await openSQL(page); await card(page).getByRole('button', { name: '↑ SQL tier', exact: true }).click();
+  await expect(card(page)).toContainText('Tier 2 · General Purpose II');
+  await page.screenshot({ path: info.outputPath('04-sql-tier2.png') });
+  await card(page).getByRole('button', { name: '↑ SQL tier', exact: true }).click();
+  await expect(card(page)).toContainText('Tier 3 · Business Critical');
+  await page.screenshot({ path: info.outputPath('05-sql-tier3.png') });
+  await card(page).getByRole('button', { name: '+ Read replica', exact: true }).click();
+  await expect(card(page)).toContainText('Read replicas 1/2');
+  await page.screenshot({ path: info.outputPath('06-sql-read-replica.png') });
+  await page.getByRole('button', { name: 'Close resource', exact: true }).click();
+  await page.screenshot({ path: info.outputPath('07-late-architecture.png') });
+  const result = page.getByRole('region', { name: 'Business result' }); await expect(result).toBeVisible({ timeout: 25000 });
+  await expect(result).toContainText('CHALLENGE CLEAR');
+  await expect(result.getByRole('region', { name: 'Final Architecture' })).toContainText('Business Critical + 1 read replicas');
+  await page.screenshot({ path: info.outputPath('08-result.png') });
+  const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('stack-and-survive.history.balance-0.4.v1')!).runs[0]);
+  expect(saved.elapsed).toBe(180); expect(saved.actions.some((a: { type: string }) => a.type === 'SCALE_IN')).toBe(true);
+  expect(errors).toEqual([]);
+});
+
+test('SQL bottleneck remains distinct from App capacity and downgrade controls obey limits', async ({ page }, info) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' }); await page.goto('/');
+  await page.getByRole('button', { name: 'Start Game', exact: true }).click();
+  await expect(page.getByTestId('traffic')).toContainText('100');
+  const skip = page.getByRole('button', { name: 'Skip guide', exact: true }); if (await skip.count()) await skip.click();
+  const expand = page.getByRole('button', { name: '+ App capacity', exact: true }); await expand.focus(); await expand.press('Enter');
+  await expect(page.locator('.facility-plaques')).toContainText('2/4 active');
+  await openSQL(page);
+  await expect(card(page).getByRole('button', { name: '↓ SQL tier', exact: true })).toBeDisabled();
+  await expect(card(page).getByRole('button', { name: '− Read replica', exact: true })).toBeDisabled();
+  await expect(page.getByTestId('traffic')).toContainText('260', { timeout: 30000 });
+  await expect(card(page)).toContainText('Reads: 116%');
+  await page.screenshot({ path: info.outputPath('sql-bottleneck.png') });
+  await card(page).getByRole('button', { name: '↑ SQL tier', exact: true }).click();
+  await expect(card(page)).toContainText('Tier 2 · General Purpose II');
+  await card(page).getByRole('button', { name: '↓ SQL tier', exact: true }).click();
+  await expect(card(page)).toContainText('Tier 1 · General Purpose I');
+});
