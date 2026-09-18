@@ -2,7 +2,7 @@ import type { View } from './controller';
 import { compare } from '@stack-and-survive/simulation/economy';
 import { blackFriday } from '@stack-and-survive/scenarios';
 import { formatMoneyRate } from './money';
-import { definitions } from '@stack-and-survive/cloud-domain';
+import { definitions, appTiers, resourceTier, appHorizontalScaling } from '@stack-and-survive/cloud-domain';
 
 export type GuideStage = 'observe' | 'decide' | 'compare';
 export type GuideRecord = 'new' | 'skipped' | 'completed';
@@ -31,7 +31,7 @@ export function guideHint(view: View, stage: GuideStage): GuideHint {
   if (compare(r.sql.writeUtilization, 1) > 0) return { title: 'Writes are pressing on SQL', text: view.challenge?.rulesVersion === '0.4' ? 'Inspect the SQL write side and compare a higher SQL tier. Cache and read replicas do not remove Order writes; adding App instances does not expand SQL.' : 'Inspect the SQL write side. Cache does not remove Order writes, and adding App instances does not expand this fixed database.', target: 'database' };
   if (compare(r.sql.readUtilization, 1) > 0 && !resources.some(resource => resource.kind === 'cache')) return { title: 'Consider reducing SQL reads', text: `Click the Cache footprint once to deploy: 5s, +${formatMoneyRate(definitions.cache.cost, 'min')}. Eligible reads can finish there; Order writes still need SQL.`, target: 'cache' };
   if (compare(r.app.utilization, 1) > 0 && r.offered.bot > 0 && !resources.some(resource => resource.kind === 'edge')) return { title: 'Bots are using App capacity', text: 'Consider Protected Edge at ingress, or compare adding App capacity. Edge filtering also has a running cost and can reject some legitimate traffic.', target: 'edge' };
-  if (compare(r.app.utilization, .7) > 0 && app && app.instances < 4) return { title: 'Consider more App capacity', text: `Click the highlighted empty bay to expand: takes 8 seconds and costs ${formatMoneyRate(definitions.compute.cost, 'min')}. Build before the next wave arrives — construction is not instant.`, target: 'compute' };
+  if (compare(r.app.utilization, .7) > 0 && app && app.instances < 4) return { title: 'Consider more App capacity', text: `Click the highlighted empty bay to expand: takes ${appHorizontalScaling.addDelay} seconds and costs ${formatMoneyRate(appTiers[resourceTier(app)-1].cost, 'min')}. Build before the next wave arrives — construction is not instant.`, target: 'compute' };
   if (compare(r.sql.readUtilization, 1) > 0) return { title: 'SQL reads remain constrained', text: 'Cache is already installed. Inspect the SQL read side; another App server cannot increase database capacity.', target: 'database' };
   if (compare(r.app.utilization, 1) > 0) return { title: 'App is at its expansion limit', text: 'Four servers can still overload. Inspect traffic intake and its filtering trade-off; there is no fifth instance.', target: 'internet' };
   if (compare(r.cache.utilization ?? 0, 1) > 0) return { title: 'Cache is under pressure', text: 'Overflow reads still reach SQL. Inspect the downstream read pressure before adding App capacity.', target: 'database' };
