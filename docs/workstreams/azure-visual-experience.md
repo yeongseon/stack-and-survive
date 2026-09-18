@@ -36,4 +36,28 @@ Dark technical canvas, restrained Azure blue/cyan, high-contrast semantic tokens
 
 ## Verification and captures
 
-Pending implementation. Before/after images go in this non-production documentation folder; screenshots are actual local game captures, never fabricated telemetry or evidence of human learning.
+Implemented semantic tokens, eight service definitions (four existing-game identities and four non-selectable concepts), reusable accessible resource nodes, on-demand service panel, a static traffic key and route drop hatching, and a separate optional four-step tutorial. Existing measured pressure is reused; absent/construction state has unknown health rather than an invented outage.
+
+### Final verification
+
+- `pnpm test`: **610 tests / 82 files passed** (baseline 597; 13 new).
+- `pnpm lint`, `pnpm typecheck`, `pnpm build`: passed. Same pre-existing Phaser chunk/mixed-import warnings.
+- `pnpm exec playwright test --config playwright.azure-visual.config.ts`: **six passed**, actual production preview, including tutorial completion/skip/reopen, keyboard and live App expansion, failed-icon fallback, no-upgrade score810 at45s and restart. No simulation tick injection.
+- New UI checked at 1440×900, 1024×768, 844×390 and 700×390; title tutorial at320×568 and844×390. Existing portrait gameplay gate retained. Tests check non-overlap with camera/HUD and reduced-motion computed styles.
+- `pnpm test:assets`:11 passed. `pnpm check:assets:demo`: passed; all existing runtime bytes/rights boundaries retained. General release approval remains unresolved.
+- LSP diagnostics for the three new main presentation components: no errors. Primary capture and gameplay paths: no uncaught browser errors.
+- Independent review found a focus restoration race, pointer hit-area issue and an ambiguous absent-resource health label; all were corrected and covered. An initial narrow-title scrollWidth check counted intentional offscreen decorative SVG geometry; it now checks actual tutorial bounds and control reachability rather than altering baseline TitleWorld.
+- No full historical browser/performance suite or human/grayscale perception study claimed. CPU/p95 and operational timeline are integration boundaries, not generated data.
+
+### Actual before/after captures
+
+Capture command: `node scripts/capture-azure-visual.mjs before|after` after `pnpm build`, using the preview server configured by `.codegpt-game.json` on127.0.0.1:43889. Before images were committed in `0f49ce1` before feature implementation. After images show the optional catalog open. Both use actual Pause → Inspect and reduced motion at the opening state; they are not live-load comparison evidence. External requests are blocked, no leaderboard POST occurs. No image edits/crops applied.
+
+| View | Before | After |
+|---|---|---|
+| Desktop architecture1440×900 | [Before](azure-visual-experience/before-architecture-1440.png) | [After](azure-visual-experience/after-architecture-1440.png) |
+| Landscape architecture844×390 | [Before](azure-visual-experience/before-architecture-844.png) | [After](azure-visual-experience/after-architecture-844.png) |
+| Desktop title1440×900 | [Before](azure-visual-experience/before-title-1440.png) | [After](azure-visual-experience/after-title-1440.png) |
+| Landscape title844×390 | [Before](azure-visual-experience/before-title-844.png) | [After](azure-visual-experience/after-title-844.png) |
+
+Branch-only deliverable: push `feature/azure-visual-experience`, no merges or live deployment. See [asset provenance](../azure-assets.md) and [cross-branch notes](../../INTEGRATION_NOTES.md). Existing AI Coach and cloud migration worktrees are intentionally untouched.
