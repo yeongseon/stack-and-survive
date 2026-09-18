@@ -20,6 +20,7 @@ import { createLandscapeClock, enhanceLandscape, requiresLandscape } from './lan
 import { v3 } from './art-v3';
 import './player-console.css';
 import './azure-visual-tokens.css';
+import { AzureTutorial } from './AzureTutorial';
 
 export function TycoonGame({ challenge = blackFridayChallenge, titleContent, onResult, nextLevel, resultContent, leaderboardContent, runReport }: {
   challenge?: Challenge; titleContent?: ReactNode; onResult?: (result: NonNullable<View['result']>, finalArchitecture: Architecture) => void; nextLevel?: () => void; resultContent?: ReactNode; leaderboardContent?: ReactNode;
@@ -168,6 +169,7 @@ export function TycoonGame({ challenge = blackFridayChallenge, titleContent, onR
         <button type="button" aria-label="About" onClick={() => open('about')}>About<small>The idea &amp; the technology</small></button>
       </nav><button ref={settingsButton} type="button" className="title-settings-btn" aria-label="Settings" aria-expanded={titleSettings} onClick={() => setTitleSettings(!titleSettings)}>&#9881; Settings</button>
       {titleSettings && <div ref={titlePanel} className="title-settings-panel" role="region" aria-label="Player settings" onKeyDown={event=>{if(event.key==='Escape'){event.preventDefault();setTitleSettings(false);settingsButton.current?.focus();}}}><SettingsPanel sound={sound} guide={guide} /><button type="button" onClick={()=>{setTitleSettings(false);settingsButton.current?.focus();}}>Close settings</button></div>}
+      <AzureTutorial compact />
       <p className="title-footnote">SAME WORKLOAD. DIFFERENT ARCHITECTURES. DIFFERENT OUTCOMES.</p></div>
     </section> : <>
       <div className="game-command-hud">
