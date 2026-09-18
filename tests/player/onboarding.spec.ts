@@ -41,7 +41,8 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 1920, height: 108
     await expect(page.getByRole('button', { name: '+ App capacity', exact: true })).toContainText('2/4 active');
     await page.getByRole('button', { name: '+ App capacity', exact: true }).press('Enter');
     const notice = page.getByTestId('phase-arrival');
-    await expect(notice).toContainText('Traffic spike', { timeout: 30000 });
+    await expect(notice).toContainText('260 req/s', { timeout: 30000 });
+    await expect(page.locator('.mission-phase')).toContainText('Traffic spike');
     await expect(notice).toContainText('260 req/s');
     const announcement = page.getByRole('status', { name: 'Phase arrival', exact: true });
     await expect(announcement).toHaveCount(1);
@@ -51,9 +52,11 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 1920, height: 108
     if (viewport.width === 844) expect(await notice.evaluate(el => getComputedStyle(el).animationName)).toBe('none');
     await page.screenshot({ path: info.outputPath('spike.png') });
     await expect(notice).toHaveCount(0, { timeout: 5000 });
-    await expect(notice).toContainText('Recovery window', { timeout: 30000 });
+    await expect(notice).toContainText('160 req/s', { timeout: 30000 });
+    await expect(page.locator('.mission-phase')).toContainText('Recovery window');
     await page.screenshot({ path: info.outputPath('recovery.png') });
-    await expect(notice).toContainText('Bot attack', { timeout: 20000 });
+    await expect(notice).toContainText('440 req/s', { timeout: 20000 });
+    await expect(page.locator('.mission-phase')).toContainText('Bot attack');
     await expect(notice).toContainText('35% bots');
     await expect(notice).toContainText('Red packets');
     await page.screenshot({ path: info.outputPath('bots.png') });

@@ -20,7 +20,6 @@ import { createLandscapeClock, enhanceLandscape, requiresLandscape } from './lan
 import { v3 } from './art-v3';
 import './player-console.css';
 import { MissionBrief } from './MissionBrief';
-import { PhaseArrival } from './PhaseArrival';
 import { missionBrief } from './mission-brief';
 import './onboarding.css';
 
@@ -172,7 +171,6 @@ export function TycoonGame({ challenge = blackFridayChallenge, titleContent, onR
       </div>
       {pauseMenuVisible && runtime.status === 'PAUSED' && !view.result && !view.error && !orientationGate && <PauseMenu sound={sound} guide={guide} onResume={() => { hidePause(); if(!gateOpen.current&&!controller.getSnapshot().error)controller.resume(); }} onInspect={hidePause} onHowToPlay={() => { helpFromPause.current=true; hidePause(); open('how'); }} onReturnToTitle={restart} />}
       <WorldGuide view={view} guide={guide} returnFocus={() => learnButton.current?.focus()} />
-      {!opening && !orientationGate && <PhaseArrival view={view} />}
       <GameFloor controller={controller} view={view} navigation={navigation} onReady={ready} blocked={opening || orientationGate} guideTarget={guide.visible ? guideHint(view, guide.stage).target : null} />
       {opening && !orientationGate && <div className="opening-caption" role="status" data-testid="opening-reveal"><small>{brief.name}</small><strong>Protect customers for {brief.duration} seconds.</strong><span>Build App · Cache · Edge before waves arrive.</span></div>}
       {view.countdown !== null && <div className="welcome-countdown" role="status"><span className="countdown-name">{brief.name} opens in</span><strong>{view.countdown}</strong><span className="countdown-forecast">Starting: {brief.opening} req/s<br />Final: {brief.final} req/s · {brief.bots}% bots</span></div>}

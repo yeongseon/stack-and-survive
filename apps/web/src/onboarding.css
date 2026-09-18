@@ -1,8 +1,8 @@
-.mission-brief {--brief-accent:#72dce9;grid-row:2;align-self:end;justify-self:center;width:min(880px,100%);box-sizing:border-box;margin:16px 0;padding:12px 16px;text-align:left;background:#071e31eb;border-left:3px solid var(--brief-accent);color:#ecf7fc}
+.onboarding-brief {--brief-accent:#72dce9;grid-row:2;align-self:end;justify-self:center;width:min(880px,100%);box-sizing:border-box;margin:16px 0;padding:12px 16px;text-align:left;background:#071e31eb;border-left:3px solid var(--brief-accent);color:#ecf7fc}
 .brief-purpose {display:flex;align-items:baseline;gap:16px;flex-wrap:wrap}
 .brief-purpose>strong {color:var(--brief-accent);font-size:14px;letter-spacing:.12em;text-transform:uppercase}
 .brief-purpose>span {font-size:18px;font-weight:600}
-.mission-brief p {margin:8px 0 0;font-size:14px;line-height:1.5}
+.onboarding-brief p {margin:8px 0 0;font-size:14px;line-height:1.5}
 .brief-forecast {display:flex;flex-wrap:wrap;gap:8px;align-items:center;color:#cce5ef}
 .brief-forecast strong {color:#ffbc7a}
 .brief-tools span {display:block;color:#cce5ef}
@@ -10,29 +10,25 @@
 .challenge-select .ladder-explainer {flex-basis:100%;color:#cce5ef}
 .welcome-countdown .countdown-forecast {display:block;font-size:14px;line-height:1.6;color:#cce5ef}
 .welcome-countdown .countdown-name {text-transform:uppercase;letter-spacing:.08em}
-.phase-arrival-slot {position:absolute;top:132px;left:50%;transform:translateX(-50%);z-index:13;pointer-events:none;width:max-content;max-width:calc(100% - 32px)}
-.phase-arrival {display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:10px 16px;background:#071e31ed;border-left:3px solid #72dce9;color:#ecf7fc;animation:phase-notice-in .18s ease-out}
-.phase-arrival strong {font-size:16px;text-transform:uppercase;letter-spacing:.06em}
-.phase-arrival span {font-size:14px}.phase-arrival small {flex-basis:100%;font-size:12px;color:#ffbc7a}.phase-arrival.with-bots {border-color:#ffbc7a}
-@keyframes phase-notice-in {from{opacity:0;translate:0 -4px}to{opacity:1;translate:0 0}}
-@media(prefers-reduced-motion:reduce){.phase-arrival{animation:none}}
+.mission-phase:has(.phase-detail) {flex-wrap:wrap;gap:2px 14px}
+.mission-phase .phase-detail {flex-basis:100%;font-size:11px;line-height:1.2}
 @media(max-height:500px) and (orientation:landscape){
- .tycoon-game .title-screen:has(.mission-brief){min-height:100dvh;padding:10px 16px;grid-template-rows:auto auto auto;gap:6px}
- .title-screen:has(.mission-brief) .title-heading h1 {font-size:32px;line-height:1;white-space:nowrap;margin:0}
- .title-screen:has(.mission-brief) .title-stack {display:inline}
- .title-screen:has(.mission-brief) .title-eyebrow,.title-screen:has(.mission-brief) .title-description,.title-screen:has(.mission-brief) .title-tagline,.title-screen:has(.mission-brief) .title-footnote {display:none}
- .mission-brief {margin:0;padding:6px 10px;align-self:center}
+ .tycoon-game .title-screen:has(.onboarding-brief){min-height:100dvh;padding:10px 16px;grid-template-rows:auto auto auto;gap:6px}
+ .title-screen:has(.onboarding-brief) .title-heading h1 {font-size:32px;line-height:1;white-space:nowrap;margin:0}
+ .title-screen:has(.onboarding-brief) .title-stack {display:inline}
+ .title-screen:has(.onboarding-brief) .title-eyebrow,.title-screen:has(.onboarding-brief) .title-description,.title-screen:has(.onboarding-brief) .title-tagline,.title-screen:has(.onboarding-brief) .title-footnote {display:none}
+ .onboarding-brief {margin:0;padding:6px 10px;align-self:center}
  .brief-purpose {gap:10px}.brief-purpose>strong {font-size:13px}.brief-purpose>span {font-size:14px}
- .mission-brief p {font-size:12px;margin-top:3px;line-height:1.3}.brief-tools span {display:inline;margin-left:8px}
+ .onboarding-brief p {font-size:12px;margin-top:3px;line-height:1.3}.brief-tools span {display:inline;margin-left:8px}
  .brief-forecast {gap:4px}.brief-forecast>span {display:none}
- .title-screen:has(.mission-brief) .challenge-select {padding:5px 8px;gap:5px 10px;margin-bottom:6px}
- .title-screen:has(.mission-brief) .challenge-select .player-name-control {margin:0;padding:0;border:0}
- .title-screen:has(.mission-brief) .challenge-select>small:not(.ladder-explainer) {display:none}
- .title-screen:has(.mission-brief) .title-actions {display:grid;grid-template-columns:1fr 1.4fr 1fr;gap:8px}
- .title-screen:has(.mission-brief) .title-actions button {min-height:44px;padding:6px;font-size:14px}
- .title-screen:has(.mission-brief) .title-actions .start-game {grid-column:auto;grid-row:auto;font-size:20px;min-height:52px}
- .title-screen:has(.mission-brief) .title-actions small {font-size:10px;margin-top:2px}
- .title-screen:has(.mission-brief) .title-settings-btn {margin-top:5px;min-height:32px}
- .phase-arrival-slot{top:118px}.phase-arrival{padding:6px 10px;gap:4px 8px}.phase-arrival strong{font-size:13px}.phase-arrival span,.phase-arrival small{font-size:12px}
+ .title-screen:has(.onboarding-brief) .challenge-select {padding:5px 8px;gap:5px 10px;margin-bottom:6px}
+ .title-screen:has(.onboarding-brief) .challenge-select .player-name-control {margin:0;padding:0;border:0}
+ .title-screen:has(.onboarding-brief) .challenge-select>small:not(.ladder-explainer) {display:none}
+ .title-screen:has(.onboarding-brief) .title-actions {display:grid;grid-template-columns:1fr 1.4fr 1fr;gap:8px}
+ .title-screen:has(.onboarding-brief) .title-actions button {min-height:44px;padding:6px;font-size:14px}
+ .title-screen:has(.onboarding-brief) .title-actions .start-game {grid-column:auto;grid-row:auto;font-size:20px;min-height:52px}
+ .title-screen:has(.onboarding-brief) .title-actions small {font-size:10px;margin-top:2px}
+ .title-screen:has(.onboarding-brief) .title-settings-btn {margin-top:5px;min-height:32px}
+ .mission-phase .phase-detail {font-size:10px}.mission-phase:has(.phase-detail)>small {display:none}
  .welcome-countdown{padding:12px}.welcome-countdown strong{font-size:40px}
 }

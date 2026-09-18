@@ -23,6 +23,8 @@ export function missionStatus(view: View) {
   const riskSeconds = risks.length ? Math.min(...risks) : null;
   return {
     elapsed, remaining, duration: scenario.duration, phaseIndex, label, status, riskSeconds,
+    phaseRps: phase?.rps ?? 0,
+    phaseBots: phase ? Math.round(phase.botRatio * 100) : 0,
     clock: `${Math.floor(remaining / 60).toString().padStart(2, '0')}:${(remaining % 60).toString().padStart(2, '0')}`,
     objective: objective?.kind === 'availability' ? `Finish with ≥${Number((objective.target * 100).toFixed(4))}% availability` : 'Keep the business alive',
     tone: label === 'Bot attack' || label === 'FINAL WAVE' ? 'attack' : label === 'Recovery window' ? 'recovery' : 'traffic',

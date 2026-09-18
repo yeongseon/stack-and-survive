@@ -5,6 +5,7 @@ import { lostSales, upcomingWave } from './wave-feedback';
 import { missionStatus } from './mission-status';
 import { formatMoney, formatMoneyRate } from './money';
 import './gameplay-hud.css';
+import { phaseArrival } from './mission-brief';
 
 export function GameHUD({ view }: { view: View }) {
   const scenario = view.challenge?.workload ?? blackFriday;
@@ -16,10 +17,11 @@ export function GameHUD({ view }: { view: View }) {
   const paused = view.state.runtime.status === 'PAUSED';
   const next=upcomingWave(view), loss=lostSales(r);
   const mission = missionStatus(view);
+  const arrival = phaseArrival(view);
   return <>
     <section className={`mission-hud ${mission.tone}${mission.arriving ? ' phase-arriving' : ''}${mission.riskSeconds !== null ? ' service-risk' : ''}`} aria-label="Operation progress" data-held={mission.status !== 'Live'}>
       <div className="mission-heading">
-        <output className="mission-phase" aria-atomic="true"><small>{mission.status} · Phase {mission.phaseIndex + 1}/{mission.phases.length}</small><strong key={mission.phaseIndex}>{mission.label}</strong></output>
+        <output className="mission-phase" aria-label="Phase arrival" aria-live="polite" aria-atomic="true"><small>{mission.status} · Phase {mission.phaseIndex + 1}/{mission.phases.length}</small><strong key={mission.phaseIndex}>{mission.label}</strong>{arrival && <span className="phase-detail" data-testid="phase-arrival">{arrival.rps} req/s{arrival.bots > 0 ? ` · ${arrival.bots}% bots · Red packets = bots` : ''}</span>}</output>
         <div className="mission-clock"><strong data-testid="mission-clock">{mission.clock}</strong><small>remaining</small></div>
       </div>
       <div className="mission-timeline" aria-hidden="true">{mission.phases.map((phase, index) => <span key={phase.start} className={index === mission.phaseIndex ? 'current' : ''} style={{ flexGrow: phase.end - phase.start }}><i style={{ width: `${phase.progress * 100}%` }} /></span>)}</div>

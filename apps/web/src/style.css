@@ -245,7 +245,7 @@ footer { order: 12; display: flex; justify-content: space-between; flex-wrap: wr
 @media (prefers-reduced-motion: reduce) { .business-feedback { animation: none; } }
 .business-feedback span { display: block; font-size: 10px; color: #bad0ce; }
 .welcome-countdown, .tycoon-result { position: fixed; z-index: 8; top: 50%; left: 50%; transform: translate(-50%,-50%); padding: 26px; text-align: center; background: #102c3af5; border: 1px solid #e3c789; border-radius: 12px; max-width: calc(100% - 24px); }
-.welcome-countdown { pointer-events: none; }.welcome-countdown strong { display: block; font-size: 64px; color: #efd08d; }
+.welcome-countdown { pointer-events: none; }.welcome-countdown small { display: block; color: #ffcc44; font-size: 12px; letter-spacing: .2em; margin-bottom: 4px; }.welcome-countdown strong { display: block; font-size: 64px; color: #efd08d; }.welcome-countdown .countdown-context { display: block; color: #9dc5df; font-size: 11px; margin-top: 6px; }
 .tycoon-result { width: 420px; }.tycoon-result h2 { font-size: 24px; }.tycoon-result button { margin: 4px; }
 .learn-dialog { margin: auto; width: min(620px,calc(100% - 24px)); max-height: calc(100dvh - 32px); overflow: auto; background: #193c4c; color: #e5f1ee; border: 1px solid #b3c5b8; border-radius: 12px; padding: 24px; }
 .learn-dialog::backdrop { background: #061c2bd4; }.learn-dialog form { float: right; }.learn-dialog p,.learn-dialog li { font-size: 14px; }.learn-dialog h2 { font-size: 24px; }
