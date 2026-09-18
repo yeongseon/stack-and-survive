@@ -10,9 +10,9 @@
 
 [![Watch the Stack & Survive gameplay demo](docs/media/demo-preview.jpg)](https://raw.githubusercontent.com/yeongseon/stack-and-survive/main/docs/media/stack-and-survive-demo.mp4)
 
-**[Watch / download the demo (MP4, 2:00, 5.4 MiB)](https://raw.githubusercontent.com/yeongseon/stack-and-survive/main/docs/media/stack-and-survive-demo.mp4)** · [Transcript, chapter guide and recording details](docs/DEMO_VIDEO.md)
+**[Watch / download the demo (MP4, 2:00, 5.9 MiB)](https://raw.githubusercontent.com/yeongseon/stack-and-survive/main/docs/media/stack-and-survive-demo.mp4)** · [Transcript, chapter guide and recording details](docs/DEMO_VIDEO.md)
 
-Real gameplay from released build `24ca388`, edited into two minutes with an actual title screenshot. **Silent video** for presenter narration: construction, traffic spikes, bot filtering, results and Player Name. The global board shows existing verified scores; this run was not publicly submitted. The full operation lasts180seconds; this is not a continuous two-minute run.
+Real gameplay from released build `24ca388`, edited from **two separate runs**: normal traffic → overload and service risk → actual failure → retry → infrastructure expansion → successful completion → Player Name and API-failure local fallback. **Silent video** for presenter narration, with labeled title/fallback screenshots. Global rows are existing verified scores, not these runs publicly submitted. A complete operation lasts 180 seconds; this is not a continuous two-minute run.
 
 The official game URL is the GitHub Pages link above. No custom domain is required.
 

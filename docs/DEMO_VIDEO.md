@@ -10,17 +10,20 @@ GitHub Markdown does not reliably provide an inline player for a committed MP4. 
 
 ## What the video shows
 
-This is a **120-second, silent, edited recording of actual ordinary-player gameplay**, prepared for live narration. It begins with an actual title-screen still held for15seconds. Moving clips remain at original speed; cuts omit parts of the180second operation and pauses. The footage was captured from the public Pages build, not the development editor or a mockup.
+This is a **120-second, silent, edited demonstration of two actual ordinary-player runs**, including both success and failure. Run A deliberately makes no upgrades, reaches service interruption, and restarts. Run B is a separate recording with App, Cache and Edge construction and a real completed result. The transition between recordings is labeled; it is not presented as one continuous attempt. Moving clips remain at original speed. The title (8 seconds) and local-fallback ending (12 seconds) are labeled actual screenshots from Run B. All footage uses the same public Pages build, not an editor or mockup.
 
 | Time | Picture | Suggested Korean narration / descriptive transcript |
 |---|---|---|
-| 0:00–0:15 | Actual title screenshot | “Stack & Survive는 실시간 클라우드 아키텍처 전략 게임입니다. 같은 트래픽에도 무엇을 언제 확장하느냐에 따라 결과가 달라집니다.” |
-| 0:15–0:30 | Opening camera and countdown | “Internet, App, SQL로 시작합니다. 화면의 달러는 가상 비즈니스 금액이며 실제 Azure 가격이 아닙니다.” |
-| 0:30–0:55 | Normal operation and construction | “확장을 눌러도 즉시 용량이 생기지는 않습니다. 건설이 끝나야 App, Cache, Edge가 부하를 처리합니다.” |
-| 0:55–1:15 | Customer spike and expanded infrastructure | “App은 처리 용량을 늘리고, Cache는 읽기 부하를 줄입니다. 비용과 준비 시간을 함께 고려해야 합니다.” |
-| 1:15–1:35 | Bot attack and changed traffic paths | “Edge는 봇 부하를 걸러내지만 정상 요청 오탐도 있습니다. 무조건 많이 짓는 대신 어떤 부하를 줄일지 선택합니다.” |
-| 1:35–1:50 | Real completed result, score9454 | “이 실행은 180초 운영을 완료했습니다. 가용성과 비즈니스 결과를 보고 다음 전략을 판단합니다.” |
-| 1:50–2:00 | Player Name, existing global rows and pending/local fallback transition | “이름으로 기록을 남길 수 있습니다. 서버는 점수 숫자가 아니라 행동 기록을 재실행해 검증합니다. 여기 보이는 글로벌 순위는 기존 검증 기록이며, 이번 실행은 공개 제출하지 않았습니다.” |
+| 0:00–0:08 | Actual title screenshot | “같은 트래픽에도 아키텍처의 선택이 결과를 바꿉니다.” |
+| 0:08–0:23 | Run A: normal traffic, no upgrades | “처음에는 App 한 대로 정상 운영됩니다. 금액은 실제 Azure 가격이 아닌 가상 비즈니스 표시입니다.” |
+| 0:23–0:33 | Run A: overload and service risk | “트래픽이 늘면 가용성이 떨어지고 매출을 잃습니다. 이 상태가 계속되면 서비스가 중단됩니다.” |
+| 0:33–0:43 | Run A: actual failure, score 810 | “증설하지 않은 이번 실행은 45초에 실패했습니다. 결과에서 원인을 확인합니다.” |
+| 0:43–0:51 | Run A: Play again and fresh start | “실패해도 새 인프라로 다시 시작할 수 있습니다.” |
+| 0:51–1:10 | Run B: separately recorded construction | “이제 별도로 녹화한 대응 전략입니다. App, Cache, Edge를 미리 준비하고 실제 건설 완료를 기다립니다.” |
+| 1:10–1:30 | Run B: customer spike and bot attack | “Cache는 읽기 부하를 줄이고 Edge는 봇을 걸러냅니다. 처리 용량과 비용, 정상 요청 오탐을 함께 고려합니다.” |
+| 1:30–1:40 | Run B: real completion, score 9454 | “이 실행은 180초를 완료했습니다. 생존뿐 아니라 가용성과 비즈니스 결과도 비교합니다.” |
+| 1:40–1:48 | Player Name and existing global rows | “이름으로 기록을 남깁니다. 글로벌 순위는 기존 검증 점수이며 이번 실행의 공개 제출 증거는 아닙니다.” |
+| 1:48–2:00 | Actual local-fallback screenshot after browser API block | “API가 응답하지 않는 상황도 확인했습니다. 점수는 이 기기에 남고, 서버 검증 대기와 재시도가 구분돼 표시됩니다.” |
 
 The transcript is suggested narration, **not an audio track**. On-screen labels identify edited gameplay, the title still and the existing-global-score limitation. Narration and any actual listening/haptic acceptance remain separate.
 
@@ -29,27 +32,29 @@ The transcript is suggested narration, **not an audio track**. On-screen labels 
 | Property | Value |
 |---|---|
 | Released source / Pages SHA | `24ca38805015cf87de710cb2ce9ffa5904ffc14f` |
-| Capture started | 2026-09-17T19:48:52.611Z |
+| Run A capture started | 2026-09-18T00:16:41.977Z |
+| Run B capture started | 2026-09-17T19:48:52.611Z |
 | Public game | https://yeongseon.github.io/stack-and-survive/ |
 | Browser | Chromium153.0.8010.12, automated ordinary-player inputs |
-| Source recording | 239.48seconds; includes startup, real180second operation and result interaction |
+| Source recordings | Run A: real failure at game time45s and retry; Run B:239.48seconds including real180second completion and result interaction |
 | MP4 | H.264,1440×900,25fps,120.000seconds; no audio stream |
-| File size | 5,672,442bytes (about5.4MiB) |
-| MP4 SHA256 | `3f25999e31d12c5b733dedb7af8580c24a1f268c7a6b2798d279a6bcb3861cf9` |
-| Raw recording SHA256 | `dbfa723433fb08c25ea59309fd144795f871f0fad4e2814d49b623e440a79d3f` |
+| File size | 6,160,277 bytes (about 5.9 MiB) |
+| MP4 SHA256 | `0ba01d4aa201919ee2fa11f62e338c9d30ce25902ad373bf31a3400c1a5815a2` |
+| Run A raw SHA256 | `dbcb82b3ea769d6d77e253da55b12719c96bda76024957e38a27d5fc7f70e213` |
+| Run B raw SHA256 | `dbfa723433fb08c25ea59309fd144795f871f0fad4e2814d49b623e440a79d3f` |
 | Title still SHA256 | `38ac281c29c81202622e2573ea7f2597e1331ac0f25e59b4bbbee1ee7bff937b` |
 
-The MP4 is remuxed with `faststart` for browser delivery, without changing the encoded video. Full-file FFmpeg decode and ffprobe duration/codec checks succeeded. This verifies decoding, not human acceptance or all-device playback. The preview is extracted from the video at55seconds.
+The MP4 is encoded with `faststart` for browser delivery. Full-file FFmpeg decode and ffprobe duration/codec checks succeeded. This verifies decoding, not human acceptance or all-device playback. The preview is extracted from the video at 78 seconds.
 
 ### Edit provenance
 
-Output uses: title still15s; raw video0–15s,15–40s,40–60s,105–125s,216–231s,228–238s. The last two clips overlap by3seconds intentionally. Source cuts do not follow an invented action timeline. The raw recording and capture manifest are retained in PC3 evidence; they are not bundled into gameplay assets.
+Output uses: title still 8s; Run A video12–27s,36–46s,54–64s,64–72s; Run B video20–39s,42–52s,106–116s,216–226s,226–234s; Run B local-fallback screenshot held12s. Both manifests have the same captured HTML hash `318700c1d44d0a13c7da4ead0fee7fb8a9f215e9b05c4c92008404c7baa75b37`. The server board changed between recordings; rows are observed at their respective capture times, not a fixed shared score fixture. Raw recordings and manifests are retained in PC3 evidence, not loaded by the game.
 
 ## Demonstration boundaries
 
 - No injected score, accelerated simulation or invented participant. Automation drove real player controls.
 - Existing server rows were read successfully. Before saving YS, the capture runner deliberately aborted API requests in its browser context to demonstrate local fallback. That is not evidence of a successful public submission for this run.
-- The visible result and the server board are different: score9454 belongs to this local run; the displayed8500point entries belong to previously verified server runs.
+- The visible results and server board are different: Run A failed with810; Run B completed with9454. The displayed global entries belong to previously verified server runs. Neither run was publicly submitted by this capture.
 - This video does not establish unfamiliar-player comprehension, voluntary replay, listening, physical vibration or rights clearance.
 - Recording a released demo does not grant broader reuse rights. See [licensing status](LICENSING_STATUS.md), [asset attribution](../apps/web/public/assets/ATTRIBUTION.md) and the [demo exception](PAGES_DEMO_EXCEPTION.md).
 
