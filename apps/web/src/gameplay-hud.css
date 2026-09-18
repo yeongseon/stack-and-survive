@@ -55,7 +55,7 @@
  .tycoon-game.diorama-game .business-feedback{top:120px!important}
 }
 @media(max-width:700px) and (orientation:landscape){
- .game-command-hud{grid-template-columns:minmax(0,1fr) 165px;grid-template-rows:58px 56px;padding-inline:10px}
+ .game-command-hud{grid-template-columns:minmax(0,1fr) 165px;grid-template-rows:58px 70px;padding-inline:10px}
  .tycoon-game.diorama-game .game-command-hud .tycoon-header h1{display:none}
  .tycoon-game.diorama-game .game-command-hud .tycoon-header nav{grid-column:2}
  .mission-hud{grid-column:1;margin:0 10px 0 0;padding-left:0;border-left:0}

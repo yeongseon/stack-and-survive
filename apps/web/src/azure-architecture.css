@@ -38,3 +38,7 @@
   .azure-traffic-key { bottom: 12px; left: 12px; }
   .azure-traffic-content { max-height: calc(100dvh - 200px); }
 }
+@media (max-width: 700px) and (orientation: landscape) {
+  .azure-experience .azure-catalog { top: 134px; }
+  .azure-services-panel { top: 132px; }
+}
