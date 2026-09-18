@@ -19,7 +19,7 @@ for (const width of [1440, 844, 1920, 740, 1024]) test(`player navigation keeps 
   let nodes: { id: string; x: number; y: number }[] = JSON.parse((await surface.getAttribute('data-nodes'))!);
   const app = nodes.find(n => n.id === 'compute')!;
   await canvas.click({ position: { x: app.x, y: app.y - 100 * fitScale * 1.25 } });
-  await expect(page.getByRole('region', { name: 'Resource actions' })).toContainText('active instances');
+  await expect(page.getByRole('region', { name: 'Resource actions' })).toContainText('1/4 instances');
   await expect(surface).toHaveAttribute('data-rendered-selection', 'compute');
   await page.getByRole('button', { name: 'Close resource', exact: true }).click();
   await expect(surface).toHaveAttribute('data-rendered-selection', '');
@@ -54,7 +54,7 @@ for (const width of [1440, 844, 1920, 740, 1024]) test(`player navigation keeps 
     nodes = JSON.parse((await surface.getAttribute('data-nodes'))!);
     const compute = nodes.find(n => n.id === 'compute')!;
     await canvas.click({ position: { x: compute.x, y: compute.y - 100 * fitScale * value } });
-    await expect(page.getByRole('region', { name: 'Resource actions' })).toContainText('active instances');
+    await expect(page.getByRole('region', { name: 'Resource actions' })).toContainText('1/4 instances');
     await page.getByRole('button', { name: 'Close resource', exact: true }).click();
   }
   await page.getByRole('button', { name: 'Fit architecture', exact: true }).click();
