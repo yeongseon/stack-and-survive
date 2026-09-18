@@ -6,6 +6,8 @@
 .scaling-controls small { line-height: 1.4; }
 .facility-plaque .scaling-pending-label { font-weight: bold; }
 .tycoon-game .resource-action-card:has(.scaling-controls) { max-height: calc(100dvh - 140px); overflow-y: auto; }
+.tycoon-game .resource-action-card:has(.scaling-controls) { z-index: 24; }
+.tycoon-floor:has(.scaling-controls) .world-controls { z-index: 24; }
 .final-scaling-architecture { display: flex; gap: 6px 16px; flex-wrap: wrap; font-size: 12px; margin: 10px 0; padding: 0 32px; }
 .final-scaling-architecture strong { display: block; width: 100%; }
 @media (max-height: 500px) { .tycoon-game .resource-action-card:has(.scaling-controls) { top: 112px !important; bottom: 8px; max-height: none; } }
