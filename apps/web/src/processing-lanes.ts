@@ -40,5 +40,10 @@ export function drawProcessingLane(g: Phaser.GameObjects.Graphics, from: Point, 
     g.lineStyle(2, color, .8);
     g.lineBetween(p.x, p.y, p.x - Math.cos(angle - .5) * 7, p.y - Math.sin(angle - .5) * 7);
     g.lineBetween(p.x, p.y, p.x - Math.cos(angle + .5) * 7, p.y - Math.sin(angle + .5) * 7);
+    if (lane.state === 'dropping') {
+      g.lineStyle(3, color, 1);
+      g.lineBetween(p.x + normal.x * 6, p.y + normal.y * 6, p.x + normal.x * 13, p.y + normal.y * 13);
+      g.lineBetween(p.x - normal.x * 6, p.y - normal.y * 6, p.x - normal.x * 13, p.y - normal.y * 13);
+    }
   }
 }

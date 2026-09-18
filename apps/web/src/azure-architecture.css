@@ -1,0 +1,35 @@
+.azure-catalog { position: absolute; z-index: 16; top: 130px; right: 16px; max-width: calc(100% - 32px); }
+.azure-catalog button, .azure-traffic-key button { min-height: 44px; border: 1px solid var(--border-default); border-radius: var(--radius-card); background: var(--surface-panel); color: var(--text-primary); padding: var(--space-2) var(--space-3); font: inherit; cursor: pointer; box-shadow: none; }
+.azure-catalog button:disabled { cursor: not-allowed; color: var(--text-muted); }
+.azure-catalog-toggle { display: block; margin-left: auto; }
+.azure-services-panel { width: 310px; max-width: 100%; box-sizing: border-box; max-height: calc(100dvh - 205px); overflow-y: auto; overscroll-behavior: contain; background: var(--surface-panel); border: 1px solid var(--border-default); border-radius: var(--radius-card); padding: var(--space-3); margin-top: var(--space-2); scrollbar-color: var(--border-default) var(--surface-panel); }
+.azure-services-panel header { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); }
+.azure-services-panel h2 { margin: 3px 0; color: var(--text-primary); font-size: 19px; }
+.azure-services-panel header small { color: var(--accent-cyan); letter-spacing: .1em; font-size: 10px; }
+.azure-services-panel p { color: var(--text-secondary); font-size: 12px; line-height: 1.5; margin: var(--space-2) 0; }
+.azure-catalog-item { padding: var(--space-3) 0; border-top: 1px solid var(--border-default); }
+.azure-catalog-item > small { display: block; margin: var(--space-2) 0; color: var(--text-secondary); font-size: 12px; line-height: 1.5; }
+.azure-catalog-item > button:not(.azure-resource-node) { width: 100%; color: var(--accent-cyan); }
+.azure-concepts summary { min-height: 44px; align-content: center; cursor: pointer; color: var(--text-secondary); font-size: 12px; }
+.azure-concepts > div { margin-bottom: var(--space-4); padding-top: var(--space-2); }
+.azure-concepts strong { font-size: 13px; color: var(--text-primary); }
+.azure-concepts small { color: var(--text-muted); font-size: 12px; line-height: 1.5; }
+.azure-traffic-key { position: absolute; z-index: 14; left: 16px; bottom: 16px; max-width: min(420px, calc(100% - 32px)); }
+.azure-traffic-content { padding: var(--space-3); margin-bottom: 50px; border: 1px solid var(--border-default); border-radius: var(--radius-card); background: var(--surface-panel); max-height: 240px; overflow: auto; }
+.azure-traffic-key > button { position: absolute; bottom: 0; left: 0; white-space: nowrap; font-size: 12px; }
+.azure-traffic-key.is-congested > button { border: 2px dashed var(--status-critical); }
+.azure-traffic-content p { font-size: 12px; line-height: 1.5; color: var(--text-secondary); }
+.azure-traffic-content ul { list-style: none; padding: 0; font-size: 12px; line-height: 1.9; }
+.azure-traffic-content [data-traffic="normal"] { color: var(--traffic-normal); }
+.azure-traffic-content [data-traffic="read"] { color: var(--traffic-read); }
+.azure-traffic-content [data-traffic="write"] { color: var(--traffic-write); }
+.azure-traffic-content [data-traffic="bot"] { color: var(--traffic-bot); }
+.azure-timeline-slot { border-top: 1px solid var(--border-default); padding-top: var(--space-2); }
+.azure-experience .facility-plaque { max-width: 170px; text-align: center; }
+.azure-experience .facility-plaque strong { font-size: 11px; letter-spacing: .025em; white-space: normal; }
+@media (max-width: 899px), (max-height: 600px) {
+  .azure-catalog { top: 118px; right: 12px; }
+  .azure-services-panel { position: fixed; right: 12px; top: 116px; bottom: 12px; width: min(320px, calc(100vw - 24px)); max-height: none; margin: 0; }
+  .azure-traffic-key { bottom: 12px; left: 12px; }
+  .azure-traffic-content { max-height: calc(100dvh - 200px); }
+}
