@@ -12,9 +12,9 @@ test('living operation expands real capacity and activates Cache and Edge only a
   const step = page.getByRole('button', { name: 'Step one tick', exact: true });
   const state = async () => JSON.parse((await page.getByTestId('diagnostics').textContent())!);
   await step.click();
-  await page.getByRole('button', { name: /Add Cache/ }).focus(); await page.getByRole('button', { name: /Add Cache/ }).press('Enter');
+  await page.getByRole('button', { name: /Deploy Cache — reduces SQL reads/ }).focus(); await page.getByRole('button', { name: /Deploy Cache — reduces SQL reads/ }).press('Enter');
   await expect(page.getByRole('button', { name: 'Confirm expansion', exact: true })).toHaveCount(0);
-  { await page.getByRole('button', { name: /Add Protected Edge/ }).focus(); await page.getByRole('button', { name: /Add Protected Edge/ }).press('Enter'); };
+  { await page.getByRole('button', { name: /Deploy Protected Edge — filters bots/ }).focus(); await page.getByRole('button', { name: /Deploy Protected Edge — filters bots/ }).press('Enter'); };
   await expect(page.getByRole('button', { name: 'Confirm expansion', exact: true })).toHaveCount(0);
   { await page.getByRole('button', { name: /App capacity/ }).focus(); await page.getByRole('button', { name: /App capacity/ }).press('Enter'); };
   await expect(page.getByRole('button', { name: 'Confirm expansion', exact: true })).toHaveCount(0);
