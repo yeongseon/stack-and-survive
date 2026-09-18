@@ -94,8 +94,12 @@ export function ChallengeApplication() {
     resultContent={<details className="result-records"><summary>Run records &amp; personal best</summary>{recordPanel}</details>}
     titleContent={<section className="challenge-select" aria-label="Challenge selection">
       <label>Challenge<select aria-label="Challenge level" value={ladder.selected} onChange={e => ladder.select(Number(e.currentTarget.value))}>
-        {challengeLadder.map((level, index) => <option key={level.challenge.id} value={index} disabled={index > unlockedLevel(ladder.progress)}>{index + 1}. {level.title}{index > unlockedLevel(ladder.progress) ? ' — locked' : ladder.progress.completed.includes(level.challenge.canonical) ? ' — complete' : ''}</option>)}
-      </select></label><p>{selected.description}</p>
+        {challengeLadder.map((level, index) => {
+          const obj = level.challenge.objective;
+          const target = obj.kind === 'availability' ? ` (≥${Number((obj.target * 100).toFixed(1))}%)` : '';
+          return <option key={level.challenge.id} value={index} disabled={index > unlockedLevel(ladder.progress)}>{index + 1}. {level.title}{target}{index > unlockedLevel(ladder.progress) ? ' — locked' : ladder.progress.completed.includes(level.challenge.canonical) ? ' — complete' : ''}</option>;
+        })}
+      </select></label><p>{selected.description} Same Black Friday workload{selected.challenge.objective.kind === 'availability' ? '; higher service objective.' : '.'}</p>
       <PlayerNameControl nickname={leaderboard.nickname} onSave={leaderboard.setNickname} optional />
       <small>Balance 0.3 · 10% sales reinvestment. Records and unlocks are separate from earlier balance versions.</small>
       {unlockedLevel(ladder.progress) !== ladder.selected && <button type="button" onClick={() => ladder.select(unlockedLevel(ladder.progress))}>Continue challenge</button>}
