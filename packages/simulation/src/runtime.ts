@@ -1,11 +1,15 @@
-import { integer, number, type Architecture, type Scenario } from '@stack-and-survive/schema';
-import { definitions, parseArchitecture, validateStart } from '@stack-and-survive/cloud-domain';
+import { integer, number, record, type Architecture, type Scenario, type ResourceTier } from '@stack-and-survive/schema';
+import { definitions, parseArchitecture, validateStart, resourceTier, appTiers, databaseTiers, readReplica, appHorizontalScaling } from '@stack-and-survive/cloud-domain';
 import { processRequests, type RequestSnapshot } from './index';
 
 export type Action = Readonly<{ time: number; sequence: number } & (
   { type: 'SCALE_OUT' } | { type: 'RATE_LIMIT'; enabled: boolean } | { type: 'EMERGENCY_WAF' }
   | { type: 'DEPLOY_RESOURCE'; kind: 'cache' | 'edge'; x: number; y: number }
+  | { type: 'SCALE_IN' | 'SCALE_UP_APP' | 'SCALE_DOWN_APP' | 'SCALE_UP_DATABASE' | 'SCALE_DOWN_DATABASE' | 'ADD_READ_REPLICA' | 'REMOVE_READ_REPLICA' }
 )>;
+export const infrastructureActionTypes = ['SCALE_IN', 'SCALE_UP_APP', 'SCALE_DOWN_APP', 'SCALE_UP_DATABASE', 'SCALE_DOWN_DATABASE', 'ADD_READ_REPLICA', 'REMOVE_READ_REPLICA'] as const;
+export type InfrastructureActionType = typeof infrastructureActionTypes[number];
+export type InfrastructureChange = { kind: 'compute' | 'database'; type: InfrastructureActionType; due: number; started: number };
 export type ActionOutcome = { action: Action; accepted: boolean; reason: string | null };
 export type Runtime = {
   status: 'PREPARATION' | 'RUNNING' | 'PAUSED' | 'COMPLETED' | 'FAILED';
@@ -23,6 +27,7 @@ export type Runtime = {
   lastSequence: number;
   actionLog: ActionOutcome[];
   deployments: { id: string; due: number }[];
+  infrastructureChanges: InfrastructureChange[];
 };
 export type TickTransition = {
   nextState: Runtime;
@@ -39,7 +44,7 @@ export function createPreparation(architecture: Architecture): Runtime {
     status: 'PREPARATION', architecture: parseArchitecture(architecture), initialArchitecture: null,
     time: 0, preparationTime: 0, scaleDue: null, preparationScaleDue: null,
     rateLimit: false, rateTransition: null, lastRateToggle: null, emergency: null,
-    emergencyUsed: false, lastSequence: -1, actionLog: [], deployments: [],
+    emergencyUsed: false, lastSequence: -1, actionLog: [], deployments: [], infrastructureChanges: [],
   };
 }
 function copy(state: Runtime): Runtime { return structuredClone(state); }
@@ -84,9 +89,22 @@ export function retryRuntime(state: Runtime): Runtime {
   return createPreparation(state.architecture);
 }
 
+export function parseAction(input: unknown): Action {
+  const raw = record(input, 'action');
+  const allowed = ['type', 'time', 'sequence', ...(raw.type === 'RATE_LIMIT' ? ['enabled'] : raw.type === 'DEPLOY_RESOURCE' ? ['kind', 'x', 'y'] : [])];
+  if (Object.keys(raw).some(key => !allowed.includes(key))) throw new Error('Unsupported action field');
+  const time = integer(raw.time, 'action time', 0, 3600), sequence = integer(raw.sequence, 'action sequence', 0, Number.MAX_SAFE_INTEGER);
+  if (raw.type === 'SCALE_OUT' || raw.type === 'EMERGENCY_WAF') return { type: raw.type, time, sequence };
+  const infrastructure = infrastructureActionTypes.find(type => type === raw.type);
+  if (infrastructure) return { type: infrastructure, time, sequence };
+  if (raw.type === 'RATE_LIMIT' && typeof raw.enabled === 'boolean') return { type: raw.type, enabled: raw.enabled, time, sequence };
+  if (raw.type === 'DEPLOY_RESOURCE' && (raw.kind === 'cache' || raw.kind === 'edge')) return { type: raw.type, kind: raw.kind, x: number(raw.x, 'x', -900, 900), y: number(raw.y, 'y', -600, 600), time, sequence };
+  throw new Error('Unsupported action type');
+}
 function validAction(action: Action): void {
+  parseAction(action);
   integer(action.time, 'action time'); integer(action.sequence, 'action sequence');
-  if (!['SCALE_OUT', 'RATE_LIMIT', 'EMERGENCY_WAF', 'DEPLOY_RESOURCE'].includes(action.type)) throw new Error('Unsupported action type');
+  if (!['SCALE_OUT', 'RATE_LIMIT', 'EMERGENCY_WAF', 'DEPLOY_RESOURCE', ...infrastructureActionTypes].includes(action.type)) throw new Error('Unsupported action type');
   if (action.type === 'RATE_LIMIT' && typeof action.enabled !== 'boolean') throw new Error('Rate limit state must be boolean');
   if (action.type === 'DEPLOY_RESOURCE') {
     if (action.kind !== 'cache' && action.kind !== 'edge') throw new Error('Only Cache or Edge can be deployed live');
@@ -113,6 +131,14 @@ export function advanceRuntime(state: Runtime, scenario: Scenario, actions: read
   const phase = scenario.traffic.find(p => p.start <= next.time && next.time < p.end);
   if (!phase) throw new Error('Running tick has no traffic phase');
   const app = next.architecture.resources.find(r => r.kind === 'compute')!;
+  for (const change of next.infrastructureChanges.filter(change => change.due <= next.time)) {
+    const resource = next.architecture.resources.find(r => r.kind === change.kind)!;
+    if (change.type === 'SCALE_IN') resource.instances--;
+    else if (change.type === 'ADD_READ_REPLICA') resource.readReplicas = (resource.readReplicas ?? 0) + 1;
+    else if (change.type === 'REMOVE_READ_REPLICA') resource.readReplicas = (resource.readReplicas ?? 0) - 1;
+    else resource.tier = (resourceTier(resource) + (change.type.startsWith('SCALE_UP') ? 1 : -1)) as ResourceTier;
+  }
+  next.infrastructureChanges = next.infrastructureChanges.filter(change => change.due > next.time);
   for (const deployment of next.deployments) {
     const resource = next.architecture.resources.find(r => r.id === deployment.id)!;
     resource.remaining = Math.max(0, deployment.due - next.time);
@@ -138,7 +164,17 @@ export function advanceRuntime(state: Runtime, scenario: Scenario, actions: read
     next.lastSequence = action.sequence;
     let reason: string | null = null;
     if (action.type === 'SCALE_OUT') {
-      if (app.remaining > 0 || app.instances >= 4 || next.scaleDue !== null) reason = 'Scale-out unavailable: pending, inactive, or at limit';
+      if (app.remaining > 0 || app.instances >= 4 || next.scaleDue !== null || next.infrastructureChanges.some(c => c.kind === 'compute')) reason = 'Scale-out unavailable: pending, inactive, or at limit';
+    } else if (infrastructureActionTypes.some(type => type === action.type)) {
+      const kind = action.type.includes('DATABASE') || action.type.includes('REPLICA') ? 'database' : 'compute';
+      const resource = next.architecture.resources.find(r => r.kind === kind)!;
+      if (scenario.balanceVersion !== '0.4') reason = 'Infrastructure scaling requires rules 0.4';
+      else if (resource.remaining > 0 || next.infrastructureChanges.some(c => c.kind === kind) || kind === 'compute' && next.scaleDue !== null) reason = 'A change is already pending or the resource is inactive';
+      else if (action.type === 'SCALE_IN' && resource.instances <= 1) reason = 'Keep at least one App instance';
+      else if (action.type.startsWith('SCALE_UP') && resourceTier(resource) >= 3) reason = 'Already at maximum tier';
+      else if (action.type.startsWith('SCALE_DOWN') && resourceTier(resource) <= 1) reason = 'Already at minimum tier';
+      else if (action.type === 'ADD_READ_REPLICA' && (resource.readReplicas ?? 0) >= readReplica.maximum) reason = 'Already at maximum read replicas';
+      else if (action.type === 'REMOVE_READ_REPLICA' && !(resource.readReplicas ?? 0)) reason = 'No read replica to remove';
     } else if (action.type === 'RATE_LIMIT') {
       if (next.rateTransition || next.rateLimit === action.enabled || (next.lastRateToggle !== null && next.time - next.lastRateToggle < 5)) {
         reason = 'Rate toggle unavailable: pending, no change, or cooldown';
@@ -153,8 +189,12 @@ export function advanceRuntime(state: Runtime, scenario: Scenario, actions: read
     }
     if (reason === null) reason = gate(next, action, emergencyCharges);
     if (reason !== null) { reject(action, reason); continue; }
-    if (action.type === 'SCALE_OUT') next.scaleDue = next.time + 8;
-    else if (action.type === 'RATE_LIMIT') {
+    if (action.type === 'SCALE_OUT') next.scaleDue = next.time + appHorizontalScaling.addDelay;
+    else if (infrastructureActionTypes.some(type => type === action.type)) {
+      const kind = action.type.includes('DATABASE') || action.type.includes('REPLICA') ? 'database' : 'compute';
+      const delay = action.type === 'SCALE_IN' ? appHorizontalScaling.removeDelay : action.type === 'REMOVE_READ_REPLICA' ? readReplica.removeDelay : action.type === 'ADD_READ_REPLICA' ? readReplica.addDelay : kind === 'compute' ? appTiers[0].delay : databaseTiers[0].delay;
+      next.infrastructureChanges.push({ kind, type: action.type as InfrastructureActionType, started: next.time, due: next.time + delay });
+    } else if (action.type === 'RATE_LIMIT') {
       next.rateTransition = { due: next.time + 2, enabled: action.enabled }; next.lastRateToggle = next.time;
     } else if (action.type === 'DEPLOY_RESOURCE') {
       const duration = definitions[action.kind].provisioning;

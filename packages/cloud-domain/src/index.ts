@@ -1,4 +1,24 @@
-import { array, integer, number, record, text, type Architecture, type Kind, type Resource } from '@stack-and-survive/schema';
+import { array, integer, number, record, text, type Architecture, type Kind, type Resource, type ResourceTier } from '@stack-and-survive/schema';
+
+export const appTiers = Object.freeze([
+  { tier: 1, name: 'Standard I', capacity: 150, cost: 5, delay: 6 },
+  { tier: 2, name: 'Standard II', capacity: 240, cost: 9, delay: 6 },
+  { tier: 3, name: 'Premium I', capacity: 360, cost: 15, delay: 6 },
+] as const);
+export const databaseTiers = Object.freeze([
+  { tier: 1, name: 'General Purpose I', reads: 180, writes: 70, cost: 12, delay: 10 },
+  { tier: 2, name: 'General Purpose II', reads: 300, writes: 110, cost: 22, delay: 10 },
+  { tier: 3, name: 'Business Critical', reads: 480, writes: 170, cost: 36, delay: 10 },
+] as const);
+export const readReplica = Object.freeze({ capacity: 180, cost: 8, addDelay: 8, removeDelay: 3, maximum: 2 });
+export const appHorizontalScaling = Object.freeze({ addDelay: 8, removeDelay: 3, maximum: 4 });
+export function resourceTier(resource: Resource): ResourceTier { return resource.tier ?? 1; }
+export function resourceRunningCost(resource: Resource): number {
+  if (resource.remaining > 0) return 0;
+  if (resource.kind === 'compute') return appTiers[resourceTier(resource) - 1].cost * resource.instances;
+  if (resource.kind === 'database') return databaseTiers[resourceTier(resource) - 1].cost + (resource.readReplicas ?? 0) * readReplica.cost;
+  return definitions[resource.kind].cost * resource.instances;
+}
 
 export const definitions: Record<Kind, { name: string; cost: number; provisioning: number }> = {
   internet: { name: 'Internet', cost: 0, provisioning: 0 },
@@ -16,8 +36,12 @@ export function parseArchitecture(input: unknown): Architecture {
     const r = record(item, 'resource'); const kind = text(r.kind, 'kind');
     if (!Object.prototype.hasOwnProperty.call(definitions, kind)) throw new Error(`Unsupported resource ${kind}`);
     const instances = integer(r.instances, 'instances', 1, kind === 'compute' ? 4 : 1);
+    if (r.tier !== undefined && kind !== 'compute' && kind !== 'database') throw new Error('Tiers apply only to App and SQL');
+    if (r.readReplicas !== undefined && kind !== 'database') throw new Error('Read replicas apply only to SQL');
     return { id: text(r.id, 'id'), kind: kind as Kind, instances,
-      x: number(r.x, 'x', -10000, 10000), y: number(r.y, 'y', -10000, 10000), remaining: integer(r.remaining, 'remaining', 0, 8) };
+      x: number(r.x, 'x', -10000, 10000), y: number(r.y, 'y', -10000, 10000), remaining: integer(r.remaining, 'remaining', 0, 8),
+      ...(r.tier === undefined ? {} : { tier: integer(r.tier, 'tier', 1, 3) as ResourceTier }),
+      ...(r.readReplicas === undefined ? {} : { readReplicas: integer(r.readReplicas, 'read replicas', 0, readReplica.maximum) }) };
   });
   if (new Set(resources.map(r => r.id)).size !== resources.length) throw new Error('Duplicate resource IDs');
   const connections = array(raw.connections, 'connections').map(item => {
