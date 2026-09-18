@@ -2,7 +2,7 @@ import { expect, it } from 'vitest';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { createElement } from 'react';
 import { baseline } from '@stack-and-survive/cloud-domain';
-import { blackFriday } from '@stack-and-survive/scenarios';
+import { infrastructureScalingScenario as blackFriday } from '@stack-and-survive/scenarios';
 import { blackFridayChallenge, evaluateObjective, parseChallenge } from '@stack-and-survive/scenarios/challenge';
 import { simulateScenario } from '@stack-and-survive/simulation/results';
 import { createController } from './controller';

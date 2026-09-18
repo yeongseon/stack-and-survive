@@ -51,7 +51,7 @@ test('approved ladder unlocks sequentially from real successful runs and ends wi
 
 test('corrupt or unavailable progression storage does not unlock levels or block play', async ({ page }) => {
   await page.addInitScript(() => {
-    localStorage.setItem('stack-and-survive.progress.balance-0.3.v1', '{corrupt');
+    localStorage.setItem('stack-and-survive.progress.balance-0.4.v1', '{corrupt');
     Storage.prototype.setItem = () => { throw new Error('storage blocked'); };
   });
   await page.goto('/?tycoon');

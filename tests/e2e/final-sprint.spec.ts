@@ -50,5 +50,5 @@ test('next-wave anticipation, single-action construction and reinvestment form a
   const result=(await view()).result;expect(result.balanceVersion).toBe('0.3');expect(result.metrics.availability).toBeGreaterThan(.99);
   expect(await page.evaluate(()=>localStorage.getItem('stack-and-survive.history.v1'))).toBe('legacy-record-not-to-be-overwritten');
   expect(await page.evaluate(()=>localStorage.getItem('stack-and-survive.progress.v1'))).toBe('legacy-progress-not-to-be-overwritten');
-  await expect.poll(()=>page.evaluate(()=>JSON.parse(localStorage.getItem('stack-and-survive.history.balance-0.3.v1')??'null')?.runs[0]?.challenge.rulesVersion)).toBe('0.3');
+  await expect.poll(()=>page.evaluate(()=>JSON.parse(localStorage.getItem('stack-and-survive.history.balance-0.4.v1')??'null')?.runs[0]?.challenge.rulesVersion)).toBe('0.4');
 });

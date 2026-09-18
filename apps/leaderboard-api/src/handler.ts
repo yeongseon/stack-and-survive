@@ -2,8 +2,8 @@ import { parseChallenge, type Challenge } from '@stack-and-survive/scenarios/cha
 import { challengeLadder } from '@stack-and-survive/scenarios/ladder';
 import { canonicalPlayerStart } from '@stack-and-survive/cloud-domain';
 import { replayRun } from '@stack-and-survive/simulation/replay';
-import { validateActionSchedule, type Action } from '@stack-and-survive/simulation/runtime';
-import { array, integer, number, record, text } from '@stack-and-survive/schema';
+import { validateActionSchedule, parseAction, type Action } from '@stack-and-survive/simulation/runtime';
+import { array, record, text } from '@stack-and-survive/schema';
 import type { LeaderboardStorage, RankContext, StoredEntry } from './storage';
 
 const MAX_ACTIONS = 500;
@@ -26,16 +26,7 @@ function validateClientRunId(id: unknown): string {
 
 function parseActions(raw: unknown[]): Action[] {
   if (raw.length > MAX_ACTIONS) throw new Error('Too many actions');
-  return raw.map(item => {
-    const a = record(item, 'action');
-    const time = integer(a.time, 'time', 0, 3600);
-    const sequence = integer(a.sequence, 'sequence', 0, Number.MAX_SAFE_INTEGER);
-    if (a.type === 'SCALE_OUT' || a.type === 'EMERGENCY_WAF') return { type: a.type, time, sequence };
-    if (a.type === 'RATE_LIMIT' && typeof a.enabled === 'boolean') return { type: 'RATE_LIMIT' as const, time, sequence, enabled: a.enabled };
-    if (a.type === 'DEPLOY_RESOURCE' && (a.kind === 'cache' || a.kind === 'edge'))
-      return { type: 'DEPLOY_RESOURCE' as const, time, sequence, kind: a.kind, x: number(a.x, 'x', -900, 900), y: number(a.y, 'y', -600, 600) };
-    throw new Error('Unsupported action type');
-  });
+  return raw.map(parseAction);
 }
 
 function actionDigest(challengeHash: string, actions: Action[]): string {
