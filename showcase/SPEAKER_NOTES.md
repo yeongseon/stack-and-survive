@@ -1,118 +1,115 @@
-# 발표 대본 — 약 3분 / 8장
+# Speaker notes — seven slides, about three minutes
 
-[슬라이드](slides.html) · [PDF](stack-and-survive-showcase.pdf)
+[Slides](slides.html) · [PDF](stack-and-survive-showcase.pdf)
 
-**목표 시간: 180초** (25 + 20 + 20 + 25 + 20 + 25 + 25 + 20초). 아래는 그대로 읽을 수 있는 원고입니다. 시간 표시는 발표자의 실제 낭독 측정값이 아닌 예산입니다. 2:50–3:10을 목표로 리허설하고, 길면 문장을 덜어내세요. 빠르게 읽어 맞추지 않습니다. 전체 게임 180초와 별도 시연은 이 시간에 포함되지 않습니다.
+This seven-slide English adaptation omits the earlier deck's standalone technical-architecture section. It is adapted for spoken English rather than translated word for word. **Target: roughly 2:40–3:00 at a comfortable pace, including short pauses.** This is a planning estimate, not a timed human rehearsal. The suggested sections below total 175 seconds. Time your own reading; shorten sentences rather than rushing. A live demo needs additional time unless your actual rehearsal leaves room.
 
-## 1. 고객지원 현장에서 생긴 질문 — 0:00–0:25
+## 1. Why I built it — 0:00–0:25
 
-저는 고객지원 업무를 하면서 Microsoft Learn 문서를 자주 참고합니다. 그때 한 가지 질문이 생겼습니다. 개념 하나하나는 설명되어 있지만, 처음 클라우드를 접하는 사람은 App, Cache, Database, Edge가 어떻게 연결되고, 어떤 선택이 어떤 결과를 만드는지 한 번에 이해하기 어려울 수도 있겠다는 생각입니다.
+I work in technical support, and I use Microsoft Learn a lot. The individual services are well explained. But I kept thinking about someone new to cloud: why would they need App, Cache and a database together? When we troubleshoot, we look across those services. I wanted a simpler way to show those connections.
 
-## 2. 문서에서 경험으로 — 0:25–0:45
+## 2. So I made a game — 0:25–0:45
 
-그래서 생각했습니다. 문서로만 설명하는 대신 직접 선택하고 실패해 보게 하면 어떨까? 공식 문서를 대체하려는 게 아니라, 문서를 이해하기 위한 직관을 먼저 경험하게 하는 겁니다. 그렇게 만든 Stack & Survive는 클라우드 구조의 선택을 180초 생존 게임으로 바꿨습니다.
+So I built Stack & Survive. Instead of only explaining the setup, I let the player run it. You decide when to expand App and add Cache or Edge. If you react too late, customer requests fail and you lose sales in the game.
 
-## 3. 예고를 보고 먼저 준비하기 — 0:45–1:05
+## 3. Black Friday — 0:45–1:15
 
-트래픽은 자동으로 들어옵니다. 플레이어는 다음 웨이브를 보고 제한된 자금으로 App, Cache, Edge를 준비합니다. 클릭했다고 바로 용량이 생기지는 않습니다. 건설과 활성화를 기다려야 하죠. 이후 가용성과 손실을 보면서, 개념을 선택의 결과와 연결해서 경험하게 됩니다.
+The scenario is Black Friday. A run lasts 180 seconds and starts at 100 requests per second. Then traffic spikes and bots arrive. Later, it's 560 requests per second with 40 percent bots. In the final 20 seconds, it's 600 with 45 percent bots. There are recovery windows too. Construction takes time, so you need to prepare before the next wave.
 
-## 4. 같은 워크로드, 다른 선택 — 1:05–1:30
+## 4. What you can do — 1:15–1:40
 
-App을 늘리면 처리량이 늘지만 SQL이 새 병목이 될 수 있습니다. Cache는 읽기에 도움이 되지만 쓰기는 SQL로 갑니다. Edge는 봇을 걸러주지만 정상 고객을 오탐할 수 있습니다. 정답 하나를 외우기보다 트레이드오프를 경험하는 게임입니다. Same workload. Different architectures. Different outcomes.
+App adds throughput, but takes eight seconds to activate and costs money to run. Adding it can leave SQL as the next bottleneck. Cache helps eligible reads; order writes still go to SQL. Edge filters bots, but can reject legitimate customers too. Adding everything isn't automatically the best approach.
 
-## 5. 결과를 보고 다른 전략으로 — 1:30–1:50
+## 5. Check the result, try again — 1:40–2:05
 
-결과에서는 점수와 가용성, 비용과 사업 영향을 확인합니다. 목표를 달성하면 자신의 이름으로 순위에도 참여합니다. 중요한 건 그다음 질문입니다. App을 조금 더 빨리 늘렸다면? Cache를 먼저 넣었다면? 다음 실행이 또 다른 실험이 됩니다. 이 화면은 실제 자동화 실행의 로컬 점수입니다.
+After the run, you can review availability, lost sales, costs and your score. If App expansion was late, try it earlier next time. Or change the order of Cache and Edge. The objectives progress from surviving 180 seconds to 99 percent, then 99.9 percent availability. Qualifying runs can join the leaderboard under a player name.
 
-## 6. 하나의 결정론적 엔진 — 1:50–2:15
+## 6. How I'd like people to use it — 2:05–2:30
 
-React가 UI를, Phaser가 월드를 담당하고, TypeScript 엔진이 규칙을 계산합니다. 전역 순위에서도 브라우저가 보낸 점수를 믿지 않습니다. 행동 기록을 보내면 Azure API가 같은 엔진을 처음부터 다시 실행해 점수를 계산합니다. 같은 시작과 행동이면 같은 결과가 나오도록 화면과 규칙을 분리했습니다.
+I'm not trying to replace Microsoft Learn. My hope is that someone plays, wonders why Cache didn't change the writes, and looks it up. Having seen the setup in action might make the documentation easier to follow. We still need testing with beginners to find out whether that actually helps.
 
-## 7. 공식 문서를 이해하기 위한 직관 — 2:15–2:40
+## 7. Closing — 2:30–2:55
 
-목표는 Microsoft Learn을 대체하는 게 아닙니다. 먼저 게임에서 질문을 만드는 겁니다. Cache를 넣으니 왜 요청이 줄었지? App을 늘렸는데 왜 SQL이 힘들어졌지? 그다음 공식 문서에서 개념을 더 정확히 확인하는 보조 경험입니다. 실제 교육 효과는 아직 검증됐다고 주장하지 않으며, 사용자 검증이 필요합니다.
+What I noticed in support wasn't a lack of documentation. It was how hard connecting the concepts might be when you're starting out. So I tried making that first step a little easier with a game. Give it a run and see where each facility helps. That's Stack & Survive. Thank you.
 
-## 8. 읽는 것에서 경험하는 것으로 — 2:40–3:00
+## 60-second version
 
-제가 느낀 문제는 문서의 부족이 아니라, 처음엔 개념을 연결하기 어려울 수 있다는 점이었습니다. Stack & Survive는 직접 선택하고 결과를 보며 그 연결을 경험하려는 시도입니다. Same workload. Different architectures. Different outcomes. 감사합니다.
+### 0:00–0:15
 
-## 60초 압축 버전
+I work in technical support and use Microsoft Learn often. I wondered whether beginners could connect the services more easily by running them in a game. So I built Stack & Survive.
 
-### 0–15초 — 고객지원 / Microsoft Learn
+### 0:15–0:30
 
-저는 고객지원을 하며 Microsoft Learn을 자주 참고합니다. 그때 입문자에게는 개념 하나보다 App, Cache, Database가 서로 어떻게 연결되는지가 어려울 수 있겠다는 생각이 들었습니다.
+You have 180 seconds to survive Black Friday. Traffic starts at 100 requests per second. The final wave reaches 600, with 45 percent bots. You prepare App, Cache and Edge before each wave.
 
-### 15–30초 — 교육용 게임의 시작
+### 0:30–0:45
 
-직접 선택하고 결과를 보면 어떨까? 그렇게 만든 Stack & Survive는 180초 클라우드 생존 게임입니다. 공식 문서를 대체하는 대신 문서를 이해하기 위한 직관을 먼저 경험하게 하려는 시도입니다.
+App adds capacity but takes time and money. Cache helps reads, not order writes. Edge blocks bots but may reject customers. Review the score, then try a different order next time.
 
-### 30–45초 — 트레이드오프
+### 0:45–1:00
 
-App은 처리량을 늘리지만 지연과 비용이 있습니다. Cache는 읽기를 돕지만 쓰기는 SQL로 갑니다. Edge는 봇을 걸러도 오탐이 생길 수 있습니다. 이 선택들의 차이를 결과로 확인합니다.
+I hope players try it first, then return to Microsoft Learn with specific questions. Whether it helps beginners still needs testing. That's Stack & Survive. Thank you.
 
-### 45–60초 — 엔진과 마무리
+## Switching to a short live demo
 
-브라우저와 서버는 같은 결정론적 엔진을 사용합니다. 전역 순위는 행동을 재실행해 계산합니다. 교육 효과 검증은 앞으로의 과제입니다. Same workload. Different architectures. Different outcomes.
+Only do this if the slot allows another 20–30 seconds. Open the title screen beforehand. Do not assume the main script and demo fit within three minutes without rehearsing both.
 
-## 라이브 시연으로 전환할 때
+“Let me show you the screen for a moment.”
 
-**별도 20–30초가 확보될 때만** 사용합니다. 3분 설명과 한 판 전체를 동시에 수행하지 않습니다. 사전에 브라우저를 열고 로딩을 확인하세요.
+1. Open the [public game](https://yeongseon.github.io/stack-and-survive/) and press Start Game. Count the opening sequence as part of the demo time.
+2. Point at Demand, Next and Funds: “This is the current demand, the next wave, and the money I can spend.”
+3. Click an empty App bay once: “Clicking doesn't increase capacity immediately. It needs time to finish building.”
+4. If time permits, add Cache: “This helps eligible reads, not every request.” Do not claim a benefit before activation.
+5. Pause within 20–30 seconds: “A full run takes 180 seconds, so I'll show the result from a run I completed earlier.” Return to slide 5.
 
-“말로 설명하는 것보다 20초만 실제 화면을 보겠습니다.”
+Label paused gameplay and recorded footage honestly. If the API is unavailable, explain that the score is local and use the [fallback plan](../docs/submission/DEMO_FALLBACK.md). Do not repeatedly submit demo scores to the public board.
 
-1. [공개 게임](https://yeongseon.github.io/stack-and-survive/)을 열고 Start Game을 누릅니다. 시작 연출 시간을 포함해 시연 타이머를 봅니다.
-2. **Demand / Next / Funds**를 가리킵니다. “지금 수요와 다음 웨이브, 쓸 수 있는 자금입니다.”
-3. 빈 App bay를 한 번 클릭합니다. “클릭했다고 즉시 성능이 올라가는 게 아니라, 건설 시간이 필요합니다.”
-4. 시간이 남으면 Cache를 클릭합니다. “Cache는 모든 요청이 아니라 적격 read 요청에만 영향을 줍니다.” 건설 전 효과가 생겼다고 말하지 않습니다.
-5. 약 20–30초에 Pause로 멈추고 원래 결과 슬라이드로 돌아갑니다. “한 판 전체는 180초이기 때문에, 결과는 별도로 실제 완료된 화면으로 이어서 보여드리겠습니다.”
+## Questions you may be asked
 
-멈춘 게임을 계속 진행 중인 것처럼 말하지 않습니다. 공개 보드에 시연용 점수를 반복 제출하지 않습니다. API 오류가 있으면 **로컬 점수**임을 밝히고 [대체 시연 계획](../docs/submission/DEMO_FALLBACK.md)을 사용합니다.
+### Why build this when Microsoft Learn already exists?
 
-## 예상 질문
+“Microsoft Learn is where I go for accurate information. I thought running a simplified setup first might make the role of Cache or Edge more concrete when someone returns to the documentation. The game isn't a replacement.”
 
-### Q. Microsoft Learn이 이미 있는데 왜 필요한가요?
+### Have you shown that it improves learning?
 
-“Microsoft Learn 같은 공식 문서는 정확한 정보를 전달하는 데 가장 중요한 자료라고 생각합니다. 이 게임은 이를 대체하려는 게 아닙니다. 입문자가 개념 간 관계를 먼저 경험하고, 이후 공식 문서를 더 쉽게 이해하도록 돕는 보조 경험을 목표로 합니다.”
+“Not yet. I've built the idea into a game, but whether beginners understand more or choose to replay still needs actual user testing.”
 
-### Q. 실제 교육 효과가 검증됐나요?
+### Why a game?
 
-“아직 그 부분은 검증됐다고 주장하지 않습니다. 현재는 교육용 게임이라는 제품 가설입니다. 실제 입문자의 이해도와 자발적인 재플레이 행동은 별도 검증 대상으로 두고 있습니다.”
+“Some details are easy to miss in an explanation. If you expand App and SQL becomes the bottleneck, you can see it and try something else. Limited time and funds make those tradeoffs visible.”
 
-### Q. 왜 게임이어야 하나요?
+### Does playing create Azure resources?
 
-“클라우드는 서비스 이름 하나를 외우는 것보다 선택의 결과와 트레이드오프를 이해하는 게 중요하다고 봤습니다. 제한된 시간과 자금에서 직접 선택하고 결과를 바로 확인하는 게임이 그 관계를 표현하기에 적합하다고 생각했습니다.”
+“No. Gameplay is a browser simulation. The optional leaderboard API is separately hosted on Azure App Service, but adding an App in the game doesn't provision a real cloud resource.”
 
-### Q. 실제 Azure를 만드는 건가요?
+### Are the dollar amounts actual Azure prices?
 
-“아니요. 게임은 브라우저 시뮬레이션입니다. 리더보드 API는 별도로 Azure App Service에 배포되어 있지만, 플레이어의 행동이 실제 Azure 리소스를 만들지는 않습니다.”
+“No. They are simulated business values. One internal credit is shown as one thousand dollars. The game isn't pricing or capacity-planning guidance.”
 
-### Q. 실제 Azure 비용인가요?
+### Why not keep adding App instances?
 
-“아니요. 달러 표시는 시뮬레이션 사업 가치입니다. 내부 1 credit을 $1K로 보여주는 것이고, 실제 Azure 가격이나 용량 산정의 근거로 쓰면 안 됩니다.”
+“They cost money and take time to activate, and there is a four-instance limit. More App capacity won't fix a SQL bottleneck. Cache helps reads but not writes, and Edge filtering can reject legitimate traffic. Each option has a cost.”
 
-### Q. 서버를 많이 늘리면 끝 아닌가요?
+### How do you handle score manipulation?
 
-“운영비가 들고 활성화까지 시간이 필요합니다. App을 늘려도 SQL이 병목이면 결과가 달라집니다. Cache는 읽기를 돕지만 쓰기는 SQL로 가고, Edge에는 오탐 트레이드오프가 있습니다. 많이 설치하는 것과 좋은 선택이 항상 같지는 않습니다.”
+“Local browser records can be edited. The global server receives an action history for a supported challenge and calculates the outcome again, rather than trusting the client's score. That doesn't make nicknames authenticated accounts or provide complete anti-cheat protection.”
 
-### Q. 점수 조작은요?
+### Does the global leaderboard work in production?
 
-“로컬 점수는 신뢰할 수 있는 대회 기록이 아닙니다. 전역 서버는 지원 챌린지와 행동 기록을 받아 동일 엔진으로 재실행하고 점수를 계산합니다. 다만 닉네임 인증이나 완전한 안티치트, 봇 방지까지 제공한다고 주장하지는 않습니다.”
+“Earlier rules 0.3 production submissions were verified. The current rules 0.4 API compatibility check is blocked in #306, so I won't claim current global submission works until it is resolved. Local results remain available. The DEMO screenshot is an automated local run, not a public submission.” Check the [dated handoff](../docs/submission/HACKATHON_HANDOFF.md) for any subsequently verified resolution before presenting.
 
-### Q. 배포된 전역 리더보드도 확인했나요?
+### How did you use AI?
 
-“네, 운영 담당자가 실제 제출·재시도·조회와 허용 출처 검증을 기록했습니다. 이 슬라이드의 DEMO 이미지는 별도의 로컬 실행입니다. 당일 운영 상태는 다시 확인하며, 서버 재시작 보존 같은 세부 운영 주장은 기록된 증거 범위를 넘어서 말하지 않겠습니다.”
+“It helped with implementation, art iteration, test writing and documentation. We ran the tests and checked the output. AI review doesn't replace real player feedback, listening checks or rights decisions.”
 
-### Q. AI는 어떻게 사용했나요?
+### Is this official Microsoft training material?
 
-“구현, 원본 아트 반복, 테스트와 문서 준비에 도움을 받았습니다. 테스트는 실제 실행 결과를 확인합니다. AI 검토가 실제 참가자 평가나 청취 확인, 권리 결정을 대신했다고 주장하지 않습니다.”
+“No. This is my own idea from working in support. It isn't Microsoft's assessment of Microsoft Learn or an endorsed training product. The presentation includes no identifying customer information or private support cases.”
 
-### Q. Microsoft의 공식 평가나 교육 자료인가요?
+## Rehearsal and factual boundaries
 
-“아니요. 고객지원 경험에서 나온 제 개인적인 관찰과 제품 아이디어입니다. Microsoft Learn에 대한 공식 평가도 아니고, Microsoft가 승인한 교육 자료라는 주장도 아닙니다. 고객 식별 정보나 내부 지원 사례는 포함하지 않았습니다.”
-
-## 발표 전 확인 및 리허설 기록
-
-- 사람의 실제 낭독 시간: **아직 측정하지 않음**. 슬라이드별 시간은 합계 180초의 목표 예산입니다.
-- 2:50–3:10을 벗어나면 본문을 줄이거나 자연스러운 쉼을 조정합니다. 실제 리허설 시간을 여기에 기록한 뒤 제출하세요.
-- 슬라이드 헤드라인만 1–8 순서로 읽어 동기 → 경험 → 선택 → 결과 → 기술 → 공식 문서로 돌아오는 흐름을 확인합니다.
-- CI 수치·배포 SHA·Pause 안정성·권리 세부 설명은 본문 발표가 아니라 Q&A와 [쇼케이스 안내](README.md), [기술 자료](../docs/SUBMISSION_TECHNICAL_NOTES.md)에 둡니다.
+- **Actual human read-aloud duration: not measured.** The English main script is approximately 370 words; at 140–150 words per minute plus brief pauses, plan roughly 2:40–3:00. These are assumptions, not evidence of a completed rehearsal.
+- The shortened script targets 60 seconds; time it yourself. Leave room for numbers, service names and slide changes.
+- The 100 → 560 → 600 progression summarizes eight phases with recovery windows. Demand does not rise continuously.
+- Screenshots retain the original `24ca388` provenance; `DEMO` denotes automation, not an unfamiliar participant or a verified global entry.
+- Deployment, rights and evidence details live in the [showcase guide](README.md) and [technical notes](../docs/SUBMISSION_TECHNICAL_NOTES.md), not in the main talk.
