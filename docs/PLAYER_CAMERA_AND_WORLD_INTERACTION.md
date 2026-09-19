@@ -67,7 +67,7 @@ Wheel/pinch/buttons respond immediately. Opening overview holds750ms and transit
 | Absent Cache footprint | Request deployment through local confirmation/acknowledgement |
 | Provisioning Cache/Edge | Inspect inactive construction and real remaining time, not active work |
 | Active Cache facility | Inspect real read-processing state |
-| SQL core | Inspect separate read/write pressure; no scaling action |
+| SQL core | Inspect separate read/write pressure; rules 0.4 also expose tier and read-replica changes through the existing inspection card ([scaling contract](INFRASTRUCTURE_SCALING.md)) |
 
 Sighted pointer play must not require floating Add Cache/Add Edge/+ App Capacity/SQL Processing/Traffic Intake rectangles. Empty bays and construction footprints may use subtle floor markers that read as facility parts. Accessible DOM equivalents remain, including discoverable keyboard entry and visible focus; merely hiding essential controls from sighted keyboard users is insufficient.
 
