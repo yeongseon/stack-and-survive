@@ -4,6 +4,17 @@
 .scaling-action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
 .tycoon-game .scaling-action-grid button { min-height: 44px; padding: 8px 6px; font-size: 14px; }
 .scaling-controls small { line-height: 1.4; }
+.scaling-action { min-width: 0; }
+.tycoon-game .scaling-action button { width: 100%; }
+.scaling-action button strong, .scaling-action button span { display: block; }
+.scaling-action button span { font-size: 11px; margin-top: 3px; }
+.tycoon-game .scaling-action small { margin-top: 4px; font-size: 11px; line-height: 1.3; }
+.scaling-status { display: block; min-height: 20px; font-size: 12px; color: #f0d498; }
+.scaling-shortcuts { position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; border: 0; margin: 0; padding: 0; }
+.tycoon-game .scaling-shortcuts button { min-height: 48px; min-width: 110px; padding: 6px 10px; background: #102b3a; border: 1px solid #8dc9d2; border-radius: 6px; color: #e5f5f5; box-shadow: 0 3px 12px #0005; }
+.scaling-shortcuts small { display: block; font-size: 10px; margin-top: 3px; color: #b2ccd1; }
+.scaling-shortcuts button[aria-expanded="true"] { border-color: #f0d498; }
+@media (max-width: 1000px) { .scaling-shortcuts { left: 130px; transform: none; bottom: 10px; } .tycoon-game .scaling-shortcuts button { min-width: 102px; font-size: 12px; padding: 5px 7px; } }
 .facility-plaque .scaling-pending-label { font-weight: bold; }
 .tycoon-game .resource-action-card:has(.scaling-controls) { max-height: calc(100dvh - 140px); overflow-y: auto; }
 .tycoon-game .resource-action-card:has(.scaling-controls) { z-index: 24; }
@@ -11,4 +22,12 @@
 .final-scaling-architecture { display: flex; gap: 6px 16px; flex-wrap: wrap; font-size: 12px; margin: 10px 0; padding: 0 32px; }
 .final-scaling-architecture strong { display: block; width: 100%; }
 @media (max-height: 500px) { .tycoon-game .resource-action-card:has(.scaling-controls) { top: 112px !important; bottom: 8px; max-height: none; } }
+@media (max-height: 500px) {
+  .tycoon-game .resource-action-card:has(.scaling-controls) { width: 340px; max-width: calc(100% - 24px); padding: 10px; }
+  .tycoon-game .resource-action-card:has(.scaling-controls) h2 { margin: 4px 0; font-size: 14px; }
+  .tycoon-game .resource-action-card .scaling-controls > strong { font-size: 13px; clear: both; }
+  .tycoon-game .resource-action-card .scaling-controls p { font-size: 11px; line-height: 1.3; }
+  .scaling-controls { gap: 3px; }
+}
+@media (max-width: 740px) and (max-height: 500px) { .tycoon-game .resource-action-card:has(.scaling-controls) { top: 136px !important; } }
 @media (prefers-reduced-motion: reduce) { .scaling-controls * { animation: none; transition: none; } }
