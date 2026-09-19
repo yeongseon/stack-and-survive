@@ -7,7 +7,7 @@ export function OperationBanner({ event }: { event: OperationEvent | null }) {
   const [current, setCurrent] = useState<OperationEvent | null>(null);
 
   useEffect(() => {
-    if (!event) return;
+    if (!event) { setVisible(false); setCurrent(null); return; }
     setCurrent(event);
     setVisible(true);
     const timer = setTimeout(() => setVisible(false), event.duration);
@@ -23,6 +23,7 @@ export function OperationBanner({ event }: { event: OperationEvent | null }) {
       aria-live={current.category === 'critical' ? 'assertive' : 'polite'}
       data-testid="operation-banner"
     >
+      <small aria-hidden="true">{({ wave: 'INCOMING WAVE', warning: 'WATCH THE PRESSURE', critical: 'OPERATION AT RISK', success: 'OPERATION UPDATE', economy: 'BUSINESS UPDATE', countdown: 'HOLD THE LINE' })[current.category]}</small>
       <strong>{current.title}</strong>
       {current.detail && <span>{current.detail}</span>}
     </div>

@@ -1,5 +1,11 @@
 # Stack & Survive — Visual Direction
 
+## Current integration addendum — #307
+
+Rules 0.4 scaling (#305) supersedes older statements below that SQL cannot scale or App cannot scale in; [Infrastructure Scaling](INFRASTRUCTURE_SCALING.md) owns those actions. #245 is merged archived experiment evidence, not a pending runtime art replacement.
+
+The bounded game-feel follow-up uses role-first world plaques (APP, CACHE, SQL, PROTECTED EDGE) with unchanged Azure names in secondary desktop labels and the service panel. Construction tracks display authoritative pending time, not new capacity; pause freezes them. Small landscape prioritizes role/state and keeps detailed service identity in the existing panel. Wave announcements use the processed snapshot tick; pre-existing starting facilities do not trigger completion rewards. Active configuration changes, including repeated expansion and tiers, can trigger short readiness cues. Paused/hidden/error/terminal presentation must not replay stale announcements. No simulation, camera geometry, asset bytes, economy or score changes.
+
 Version: 0.7. Reviewed merged main: `9421e74` (PR #253). **Game-first interaction and original V3 art are delivered**, followed by balance0.3 and Settings/Pause. #202 is completed implementation history, not the next task. [Gameplay](GAMEPLAY_SPEC.md) owns supported controls; [camera/world interaction](PLAYER_CAMERA_AND_WORLD_INTERACTION.md) remains the cross-layer guardrail. [Resource Visual States](RESOURCE_VISUAL_STATES.md) and [Simulation](SIMULATION_SPEC.md) own truthful states and outcomes. The [checkpoint](submission/RELEASE_CHECKPOINT.md) separates local presentation follow-ups from deployed evidence.
 
 > The world is the primary interface.
