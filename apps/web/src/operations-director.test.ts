@@ -5,6 +5,7 @@ import { startRuntime, type Action } from '@stack-and-survive/simulation/runtime
 import { canonicalPlayerStart } from '@stack-and-survive/cloud-domain';
 import { blackFridayChallenge } from '@stack-and-survive/scenarios/challenge';
 import type { View } from './controller';
+import { createController } from './controller';
 
 const scenario = blackFridayChallenge.workload;
 
@@ -60,15 +61,64 @@ describe('operations director event derivation', () => {
   });
 
   it('customer loss event appears when sales are dropping', () => {
-    const { allEvents } = simulateAndCollectEvents([]);
-    const lossEvents = allEvents.filter(e => e.title.includes('CUSTOMERS') || e.title.includes('DROPPING'));
-    expect(lossEvents.length).toBeGreaterThanOrEqual(1);
+    const controller = createController({ start: () => () => {} }, undefined, true);
+    controller.start();
+    for (let tick = 0; tick <= 25; tick++) controller.inspectNextTick();
+    const view = controller.getSnapshot();
+    const previous = { ...createDirectorState(), lastPhaseIndex: 1, appCritical: true };
+    expect(deriveOperationEvents(view, previous).events.some(event => event.title === 'CUSTOMERS DROPPING')).toBe(true);
+    const arriving = deriveOperationEvents(view, { ...previous, lastPhaseIndex: 0 });
+    expect(arriving.events.some(event => event.id === 'wave:1')).toBe(true);
+    expect(arriving.events.some(event => event.title === 'CUSTOMERS DROPPING')).toBe(false);
+    controller.destroy();
   });
 
   it('capacity online event appears when resource activates', () => {
     const { allEvents } = simulateAndCollectEvents(qualifyingActions);
     const activations = allEvents.filter(e => e.category === 'success' && e.title.includes('ONLINE'));
     expect(activations.length).toBeGreaterThanOrEqual(1);
+  });
+
+  it('does not celebrate initial capacity and announces a wave only on its measured tick', () => {
+    const controller = createController({ start: () => () => {} }, undefined, true);
+    controller.start();
+    let director = createDirectorState();
+    for (let tick = 0; tick <= 25; tick++) {
+      controller.inspectNextTick();
+      const view = controller.getSnapshot();
+      const before = structuredClone(view);
+      const { events, next } = deriveOperationEvents(view, director);
+      director = next;
+      if (tick === 0) expect(events.filter(event => event.id.startsWith('activate:'))).toEqual([]);
+      if (tick === 24) expect(events.some(event => event.id === 'wave:1')).toBe(false);
+      if (tick === 25) expect(events.find(event => event.id === 'wave:1')).toMatchObject({ time: 25 });
+      expect(view).toEqual(before);
+    }
+    controller.destroy();
+  });
+
+  it('recognizes repeated expansion and tier activation without treating queued capacity as ready', () => {
+    const controller = createController({ start: () => () => {} }, undefined, true);
+    controller.start(); controller.inspectNextTick();
+    const base = controller.getSnapshot();
+    const initial = deriveOperationEvents(base, createDirectorState());
+    const changed = structuredClone(base);
+    const app = changed.state.runtime.architecture.resources.find(resource => resource.kind === 'compute')!;
+    app.instances = 2;
+    const expanded = deriveOperationEvents(changed, initial.next);
+    expect(expanded.events.some(event => event.title === 'APP READY · 2 instances · Tier 1')).toBe(true);
+    expect(deriveOperationEvents(changed, expanded.next).events).toEqual([]);
+    app.instances = 1;
+    const shrunk = deriveOperationEvents(changed, expanded.next);
+    app.instances = 2;
+    const repeated = deriveOperationEvents(changed, shrunk.next);
+    expect(repeated.events.some(event => event.title.includes('2 instances'))).toBe(true);
+    app.tier = 2;
+    expect(deriveOperationEvents(changed, repeated.next).events.some(event => event.title.includes('Tier 2'))).toBe(true);
+    const queued = structuredClone(base);
+    queued.state.runtime.scaleDue = queued.state.runtime.time + 8;
+    expect(deriveOperationEvents(queued, initial.next).events).toEqual([]);
+    controller.destroy();
   });
 
   it('recovery event appears after pressure eases', () => {

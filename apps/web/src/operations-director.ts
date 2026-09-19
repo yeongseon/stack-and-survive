@@ -6,6 +6,7 @@ import type { View } from './controller';
 import { blackFriday } from '@stack-and-survive/scenarios';
 import { compare } from '@stack-and-survive/simulation/economy';
 import { trafficPhaseLabel, lostSales } from './wave-feedback';
+import { resourceTier } from '@stack-and-survive/cloud-domain';
 
 export type OperationEvent = {
   id: string;
@@ -50,7 +51,7 @@ export function deriveOperationEvents(view: View, previous: DirectorState): { ev
 
   if (runtime.status !== 'RUNNING' || view.error || !r) return { events, next };
 
-  const time = runtime.time;
+  const time = view.snapshot!.time;
   let priority = 0;
 
   // --- Wave transitions ---
@@ -150,12 +151,16 @@ export function deriveOperationEvents(view: View, previous: DirectorState): { ev
   }
   next.customerLoss = hasLoss;
 
-  // --- Resource activations ---
+  // Compare consecutive active configurations, not every configuration ever seen.
+  // This recognizes a repeated scale-out after scale-in without celebrating startup.
+  const activeConfigurations = new Set<string>();
   for (const resource of runtime.architecture.resources) {
-    const key = `${resource.kind}:${resource.instances}`;
-    if (resource.remaining === 0 && !previous.lastActivations.has(key)) {
+    const key = `${resource.kind}:${resource.instances}:${resourceTier(resource)}:${resource.readReplicas ?? 0}`;
+    if (resource.remaining === 0) activeConfigurations.add(key);
+    if (previous.lastPhaseIndex >= 0 && resource.remaining === 0 && !previous.lastActivations.has(key)) {
       const labels: Record<string, string> = {
-        compute: `CAPACITY ONLINE · ${resource.instances} instances`,
+        compute: `APP READY · ${resource.instances} ${resource.instances === 1 ? 'instance' : 'instances'} · Tier ${resourceTier(resource)}`,
+        database: `SQL READY · Tier ${resourceTier(resource)} · ${resource.readReplicas ?? 0} read replicas`,
         cache: 'CACHE ONLINE · Reads accelerated',
         edge: 'PROTECTION ONLINE · Filtering bots',
       };
@@ -166,8 +171,8 @@ export function deriveOperationEvents(view: View, previous: DirectorState): { ev
         });
       }
     }
-    if (resource.remaining === 0) next.lastActivations.add(key);
   }
+  next.lastActivations = activeConfigurations;
 
   // Sort by priority descending, keep only highest if multiple
   events.sort((a, b) => b.priority - a.priority);
