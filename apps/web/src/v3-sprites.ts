@@ -3,7 +3,7 @@ import type { Resource } from '@stack-and-survive/schema';
 import type { Point } from './editor';
 import type { View } from './controller';
 import { v3, v3Asset, v3Texture, v3Unit } from './art-v3';
-import { playerBuildingScale, buildingLayers, resourceArtBounds } from './building-assets';
+import { activeBuildingScale, buildingLayers, resourceArtBounds } from './building-assets';
 import { resourceVisualState } from './resource-visual-state';
 // tycoonPoint no longer needed — env scenery baked into hall-background
 import { resourceActivity } from './resource-activity';
@@ -33,7 +33,7 @@ export class V3Sprites {
   update(resource: Resource, p: Point, rank: number, view: View, time: number, reduced: boolean) {
     if (!v3) return;
     const geometry=v3.geometry;
-    const state=resourceVisualState(view,reduced), scale=playerBuildingScale(resource.kind);
+    const state=resourceVisualState(view,reduced), scale=activeBuildingScale(resource);
     const base=buildingLayers.body+rank*10;
     const moving=state.canAnimate;
     const work=resourceActivity(view);
@@ -141,6 +141,6 @@ export class V3Sprites {
   }
   end(){ for(const [key,image] of this.images)if(!this.used.has(key))image.setVisible(false); }
   diagnostics(){return {allocated:this.images.size,visible:this.used.size,scenery:this.scenery.length,
-    layers:[...this.images].filter(([key])=>this.used.has(key)).map(([key,image])=>({key,texture:image.texture.key,x:image.x,y:image.y}))};}
+    layers:[...this.images].filter(([key])=>this.used.has(key)).map(([key,image])=>({key,texture:image.texture.key,x:image.x,y:image.y,width:image.displayWidth,height:image.displayHeight}))};}
   destroy(){for(const image of this.images.values())image.destroy();for(const image of this.scenery)image.destroy();this.activity.destroy();this.images.clear();}
 }
