@@ -3,7 +3,7 @@ import type { View } from './controller';
 import type { Point } from './editor';
 import { tycoonPoint } from './tycoon-layout';
 import { facilityBays } from './facility-bays';
-import { playerBuildingScale, resourceArtBounds } from './building-assets';
+import { activeBuildingScale, playerBuildingScale, resourceArtBounds } from './building-assets';
 
 export type WorldTarget = { id: string; kind: Kind; point: Point; bounds: { x: number; y: number; width: number; height: number }; build: boolean };
 export function worldTargets(view: View, width: number, height: number): WorldTarget[] {
@@ -11,7 +11,7 @@ export function worldTargets(view: View, width: number, height: number): WorldTa
   for (const kind of ['internet', 'edge', 'compute', 'cache', 'database'] as const) {
     const point = tycoonPoint(kind, width, height);
     const resource = view.state.runtime.architecture.resources.find(r => r.kind === kind);
-    const scale = playerBuildingScale(kind, width);
+    const scale = resource ? activeBuildingScale(resource, width) : playerBuildingScale(kind, width);
     targets.push({ id: resource?.id ?? kind, kind, point, build: !resource,
       bounds: resource ? resourceArtBounds(kind, scale, true) : { x: -48, y: -28, width: 96, height: 56 } });
     if (kind === 'compute' && resource && resource.instances < 4 && view.state.runtime.scaleDue === null) {
