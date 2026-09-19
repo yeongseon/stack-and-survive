@@ -18,13 +18,15 @@ Real gameplay from released build `24ca388`, edited from **two separate runs**: 
 
 The official game URL is the GitHub Pages link above. No custom domain is required.
 
-**Presenting the project?** [Open the showcase](showcase/README.md) for an 8-slide browser deck, Korean speaker notes and PDF-print instructions.
+**Presenting the project?** [Open the showcase](showcase/README.md) for a 7-slide English browser deck, English speaker notes and a [downloadable PDF](showcase/stack-and-survive-showcase.pdf).
 
 ![Stack & Survive gameplay: a unified command HUD above App, Cache, Edge and SQL facilities during a bot attack.](docs/images/gameplay.webp)
 
 ## Why play?
 
 More servers are not always the best answer. App expansion takes time; Cache helps eligible reads but not SQL writes; Protected Edge filters bots but can reject legitimate customers. Your choices change availability, operating costs and the final score.
+
+**Current rules 0.4:** App scale-in/out and tier changes, SQL tiers and read replicas are now available through facility inspection. [Scaling guide and actual captured examples](docs/INFRASTRUCTURE_SCALING.md). The video and overview screenshots below document the earlier `24ca388` / rules 0.3 release, not the current interface. See the [dated presentation handoff](docs/submission/HACKATHON_HANDOFF.md) for current verification and release blockers.
 
 - **One living data center:** click facilities and empty bays directly; routes are automatic.
 - **Eight traffic phases:** anticipate spikes, bot attacks, recovery windows and the final wave.
@@ -47,7 +49,7 @@ More servers are not always the best answer. App expansion takes time; Cache hel
 
 Dollar amounts are **simulated business value, not actual Azure prices**. One internal credit is displayed as **$1K**: starting funds are **$75K**, and a loss of 0.25 credit/second is **$250/s**. Only **10% of successful customer sales** returns to Upgrade Funds; bots earn nothing.
 
-App, Cache and Edge have running costs of **$5K/min**, **$8K/min** and **$3K/min**, respectively—not one-time purchase prices. The emergency filtering boost costs **$8K** once. Display formatting does not change simulation values or scoring.
+At the base tier, each App instance costs **$5K/min**; Cache and Edge cost **$8K/min** and **$3K/min**, respectively—not one-time purchase prices. Higher App/SQL tiers and SQL read replicas have separate [running costs and activation delays](docs/INFRASTRUCTURE_SCALING.md#mechanics). The emergency filtering boost costs **$8K** once. Display formatting does not change simulation values or scoring.
 
 ## Screenshots
 

@@ -5,11 +5,11 @@
 - **Play:** [illustrated player guide](PLAYER_GUIDE.md), with actual screenshots from opening to result.
 - **Build:** [development guide](DEVELOPMENT.md), covering setup, modes, test prerequisites and capture reproduction.
 - **Contribute:** [contribution guide](../CONTRIBUTING.md), covering issue/PR workflow, verification and unresolved license boundaries.
-- **Present:** [showcase](../showcase/README.md), with a browser slide deck and Korean speaker notes.
+- **Present:** [showcase](../showcase/README.md), with a seven-slide English deck, downloadable PDF and English speaker notes.
 
 ## Current contracts
 
-The [release checkpoint](submission/RELEASE_CHECKPOINT.md) records the historical PR #253 (`9421e74`) baseline, including game-first interaction, V3 art, balance0.3, Settings/Pause and client release/submission preparation. Camera/art implementation is delivered, not the next work item. Human/audio/rights gates remain open; CORS #260 is closed and PR #261 merged. Use [final release readiness](submission/FINAL_RELEASE_READINESS.md) for newer operational evidence and remaining gates. Public source visibility is not an OSS license grant or third-party rights approval.
+Use the [dated hackathon handoff](submission/HACKATHON_HANDOFF.md) for the latest presentation checkpoint, current rules 0.4 and backend compatibility blocker. The [release checkpoint](submission/RELEASE_CHECKPOINT.md) and [Computer 1 readiness report](submission/FINAL_RELEASE_READINESS.md) are historical revision-specific evidence, not current deployment status. Human/audio/rights gates remain open. Public source visibility is not an OSS license grant or third-party rights approval.
 
 | Order | Current authority | Responsibility |
 |---|---|---|
