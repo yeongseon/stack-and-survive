@@ -10,20 +10,22 @@ GitHub Markdown does not reliably provide an inline player for a committed MP4. 
 
 ## What the video shows
 
+**Historical demonstration:** this video records `24ca388` / rules 0.3. The current game adds rules 0.4 infrastructure scaling and newer onboarding; this recording does not verify those features or the current backend. See the [current handoff](submission/HACKATHON_HANDOFF.md) and [scaling captures](INFRASTRUCTURE_SCALING.md#captured-scenes).
+
 This is a **120-second, silent, edited demonstration of two actual ordinary-player runs**, including both success and failure. Run A deliberately makes no upgrades, reaches service interruption, and restarts. Run B is a separate recording with App, Cache and Edge construction and a real completed result. The transition between recordings is labeled; it is not presented as one continuous attempt. Moving clips remain at original speed. The title (8 seconds) and local-fallback ending (12 seconds) are labeled actual screenshots from Run B. All footage uses the same public Pages build, not an editor or mockup.
 
-| Time | Picture | Suggested Korean narration / descriptive transcript |
+| Time | Picture | Suggested English narration / descriptive transcript |
 |---|---|---|
-| 0:00–0:08 | Actual title screenshot | “같은 트래픽에도 아키텍처의 선택이 결과를 바꿉니다.” |
-| 0:08–0:23 | Run A: normal traffic, no upgrades | “처음에는 App 한 대로 정상 운영됩니다. 금액은 실제 Azure 가격이 아닌 가상 비즈니스 표시입니다.” |
-| 0:23–0:33 | Run A: overload and service risk | “트래픽이 늘면 가용성이 떨어지고 매출을 잃습니다. 이 상태가 계속되면 서비스가 중단됩니다.” |
-| 0:33–0:43 | Run A: actual failure, score 810 | “증설하지 않은 이번 실행은 45초에 실패했습니다. 결과에서 원인을 확인합니다.” |
-| 0:43–0:51 | Run A: Play again and fresh start | “실패해도 새 인프라로 다시 시작할 수 있습니다.” |
-| 0:51–1:10 | Run B: separately recorded construction | “이제 별도로 녹화한 대응 전략입니다. App, Cache, Edge를 미리 준비하고 실제 건설 완료를 기다립니다.” |
-| 1:10–1:30 | Run B: customer spike and bot attack | “Cache는 읽기 부하를 줄이고 Edge는 봇을 걸러냅니다. 처리 용량과 비용, 정상 요청 오탐을 함께 고려합니다.” |
-| 1:30–1:40 | Run B: real completion, score 9454 | “이 실행은 180초를 완료했습니다. 생존뿐 아니라 가용성과 비즈니스 결과도 비교합니다.” |
-| 1:40–1:48 | Player Name and existing global rows | “이름으로 기록을 남깁니다. 글로벌 순위는 기존 검증 점수이며 이번 실행의 공개 제출 증거는 아닙니다.” |
-| 1:48–2:00 | Actual local-fallback screenshot after browser API block | “API가 응답하지 않는 상황도 확인했습니다. 점수는 이 기기에 남고, 서버 검증 대기와 재시도가 구분돼 표시됩니다.” |
+| 0:00–0:08 | Actual title screenshot | “Same workload. Different architectures. Different outcomes.” |
+| 0:08–0:23 | Run A: normal traffic, no upgrades | “One App instance handles the opening traffic. The money represents simulated business value, not real Azure prices.” |
+| 0:23–0:33 | Run A: overload and service risk | “Demand rises, availability falls, and sales are lost. If this continues, the service will stop.” |
+| 0:33–0:43 | Run A: actual failure, score 810 | “Without upgrades, this run failed at 45 seconds. The result explains what went wrong.” |
+| 0:43–0:51 | Run A: Play again and fresh start | “After failure, start again with fresh infrastructure.” |
+| 0:51–1:10 | Run B: separately recorded construction | “This is a different, separately recorded run. We prepare App, Cache and Edge ahead of demand, then wait for construction to complete. Capacity is not instant.” |
+| 1:10–1:30 | Run B: customer spike and bot attack | “Cache helps eligible reads. Edge filters bots but can also reject legitimate traffic. We have to balance processing capacity, running costs and customer losses rather than simply building more.” |
+| 1:30–1:40 | Run B: real completion, score 9454 | “This run completed all 180 seconds. Review availability, costs and the final score.” |
+| 1:40–1:48 | Player Name and existing global rows | “These global rows are earlier verified runs, not a submission of this recorded run.” |
+| 1:48–2:00 | Actual local-fallback screenshot after browser API block | “Here the browser API requests were blocked deliberately. The local score remains, while pending verification and retry are shown separately.” |
 
 The transcript is suggested narration, **not an audio track**. On-screen labels identify edited gameplay, the title still and the existing-global-score limitation. Narration and any actual listening/haptic acceptance remain separate.
 

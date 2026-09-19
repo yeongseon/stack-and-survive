@@ -1,5 +1,7 @@
 # Final Release Readiness Report — Computer 1
 
+> **Historical report, not current status.** This September 17 checkpoint is retained for its original evidence. For the September 19 integrated rules 0.4 candidate, merged #294, current API compatibility blocker and presentation materials, use [HACKATHON_HANDOFF.md](HACKATHON_HANDOFF.md). Pending-merge statements below describe that earlier checkpoint and must not be read as today's backlog.
+
 Observed 2026-09-17. **READY WITH RISKS** for the existing owner-authorized demo, not blanket rights approval or proof of final visual acceptance.
 
 ## Candidate and ownership

@@ -2,6 +2,9 @@
 
 These guides are preparation material, not proof that a submission, listening or human session occurred. Recording/capture completion is revision-specific and recorded in the [live checklist #7](https://github.com/yeongseon/stack-and-survive/issues/7). Record the exact release SHA and Pages artifact before using media. The client/release owner maintains this pack; the backend owner maintains API deployment and its evidence.
 
+- [Global submission English draft and final checks](GLOBAL_SUBMISSION.md)
+- [Dated hackathon handoff, current blockers and presenter runbook](HACKATHON_HANDOFF.md)
+- [Seven-slide English presentation and PDF](../../showcase/README.md)
 - [Two-minute demo script](DEMO_SCRIPT.md)
 - [Watch the two-minute demo and read its transcript](../DEMO_VIDEO.md)
 - [Demo fallback and recovery](DEMO_FALLBACK.md)

@@ -1,117 +1,97 @@
 <!doctype html>
-<html lang="ko">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Stack &amp; Survive — From Document to Experience</title>
+  <title>Stack &amp; Survive — Why I Built It</title>
   <link rel="stylesheet" href="slides.css">
   <script src="slides.js" defer></script>
 </head>
 <body>
-  <main aria-label="Stack & Survive 발표 자료">
+  <main aria-label="Stack & Survive presentation">
     <section class="slide motivation" id="slide-1" aria-labelledby="title-1">
       <div class="copy">
-        <p class="eyebrow">01 / WHY I STARTED</p>
-        <h1 id="title-1" tabindex="-1">고객지원 현장에서<br><em>한 가지 질문</em>이<br>생겼습니다.</h1>
-        <p>고객지원을 하며<br>Microsoft Learn을 자주 참고합니다.</p>
-        <p>처음 만나는 App · Cache · Database · Edge.<br>각 개념이 <strong>어떻게 연결되는지</strong><br>쉽지 않을 수 있다고 느꼈습니다.</p>
-        <p class="small">고객지원 경험에서 나온 개인적인 관찰입니다.</p>
+        <p class="eyebrow">01 / WHY I BUILT IT</p>
+        <h1 id="title-1" tabindex="-1">Working in support,<br><em>I kept thinking<br>about beginners.</em></h1>
+        <p>I use Microsoft Learn a lot in my work.</p>
+        <p>The services are well explained.<br>But if you're new to cloud, why do you<br><strong>need them together?</strong></p>
       </div>
-      <figure><img src="../docs/images/title.webp" alt="Stack & Survive의 데이터센터 타이틀과 Start Game 화면"><figcaption>그 질문에서 시작된 게임 · 실제 캡처 24ca388</figcaption></figure>
+      <figure><img src="../docs/images/title.webp" alt="Stack & Survive title screen with a data center and Start Game button"><figcaption>That led me to build Stack &amp; Survive. Captures: rules 0.3, source 24ca388; current game includes 0.4 scaling.</figcaption></figure>
     </section>
     <section class="slide" id="slide-2" aria-labelledby="title-2">
       <div class="copy">
-        <p class="eyebrow">02 / FROM DOCUMENT TO EXPERIENCE</p>
-        <h2 id="title-2" tabindex="-1">읽는 대신,<br><em>직접 선택하게 하면<br>어떨까?</em></h2>
-        <p>공식 문서를 대체하는 것이 아니라,<br>문서를 이해하기 위한 직관을 먼저.</p>
-        <p class="story-flow">선택 → 결과 → 다시 선택</p>
-        <p class="lead">교육용 클라우드 전략 게임<br><strong>Stack &amp; Survive</strong></p>
+        <p class="eyebrow">02 / SO I MADE A GAME</p>
+        <h2 id="title-2" tabindex="-1">Instead of explaining it,<br><em>let people run it.</em></h2>
+        <p>You decide when to add App capacity,<br>Cache and Edge.</p>
+        <p>React too late, and customer requests fail.<br>You lose sales in the game.</p>
       </div>
-      <figure><img src="../docs/images/gameplay.webp" alt="App, Cache, Edge, SQL이 연결되어 실제 트래픽을 처리하는 게임 화면"><figcaption>180초 동안 살아 있는 클라우드 구조를 운영합니다.</figcaption></figure>
+      <figure><img src="../docs/images/gameplay.webp" alt="App, Cache, Edge and SQL processing traffic in the game"><figcaption>You add the facilities and see what changes.</figcaption></figure>
     </section>
     <section class="slide" id="slide-3" aria-labelledby="title-3">
       <div class="copy">
-        <p class="eyebrow">03 / CORE LOOP</p>
-        <h2 id="title-3" tabindex="-1">예고를 보고,<br><em>먼저 준비하세요.</em></h2>
-        <ol><li>트래픽 변화를 확인</li><li>App · Cache · Edge 선택</li><li>건설과 활성화까지 기다림</li><li>가용성 · 손실 · 결과 확인</li></ol>
-        <p>180초 · 8 traffic phases · 3 sequential objectives</p>
-        <p class="small">결과를 보며 개념과 행동을 연결합니다.<br>$75K는 게임상 사업 가치이며 실제 Azure 가격이 아닙니다.</p>
+        <p class="eyebrow">03 / BLACK FRIDAY</p>
+        <h2 id="title-3" tabindex="-1">Get through<br><em>180 seconds<br>of Black Friday.</em></h2>
+        <ul><li>Start: <strong>100 req/s</strong></li><li>Traffic spikes, then bots arrive</li><li>Later: <strong>560 req/s · 40% bots</strong></li><li>Final 20 seconds: <strong>600 req/s · 45% bots</strong></li></ul>
+        <p>Eight phases, with recovery windows.<br>Build before the next wave arrives.</p>
+        <p class="small">Game money is not actual Azure pricing.</p>
       </div>
-      <div class="gallery"><figure><img src="../docs/images/warning.webp" alt="다음 트래픽 급증을 예고하는 HUD"><figcaption>다음 웨이브를 미리 확인</figcaption></figure><figure><img src="../docs/images/construction.webp" alt="추가 App 용량이 건설 중이며 아직 활성화되지 않은 상태"><figcaption>건설 중 ≠ 활성 용량</figcaption></figure></div>
+      <div class="gallery"><figure><img src="../docs/images/warning.webp" alt="HUD warning before the next traffic spike"><figcaption>Watch the next-wave warning.</figcaption></figure><figure><img src="../docs/images/construction.webp" alt="An App bay under construction before its capacity becomes active"><figcaption>Under construction ≠ active capacity</figcaption></figure></div>
     </section>
     <section class="slide" id="slide-4" aria-labelledby="title-4">
       <div class="copy">
-        <p class="eyebrow">04 / ARCHITECTURE TRADE-OFFS</p>
-        <h2 id="title-4" tabindex="-1">같은 워크로드.<br><em>다른 선택, 다른 결과.</em></h2>
-        <dl><dt>App</dt><dd>처리량 증가 · 활성화 지연 + 운영비</dd><dt>Cache</dt><dd>읽기 요청 완화 · SQL write는 그대로</dd><dt>Protected Edge</dt><dd>봇 필터링 · 정상 고객 오탐 가능</dd></dl>
-        <p>정답 하나를 외우는 게임이 아닙니다.</p>
-        <p class="small">Same workload. Different architectures. Different outcomes.</p>
+        <p class="eyebrow">04 / WHAT YOU CAN DO</p>
+        <h2 id="title-4" tabindex="-1">You decide<br><em>what to add first.</em></h2>
+        <dl><dt>App</dt><dd>More throughput · takes 8 seconds to activate</dd><dt>Cache</dt><dd>Helps eligible reads · order writes still go to SQL</dd><dt>Protected Edge</dt><dd>Blocks bots · can also reject legitimate customers</dd></dl>
+        <p>Running costs matter. More isn't always better.</p>
       </div>
-      <figure><img src="../docs/images/gameplay.webp" alt="봇 공격에 대응하는 App 3개, Cache와 Protected Edge"><figcaption>선택의 효과와 비용을 같은 실행에서 확인합니다.</figcaption></figure>
+      <figure><img src="../docs/images/gameplay.webp" alt="Three App instances with Cache and Protected Edge during a bot attack"><figcaption>Adding App capacity can leave SQL as the next bottleneck.</figcaption></figure>
     </section>
     <section class="slide" id="slide-5" aria-labelledby="title-5">
       <div class="copy">
-        <p class="eyebrow">05 / LEARN BY RETRYING</p>
-        <h2 id="title-5" tabindex="-1">결과를 보고,<br><em>다른 전략으로 다시.</em></h2>
-        <p>결과를 보면 다음 질문이 생깁니다.</p>
-        <ul><li>“App을 더 일찍 늘렸다면?”</li><li>“Cache를 먼저 설치했다면?”</li><li>“Edge 없이 버틸 수 있을까?”</li></ul>
-        <p>다음 플레이가 또 다른 실험이 됩니다.</p>
-        <p class="small">Score · Availability · Business impact<br>Player Name · Leaderboard · Play Again</p>
+        <p class="eyebrow">05 / CHECK THE RESULT, TRY AGAIN</p>
+        <h2 id="title-5" tabindex="-1">See how<br><em>your run went.</em></h2>
+        <p>Availability · lost sales · cost · score</p>
+        <p>Next time, expand App earlier.<br>Or change the order of Cache and Edge.</p>
+        <p>Meet the objective to join the leaderboard.</p>
+        <p class="small">Objectives: survive 180s → 99% availability → 99.9%</p>
       </div>
-      <figure><img src="../docs/images/result.webp" alt="9473점 성공 결과, 로컬 DEMO 순위와 다시 시도할 수 있는 조작부"><figcaption>실제 자동화 실행의 로컬 DEMO 점수 · 공개 서버의 사람 참가 결과가 아님</figcaption></figure>
+      <figure><img src="../docs/images/result.webp" alt="A 9473-point completion with a local DEMO ranking and retry controls"><figcaption>Automated local run · 24ca388 / rules 0.3 · not a human or public verified entry.</figcaption></figure>
     </section>
-    <section class="slide architecture" id="slide-6" aria-labelledby="title-6">
+    <section class="slide" id="slide-6" aria-labelledby="title-6">
       <div class="copy">
-        <p class="eyebrow">06 / ENGINEERING</p>
-        <h2 id="title-6" tabindex="-1">게임의 결과는<br><em>하나의 결정론적 엔진</em>이<br>계산합니다.</h2>
-        <p><strong>서버는 클라이언트가 보낸<br>점수를 믿지 않습니다.</strong></p>
-        <p>플레이어의 행동 기록을 다시 실행해<br>점수를 서버에서 계산합니다.</p>
-        <p class="small">닉네임 인증·완전한 anti-cheat 시스템은 아닙니다.<br>플레이 중 실제 Azure 리소스를 생성하지 않습니다.</p>
+        <p class="eyebrow">06 / HOW I'D LIKE PEOPLE TO USE IT</p>
+        <h2 id="title-6" tabindex="-1">Try it first.<br><em>Then look up<br>what puzzled you.</em></h2>
+        <p>I hope reading Microsoft Learn feels<br>more concrete after running this setup.</p>
+        <p class="small">We still need user testing to find out whether it helps.</p>
       </div>
-      <div class="architecture-map" aria-label="브라우저와 Azure API가 동일한 TypeScript 시뮬레이션을 사용한다. 행동 기록은 서버에서 검증되고 재실행되어 전역 점수를 계산한다.">
-        <div class="node"><small>BROWSER · GITHUB PAGES</small><strong>React UI + Phaser world</strong><span>플레이어 선택 · 로컬 결과</span></div>
-        <p class="connector">브라우저와 서버가 같은 엔진 사용</p>
-        <div class="shared"><small>SHARED SIMULATION</small><strong>rules + workload + economy + score</strong><span>같은 시작 상태 + 같은 행동 시점 → 같은 결과</span></div>
-        <p class="connector">행동 기록 → 검증 → 동일 엔진으로 재실행</p>
-        <div class="node"><small>AZURE APP SERVICE API</small><strong>Authoritative score → Global rank</strong><span>validate actions → replay → authoritative rank</span></div>
-      </div>
-    </section>
-    <section class="slide" id="slide-7" aria-labelledby="title-7">
-      <div class="copy">
-        <p class="eyebrow">07 / LEARNING POSITION</p>
-        <h2 id="title-7" tabindex="-1">공식 문서를 대체하는<br>것이 아니라,<br><em>이해를 위한 직관을 먼저.</em></h2>
-        <p class="lead">문서 이전의 직관<br>+ 문서 이후의 질문</p>
-        <p>Learn the concept<br>by experiencing the consequence.</p>
-        <p class="small">실제 학습 효과는 별도 사용자 검증이 필요한 가설입니다.</p>
-      </div>
-      <div class="learning-flow" aria-label="경험에서 질문으로, 질문에서 공식 문서로 이어지는 보조 학습 경험">
-        <div class="node"><small>EXPERIENCE</small><strong>선택의 결과를 본다</strong><span>“Cache를 넣으니 뭐가 달라졌지?”</span></div>
+      <div class="learning-flow" aria-label="Questions from playing that a beginner can follow up in Microsoft Learn">
+        <div class="node"><small>AFTER ADDING CACHE</small><strong>Why didn't the writes change?</strong><span>Eligible reads and order writes take different paths.</span></div>
         <p class="connector" aria-hidden="true">↓</p>
-        <div class="node"><small>QUESTION</small><strong>왜 달라졌는지 궁금해진다</strong><span>“읽기 요청이 줄어든 이유는?”</span></div>
+        <div class="node"><small>AFTER EXPANDING APP</small><strong>Why is SQL busy now?</strong><span>Check which layer is limiting the system.</span></div>
         <p class="connector" aria-hidden="true">↓</p>
-        <div class="shared"><small>DOCUMENT</small><strong>공식 문서로 개념을 정확히 이해한다</strong><span>Microsoft Learn 등 공식 자료로 연결</span></div>
+        <div class="shared"><small>WHEN YOU WANT TO KNOW MORE</small><strong>Go back to Microsoft Learn.</strong><span>Check how the real services work and how to configure them.</span></div>
       </div>
     </section>
-    <section class="slide closing" id="slide-8" aria-labelledby="title-8">
+    <section class="slide closing" id="slide-7" aria-labelledby="title-7">
       <div class="copy">
-        <p class="eyebrow">08 / FROM DOCUMENT TO EXPERIENCE</p>
-        <h2 id="title-8" tabindex="-1">개념을 읽는 것에서<br><em>선택의 결과를<br>경험하는 것으로.</em></h2>
-        <p><strong>Stack &amp; Survive</strong><br>Build. Scale. Keep the business flowing.</p>
+        <p class="eyebrow">07 / THANK YOU</p>
+        <h2 id="title-7" tabindex="-1">I wanted to make<br><em>getting started<br>a little easier.</em></h2>
+        <p><strong>Stack &amp; Survive</strong><br>Try running App, Cache and Edge<br>through Black Friday.</p>
+        <p class="small">Build. Scale. Keep the business flowing.</p>
         <p class="small">Same workload. Different architectures. Different outcomes.</p>
-        <p>당신이라면 다음 트래픽 전에<br>무엇을 바꾸시겠습니까?</p>
-        <p><a class="play-link" href="https://yeongseon.github.io/stack-and-survive/">게임 플레이 ↗</a></p>
+        <p><a class="play-link" href="https://yeongseon.github.io/stack-and-survive/">Play the game ↗</a></p>
         <p class="url">yeongseon.github.io/stack-and-survive/</p>
       </div>
-      <figure><img src="../docs/images/recovery.webp" alt="회복 구간에서 다음 전략을 준비하는 데이터센터"><figcaption>실제 캡처 24ca388 · 개인 프로젝트 · Microsoft 보증/승인 주장 없음</figcaption></figure>
+      <figure><img src="../docs/images/recovery.webp" alt="The data center in a recovery phase before the next wave"><figcaption>Give it a run and see what you'd change.</figcaption></figure>
     </section>
   </main>
-  <nav class="deck-controls" aria-label="슬라이드 탐색" hidden>
-    <button type="button" id="previous" aria-label="이전 슬라이드">← 이전</button>
-    <output id="position" aria-live="polite" aria-atomic="true">1 / 8</output>
-    <button type="button" id="next" aria-label="다음 슬라이드">다음 →</button>
-    <button type="button" id="print">인쇄 / PDF</button>
-    <a href="stack-and-survive-showcase.pdf" download>PDF 다운로드</a>
-    <a href="SPEAKER_NOTES.md">발표 대본</a>
+  <nav class="deck-controls" aria-label="Slide navigation" hidden>
+    <button type="button" id="previous" aria-label="Previous slide">← Previous</button>
+    <output id="position" aria-live="polite" aria-atomic="true">1 / 7</output>
+    <button type="button" id="next" aria-label="Next slide">Next →</button>
+    <button type="button" id="print">Print / PDF</button>
+    <a href="stack-and-survive-showcase.pdf" download>Download PDF</a>
+    <a href="SPEAKER_NOTES.md">Speaker notes</a>
   </nav>
 </body>
 </html>
