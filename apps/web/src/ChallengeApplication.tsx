@@ -13,6 +13,7 @@ import { qualifiesForLeaderboard, type RankResult } from './leaderboard';
 import { summarizeRun, type RunSummary } from './run-history';
 import { useGlobalLeaderboard } from './useGlobalLeaderboard';
 import { PlayerNameControl } from './PlayerNameControl';
+import { objectiveSummary } from './mission-brief';
 
 export function ChallengeApplication() {
   const ladder = useChallengeLadder();
@@ -94,12 +95,9 @@ export function ChallengeApplication() {
     resultContent={<details className="result-records"><summary>Run records &amp; personal best</summary>{recordPanel}</details>}
     titleContent={<section className="challenge-select" aria-label="Challenge selection">
       <label>Challenge<select aria-label="Challenge level" value={ladder.selected} onChange={e => ladder.select(Number(e.currentTarget.value))}>
-        {challengeLadder.map((level, index) => {
-          const obj = level.challenge.objective;
-          const target = obj.kind === 'availability' ? ` (≥${Number((obj.target * 100).toFixed(1))}%)` : '';
-          return <option key={level.challenge.id} value={index} disabled={index > unlockedLevel(ladder.progress)}>{index + 1}. {level.title}{target}{index > unlockedLevel(ladder.progress) ? ' — locked' : ladder.progress.completed.includes(level.challenge.canonical) ? ' — complete' : ''}</option>;
-        })}
-      </select></label><p>{selected.description} Same Black Friday workload{selected.challenge.objective.kind === 'availability' ? '; higher service objective.' : '.'}</p>
+        {challengeLadder.map((level, index) => <option key={level.challenge.id} value={index} disabled={index > unlockedLevel(ladder.progress)}>{index + 1}. {level.title} — {objectiveSummary(level.challenge)}{index > unlockedLevel(ladder.progress) ? ' — locked' : ladder.progress.completed.includes(level.challenge.canonical) ? ' — complete' : ''}</option>)}
+      </select></label><p>{objectiveSummary(selected.challenge)}</p>
+      <small className="ladder-explainer">Same {scenarioName} workload.{selected.challenge.objective.kind === 'survive' ? ' Keep the business running.' : ' Higher service objective.'}</small>
       <PlayerNameControl nickname={leaderboard.nickname} onSave={leaderboard.setNickname} optional />
     <small>Balance 0.4 · Infrastructure scaling · 10% sales reinvestment. Earlier records and unlocks stay separate.</small>
       {unlockedLevel(ladder.progress) !== ladder.selected && <button type="button" onClick={() => ladder.select(unlockedLevel(ladder.progress))}>Continue challenge</button>}

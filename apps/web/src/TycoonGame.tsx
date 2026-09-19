@@ -21,6 +21,9 @@ import { v3 } from './art-v3';
 import { OperationBanner } from './OperationBanner';
 import { createDirectorState, deriveOperationEvents, type OperationEvent } from './operations-director';
 import './player-console.css';
+import { MissionBrief } from './MissionBrief';
+import { missionBrief } from './mission-brief';
+import './onboarding.css';
 import './azure-visual-tokens.css';
 import { AzureTutorial } from './AzureTutorial';
 
@@ -135,7 +138,7 @@ export function TycoonGame({ challenge = blackFridayChallenge, titleContent, onR
   const open = (next: typeof page) => { dialogOpener.current = document.activeElement instanceof HTMLElement ? document.activeElement : null; setPage(next); dialog.current?.showModal(); };
   const runtime = view.state.runtime;
   const currentChallenge = view.challenge ?? blackFridayChallenge;
-
+  const brief = missionBrief(currentChallenge.workload);
   const enhance = () => {
     const generation = ++enhancementGeneration.current;
     if (matchMedia('(pointer: coarse)').matches) void enhanceLandscape(document.documentElement).then(message => {
@@ -170,16 +173,9 @@ export function TycoonGame({ challenge = blackFridayChallenge, titleContent, onR
       <TitleWorld />
       <div className="title-heading"><p className="title-eyebrow">A REAL-TIME CLOUD INFRASTRUCTURE GAME</p>
         <h1><span className="title-stack">STACK</span> <em>&amp;</em> SURVIVE</h1><p className="title-tagline">Build. Scale. Keep the business flowing.</p>
-        <aside className="mission-brief" aria-label="Mission brief">
-          <h2>BLACK FRIDAY</h2>
-          <p>Survive {currentChallenge.workload.duration} seconds of rising traffic.</p>
-          <dl>
-            <dt>Opening</dt><dd>{currentChallenge.workload.traffic[0].rps} req/s</dd>
-            <dt>Final wave</dt><dd>{currentChallenge.workload.traffic.at(-1)!.rps} req/s · {Math.round(currentChallenge.workload.traffic.at(-1)!.botRatio * 100)}% bots</dd>
-          </dl>
-          <p className="mission-tools">Your tools: <strong>App</strong> · <strong>Cache</strong> · <strong>Protected Edge</strong></p>
-        </aside>
+        <p className="title-description">Your customers are arriving. Make every infrastructure decision count.</p>
       </div>
+      <MissionBrief scenario={currentChallenge.workload} />
       <div className="title-bottom">{titleContent}<nav className="title-actions" aria-label="Introduction">
         <button type="button" aria-label="How to Play" onClick={() => open('how')}>How to Play<small>Learn the basics</small></button>
         <button ref={startButton} type="button" aria-label="Start Game" className="start-game" onClick={() => start()}>▶ Start Game<small>One business. {currentChallenge.workload.duration === 180 ? 'Three minutes.' : `${currentChallenge.workload.duration} seconds.`}</small></button>
@@ -197,8 +193,8 @@ export function TycoonGame({ challenge = blackFridayChallenge, titleContent, onR
       {entered && !opening && !view.result && <OperationBanner event={bannerEvent} />}
       <WorldGuide view={view} guide={guide} returnFocus={() => learnButton.current?.focus()} />
       <GameFloor controller={controller} view={view} navigation={navigation} onReady={ready} blocked={opening || orientationGate} guideTarget={guide.visible ? guideHint(view, guide.stage).target : null} />
-      {opening && !orientationGate && <div className="opening-caption" role="status" data-testid="opening-reveal"><small>YOUR DATA CENTER</small><strong>Black Friday is about to begin.</strong><span>Traffic enters left. Flows through App, Cache, SQL.</span></div>}
-      {view.countdown !== null && <div className="welcome-countdown" role="status"><small>BLACK FRIDAY OPENS IN</small><strong>{view.countdown}</strong><span className="countdown-context">Starting: {currentChallenge.workload.traffic[0].rps} req/s · Final: {currentChallenge.workload.traffic.at(-1)!.rps} req/s · {Math.round(currentChallenge.workload.traffic.at(-1)!.botRatio * 100)}% bots</span></div>}
+      {opening && !orientationGate && <div className="opening-caption" role="status" data-testid="opening-reveal"><small>{brief.name}</small><strong>Protect customers for {brief.duration} seconds.</strong><span>Traffic enters left. Flows through App, Cache, SQL. Build before waves arrive.</span></div>}
+      {view.countdown !== null && <div className="welcome-countdown" role="status"><span className="countdown-name">{brief.name} opens in</span><strong>{view.countdown}</strong><span className="countdown-forecast">Starting: {brief.opening} req/s<br />Final: {brief.final} req/s · {brief.bots}% bots</span></div>}
       {view.notice && diagnosticsEnabled && <p className="tycoon-notice">{view.notice}</p>}
       {view.result && <GameResult result={view.result} architecture={runtime.architecture} report={runReport?.result === view.result ? runReport.data : null} restart={restart} review={() => open('learn')} nextLevel={view.result.objectiveMet ? nextLevel : undefined} records={resultContent} leaderboard={leaderboardContent} />}
       {view.error && <section role="alert" className="tycoon-result"><p>{view.error}</p><button ref={rebuildButton} type="button" onClick={() => controller.recoverRenderer()}>Rebuild graphics</button><button type="button" onClick={restart}>Return to title</button></section>}
