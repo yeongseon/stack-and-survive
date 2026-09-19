@@ -4,14 +4,18 @@
   top: 120px;
   left: 50%;
   transform: translateX(-50%);
-  padding: 10px 24px;
-  border-radius: 8px;
+  padding: 10px 28px 12px;
+  border-radius: 3px 3px 12px 12px;
   text-align: center;
   pointer-events: none;
   animation: banner-enter .3s ease-out;
-  max-width: calc(100% - 48px);
-  white-space: nowrap;
+  width: max-content;
+  max-width: min(460px, calc(100% - 48px));
+  box-sizing: border-box;
+  white-space: normal;
+  box-shadow: 0 12px 28px #0005, inset 0 3px 0 currentColor;
 }
+.operation-banner small { display: block; font-size: 9px; letter-spacing: .2em; opacity: .8; margin-bottom: 5px; }
 .operation-banner strong {
   display: block;
   font-size: 16px;
@@ -70,6 +74,12 @@
 
 @media (max-width: 600px) {
   .operation-banner { top: 115px; padding: 8px 16px; }
+  .operation-banner strong { font-size: 13px; }
+  .operation-banner span { font-size: 10px; }
+}
+@media (max-height: 500px) and (orientation: landscape) {
+  .operation-banner { top: auto; bottom: 64px; max-width: min(320px, calc(100% - 32px)); padding: 6px 18px 8px; }
+  .operation-banner small { font-size: 8px; margin-bottom: 3px; }
   .operation-banner strong { font-size: 13px; }
   .operation-banner span { font-size: 10px; }
 }
