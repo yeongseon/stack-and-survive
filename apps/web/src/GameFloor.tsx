@@ -13,6 +13,7 @@ import { ScalingControls } from './ScalingControls';
 import { appTiers, resourceTier, appHorizontalScaling } from '@stack-and-survive/cloud-domain';
 import { AzureArchitecturePanel } from './AzureArchitecturePanel';
 import { AzureTrafficKey } from './AzureTrafficKey';
+import { facilityConstruction, facilityRoles } from './facility-feedback';
 
 function LocalAction({ controller, action, children }: { controller: Controller; action: ActionRequest; children: React.ReactNode }) {
   const reason = controller.actionReason(action);
@@ -89,18 +90,20 @@ export function GameFloor({ controller, view, navigation, onReady, blocked = fal
         const p = projection.resourceScreen(kind);
         const width = host.current?.clientWidth ?? 320, height = host.current?.clientHeight ?? 568;
         const art = resourceArtBounds(kind, playerBuildingScale(kind, width), true);
-        const top = p.y + (resource ? art.y : -24) * projection.effectiveZoom - (kind === 'internet' || !resource ? 38 : 76);
+        const top = p.y + (resource ? art.y : -24) * projection.effectiveZoom - (kind === 'internet' || !resource ? 38 : height < 500 ? 76 : 102);
         const pressure = kind === 'compute' ? visual.app.pressure : kind === 'database' ? visual.sql.pressure : kind === 'cache' ? visual.cache.pressure : null;
         const warning = pressure === 'warning' || pressure === 'overcapacity';
-        const pending = runtime.infrastructureChanges.find(change => change.kind === kind);
+        const construction = facilityConstruction(view, kind);
         const detail = !resource ? kind === 'cache' ? `Helps reads · Ready in ${definitions.cache.provisioning}s` : kind === 'edge' ? `Filters bots · Ready in ${definitions.edge.provisioning}s` : 'Build here +' : resource.remaining > 0 ? `Construction · ${resource.remaining}s`
           : kind === 'compute' ? `T${resourceTier(app)} · ${app.instances}/4 active${warning ? ' · ! APP pressure' : ''}`
-          : kind === 'database' ? `T${resourceTier(resource)} · ${resource.readReplicas ?? 0} read replicas · R ${view.snapshot ? Math.round(view.snapshot.requests.sql.readUtilization * 100) + '%' : '—'} / W ${view.snapshot ? Math.round(view.snapshot.requests.sql.writeUtilization * 100) + '%' : '—'}${warning ? ' !' : ''}`
+          : kind === 'database' ? `T${resourceTier(resource)} · ${resource.readReplicas ?? 0} replicas · R ${view.snapshot ? Math.round(view.snapshot.requests.sql.readUtilization * 100) + '%' : '—'} / W ${view.snapshot ? Math.round(view.snapshot.requests.sql.writeUtilization * 100) + '%' : '—'}${warning ? ' !' : ''}`
           : kind === 'internet' ? visual.internet.rateLimited ? 'Intake limited' : 'Traffic origin'
           : kind === 'edge' ? visual.edge.boost === 'active' ? 'Filtering boosted' : 'Protected ingress' : 'Read cache';
-        return <div key={kind} className={`facility-plaque${warning ? ' pressure' : ''}`} hidden={p.x < 35 || p.x > width-35 || top < 0 || top > height-50} style={{ left: p.x, top }}>
-          <strong>{({ internet: 'INTAKE', edge: 'Azure Application Gateway', compute: 'Azure App Service', cache: 'Azure Managed Redis', database: 'Azure SQL Database' })[kind]}</strong><span>{kind === 'edge' ? `Protected Edge / WAF · ${detail}` : detail}</span>
-          {pending && <span className="scaling-pending-label">{pending.type === 'SCALE_IN' ? 'DRAINING' : pending.type.includes('REPLICA') ? 'REPLICA CHANGE' : 'TIER CHANGE'} · {Math.max(0,pending.due-runtime.time)}s</span>}
+        return <div key={kind} data-facility={kind} className={`facility-plaque${warning ? ' pressure' : ''}${construction ? ' constructing' : ''}${!resource ? ' buildable' : ''}`} hidden={p.x < 35 || p.x > width-35 || top < 0 || top > height-75} style={{ left: p.x, top }}>
+          <strong>{facilityRoles[kind]}</strong>
+          {kind !== 'internet' && <small className="facility-service">{({ edge: 'Azure Application Gateway / WAF', compute: 'Azure App Service', cache: 'Azure Managed Redis', database: 'Azure SQL Database' })[kind]}</small>}
+          <span>{detail}</span>
+          {construction && <><span className="scaling-pending-label">{construction.label} · {construction.remaining === 0 ? 'Activating next tick' : `${construction.remaining}s`}</span><i className="facility-build-track"><i style={{ width: `${construction.progress * 100}%` }} /></i></>}
         </div>;
       })}
     </div>

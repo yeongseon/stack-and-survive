@@ -25,6 +25,7 @@ import { MissionBrief } from './MissionBrief';
 import { missionBrief } from './mission-brief';
 import './onboarding.css';
 import './azure-visual-tokens.css';
+import './facility-feedback.css';
 import { AzureTutorial } from './AzureTutorial';
 
 export function TycoonGame({ challenge = blackFridayChallenge, titleContent, onResult, nextLevel, resultContent, leaderboardContent, runReport }: {
@@ -57,14 +58,17 @@ export function TycoonGame({ challenge = blackFridayChallenge, titleContent, onR
     if (view.state.runtime.status === 'RUNNING' && !view.error && view.snapshot !== prevViewRef.current.snapshot) {
       const { events, next } = deriveOperationEvents(view, directorRef.current);
       directorRef.current = next;
-      if (events.length > 0) setBannerEvent(events[0]);
+      if (events.length > 0 && !hidden && !orientationGate) setBannerEvent(events[0]);
     }
     if (view.state.runtime.status === 'PREPARATION' && prevViewRef.current.state.runtime.status !== 'PREPARATION') {
       directorRef.current = createDirectorState();
       setBannerEvent(null);
     }
     prevViewRef.current = view;
-  }, [view]);
+  }, [view, hidden, orientationGate]);
+  useEffect(() => {
+    if (hidden || orientationGate || view.error || view.result || view.state.runtime.status !== 'RUNNING') setBannerEvent(null);
+  }, [hidden, orientationGate, view.error, view.result, view.state.runtime.status]);
   const [entered, setEntered] = useState(false);
   const [titleSettings, setTitleSettings] = useState(false);
   const [pauseMenuVisible, setPauseMenuVisible] = useState(false);
@@ -190,7 +194,7 @@ export function TycoonGame({ challenge = blackFridayChallenge, titleContent, onR
         <GameHUD view={view} />
       </div>
       {pauseMenuVisible && runtime.status === 'PAUSED' && !view.result && !view.error && !orientationGate && <PauseMenu sound={sound} guide={guide} onResume={() => { hidePause(); if(!gateOpen.current&&!controller.getSnapshot().error)controller.resume(); }} onInspect={hidePause} onHowToPlay={() => { helpFromPause.current=true; hidePause(); open('how'); }} onReturnToTitle={restart} />}
-      {entered && !opening && !view.result && <OperationBanner event={bannerEvent} />}
+      {entered && !opening && !orientationGate && !hidden && !view.result && !view.error && runtime.status === 'RUNNING' && <OperationBanner event={bannerEvent} />}
       <WorldGuide view={view} guide={guide} returnFocus={() => learnButton.current?.focus()} />
       <GameFloor controller={controller} view={view} navigation={navigation} onReady={ready} blocked={opening || orientationGate} guideTarget={guide.visible ? guideHint(view, guide.stage).target : null} />
       {opening && !orientationGate && <div className="opening-caption" role="status" data-testid="opening-reveal"><small>{brief.name}</small><strong>Protect customers for {brief.duration} seconds.</strong><span>Traffic enters left. Flows through App, Cache, SQL. Build before waves arrive.</span></div>}
