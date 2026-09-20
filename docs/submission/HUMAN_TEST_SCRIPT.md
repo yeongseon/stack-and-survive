@@ -4,6 +4,9 @@ Purpose: evaluate #25 comprehension, #195 game-feel/navigation and #159 voluntar
 
 **Record:** date/time ____ · build SHA ____ · URL/artifact ____ · browser/device/orientation ____ · participant unfamiliarity ____ · consent ____ · facilitator ____ · assistance provided ____.
 
+Anonymous session ID ____ · first run unaided: yes / no / incomplete ____ · first assistance time and exact words ____.
+Consent scope: observation ____ · recording ____ · anonymized quotation/publication ____. Do not record or publish beyond the granted scope; keep raw notes private and do not commit participant identities or recordings to this public repository. The participant may stop at any time.
+
 ## 1. No explanation
 Show title. Say: “Please start when ready.” Do not explain traffic, Cache, Edge or where to click. Observe first impression, attention, inputs, zoom/Fit, anticipated phases and response to pressure. Record timestamped actions and exact assistance.
 
@@ -19,6 +22,8 @@ Show title. Say: “Please start when ready.” Do not explain traffic, Cache, E
 Do not ask them to play again or what they will change next run yet. Allow them to choose after the result. Record: second attempt? ____ · voluntary or prompted? ____ · exact words/actions ____ · changed architecture/timing ____.
 
 A declined or prompted second run is **not** a voluntary-replay pass. Asking about a next attempt before observing it can bias #159; if it happened, record the prompt rather than relabeling the choice.
+
+Replay classification: voluntary / prompted / declined / not observed ____. Observation window start/end ____ · prompt time (if any) ____. Stopping early is incomplete evidence, not a decline. After the session, transfer only consented, necessary evidence to the [cohort summary](HUMAN_TEST_SUMMARY.md).
 
 ## 3. Questions after observation
 Write answers verbatim; do not teach/correct until this section is recorded.
