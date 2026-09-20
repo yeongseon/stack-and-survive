@@ -10,12 +10,12 @@
 
 **Can players cheat scores?** Local storage is user-editable and not trusted competition. The optional server resolves a supported challenge, starts from the canonical architecture and replays validated actions to compute the score. This rejects client-supplied score manipulation but does not prevent bots, optimized offline schedules or impersonation of an unverified nickname.
 
-**Is the global leaderboard live?** Answer from current deployment evidence, not repository contents. The code and deployment wiring exist; show global results only when the configured API actually responds and verifies submissions. Otherwise explicitly demonstrate local scores. The backend owner is responsible for endpoint/persistence verification.
+**Is the global leaderboard live?** The optional API exists, but the last check rejected current 0.4 hashes (#306). Demonstrate local results honestly; historical 0.3 verified rows do not verify this run. Authorized backend rollout and fresh evidence are required. See [Current status](../CURRENT_STATUS.md).
 
-**How is AI involved?** AI assisted implementation, original artwork iteration and test/document preparation. Engineering checks and screenshot review are recorded. Do not portray automated tests as human playtesting or claim generated art is licensed beyond documented decisions.
+**How is AI involved?** AI assisted implementation, original-art iteration and test/document preparation. Draft PR #316 separately implements post-run Azure OpenAI Bicep export plus curated Microsoft Learn links, but is not merged/deployed; actual model smoke is blocked on resources/settings. Do not present mocks as live AI, automated tests as human playtesting, or generated art as rights-cleared.
 
 **Educational tool or game?** A strategy game intended to make consequences understandable through play. Learning and voluntary replay are hypotheses evaluated with real participants—not established merely by passing unit tests.
 
-**Other clouds, SQL scaling or more resources?** Possible future projects, not current functionality or promised roadmap. This release deliberately keeps one workload family and a small supported action set. No scale-in, permanent FIFO, speed controls or actual Azure deployment.
+**Can you scale back down or upgrade SQL?** Yes: current App scale-in/out and tiers, SQL tiers and read replicas have delayed activation and running-cost tradeoffs. SQL starts visually compact and grows with active tier. Other clouds, functions/queues/failover, speed controls and actual provisioning remain outside current gameplay.
 
 **Why React and Phaser?** React handles accessible controls and results; Phaser renders the fixed isometric world. A headless shared simulation owns processing and economics, so camera/art changes cannot decide outcomes. See the existing Technical Story links rather than describing a second server engine.

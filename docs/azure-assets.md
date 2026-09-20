@@ -12,7 +12,7 @@ The repository retrieved it on 2026-09-12. The source guidance was checked again
 | Existing local asset | Official service / original archive suffix | Use in this change |
 |---|---|---|
 | `app-service.svg` | Azure App Service — `Icons/app services/10035-icon-service-App-Services.svg` | Application-tier identity beside full service name in node and existing world |
-| `azure-sql.svg` | Azure SQL Database — `Icons/databases/10130-icon-service-SQL-Database.svg` | Data-tier identity; fixed game SQL capacity, no scale action |
+| `azure-sql.svg` | Azure SQL Database — `Icons/databases/10130-icon-service-SQL-Database.svg` | Data-tier identity; current SQL tier/read-replica actions are game abstractions, not new icon rights |
 | `managed-redis.svg` | Azure Managed Redis — `Icons/databases/03675-icon-service-Azure-Managed-Redis.svg` | Eligible-read cache identity, not a renamed legacy Redis icon |
 | `application-gateway.svg` | Azure Application Gateway — `Icons/networking/10076-icon-service-Application-Gateways.svg` | Existing Protected Edge/WAF abstraction; no new independent Application Gateway gameplay resource |
 

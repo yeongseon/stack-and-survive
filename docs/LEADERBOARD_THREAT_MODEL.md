@@ -1,5 +1,7 @@
 # Leaderboard Threat Model
 
+Scope: merged leaderboard API, not draft Export #316. See [current deployed compatibility and draft boundary](CURRENT_STATUS.md). No AI endpoint or model credentials are present in main.
+
 ## Overview
 
 The global leaderboard accepts player action schedules, replays them through the deterministic simulation engine, and stores server-computed authoritative scores. It does not trust any score sent by the browser.
@@ -17,8 +19,8 @@ The global leaderboard accepts player action schedules, replays them through the
 | Unknown challenge | Challenge allowlist from ladder | Low | Preserve |
 | Storage corruption | Quarantine + atomic writes | Backup still needed | Automated backup |
 | Instance loss | Persistent `/home/` on App Service | Single-instance limitation | Azure-native DB later |
-| CORS bypass | Origin allowlist, no wildcard | Standard browser enforcement | Preserve |
-| IP spoofing via X-Forwarded-For | First value trusted when `TRUST_PROXY=true` | Azure infra controls header | Document limitation |
+| Cross-origin access | Origin allowlist, no wildcard response header | CORS is not auth or a server-side write guard; non-browser callers can submit | Separate authorization if needed |
+| IP spoofing via X-Forwarded-For | Socket IP unless `TRUST_PROXY=true`, then first forwarded value | Safe only when trusted proxy sanitizes client-supplied values; verify actual ingress behavior | Stronger trusted-proxy validation |
 
 ## Not in scope (Hackathon)
 

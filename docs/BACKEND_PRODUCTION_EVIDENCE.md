@@ -1,5 +1,7 @@
 # Backend Production Evidence
 
+> **Historical September 17–18 evidence, not current service readiness.** Preserve the original report below. Its older endpoint/source/test counts and 34-hour retention observations do not establish current 0.4 compatibility or an actual restart event. Later clarification leaves restart durability unverified; #306 records the configured MCAPS API rejecting current hashes. See [Current status](CURRENT_STATUS.md). The concluding original “all criteria verified” claim must be read with this correction, not used to close today's gates.
+
 Last updated: 2026-09-18T04:38Z
 
 ## Deployment

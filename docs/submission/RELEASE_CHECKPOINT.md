@@ -1,5 +1,7 @@
 # Release checkpoint
 
+> **Historical checkpoint.** Pending PRs, CORS incident and counts below are preserved evidence. Use [Current status](../CURRENT_STATUS.md): #245 is merged archived evidence, scaling arrived in #305, and today's API blocker is #306 rather than historical #260.
+
 Observed 2026-09-16 UTC (2026-09-17 KST). This is a dated handoff, not perpetual deployment status or final submission approval. Recheck before presenting.
 
 ## Merged and deployed client

@@ -4,9 +4,13 @@
 
 The existing shared runtime now supports deterministic App shrink/tier changes, SQL tier changes and SQL read replicas; [details](INFRASTRUCTURE_SCALING.md). Optional additive resource tier/replica fields survive parse/replay/history. One strict action parser is shared by runtime validation, saved action parsing, pending-submission validation and backend submission. Current challenge identity is version2/rules0.4; old rules retain distinct exports and storage keys.
 
-Rendering reads pending changes and active resource state only. Optional tier textures are discovered through the existing V3 inventory and fall back to required base textures. Computer3 owns image sources/exports; Computer1 does not modify `art/**` or public assets. The backend replay build must be updated before releasing the new frontend to avoid unsupported-challenge responses from a0.3 API.
+Rendering reads pending changes and active resource state only. Optional tier textures use the V3 inventory and fall back to required base textures. `activeBuildingScale` applies SQL's active-tier 58/78/100% size consistently to sprites, anchors, lighting and hit bounds. Source supports 0.4 replay, but the configured production API still rejects current hashes (#306); source support is not deployment proof.
 
-Version: 1.1. Browser-local TypeScript/React/Phaser, with an owner-authorized static GitHub Pages demo. No game backend or outbound product telemetry. Public source and demo hosting do not imply general release rights approval.
+Version: 1.2. Reviewed main `c68ec0c`: browser-local game state with an optional Node HTTP replay-verifying leaderboard API on Azure App Service. No server controls live simulation and no product analytics are added. Public source/demo hosting do not imply rights approval. [Current status](CURRENT_STATUS.md) separates actual Pages deployment, incompatible deployed API and unmerged work.
+
+### Draft-only post-run AI boundary
+
+PR #316 implements Export to Azure and curated Microsoft Learn links on its own branch, not this merged runtime. Finished-run numbers go through a server-only Azure Responses proxy to validated Bicep/reasons for copy/download. It does not execute Bicep or affect gameplay, score, replay or storage. Static Learn URLs are curated, not generated. Real model output is unverified because AI resources/settings were absent; offline compiled fixtures and green branch CI do not prove a live service. Keep AI Coach separate. `/api/export-bicep` and `ai` health fields are not current main endpoints.
 
 ## Architecture
 
@@ -50,7 +54,7 @@ Normal player disables architecture persistence/manual edits. The QA shell is a 
 
 `scenarios/challenge` (#153) owns immutable validated conditions, deterministic canonical identity and survive/availability objective evaluation. `createController` accepts an optional fourth challenge input (default Black Friday); its View and terminal result retain that challenge. Controller simulation calls, player HUD/pressure/guide, events and result labels use the injected workload. Terminal results additionally retain the actual initial architecture and ordered action outcomes, so replay does not start from the upgraded final architecture. Comparisons reject unlike complete challenge conditions and mixed legacy/new identity.
 
-`ChallengeApplication` offers the approved three-objective ladder with separate validated local completion progress. `useRunHistory` records terminal results once and handles storage failures without interrupting gameplay. `run-history.ts` retains 20 recent attempts plus independent eligible bests, validates full provenance by engine replay at load/write boundaries, and compares only exact challenge conditions. Resetting records does not reset progression or other settings. See [Run history](RUN_HISTORY.md); profiles and richer replay results remain #157/#158.
+`ChallengeApplication` offers the three-objective ladder with separate validated local progress. `useRunHistory` records terminal results once and handles storage failure without interrupting play. `run-history.ts` retains 20 attempts plus eligible bests, validates provenance by replay and compares exact conditions, using balance-0.4 keys. Resetting records does not reset progression/settings. Descriptive profiles and richer result/comparison UI (#157/#158) are implemented; see [Run history](RUN_HISTORY.md) and [Operation report](OPERATION_REPORT.md).
 
 ## Renderer and coordinates
 
@@ -90,6 +94,6 @@ Quality CI checks templates/static/unit/build, both browser modes and the projec
 
 ## Security and deferred architecture
 
-No secrets, customer telemetry or private platform information belongs in client code. The public repo has licensing/security review tracked in #164; public visibility is not policy clearance. GitHub Pages serves the approved static demo; there is no game backend, outbound product analytics or broader hosted production service beyond that exception.
+No secrets, customer telemetry or private platform information belongs in client code. #164 tracks rights; public visibility is not clearance. Pages serves the approved static frontend; the optional API handles replay verification and persistent ranking, not game state. Current backend compatibility is blocked (#306). No outbound product analytics or AI call exists in main. Cloud operations require separate authorization.
 
-Protocol/observability packages, Azure Static Web Apps/Functions/Container Apps/Redis/Cosmos and online features are future options requiring concrete need and approval. Do not provision services to make a cloud-themed game appear more cloud-native.
+Additional protocol/observability packages and alternate hosting/storage require concrete need and approval. The existing leaderboard is not a future-only feature. Export/AI remains draft-only as described above; no cloud provisioning follows from a UI or documentation change.

@@ -1,5 +1,7 @@
 # Reproducible capture plan
 
+This full-run screenshot workflow is distinct from `scripts/capture-tradeoff.mjs`, which produces the continuous short 0.4 SQL decision clip. Existing committed walkthrough images remain `24ca388` historical captures; do not relabel them after code changes. [Current status](../CURRENT_STATUS.md) identifies the release and media versions.
+
 Run `pnpm capture:submission` from the repository root. It builds ordinary production and starts its own loopback preview/browser. Allow roughly five minutes for the unaccelerated successful run, a separate real overload run and capture overhead. Output is ignored under `test-results-submission/<timestamp>/`.
 
 The script operates the existing Start, one-click building controls and leaderboard UI. It does not modify engine state, inject metrics, add a demo mode or advance synthetic ticks. Actions are triggered by observed next-phase countdowns. Captures are actual states, but wall-clock scheduling means exact request ticks can vary slightly; the saved action history is the source of exact replay. A missed milestone must fail the capture rather than be relabeled.

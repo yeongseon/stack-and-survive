@@ -1,5 +1,7 @@
 # Global Leaderboard - Demo Technical Evidence
 
+> This source-architecture and historical deployment checklist is not a current live-service verification. The configured origin is now `https://stack-survive-mcaps-ychoe.azurewebsites.net`, with current 0.4 support blocked in #306. The deployment table below records the earlier endpoint; retention is not restart proof. See [Current status](CURRENT_STATUS.md) before presenting.
+
 ## Architecture
 
 ```
@@ -82,7 +84,7 @@ Azure App Service Leaderboard API
 | Persistence | App Service `/home/` | Azure-managed | Azure-managed |
 | Multi-replica safety | No | Yes | Yes |
 | Query/ranking | In-memory sort | Partition + sort key | SQL-like queries |
-| Cost | Free (App Service) | Very low | Low-moderate |
+| Cost | Uses the existing App Service plan; not inherently free | Depends on actual usage/tier | Depends on actual usage/tier |
 | Deployment complexity | Minimal | Moderate | Moderate |
 | Migration effort | N/A | Medium | Medium |
 

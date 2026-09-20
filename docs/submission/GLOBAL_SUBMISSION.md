@@ -8,14 +8,16 @@ This is a review-ready draft, **not a completed submission or verified event-com
 - [Repository and illustrated overview](https://github.com/yeongseon/stack-and-survive)
 - [English presentation and PDF](../../showcase/README.md)
 - [English speaker notes, short version and Q&A](../../showcase/SPEAKER_NOTES.md)
-- [Two-minute video and English narration](../DEMO_VIDEO.md)
+- [Current 53.4-second tradeoff clip and historical two-minute overview](../DEMO_VIDEO.md)
 - [Screenshot walkthrough](../PLAYER_GUIDE.md)
 - [Technical explanation](../SUBMISSION_TECHNICAL_NOTES.md)
 - [Demo fallback](DEMO_FALLBACK.md) and [known limitations](KNOWN_LIMITATIONS.md)
 
-The deck is seven slides with no standalone implementation-architecture slide. Technical detail remains in the Q&A and linked documentation. The video is a separate silent 120-second edit of two real runs; it is not a recording of the spoken presentation.
+The deck is seven slides with no standalone architecture slide. Choose either the current-feature 53.4-second continuous automated clip (final review paused, not a completed operation) or the historical silent 120-second edit of two runs. Neither is a recording of the spoken presentation. Captures retain exact provenance; current-feature media is not evidence of a current live AI service.
 
 Read the [dated release handoff](HACKATHON_HANDOFF.md) before presenting: rules 0.4 are implemented, but production API compatibility is blocked in #306. Historical media does not prove the current global leaderboard works.
+
+[Current status](../CURRENT_STATUS.md) is the latest authority. Export to Azure and curated Microsoft Learn result links are implemented only in draft #316; do not list them as deployed capabilities or demonstrate mocked output as live AI. Real model configuration/compilation and human review remain pending.
 
 ## One-sentence pitch
 
