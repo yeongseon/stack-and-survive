@@ -22,6 +22,21 @@ The global leaderboard accepts player action schedules, replays them through the
 
 ## Not in scope (Hackathon)
 
+### AI export endpoint
+
+`POST /api/export-bicep` is a post-run text-generation boundary. Export metrics are not replay-verified and never update scores/records.
+
+| Threat | Mitigation | Residual risk |
+|---|---|---|
+| Cost/quota burn | Separate 5/IP/min, 20 KB UTF-8 body, 25 s upstream timeout, 2500 output tokens | No auth/global quota: rotated IPs can consume quota; operator spending/capacity controls remain necessary |
+| Prompt injection | No player free text; allowlisted challenge/cause/action tokens and canonical tier fields; extra fields rejected | HTTP input remains untrusted; numeric claims can be forged; not replay verification |
+| Unsafe/generated misinformation | Strict JSON schema plus structural/mapping/credential filters; client validation; escaped text | Numeric-token checks do not prove grounding or deployability; human review required |
+| Secret exposure | Server-only settings; sanitized errors; redirects denied; no request/output logging | Provider retention/abuse monitoring follows Azure policy |
+| Stored model/player state | `store:false`, no conversation ID, no export persistence/telemetry | Existing request counter and platform/provider operational logs remain separate |
+| Cross-origin cost abuse | Allowlist and reject disallowed Origin before AI call | CORS is not auth; non-browser callers can omit/spoof Origin |
+
+Only mandatory resource-declaration `@API-version` is allowed; URLs/modules/scripts/credential-looking Bicep are rejected. The inert parameters JSON schema URL is separately allowlisted. Returned code is never run. SQL uses Entra-only administrator parameters, with no generated credentials. GP read replicas require a caveat rather than unsupported `readScale`.
+
 The following are explicitly out of scope and should not be added before submission:
 
 - Login / OAuth / accounts
