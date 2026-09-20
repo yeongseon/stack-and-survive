@@ -37,6 +37,6 @@ Names without paths/extensions in the table refer to `docs/<name>.md`. “Covere
 
 ## Ongoing maintenance
 
-Link-check result: 94 Markdown files and 394 local links checked; the one obsolete ADR anchor was repaired. No missing local targets or unresolved checked Markdown anchors remain. No remote availability or legal approval is inferred from this local check.
+Link-check result: 94 Markdown files and 395 local links checked; the one obsolete ADR anchor was repaired. No missing local targets or unresolved checked Markdown anchors remain. No remote availability or legal approval is inferred from this local check.
 
 Update `CURRENT_STATUS.md` when implementation merges or a new actual deployment/service check changes evidence. A docs-only commit after `c68ec0c` does not change that runtime baseline. Feature-specific contracts own details; the status page owns delivery state. When #316 merges, reconcile its overlapping docs rather than preserving contradictory “draft” and “live” statements. Human/audio/rights/event gates stay open until their own required evidence exists.
