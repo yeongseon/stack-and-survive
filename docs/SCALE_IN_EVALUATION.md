@@ -1,5 +1,7 @@
 # Runtime App scale-in — evaluation only (#132)
 
+> **Archived proposal, not current rules.** #132 closed not planned; separate owner-approved #305 later implemented App scale-in (3s, minimum one, no refund), App/SQL tiers and SQL read replicas. Use [Infrastructure Scaling](INFRASTRUCTURE_SCALING.md). Original alternatives/approval language below are historical, not today's controls or an open #132.
+
 Status: proposal for later approval, outside the visual P0. No code, new action, new balance constants or player controls are authorized by this document. Revisit after real first-time-player evidence (#25).
 
 ## Decision to evaluate
