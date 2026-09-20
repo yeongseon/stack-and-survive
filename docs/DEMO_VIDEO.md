@@ -1,5 +1,7 @@
 # Stack & Survive — demo video
 
+[Current status](CURRENT_STATUS.md) distinguishes deployed `c68ec0c`, local recording sources below and unmerged AI Export/Learn #316. The 0.4 clip's inspector fix is incorporated through #319; the video still records its original `ff93cd6` local run, not a new public-site recording.
+
 [Back to README](../README.md) · [Play the game](https://yeongseon.github.io/stack-and-survive/)
 
 ## Current rules 0.4: the bottleneck tradeoff

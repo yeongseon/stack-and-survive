@@ -1,5 +1,7 @@
 # Demo fallback
 
+Current reference: [implementation/release status](../CURRENT_STATUS.md). Both reviewed MP4 files can be downloaded from [Demo video](../DEMO_VIDEO.md); preserve which is current-feature local capture versus historical edited overview. API #306 currently rejects 0.4; draft AI Export is not a fallback service.
+
 1. Verify the project entry `https://yeongseon.github.io/stack-and-survive/` and note any inherited account-domain redirect. Do not change account-wide DNS to repair a project link.
 2. Confirm the exact main Quality run succeeded **and** its Pages deploy job executed successfully. A skipped stale-main job can have a successful workflow conclusion without publishing anything.
 3. If network/API is unavailable, describe the board as **local scores**. The browser game does not require the optional leaderboard server. Never fake a server badge or successful global submission.
