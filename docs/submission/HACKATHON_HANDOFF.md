@@ -1,5 +1,9 @@
 # Hackathon handoff — 2026-09-19 UTC
 
+## Current authority — 2026-09-21
+
+Use [Current status](../CURRENT_STATUS.md): deployed `c68ec0c`, exact-main Quality 35517501080 and actual Pages build/deploy 35522927900 passed. #318/#319 delivered service-guide wording, inspector bounds, current-feature clip and participant preparation. Dated updates below retain their own source/counts, not today's backlog. Export/Learn draft #316 is not deployed; API #306 and human/audio/rights/event gates remain open.
+
 ## Update — 2026-09-20 UTC
 
 Latest verified released runtime at this update: **`4c3e1e7` (#312)**. Exact-main [Quality 35482554523](https://github.com/yeongseon/stack-and-survive/actions/runs/35482554523) and actual Pages [build + deploy 35486222214](https://github.com/yeongseon/stack-and-survive/actions/runs/35486222214) passed. Public pointer checks verified App 1→2→1 and App/SQL tier 1→2, with zero page errors and no public score POST. There are 672 passing unit tests at that checkpoint. #307/#308/#311 and PRs #309/#310/#312 are delivered; their old pending statements below are historical.
