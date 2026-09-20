@@ -1,6 +1,6 @@
 # Licensing and Rights Status
 
-Current status of asset rights and code licensing decisions tracked in #164.
+Asset rights and code licensing decisions tracked in #164 remain unresolved at the [current checkpoint](CURRENT_STATUS.md). This documentation refresh makes no new license selection or legal decision. Prior secret-scan counts below are dated observations, not a guarantee of no exposed secret.
 
 ## Asset Inventory Summary
 
