@@ -2,6 +2,8 @@
 
 ## Overview
 
+This describes merged source, not production compatibility. The configured MCAPS API still rejects the current 0.4 hash (#306); [Current status](CURRENT_STATUS.md) owns dated deployment evidence. Export to Azure and Learn links remain in unmerged draft #316, independent of this replay flow.
+
 Stack & Survive uses a **server-verified leaderboard** where the browser never sends a trusted score. The server replays the player's infrastructure decisions using the same deterministic simulation engine that powers the game.
 
 ## Flow
@@ -81,7 +83,7 @@ Challenges are identified by their content hash (`contentHash`), which includes:
 - Full workload specification (duration, budget, traffic phases, targets)
 - Objective definition
 
-Balance version 0.2 and 0.3 runs are naturally separated because the content hash includes `rulesVersion`.
+Rules 0.2/0.3/0.4 identities are separated by `rulesVersion` and complete challenge content. Current API source allowlists the 0.4 ladder plus legacy 0.3 ladder; preserving 0.2 engine fixtures does not mean the API accepts arbitrary 0.2 submissions.
 
 ## Ranking
 
@@ -117,7 +119,7 @@ No authentication, user accounts, device IDs, IP addresses, or personal data bey
 
 Runs are deduplicated by `challengeContentHash + clientRunId`. The browser generates a UUID for each completed run. This means:
 
-- The same player retrying submission of a completed run is rejected (same clientRunId)
+- An identical retry returns the existing entry/rank with HTTP 200; no duplicate is created. Reusing the ID with a different nickname or action digest returns 409.
 - Two different players who happen to make identical infrastructure decisions are both accepted (different clientRunIds)
 - `actionDigest` is retained as provenance metadata but is NOT the duplicate key
 
