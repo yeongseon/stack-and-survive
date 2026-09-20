@@ -1,0 +1,26 @@
+import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+import { createHash } from 'node:crypto';
+import { execFileSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
+
+const directory = new URL('../docs/media/', import.meta.url);
+const manifest = JSON.parse(await readFile(new URL('scaling-tradeoff.json', directory), 'utf8'));
+const movie = new URL('scaling-tradeoff.mp4', directory);
+assert.equal(manifest.status, 'complete'); assert.deepEqual(manifest.errors, []);
+assert.equal(manifest.leaderboardPosts, 0);
+assert.match(manifest.sourceCommit, /^[a-f0-9]{40}$/);
+assert.equal(createHash('sha256').update(await readFile(movie)).digest('hex'), manifest.movie.sha256);
+const before = manifest.observations.find(item => item.name === '04-sql-bottleneck');
+const after = manifest.observations.find(item => item.name === '06-same-demand-recovered');
+assert.equal(before.readouts.traffic, '260 req/s'); assert.equal(after.readouts.traffic, before.readouts.traffic);
+assert.match(before.card, /Reads: 116%/); assert.match(after.card, /Reads: 69%/);
+assert.equal(before.readouts.availability, '89.2%'); assert.equal(after.readouts.availability, '100.0%');
+assert.equal(before.readouts['lost-sales'], '$56/s'); assert.equal(after.readouts['lost-sales'], '$0/s');
+const probe = JSON.parse(execFileSync('ffprobe', ['-v', 'error', '-show_format', '-show_streams', '-of', 'json', fileURLToPath(movie)], { encoding: 'utf8' }));
+assert.equal(probe.streams.length, 1); assert.equal(probe.streams[0].codec_name, 'h264');
+assert.equal(probe.streams[0].width, 1440); assert.equal(probe.streams[0].height, 1000);
+assert.equal(Number(probe.format.duration), manifest.movie.duration);
+assert.ok(manifest.movie.duration > 40 && manifest.movie.duration < 90);
+execFileSync('ffmpeg', ['-hide_banner', '-loglevel', 'error', '-i', fileURLToPath(movie), '-f', 'null', '-'], { stdio: 'inherit' });
+console.log(`PASS ${manifest.movie.duration}s video, SHA256, source, observed tradeoff, no score POST and complete decode`);
