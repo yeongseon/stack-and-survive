@@ -1,5 +1,13 @@
 # Hackathon handoff — 2026-09-19 UTC
 
+## Update — 2026-09-20 UTC
+
+Latest verified released runtime at this update: **`4c3e1e7` (#312)**. Exact-main [Quality 35482554523](https://github.com/yeongseon/stack-and-survive/actions/runs/35482554523) and actual Pages [build + deploy 35486222214](https://github.com/yeongseon/stack-and-survive/actions/runs/35486222214) passed. Public pointer checks verified App 1→2→1 and App/SQL tier 1→2, with zero page errors and no public score POST. There are 672 passing unit tests at that checkpoint. #307/#308/#311 and PRs #309/#310/#312 are delivered; their old pending statements below are historical.
+
+**New presentation evidence:** [53.4-second rules 0.4 bottleneck clip and transcript](../DEMO_VIDEO.md#current-rules-04-the-bottleneck-tradeoff), recorded from candidate `ff93cd6` (the deployed source plus #314 inspector layout correction). It shows actual 260 req/s demand, SQL reads 116%→69%, current-tick availability 89.2%→100%, losses $56/s→$0/s and the higher SQL cost. The local capture is not deployment or human acceptance; its manifest discloses source and workspace state. Use it to explain one tradeoff, not as evidence of completing a full operation.
+
+The existing 120-second video and slide screenshots remain explicitly historical. Use the [blank cohort summary](HUMAN_TEST_SUMMARY.md) after real participant observations; no participant data or learning claim has been added. Current API #306 was rechecked and still returns 400 `Unsupported challenge`. Rights, actual listening, official event criteria and final submission remain unresolved. The September 19 checkpoint below is retained, not silently rewritten as current evidence.
+
 **Software and presentation preparation, not completed event submission or human acceptance.** This checkpoint supersedes older pending-merge statements, not their historical evidence. Live status can change: verify the exact commit and actual deploy job before presenting.
 
 ## Judge-facing materials
