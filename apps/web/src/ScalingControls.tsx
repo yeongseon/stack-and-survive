@@ -30,10 +30,10 @@ export function ScalingControls({ resource, view, controller }: { resource: Reso
       : <p>Primary ×1 · Read replicas {resource.readReplicas ?? 0}/{readReplica.maximum}</p>}
     <output className="scaling-status" aria-live="polite">{queued ? 'Request queued · starts next tick' : construction ? `${pending?.type === 'SCALE_IN' ? 'Draining last App bay' : pending?.type.includes('REPLICA') ? 'Changing read replicas' : pending ? 'Changing tier' : 'Expanding App'} · ${construction.remaining > 0 ? `${construction.remaining}s remaining` : 'Activating next tick'}` : 'No change pending'}</output>
     <div className="scaling-action-grid">{actions.map(({ label, name, detail, request }) => {
-      const reason = controller.actionReason(request);
+      const reason = view.state.runtime.status === 'PREPARATION' ? 'Available when opening traffic starts.' : controller.actionReason(request);
       const description = `${id}-${request.type}`;
       return <div key={request.type} className="scaling-action">
-        <button type="button" aria-label={label} aria-describedby={description} disabled={reason !== null} onClick={() => controller.queueAction(request)}><strong>{name}</strong><span>{label}</span></button>
+        <button type="button" aria-label={`${name} · ${label}`} aria-describedby={description} disabled={reason !== null} onClick={() => controller.queueAction(request)}><strong>{name}</strong><span>{label}</span></button>
         <small id={description}>{reason ? formatMoneyReason(reason) ?? reason : detail}</small>
       </div>;
     })}</div>
