@@ -1,6 +1,6 @@
 # Replayability design
 
-Version: 0.2. Epic #152. Micro/run fundamentals, the approved objective ladder and local records are implemented; profiles, richer replay results and P1 systems remain planned. Concrete challenge schemas belong to [Challenge System](CHALLENGE_SYSTEM.md); measured strategies to [Strategy Balance](ARCHITECTURE_STRATEGY_BALANCE.md).
+Version: 0.3. Epic #152's identity/ladder/history/profiles/result comparisons are implemented. Only actual voluntary replay acceptance (#159) remains; #160–#163 are closed not planned. [Challenge System](CHALLENGE_SYSTEM.md) owns schemas; [Strategy Balance](ARCHITECTURE_STRATEGY_BALANCE.md) preserves version-specific evidence.
 
 > Can I build a better architecture for the same workload?
 
@@ -9,8 +9,8 @@ Version: 0.2. Epic #152. Micro/run fundamentals, the approved objective ladder a
 | Loop | Desired cycle | Current state |
 |---|---|---|
 | Micro | Traffic → pressure → decision → accepted delay → visible consequence | Implemented; improvement depends on actual workload, not guaranteed |
-| Run | Start → growth → survive/fail → result → compare → retry/next | Start/result/fresh retry, eligible next level and records implemented; richer comparisons planned |
-| Meta | Challenge → clear → personal best → new constraint → new strategy | Three-objective ladder and local bests implemented; profiles and P1 modifiers planned |
+| Run | Start → growth → survive/fail → result → compare → retry/next | Implemented outcome report, compatible comparisons, fresh retry, eligible next level and records |
+| Meta | Challenge → clear → personal best → new objective → new strategy | Three-objective ladder, local bests and descriptive profiles implemented; modifiers not current scope |
 
 An illustrative 10–20s decision cadence is a playtest hypothesis, not a timer to force decisions or fabricate incidents. Current simulation duration is 180s. Progression should change constraints, not grant permanent capacity/cache/stat bonuses.
 
@@ -18,7 +18,7 @@ An illustrative 10–20s decision cadence is a playtest hypothesis, not a timer 
 
 After identity and strategy calibration: a small deterministic ladder, compatible-run personal bests/history, evidence-based profiles and result CTAs that encourage a new experiment. #153→#154→#155→#156→#157→#158→#159 is the execution dependency chain. Preserve the current default workload unless an approved versioned content change is required.
 
-Profiles describe, not rank, behavior. Scale-oriented, cache-oriented, protected and balanced are candidate categories, not selected pre-run classes. Labels such as late scaler require actual accepted-action timing; efficiency needs measured outcomes, not just presence of Cache. Define deterministic thresholds/ties and a mixed/unknown fallback before implementation. No invented quality stars or universal best profile.
+Implemented profiles describe, not rank, behavior: Emergency bridge, Cache-first protection, Layered capacity, Cache-led expansion and mixed/unclassified fallbacks. [Architecture Profiles](ARCHITECTURE_PROFILES.md) owns precedence/evidence. No inferred efficiency or late-scaler label follows merely from installed resources; no invented quality stars or universal best profile.
 
 ## Results and local records
 
@@ -30,7 +30,7 @@ Show actual completion/objective result, architecture evidence, compatible previ
 
 Objectives/modifiers vary a workload under deterministic rules; boss tests expose specific weaknesses; UTC daily challenges share dated conditions for the same content version; collections reflect actual discovered profiles without permanent power. Achievements or flow streaks remain optional candidates, not required new systems. If a streak is later approved, it must describe actual time above an objective threshold rather than replace architecture outcomes.
 
-Do not add accounts, multiplayer, leaderboards, gacha, premium currencies, artificial waits, inventory or dozens of services to create superficial progression.
+The optional replay-verifying leaderboard was separately authorized and implemented; it is not a progression gate. Do not add accounts, multiplayer, gacha, premium currencies, artificial waits, inventory or dozens of services merely to create superficial progression.
 
 ## Human gate
 
