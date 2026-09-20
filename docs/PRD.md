@@ -1,6 +1,6 @@
 # Stack & Survive — Product Requirements
 
-Version: 1.2. Reviewed merged baseline: PR #253 / `9421e74`. [Simulation](SIMULATION_SPEC.md) owns numerical truth; [Gameplay](GAMEPLAY_SPEC.md) owns current controls; [Roadmap](PRODUCT_ROADMAP.md) owns future scope. Camera/direct-world interaction, V3 art, balance0.3 and Settings/Pause are delivered. The [release checkpoint](submission/RELEASE_CHECKPOINT.md) distinguishes deployed evidence from the local mission-HUD follow-up and remaining human gates.
+Version: 1.3. Reviewed merged baseline: `c68ec0c`, rules 0.4. [Simulation](SIMULATION_SPEC.md) owns numerical truth; [Gameplay](GAMEPLAY_SPEC.md) owns current controls; [Roadmap](PRODUCT_ROADMAP.md) owns future scope. [Current status](CURRENT_STATUS.md) distinguishes implemented/deployed features, draft-only work and human gates.
 
 > Build. Scale. Keep the business flowing.
 >
@@ -16,17 +16,17 @@ A browser-local real-time infrastructure-management game for developers, enginee
 |---|---|
 | Entry | Decorative title, Start Game, How to Play, About, Settings; landscape gate, whole-map reveal and five-second countdown |
 | Baseline | Fixed Internet, active App1 and SQL; absent Cache/Edge pads |
-| Expansion | App scale-out to four; one-time live Cache/Edge installation; automatic supported routing |
+| Scaling | App 1–4 instances and three tiers; SQL three tiers and 0–2 read replicas; one-time Cache/Edge installation; automatic supported routing |
 | Interventions | Intake rate-limit toggle and once-per-run active-Edge filtering boost |
 | Feedback | Physical active/empty/construction bays, real routed packets, bounded pressure, served-business feedback |
-| Information | Upgrade Funds/demand/availability/pressure/lost sales/next wave; Learn for explanations, objectives, events and metrics; local mission-progress follow-up is recorded separately in the checkpoint |
+| Information | Mission clock/phase/objective/risk, Upgrade Funds/demand/availability/pressure/lost sales/next wave; Learn help and Azure service guide; visible App/SQL scaling entry points |
 | Guidance and sound | Skippable contextual world guide; default-muted optional synthesized audio and supported opt-in haptics, with manual acceptance still pending |
 | Outcome | Operation report with engine cause/score/NBV/availability, descriptive profile, compatible prior/best comparisons and next experiment; eligible Next level or Play again / Review business |
 | Retry | Fresh baseline via title, not persistent upgraded infrastructure |
 | Content | Approved three-objective ladder on the same deterministic 180-second Black Friday workload; no new workload families |
 | Local records | Up to 20 recent attempts, separate objective-valid personal bests per exact challenge, browser-local progress; no permanent capacity bonuses |
 
-Normal play has no free placement/wiring, initial-instance form, architecture save/restore, resource deletion, scale-in or SQL upgrade. The manual editor and saved architecture editing remain QA/development tools; ordinary play has validated local history/comparison without restoring upgraded infrastructure. The canonical landscape world supports zoom/pan/Fit and single-action direct expansion, with semantic keyboard equivalents and resource cards. [Gameplay](GAMEPLAY_SPEC.md) defines the separation.
+Normal play has no free placement/wiring, initial-instance form, architecture save/restore or resource deletion. Rules 0.4 expose App scale-in/out and App/SQL tier changes plus SQL read-replica changes through bounded resource cards; [the scaling contract](INFRASTRUCTURE_SCALING.md) owns costs and delays. The manual editor remains QA-only. Ordinary play has validated local history/comparison without restoring upgraded infrastructure, camera zoom/pan/Fit and keyboard/touch equivalents.
 
 ## Product principles
 
@@ -54,10 +54,10 @@ The #197/camera foundation and #199/#200/#201 interaction slices are delivered, 
 
 Production-quality #144–#150 software and replayability #153–#158 are delivered; #149 manual audio/haptics and #159 replay evidence remain open. #152 remains for #159. Existing human gates are not accepted merely because software is merged.
 
-Objectives/modifiers, workload families, daily challenges, discoveries (#160–#163) and scale-in #132 are closed not planned for this Hackathon. Passing a human gate does not automatically reopen them. SQL upgrades, queues, functions, asynchronous processing, replication and failover are not current mechanics. New work requires separate approved contracts; examples are not implementation authorization.
+Objectives/modifiers, workload families, daily challenges and discoveries (#160–#163) remain closed not planned. Historical scale-in proposal #132 remains closed, but separate approved #305 implemented App scale-in, SQL tiers and read replicas in rules 0.4. Persistent queues, functions, asynchronous processing, replication failover and additional workload families are not current mechanics. Draft #316 implements AI only as post-run text export/explanation and curated Learn links; it is not merged or available in the deployed game and does not merge AI Coach.
 
 ## Exclusions and distribution
 
-No paid asset dependencies, gacha, energy/stamina, premium currency, permanent capacity bonuses, accounts, multiplayer, real Azure provisioning by gameplay, AWS/GCP expansion, camera rotation or full 3D in current scope. The optional replay-verifying leaderboard API is a separate backend-owner service; #260 is closed and PR #261 merged. Current operational evidence and remaining submission/persistence gates are in [final release readiness](submission/FINAL_RELEASE_READINESS.md), not implied by client gameplay work. New hosting/telemetry require separate authorization; the GitHub Pages demo is owner-authorized under the [exact-inventory exception](PAGES_DEMO_EXCEPTION.md).
+No paid asset dependencies, gacha, energy/stamina, premium currency, permanent capacity bonuses, accounts, multiplayer, real Azure provisioning by gameplay, AWS/GCP expansion, camera rotation or full 3D in current scope. The optional replay API is separate from the local game; current deployed 0.4 compatibility is blocked in #306 despite merged source support. [Current status](CURRENT_STATUS.md) owns operational and draft-AI boundaries. New hosting/telemetry require separate authorization; Pages remains under the [exact-inventory exception](PAGES_DEMO_EXCEPTION.md).
 
 The repository is public by owner request, with no project-wide OSS license selected. #164 tracks code/art licensing and employer/Hackathon/third-party obligations. Official Azure icons remain unchanged separate identifiers with their own terms. No endorsement, affiliation or rights clearance is implied.

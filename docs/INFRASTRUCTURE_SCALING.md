@@ -38,7 +38,7 @@ One pending infrastructure change per facility: horizontal App expansion conflic
 
 ### Deployment boundary
 
-The currently deployed API may only support0.3. Deploy the matching0.4 replay backend **before** releasing the new client; verify its new challenge hash and successful local-test replay. Do not POST fabricated demo scores into the public board. An older API rejecting0.4 must leave local results working. This implementation task does not provision a model or change cloud subscriptions.
+The 0.4 frontend has shipped, but the configured MCAPS API was actually observed returning 400 `Unsupported challenge` for its hash (#306). The server-first rollout prerequisite was not satisfied operationally: deploy compatible merged replay code through an authorized path and verify current/legacy hashes. Do not POST fabricated demo scores. Local results remain available. [Current status](CURRENT_STATUS.md) records the deployment-access and separate draft-AI boundaries.
 
 ## Balance evidence
 
