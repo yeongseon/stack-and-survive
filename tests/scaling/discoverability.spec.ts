@@ -28,6 +28,12 @@ for (const width of [1440, 667]) {
     await page.screenshot({ path: info.outputPath('compact-sql-and-controls.png') });
     await activate('Manage App scaling');
     const card = page.getByRole('region', { name: 'Resource actions', exact: true });
+    const panelBounds = (await card.boundingBox())!;
+    expect(panelBounds.y + panelBounds.height).toBeLessThanOrEqual(page.viewportSize()!.height);
+    const bodyBounds = (await card.locator('.scaling-controls').boundingBox())!;
+    expect(bodyBounds.width).toBeGreaterThan(220);
+    const closeBounds = (await card.getByRole('button', { name: 'Close resource', exact: true }).boundingBox())!;
+    expect(bodyBounds.y).toBeGreaterThanOrEqual(closeBounds.y + closeBounds.height);
     await expect(card.getByRole('button', { name: 'Scale in · − Instance', exact: true })).toBeDisabled();
     await expect(card.getByRole('button', { name: 'Scale in · − Instance', exact: true })).toHaveAccessibleDescription(/minimum|one|1/i);
     await activate('Scale out · + Instance');
