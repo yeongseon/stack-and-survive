@@ -1,5 +1,7 @@
 # Player camera implementation
 
+Current implementation remains fixed-world, Fit-relative camera math. SQL's active-tier 58/78/100% resource size changes art/hit/label anchors, not canonical map coordinates or the whole-map camera envelope; viewport resizing does not itself resize a facility's tier. See [Infrastructure Scaling](INFRASTRUCTURE_SCALING.md).
+
 Canonical landscape integration #208 supersedes the responsive Fit plane introduced in #187/#196. This is subordinate to [Player Camera and World Interaction](PLAYER_CAMERA_AND_WORLD_INTERACTION.md). Navigation/direct interaction shipped in #199; the map/landscape/intro changes ship with #208.
 
 ## One world, different cameras

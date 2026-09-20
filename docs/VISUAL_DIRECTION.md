@@ -6,7 +6,7 @@ Rules 0.4 scaling (#305) supersedes older statements below that SQL cannot scale
 
 The bounded game-feel follow-up uses role-first world plaques (APP, CACHE, SQL, PROTECTED EDGE) with unchanged Azure names in secondary desktop labels and the service panel. Construction tracks display authoritative pending time, not new capacity; pause freezes them. Small landscape prioritizes role/state and keeps detailed service identity in the existing panel. Wave announcements use the processed snapshot tick; pre-existing starting facilities do not trigger completion rewards. Active configuration changes, including repeated expansion and tiers, can trigger short readiness cues. Paused/hidden/error/terminal presentation must not replay stale announcements. No simulation, camera geometry, asset bytes, economy or score changes.
 
-Version: 0.7. Reviewed merged main: `9421e74` (PR #253). **Game-first interaction and original V3 art are delivered**, followed by balance0.3 and Settings/Pause. #202 is completed implementation history, not the next task. [Gameplay](GAMEPLAY_SPEC.md) owns supported controls; [camera/world interaction](PLAYER_CAMERA_AND_WORLD_INTERACTION.md) remains the cross-layer guardrail. [Resource Visual States](RESOURCE_VISUAL_STATES.md) and [Simulation](SIMULATION_SPEC.md) own truthful states and outcomes. The [checkpoint](submission/RELEASE_CHECKPOINT.md) separates local presentation follow-ups from deployed evidence.
+Version: 0.8. Reviewed merged main `c68ec0c`. Game-first interaction, original V3 art, Settings/Pause, rules 0.4 scaling and visible service guide are delivered. SQL starts compact and grows only with active tiers; cards stay bounded. [Gameplay](GAMEPLAY_SPEC.md), [Resource Visual States](RESOURCE_VISUAL_STATES.md) and [Simulation](SIMULATION_SPEC.md) own behavior; [Current status](CURRENT_STATUS.md) owns deployment versus draft work.
 
 > The world is the primary interface.
 >
@@ -31,7 +31,7 @@ Direction: **stylized-realistic 2.5D isometric industrial data-center game art**
 
 Prioritize distinguishable silhouettes, coherent materials, bright hero facilities against subordinate surroundings and truthful moving state. App retains four physical bays; SQL retains separate read/write regions; Edge is a checkpoint, Cache compact memory and Intake ingress machinery. Actual labels-hidden identification at1440x900 requires human evidence; no invented commercial-quality score.
 
-Editable source → >=512px raster master → optimized runtime PNG → Phaser plus small state overlays remains the production approach. Record provenance/manifest before runtime import. The exact-inventory Pages exception explicitly includes reviewed original V3 bytes, not arbitrary new assets. PR #245 Iteration04 is a separate environment experiment awaiting owner review, with no automatic merge or runtime adoption. Do not overlap that work with client HUD polish or silently extend approval.
+Editable source → >=512px raster master → optimized PNG → Phaser plus small state overlays remains the production approach. Record provenance before import. Pages approval covers exact V3 bytes, not arbitrary assets. #245 is merged archived experiment evidence, not adopted runtime art or permission to extend inventory.
 
 Fast loop: affected tests + build + inspect1440x900 + adjust, then390/1920. Run final five-width/full regression/asset checks before grouped merge; measure hardware performance after major integration, not every art tweak. No new simulation systems or unrelated refactors.
 
@@ -49,7 +49,7 @@ An indoor data-center game, not a portal, floating diagram or unrelated sci-fi c
 
 Use contact shadows, service corridors, layered props, floor occlusion and restrained light pools for depth. At Fit, silhouettes and architecture routes matter more than tiny decoration. Close zoom should reward inspection without requiring it to recognize facilities.
 
-Reference scenes cite attainable architecture/tick fixtures. App1 at 220 RPS overloads App, not SQL. An active Cache cannot coexist with an absent Cache build affordance. Runtime scale-in and SQL scaling are not actions.
+Reference scenes cite attainable versioned fixtures. App1 at 220 RPS overloads App, not SQL; installed Cache cannot coexist with an absent build affordance. Rules 0.4 scale-in and SQL tiers/replicas must reflect active state only; the old no-scaling restriction no longer applies.
 
 ## Physical interaction affordances
 
