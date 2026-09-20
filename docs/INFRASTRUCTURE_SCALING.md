@@ -4,6 +4,12 @@ Computer 1 owns this gameplay/runtime integration. Computer 3 owns `art/**` and 
 
 ## Mechanics
 
+### Player controls
+
+Use the always-visible **App scaling** and **SQL scaling** buttons along the bottom of the world, or select the facility itself. App **Scale out / Scale in** adds/removes machines; **Scale up / Scale down** changes the tier. SQL offers tier changes and read-replica changes. Each disabled action shows its actual reason, including minimum size, maximum tier, paused state or another pending change. The status distinguishes a queued request from construction and activation; current capacity/cost do not change early.
+
+SQL starts at a compact Tier 1 visual size (58% of the previous maximum), grows to 78% at Tier 2 and 100% at Tier 3, and shrinks on an activated downgrade. Sprites, selection bounds, labels, lighting and replica anchors follow the active tier together. Pending upgrades do not resize it. Camera framing and simulation capacity/cost remain independent of visual scale.
+
 Scale out means more App machines; scale in removes the highest active bay after a three-second draining interval. Four bays remain the maximum, one active instance the minimum. Scaling a tier changes the same logical facility, not the machine count. SQL retains one primary; up to two companion read replicas add read capacity only.
 
 | Facility / level | Capacity | Simulated running cost/min | Change delay |

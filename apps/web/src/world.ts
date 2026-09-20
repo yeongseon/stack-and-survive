@@ -7,7 +7,7 @@ import { createServiceBadge } from './service-icons';
 import { optionalScalingAsset, replicaOffsets } from './scaling-art';
 import { buildingPresentation, drawBuilding, insideBuilding } from './building-art';
 import { drawEnvironment } from './environment-art';
-import { buildingAssets, buildingLayers, moduleAsset, resourceArtBounds, playerBuildingScale } from './building-assets';
+import { activeBuildingScale, buildingAssets, buildingLayers, moduleAsset, resourceArtBounds, playerBuildingScale } from './building-assets';
 import { BuildingSprites } from './building-sprites';
 import { drawProcessingLane, lanePoint, processingLanes } from './processing-lanes';
 import { pressureLosses, pressurePositions, pressureQueues } from './queue-visualization';
@@ -211,7 +211,7 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
             badge = created; badges.set(resource.id, badge); badgeLayer.append(badge);
           }
           const point = positions[i];
-          const badgeTop = point.y + resourceArtBounds(resource.kind, view.playerMode ? playerBuildingScale(resource.kind, width) : 1, view.playerMode).y;
+          const badgeTop = point.y + resourceArtBounds(resource.kind, view.playerMode ? activeBuildingScale(resource, width) : 1, view.playerMode).y;
           const p = playerCamera ? playerCamera.fitToScreen({ x: point.x, y: badgeTop }) : { x: point.x, y: badgeTop };
           const badgeY = p.y - 36;
           badge.hidden = p.x < 16 || p.x > screenWidth - 16 || badgeY < 0 || badgeY > screenHeight - 32;
@@ -255,7 +255,7 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
           const connected = architecture.connections.some(c => c.from === resource.id || c.to === resource.id);
           const state = resource.remaining > 0 ? `PROVISIONING ${resource.remaining}s` : !connected ? 'DISCONNECTED' : utilizationLabel(u);
           const pending = resource.kind === 'compute' && (view.state.runtime.scaleDue !== null || view.state.runtime.preparationScaleDue !== null);
-          const artScale = view.playerMode ? playerBuildingScale(resource.kind, width) : 1;
+          const artScale = view.playerMode ? activeBuildingScale(resource, width) : 1;
           const hero = !!v3 && !!view.playerMode;
           const spriteBody = hero || this.sprites.update(resource, p, pending, rank, view.playerMode && resource.kind === 'compute' ? visualState.app.bays : undefined, artScale);
           const building = hero ? buildingPresentation(resource,connected,view.selected===resource.id,pending) : drawBuilding(g, p, resource, connected, view.selected === resource.id,
@@ -363,7 +363,7 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
             const progress = reducedMotion ? .5 : 1 - (until - animationTime) / 1400;
             if(v3){
               const resource=resources.find(r=>r.kind===kind)!;
-              const scale=playerBuildingScale(resource.kind);
+            const scale=activeBuildingScale(resource);
               const bay=kind==='compute'?facilityBays[Math.max(0,resource.instances-1)]:{x:0,y:0};
               const x=p.x+bay.x*scale,y=p.y+bay.y*scale;
               fx.lineStyle(3,0xc8ffed,(1-progress)*.8);fx.strokeEllipse(x,y+14,100*scale*(.7+progress*.4),40*scale*(.7+progress*.4));
@@ -399,7 +399,8 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
            const a = at(flow.from); const b = at(flow.to);
            if (!a || !b) return;
            const appResource = resources.find(r => r.kind === 'compute');
-           const replicas = resources.find(r => r.kind === 'database')?.readReplicas ?? 0;
+           const databaseResource = resources.find(r => r.kind === 'database');
+           const replicas = databaseResource?.readReplicas ?? 0;
             const count = representativeCount(flow.volume); packetCount += count;
             for (let i = 0; i < count; i++) {
               const p = reducedMotion ? (i + .5) / count : (time / 3000 + i / count + lane * .07) % 1;
@@ -410,8 +411,8 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
                const bay = facilityBays[i % appResource.instances], scale = playerBuildingScale('compute');
                destination = { x: b.x + bay.x * scale, y: b.y + bay.y * scale };
              }
-             if (view.playerMode && flow.to === 'database' && flow.kind === 'browse' && flow.end !== 'failed' && replicas > 0 && i % (replicas + 1) > 0) {
-               const offset = replicaOffsets[i % (replicas + 1) - 1], scale = playerBuildingScale('database');
+             if (view.playerMode && databaseResource && flow.to === 'database' && flow.kind === 'browse' && flow.end !== 'failed' && replicas > 0 && i % (replicas + 1) > 0) {
+                const offset = replicaOffsets[i % (replicas + 1) - 1], scale = activeBuildingScale(databaseResource);
                destination = { x: b.x + offset.x * scale, y: b.y + offset.y * scale };
              }
              const point = lanePoint(a, destination, progress);
@@ -466,7 +467,7 @@ export async function mountWorld(host: HTMLDivElement, controller: Controller, g
       return view.state.runtime.architecture.resources
         .map(r => ({ resource: r, center: view.playerMode ? tycoonPoint(r.kind) : project(r, camera(), canvas.clientWidth, canvas.clientHeight) }))
         .filter(item => {
-          const bounds = resourceArtBounds(item.resource.kind, view.playerMode ? playerBuildingScale(item.resource.kind, canvas.clientWidth) : 1, view.playerMode);
+          const bounds = resourceArtBounds(item.resource.kind, view.playerMode ? activeBuildingScale(item.resource, canvas.clientWidth) : 1, view.playerMode);
           return insideBuilding(p, item.center) || (p.x >= item.center.x + bounds.x && p.x <= item.center.x + bounds.x + bounds.width
             && p.y >= item.center.y + bounds.y && p.y <= item.center.y + bounds.y + bounds.height);
         })

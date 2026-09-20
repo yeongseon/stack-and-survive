@@ -1,4 +1,5 @@
-import type { Kind } from '@stack-and-survive/schema';
+import type { Kind, Resource } from '@stack-and-survive/schema';
+import { resourceTier } from '@stack-and-survive/cloud-domain';
 import bounds from '../../../art/buildings/bounds.json' with { type: 'json' };
 import { facilityBays, facilityModuleScale } from './facility-bays';
 import { assetUrl } from './asset-url';
@@ -25,6 +26,10 @@ export function playerBuildingScale(kind: Kind, _width?: number) {
   void _width;
   if (v3) return kind === 'compute' ? 2.5 : kind === 'database' ? 2.7 : 1.9;
   return kind === 'database' ? 2.3 : kind === 'compute' ? 1.9 : 1.7;
+}
+export function activeBuildingScale(resource: Resource, width?: number) {
+  const scale = playerBuildingScale(resource.kind, width);
+  return resource.kind === 'database' ? scale * [0.58, 0.78, 1][resourceTier(resource) - 1] : scale;
 }
 export function resourceArtBounds(kind: Kind, scale = 1, player = false) {
   const art = buildingAssets[kind]?.visible;

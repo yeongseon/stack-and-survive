@@ -2,7 +2,7 @@ import type Phaser from 'phaser';
 import type { Kind, Resource } from '@stack-and-survive/schema';
 import type { Point } from './editor';
 import type { resourceVisualState, PressureState } from './resource-visual-state';
-import { playerBuildingScale, resourceArtBounds } from './building-assets';
+import { activeBuildingScale, resourceArtBounds } from './building-assets';
 
 type Visual = ReturnType<typeof resourceVisualState>;
 export type LightState = { mode: 'pending' | 'idle' | 'healthy' | 'warning' | 'critical' | 'boosted'; color: number; alpha: number };
@@ -31,7 +31,7 @@ export class FacilityLighting {
     }
   }
   update(resources: Resource[], points: Point[], visual: Visual, width: number, enabled: boolean) {
-    const signature = JSON.stringify([enabled, width, points, visual.reading, resources.map(resource => [resource.id, resource.kind, resource.remaining, facilityLight(resource.kind, visual)])]);
+    const signature = JSON.stringify([enabled, width, points, visual.reading, resources.map(resource => [resource.id, resource.kind, resource.tier, resource.remaining, facilityLight(resource.kind, visual)])]);
     if (signature === this.signature) return;
     this.signature = signature;
     const current = new Set<string>();
@@ -45,7 +45,7 @@ export class FacilityLighting {
           glow: this.scene.add.image(0, 0, 'facility-soft-disc').setDepth(2), state };
         this.entries.set(resource.id, entry);
       }
-      const scale = playerBuildingScale(resource.kind, width);
+      const scale = activeBuildingScale(resource, width);
       const bounds = resourceArtBounds(resource.kind, scale, true);
       const point = points[index];
       entry.state = state;

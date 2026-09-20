@@ -3,7 +3,7 @@ import type { Kind, Resource } from '@stack-and-survive/schema';
 import type { Point } from './editor';
 import type { View } from './controller';
 import { facilityBays } from './facility-bays';
-import { playerBuildingScale } from './building-assets';
+import { activeBuildingScale } from './building-assets';
 
 export type ResourceActivity = { resource: Kind; type: 'server-work' | 'cache-work' | 'sql-read' | 'sql-write' | 'intake'; slot?: number };
 export function resourceActivity(view: View): ResourceActivity[] {
@@ -32,7 +32,7 @@ export function drawResourceActivity(g: Phaser.GameObjects.Graphics, items: Reso
   for (const item of items) {
     const index = resources.findIndex(r => r.kind === item.resource);
     if (index < 0) continue;
-    const p = positions[index], scale = playerBuildingScale(item.resource, width);
+    const p = positions[index], scale = activeBuildingScale(resources[index], width);
     g.save(); g.translateCanvas(p.x, p.y); g.scaleCanvas(scale, scale);
     if (item.type === 'server-work') {
       const bay = facilityBays[item.slot ?? 0];

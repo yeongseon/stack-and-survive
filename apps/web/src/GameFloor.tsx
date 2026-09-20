@@ -6,7 +6,7 @@ import { type PlayerNavigation } from './player-navigation';
 import { definitions } from '@stack-and-survive/cloud-domain';
 import type { WorldTarget } from './world-interaction';
 import { resourceVisualState } from './resource-visual-state';
-import { playerBuildingScale, resourceArtBounds } from './building-assets';
+import { activeBuildingScale, playerBuildingScale, resourceArtBounds } from './building-assets';
 import { recoveryFeedback, type Recovery } from './wave-feedback';
 import { formatMoney, formatMoneyRate, formatMoneyReason } from './money';
 import { ScalingControls } from './ScalingControls';
@@ -76,7 +76,8 @@ export function GameFloor({ controller, view, navigation, onReady, blocked = fal
   const localPosition = (kind: keyof typeof tycoonPositions) => {
     const p = projection.resourceScreen(kind);
     const width = host.current?.clientWidth ?? 320, height = host.current?.clientHeight ?? 568;
-    const art = resourceArtBounds(kind, playerBuildingScale(kind), true);
+    const resource = runtime.architecture.resources.find(item => item.kind === kind);
+    const art = resourceArtBounds(kind, resource ? activeBuildingScale(resource) : playerBuildingScale(kind), true);
     const right = p.x + (art.x + art.width) * projection.effectiveZoom + 14;
     const left = p.x + art.x * projection.effectiveZoom - 294;
     const preferred = right + 280 <= width - 12 ? right : left >= 12 ? left : p.x + 32;
@@ -89,7 +90,7 @@ export function GameFloor({ controller, view, navigation, onReady, blocked = fal
         const resource = runtime.architecture.resources.find(r => r.kind === kind);
         const p = projection.resourceScreen(kind);
         const width = host.current?.clientWidth ?? 320, height = host.current?.clientHeight ?? 568;
-        const art = resourceArtBounds(kind, playerBuildingScale(kind, width), true);
+        const art = resourceArtBounds(kind, resource ? activeBuildingScale(resource, width) : playerBuildingScale(kind, width), true);
         const top = p.y + (resource ? art.y : -24) * projection.effectiveZoom - (kind === 'internet' || !resource ? 38 : height < 500 ? 76 : 102);
         const pressure = kind === 'compute' ? visual.app.pressure : kind === 'database' ? visual.sql.pressure : kind === 'cache' ? visual.cache.pressure : null;
         const warning = pressure === 'warning' || pressure === 'overcapacity';
@@ -128,6 +129,10 @@ export function GameFloor({ controller, view, navigation, onReady, blocked = fal
       </div></details>
     </div>
     <div className="world-controls">
+      {view.challenge?.rulesVersion === '0.4' && <fieldset className="scaling-shortcuts" aria-label="Infrastructure scaling">
+        <button type="button" aria-label="Manage App scaling" aria-expanded={selected?.kind === 'compute'} onClick={() => select(app.id)}>App scaling<small>In / Out · Up / Down</small></button>
+        <button type="button" aria-label="Manage SQL scaling" aria-expanded={selected?.kind === 'database'} onClick={() => select('database')}>SQL scaling<small>Tier · Read replicas</small></button>
+      </fieldset>}
       <div className="world-keyboard-controls" role="group" aria-label="Infrastructure keyboard controls">
       {(['edge', 'cache'] as const).map(kind => {
         const resource = runtime.architecture.resources.find(r => r.kind === kind);
