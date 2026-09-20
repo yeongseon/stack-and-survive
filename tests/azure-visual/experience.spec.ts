@@ -51,9 +51,15 @@ test('tutorial can be skipped and navigated on 320px and landscape without start
 test('resource catalog uses real status, unchanged actions and accessible keyboard selection', async ({ page }) => {
   const errors: string[] = []; page.on('pageerror', error => errors.push(error.message));
   await page.emulateMedia({ reducedMotion: 'reduce' }); await start(page);
-  await page.getByRole('button', { name: 'Azure services', exact: true }).click();
+  const guide = page.getByRole('button', { name: 'Azure service guide', exact: true });
+  await expect(guide).toHaveAccessibleDescription('Resource roles & status');
+  await guide.click();
   const panel = page.getByRole('region', { name: 'Azure services panel', exact: true });
   await expect(panel.getByRole('button', { name: 'Close services', exact: true })).toBeFocused();
+  await expect(panel).toContainText('Use App scaling or SQL scaling');
+  await expect(panel).toContainText('explicit action buttons below change the game');
+  await expect(page.locator('[data-facility="compute"]')).toContainText('1/4 active');
+  await expect(page.locator('[data-facility="compute"] .facility-build-track')).toHaveCount(0);
   const app = panel.getByRole('button', { name: /^Azure App Service,/ });
   expect(await app.evaluate(el => ({ animation: getComputedStyle(el).animationName, duration: getComputedStyle(el).transitionDuration }))).toEqual({ animation: 'none', duration: '0s' });
   await expect(panel).not.toContainText('Offline · Not deployed');
@@ -65,12 +71,12 @@ test('resource catalog uses real status, unchanged actions and accessible keyboa
   await expect(panel).toHaveCount(0);
   await expect(page.getByRole('region', { name: 'Resource actions', exact: true })).toContainText('Azure App Service');
   await page.getByRole('button', { name: 'Close resource', exact: true }).click();
-  await expect(page.getByRole('button', { name: 'Azure services', exact: true })).toBeFocused();
+  await expect(page.getByRole('button', { name: 'Azure service guide', exact: true })).toBeFocused();
   await page.getByRole('button', { name: 'Traffic key', exact: false }).click();
   await expect(page.getByRole('region', { name: 'Traffic direction and legend' })).toContainText('database writes');
   await page.getByRole('button', { name: 'Ⅱ Pause', exact: true }).click();
   await page.getByRole('button', { name: 'Inspect paused world', exact: true }).click();
-  await page.getByRole('button', { name: 'Azure services', exact: true }).click();
+  await page.getByRole('button', { name: 'Azure service guide', exact: true }).click();
   await expect(panel.getByRole('button', { name: 'Scale out App', exact: true })).toBeDisabled();
   await expect(panel).toContainText('Paused · last measured state');
   await panel.getByText('Other Azure concepts · not selectable', { exact: true }).click();
@@ -79,13 +85,18 @@ test('resource catalog uses real status, unchanged actions and accessible keyboa
   expect(errors).toEqual([]);
 });
 
-test('responsive service drawer preserves HUD, camera and pause access', async ({ page }) => {
+test('responsive service drawer preserves HUD, camera and pause access', async ({ page }, info) => {
   await page.emulateMedia({ reducedMotion: 'reduce' }); await start(page);
   await page.getByRole('button', { name: 'Ⅱ Pause', exact: true }).click();
   await page.getByRole('button', { name: 'Inspect paused world', exact: true }).click();
   for (const viewport of [{ width: 1440, height: 900 }, { width: 1024, height: 768 }, { width: 844, height: 390 }, { width: 700, height: 390 }]) {
     await page.setViewportSize(viewport);
-    await page.getByRole('button', { name: 'Azure services', exact: true }).click();
+    const guide = page.getByRole('button', { name: 'Azure service guide', exact: true });
+    await expect(guide).toHaveAccessibleDescription('Resource roles & status');
+    await expect(guide).toBeInViewport();
+    expect((await guide.boundingBox())!.height).toBeGreaterThanOrEqual(44);
+    await page.screenshot({ path: info.outputPath(`guide-closed-${viewport.width}.png`) });
+    await guide.click();
     const panel = page.getByRole('region', { name: 'Azure services panel', exact: true });
     const bounds = (await panel.boundingBox())!;
     expect(bounds.x).toBeGreaterThanOrEqual(0); expect(bounds.x + bounds.width).toBeLessThanOrEqual(viewport.width);
@@ -94,7 +105,7 @@ test('responsive service drawer preserves HUD, camera and pause access', async (
     await page.getByRole('button', { name: 'Fit architecture', exact: true }).click({ trial: true });
     await page.getByRole('button', { name: '▶ Resume', exact: true }).click({ trial: true });
     await panel.getByRole('button', { name: 'Close services', exact: true }).focus(); await page.keyboard.press('Escape');
-    await expect(page.getByRole('button', { name: 'Azure services', exact: true })).toBeFocused();
+    await expect(page.getByRole('button', { name: 'Azure service guide', exact: true })).toBeFocused();
   }
 });
 
@@ -112,7 +123,7 @@ test('unchanged no-upgrade failure result and restart remain accessible', async 
 test('missing service icon retains adjacent name and usable resource controls', async ({ page }) => {
   await page.route('**/assets/azure-icons/app-service.svg', route => route.abort());
   await page.emulateMedia({ reducedMotion: 'reduce' }); await start(page);
-  await page.getByRole('button', { name: 'Azure services', exact: true }).click();
+  await page.getByRole('button', { name: 'Azure service guide', exact: true }).click();
   const node = page.getByRole('button', { name: /^Azure App Service,/ });
   await expect(node.locator('.azure-node-fallback')).toHaveText('APP');
   await expect(node).toContainText('Azure App Service');
