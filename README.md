@@ -26,6 +26,8 @@ The official game URL is the GitHub Pages link above. No custom domain is requir
 
 More servers are not always the best answer. App expansion takes time; Cache helps eligible reads but not SQL writes; Protected Edge filters bots but can reject legitimate customers. Your choices change availability, operating costs and the final score.
 
+**See one decision change the outcome:** [53-second current-feature demo and narration](docs/DEMO_VIDEO.md#current-rules-04-the-bottleneck-tradeoff) — App expansion leaves a SQL bottleneck; a delayed SQL tier change restores service at a higher running cost. Continuous automated local gameplay, not a human learning study.
+
 **Current rules 0.4:** App scale-in/out and tier changes, SQL tiers and read replicas are now available through facility inspection. [Scaling guide and actual captured examples](docs/INFRASTRUCTURE_SCALING.md). The video and overview screenshots below document the earlier `24ca388` / rules 0.3 release, not the current interface. See the [dated presentation handoff](docs/submission/HACKATHON_HANDOFF.md) for current verification and release blockers.
 
 - **One living data center:** click facilities and empty bays directly; routes are automatic.

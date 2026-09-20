@@ -1,5 +1,7 @@
 # Showcase — Why I built Stack & Survive
 
+For the latest scaling interface and compact SQL, use the [53-second current-feature clip](../docs/DEMO_VIDEO.md#current-rules-04-the-bottleneck-tradeoff) as a separate optional demo. Existing slide screenshots remain historical; the new clip is a local candidate capture, not human validation. Allow an additional minute or replace part of the talk—do not promise a three-minute talk plus a full demo in the same slot.
+
 **[Download the English PDF](stack-and-survive-showcase.pdf)** · [Browser slides](slides.html) · [English speaker notes](SPEAKER_NOTES.md) · [Play the game](https://yeongseon.github.io/stack-and-survive/)
 
 Seven slides tell the story in plain English: **working in support → building a game → Black Friday → App/Cache/Edge → results → returning to documentation → closing**. The technical-architecture slide remains removed. Speaker notes include the main talk, a 60-second version, a short live-demo transition and Q&A.
