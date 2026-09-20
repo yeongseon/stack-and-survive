@@ -6,7 +6,15 @@ The existing shared runtime now supports deterministic App shrink/tier changes, 
 
 Rendering reads pending changes and active resource state only. Optional tier textures are discovered through the existing V3 inventory and fall back to required base textures. Computer3 owns image sources/exports; Computer1 does not modify `art/**` or public assets. The backend replay build must be updated before releasing the new frontend to avoid unsupported-challenge responses from a0.3 API.
 
-Version: 1.1. Browser-local TypeScript/React/Phaser, with an owner-authorized static GitHub Pages demo. No game backend or outbound product telemetry. Public source and demo hosting do not imply general release rights approval.
+Version: 1.1. Browser-local TypeScript/React/Phaser, with an owner-authorized static GitHub Pages demo. No game-state backend. The optional API hosts leaderboard verification and a stateless Azure OpenAI proxy for Export to Azure; no player telemetry is stored by the export proxy. Public source and demo hosting do not imply general release rights approval.
+
+### AI boundary
+
+`azure-learn.ts` owns the fixed HTTPS Microsoft Learn destinations. The result lists only represented final resources plus Bicep guidance, independently of API configuration; generated resource explanations reuse the same allowlist. Links open with `noopener noreferrer`, with no click telemetry or AI-generated URL fields.
+
+Export to Azure is an explicitly requested, post-run operation. Its input is bounded run numbers, final resource configuration and allowlisted engine strings/accepted action tokens; no nickname, prompt free text or per-tick stream is sent. The server validates all HTTP fields (even engine-derived values are untrusted over HTTP), uses Azure Responses Structured Outputs with `store:false`, then validates the returned JSON again. The browser also validates the response and renders it as escaped text. No AI output is executed or fed into runtime, score, replay, history or leaderboard calculations.
+
+The only browser setting is the existing public `VITE_LEADERBOARD_API` origin. Azure OpenAI origin/key/deployment remain on the API. Requests are capped at 20 KB and 5/IP/min, with 25-second upstream timeout and sanitized failures; the panel fails independently of the result. Reasons cite supplied numeric evidence, but lexical checking cannot prove factual grounding. Bicep is a reviewed candidate scaffold, not proof of deployability or equivalence between gameplay tiers and Azure performance. Compilation, region/SKU availability, identity, networking, app code and integration remain the operator's responsibility. No telemetry or model conversation is stored by this implementation; provider abuse-monitoring/retention policy is separate from `store:false`.
 
 ## Architecture
 
@@ -90,6 +98,6 @@ Quality CI checks templates/static/unit/build, both browser modes and the projec
 
 ## Security and deferred architecture
 
-No secrets, customer telemetry or private platform information belongs in client code. The public repo has licensing/security review tracked in #164; public visibility is not policy clearance. GitHub Pages serves the approved static demo; there is no game backend, outbound product analytics or broader hosted production service beyond that exception.
+No secrets, customer telemetry or private platform information belongs in client code. The public repo has licensing/security review tracked in #164; public visibility is not policy clearance. No game-state backend: GitHub Pages serves the approved static demo and the optional API hosts leaderboard verification and a stateless Azure OpenAI export proxy. Export does not store player telemetry or create Azure resources; configuring that service still requires separate authorization.
 
 Protocol/observability packages, Azure Static Web Apps/Functions/Container Apps/Redis/Cosmos and online features are future options requiring concrete need and approval. Do not provision services to make a cloud-themed game appear more cloud-native.
