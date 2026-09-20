@@ -1,5 +1,7 @@
 # Architecture strategy balance
 
+> Versioned evidence: the introduction summarizes 0.3 calibration and tables retain 0.2 observations. Current play is 0.4; SQL tiers/read replicas and scale-in are supported under [Infrastructure Scaling](INFRASTRUCTURE_SCALING.md). Old unsupported-SQL statements apply only to the legacy schedules, not today's action set. No historical result is retuned here.
+
 Version: 0.3. Current economy/waves and five measured live strategies are in [Simulation Specification](SIMULATION_SPEC.md) and `sprint-balance.test.ts`: initial75 Upgrade Funds,10% successful-revenue reinvestment and eight attack/recovery phases. Cache-scale A16/C17/A57/A102 completes at100% with26.473067 funds; prepared layers A16/C17/E57/A57 at99.620116% with26.159026; early maximum C0/E0/A0/A8/A16 leaves2.565605. These are request ticks with unchanged activation delays, not globally optimal strategy claims. **The tables below are historical0.2**, still covered by `reference.test.ts`/`strategy-evidence.test.ts` against explicit legacy fixtures, not current balance estimates.
 
 ## Existing Black Friday evidence
@@ -27,7 +29,7 @@ App1/220 RPS restricts work at App and does not make SQL critical. App scaling c
 | Edge-oriented | Is bot displacement worth filtering cost/false positives? | Little benefit on bot-free demand; does not solve SQL limits |
 | Balanced | Does combined protection/read relief justify cost/timing? | More deployment decisions; no universal superiority claim |
 
-SQL-upgrade and async/Queue/Functions examples are not supported current strategies. Do not balance against absent mechanics or silently change v0.2 to force a desired story.
+SQL upgrades were unsupported in the historical 0.2 schedules below; current 0.4 supports SQL tiers/read replicas. Async/Queue/Functions remain absent. Do not reinterpret legacy measurements or silently change 0.2 to force a desired story.
 
 ## Calibration method (#154)
 
