@@ -4,6 +4,8 @@
 
 Follow one operation from the title to its result. Screenshots below are actual automated captures from **`24ca388`**, resized for documentation. They illustrate behavior—not a guarantee that copying approximate timing produces the same score. The final overload example is a **separate** run. [Full provenance](images/README.md).
 
+**Current controls (rules 0.4):** the screenshots are historical 0.3. Use bottom **App scaling / SQL scaling** for instance/tier/replica controls; upper-right **Azure service guide** explains all service roles and supports inspection, not only App Service. SQL starts compact and grows after an activated tier change. [Current-feature video](DEMO_VIDEO.md#current-rules-04-the-bottleneck-tradeoff) shows the newer interface. [Release status](CURRENT_STATUS.md) separates the live game from draft-only AI Export/Learn links.
+
 ## 1. Start without an account
 
 Choose an unlocked **Challenge**, optionally set **Player name**, then press **Start Game**. First-time players begin with the survival objective; later objectives require higher availability on the same workload. A name is only necessary when joining the leaderboard.
@@ -30,7 +32,7 @@ The camera introduces the hall before the countdown. There is no architecture ed
 
 ## 3. Expand before capacity is needed
 
-Click an **empty App bay once** to request expansion. The marked construction bay is not active capacity yet. App expansion takes **8 seconds** and adds **$5K/min** in running expense when active. Maximum active App count is four.
+Click an **empty App bay once**, or **App scaling → Scale out**, to request expansion. A construction bay is not active capacity. Expansion takes **8 seconds**, adds the current tier's per-instance running cost (**$5K/min at Tier 1**) and stops at four. **Scale in** removes one instance after 3 seconds, minimum one; **Scale up/down** changes all App instances' tier after 6 seconds. No refund or permanent bonus is created.
 
 ![App construction: the new bay has a visible construction state while existing instances keep working.](images/construction.webp)
 
@@ -43,6 +45,8 @@ Click the empty **Cache** footprint to request deployment. It takes **5 seconds*
 ![Active Cache: the installation is complete and the read branch is visible.](images/cache.webp)
 
 More App capacity can move pressure downstream to SQL. Avoid treating every failure as an instruction to add another App.
+
+Use **SQL scaling → Scale up/down** to change read/write capacity after 10 seconds. **Add/remove replica** changes read capacity only (8s add, 3s remove; maximum two). Tier and replica running costs are in the [scaling table](INFRASTRUCTURE_SCALING.md#mechanics). Existing capacity/cost remains until activation; the card shows queued/pending time and why an action is disabled. Cache and replicas do not solve write pressure.
 
 ## 5. Watch the warning, then the consequence
 
@@ -87,6 +91,8 @@ The result appears without waiting for a server. If you met the objective and ha
 - **Details** contains monetary results, decisions, comparisons and history. **Try another architecture / Play again** starts fresh infrastructure; **Next level** advances when unlocked.
 
 The images show **local-only automation**, not a live public submission. The online list can differ.
+
+Current operational limitation: the configured API rejects current rules 0.4 challenge reads (#306), so do not promise a global submission until backend compatibility is verified. Local results remain available.
 
 ## 9. Use landscape and scroll results when needed
 
