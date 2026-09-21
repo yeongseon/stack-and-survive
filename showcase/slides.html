@@ -3,91 +3,84 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Stack &amp; Survive — Why I Built It</title>
+  <title>Stack &amp; Survive — Learning Azure, together</title>
   <link rel="stylesheet" href="slides.css">
   <script src="slides.js" defer></script>
 </head>
 <body>
-  <main aria-label="Stack & Survive presentation">
+  <main aria-label="Why I built Stack & Survive">
     <section class="slide motivation" id="slide-1" aria-labelledby="title-1">
       <div class="copy">
-        <p class="eyebrow">01 / WHY I BUILT IT</p>
-        <h1 id="title-1" tabindex="-1">Working in support,<br><em>I kept thinking<br>about beginners.</em></h1>
-        <p>I use Microsoft Learn a lot in my work.</p>
-        <p>The services are well explained.<br>But if you're new to cloud, why do you<br><strong>need them together?</strong></p>
+        <h1 id="title-1" tabindex="-1">Learning Azure<br>for the first time<br>felt overwhelming.</h1>
+        <p>Microsoft Learn and documentation<br>gave me the concepts.</p>
+        <p>Connecting them together<br>was harder.</p>
       </div>
-      <figure><img src="../docs/images/title.webp" alt="Stack & Survive title screen with a data center and Start Game button"><figcaption>That led me to build Stack &amp; Survive. Local captures: a6f6956 · rules 0.4.</figcaption></figure>
-    </section>
-    <section class="slide" id="slide-2" aria-labelledby="title-2">
-      <div class="copy">
-        <p class="eyebrow">02 / SO I MADE A GAME</p>
-        <h2 id="title-2" tabindex="-1">Instead of explaining it,<br><em>let people run it.</em></h2>
-        <p>You decide when to add App capacity,<br>Cache and Edge.</p>
-        <p>React too late, and customer requests fail.<br>You lose sales in the game.</p>
-      </div>
-      <figure><img src="../docs/images/gameplay.webp" alt="App, Cache, Edge and SQL processing traffic in the game"><figcaption>You add the facilities and see what changes.</figcaption></figure>
-    </section>
-    <section class="slide" id="slide-3" aria-labelledby="title-3">
-      <div class="copy">
-        <p class="eyebrow">03 / BLACK FRIDAY</p>
-        <h2 id="title-3" tabindex="-1">Get through<br><em>180 seconds<br>of Black Friday.</em></h2>
-        <ul><li>Start: <strong>100 req/s</strong></li><li>Traffic spikes, then bots arrive</li><li>Later: <strong>560 req/s · 40% bots</strong></li><li>Final 20 seconds: <strong>600 req/s · 45% bots</strong></li></ul>
-        <p>Eight phases, with recovery windows.<br>Build before the next wave arrives.</p>
-        <p class="small">Game money is not actual Azure pricing.</p>
-      </div>
-      <div class="gallery"><figure><img src="../docs/images/warning.webp" alt="HUD warning before the next traffic spike"><figcaption>Watch the next-wave warning.</figcaption></figure><figure><img src="../docs/images/construction.webp" alt="An App bay under construction before its capacity becomes active"><figcaption>Under construction ≠ active capacity</figcaption></figure></div>
-    </section>
-    <section class="slide" id="slide-4" aria-labelledby="title-4">
-      <div class="copy">
-        <p class="eyebrow">04 / WHAT YOU CAN DO</p>
-        <h2 id="title-4" tabindex="-1">You decide<br><em>what to add first.</em></h2>
-        <dl><dt>App</dt><dd>More throughput · takes 8 seconds to activate</dd><dt>Cache</dt><dd>Helps eligible reads · order writes still go to SQL</dd><dt>Protected Edge</dt><dd>Blocks bots · can also reject legitimate customers</dd></dl>
-        <p>Running costs matter. More isn't always better.</p>
-      </div>
-      <figure><img src="../docs/images/gameplay.webp" alt="Three App instances with Cache and Protected Edge during a bot attack"><figcaption>Adding App capacity can leave SQL as the next bottleneck.</figcaption></figure>
-    </section>
-    <section class="slide" id="slide-5" aria-labelledby="title-5">
-      <div class="copy">
-        <p class="eyebrow">05 / CHECK THE RESULT, TRY AGAIN</p>
-        <h2 id="title-5" tabindex="-1">See how<br><em>your run went.</em></h2>
-        <p>Availability · lost sales · cost · score</p>
-        <p>Next time, expand App earlier.<br>Or change the order of Cache and Edge.</p>
-        <p>Meet the objective to join the leaderboard.</p>
-        <p class="small">Objectives: survive 180s → 99% availability → 99.9%</p>
-      </div>
-      <figure><img src="../docs/images/result.webp" alt="A 9473-point completion with a local DEMO ranking and retry controls"><figcaption>Automated local run · a6f6956 / rules 0.4 · not a human or public verified entry.</figcaption></figure>
-    </section>
-    <section class="slide" id="slide-6" aria-labelledby="title-6">
-      <div class="copy">
-        <p class="eyebrow">06 / HOW I'D LIKE PEOPLE TO USE IT</p>
-        <h2 id="title-6" tabindex="-1">Try it first.<br><em>Then look up<br>what puzzled you.</em></h2>
-        <p>I hope reading Microsoft Learn feels<br>more concrete after running this setup.</p>
-        <p class="small">We still need user testing to find out whether it helps.</p>
-      </div>
-      <div class="learning-flow" aria-label="Questions from playing that a beginner can follow up in Microsoft Learn">
-        <div class="node"><small>AFTER ADDING CACHE</small><strong>Why didn't the writes change?</strong><span>Eligible reads and order writes take different paths.</span></div>
-        <p class="connector" aria-hidden="true">↓</p>
-        <div class="node"><small>AFTER EXPANDING APP</small><strong>Why is SQL busy now?</strong><span>Check which layer is limiting the system.</span></div>
-        <p class="connector" aria-hidden="true">↓</p>
-        <div class="shared"><small>WHEN YOU WANT TO KNOW MORE</small><strong>Go back to Microsoft Learn.</strong><span>Check how the real services work and how to configure them.</span></div>
+      <div class="sketch" role="img" aria-label="My questions around App Service and Azure SQL: when to scale, what if traffic doubles, would cache help, what happens to cost?">
+        <p class="note note-top">What if traffic doubles?</p>
+        <div class="sketch-row"><span class="service">App Service</span><span class="arrow" aria-hidden="true">→</span><span class="service">Azure SQL</span></div>
+        <p class="note note-middle">scale here? ↖</p>
+        <p class="note note-bottom">Would cache help?<br>What happens to cost?</p>
+        <span class="pencil-circle" aria-hidden="true"></span>
       </div>
     </section>
-    <section class="slide closing" id="slide-7" aria-labelledby="title-7">
-      <div class="copy">
-        <p class="eyebrow">07 / THANK YOU</p>
-        <h2 id="title-7" tabindex="-1">I wanted to make<br><em>getting started<br>a little easier.</em></h2>
-        <p><strong>Stack &amp; Survive</strong><br>Try running App, Cache and Edge<br>through Black Friday.</p>
-        <p class="small">Build. Scale. Keep the business flowing.</p>
-        <p class="small">Same workload. Different architectures. Different outcomes.</p>
-        <p><a class="play-link" href="https://yeongseon.github.io/stack-and-survive/">Play the game ↗</a></p>
-        <p class="url">yeongseon.github.io/stack-and-survive/</p>
+    <section class="slide gap" id="slide-2" aria-labelledby="title-2">
+      <h2 id="title-2" tabindex="-1">I knew what the services were.<br><span class="emphasis">I didn't know how they behaved together.</span></h2>
+      <div class="diagram" role="img" aria-label="Users send traffic to App Service, then Azure SQL. Cache can help reads. Questions: where to scale and which layer is the bottleneck?">
+        <p class="note traffic-note">traffic ↑</p>
+        <div class="architecture-line"><span>Users</span><b aria-hidden="true">→</b><span class="service">App Service</span><b aria-hidden="true">→</b><span class="service">Azure SQL</span></div>
+        <div class="diagram-questions"><span class="note">scale here?</span><span class="note">DB bottleneck?</span></div>
+        <div class="cache-branch"><span aria-hidden="true">↳</span><span class="service">Cache</span><span class="note">helps reads?</span></div>
       </div>
-      <figure><img src="../docs/images/recovery.webp" alt="The data center in a recovery phase before the next wave"><figcaption>Give it a run and see what you'd change.</figcaption></figure>
+      <p class="quiet">Knowing a definition wasn't the same as knowing what to do next.</p>
+    </section>
+    <section class="slide screenshot-slide" id="slide-3" aria-labelledby="title-3">
+      <h2 id="title-3" tabindex="-1">So I built this.</h2>
+      <figure class="game-image"><img src="../docs/images/gameplay.webp" alt="Stack & Survive with App, SQL, Cache and Protected Edge responding to a bot attack"></figure>
+      <p>A simple game for experiencing Azure architecture decisions.</p>
+    </section>
+    <section class="slide screenshot-slide experience" id="slide-4" aria-labelledby="title-4">
+      <h2 id="title-4" tabindex="-1">You make a change.<br>The system reacts.</h2>
+      <div class="annotated-game">
+        <figure class="game-image"><img src="../docs/images/opening.webp" alt="An operation starts with a small App and SQL, with demand, availability and funds in the HUD"></figure>
+        <div class="margin-notes"><p class="note">← Traffic comes in</p><p class="note">← You change<br>the architecture</p><p class="note">Availability &amp; cost<br>react ↑</p></div>
+      </div>
+      <p class="quiet">Build before the next wave.</p>
+    </section>
+    <section class="slide decision" id="slide-5" aria-labelledby="title-5">
+      <h2 id="title-5" tabindex="-1">What would you change?</h2>
+      <div class="decision-scene">
+        <figure class="game-image"><img src="../docs/images/overload.webp" alt="An App bottleneck during a 260 requests per second spike; customer requests are being lost"></figure>
+        <div class="choices"><p class="note">More App instances?</p><p class="note">Scale the database?</p><p class="note">Add cache?</p><p class="note">Protect the edge?</p></div>
+      </div>
+      <p>The interesting part isn't clicking Scale Out.<br>It's deciding which layer is actually under pressure.</p>
+    </section>
+    <section class="slide result-slide" id="slide-6" aria-labelledby="title-6">
+      <div class="copy">
+        <h2 id="title-6" tabindex="-1">It survived.</h2>
+        <p class="question">But was it a good<br>architecture?</p>
+        <p class="note">Did I build too much?<br>What did it cost?</p>
+        <p class="quiet">Availability is only part of the story.</p>
+      </div>
+      <figure class="game-image"><img src="../docs/images/result.webp" alt="Actual completed run: 9,473 points, 99.61 percent aggregate availability, with its final architecture and local score"></figure>
+    </section>
+    <section class="slide reflection" id="slide-7" aria-labelledby="title-7">
+      <h2 id="title-7" tabindex="-1">What would you change next time?</h2>
+      <div class="reflection-body">
+        <figure class="game-image"><img src="../docs/images/learn.webp" alt="The completed result offers official Microsoft Learn links for the services in the final architecture"></figure>
+        <div class="copy"><p>Look back at the run.</p><p>Try a different choice.</p><p>Return to Microsoft Learn<br>with a more concrete question.</p><p class="note">play → observe<br>reflect → try again</p></div>
+      </div>
+    </section>
+    <section class="slide closing" id="slide-8" aria-labelledby="title-8">
+      <h2 id="title-8" tabindex="-1">Making the first step<br>into Azure easier.</h2>
+      <p>I hope this helps customers become more familiar<br>with Azure through a simple, interactive experience.</p>
+      <p class="closing-thought">Not a replacement for Microsoft Learn.<br>Just another way to get started.</p>
+      <div class="signature"><strong>Stack &amp; Survive</strong><a href="https://yeongseon.github.io/stack-and-survive/">yeongseon.github.io/stack-and-survive</a></div>
+      <p class="note last-question">What would you change?</p>
     </section>
   </main>
   <nav class="deck-controls" aria-label="Slide navigation" hidden>
     <button type="button" id="previous" aria-label="Previous slide">← Previous</button>
-    <output id="position" aria-live="polite" aria-atomic="true">1 / 7</output>
+    <output id="position" aria-live="polite" aria-atomic="true">1 / 8</output>
     <button type="button" id="next" aria-label="Next slide">Next →</button>
     <button type="button" id="print">Print / PDF</button>
     <a href="stack-and-survive-showcase.pdf" download>Download PDF</a>
