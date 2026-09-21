@@ -20,7 +20,7 @@ A real-time cloud infrastructure strategy game: survive a 180-second traffic sur
 
 The official game URL is the GitHub Pages link above. No custom domain is required.
 
-**Presenting the project?** [Open the showcase](showcase/README.md) for the matching 8-slide English deck, personal speaker notes and [PDF](showcase/stack-and-survive-showcase.pdf).
+**Presenting the project?** [Open the showcase](showcase/README.md) for a brief project-title cover followed by the same eight-slide English story, personal notes and [nine-page PDF](showcase/stack-and-survive-showcase.pdf). The video opens with two seconds of title, keeping the approved GuyNeural speech and total 120 seconds unchanged.
 
 ![Stack & Survive gameplay: a unified command HUD above App, Cache, Edge and SQL facilities during a bot attack.](docs/images/gameplay.webp)
 

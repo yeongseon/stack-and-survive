@@ -1,5 +1,7 @@
 # Current implementation and release status
 
+Presentation cover refinement (#332): owner approved GuyNeural and requested the project name first. Browser/PDF/video now start with **Stack & Survive**; video shows the silent cover for two seconds, then the same eight recorded story sections. Their approved WAV bytes are unchanged. Nine PDF pages, still 120 seconds; no new TTS provider request or cloud operation.
+
 ## Latest merge and media checkpoint — 2026-09-21
 
 Narration/palette refinement (#330): the same personal eight-slide story now uses the earlier dark navy/teal/warm-yellow colors and stock `en-US-GuyNeural` at default rate/pitch. This replaces the rejected basic macOS voice; public narration text is sent through the separately opted-in Edge TTS tool, not a provisioned Azure service. [Listening sample](media/narration-sample.mp3) and voice/text/file hashes accompany the video. This records the actual generated provider voice, not a human naturalness or usage-rights approval. No game/runtime/cloud configuration changes.

@@ -7,7 +7,7 @@
 - **Play:** [illustrated player guide](PLAYER_GUIDE.md), with actual screenshots from opening to result.
 - **Build:** [development guide](DEVELOPMENT.md), covering setup, modes, test prerequisites and capture reproduction.
 - **Contribute:** [contribution guide](../CONTRIBUTING.md), covering issue/PR workflow, verification and unresolved license boundaries.
-- **Present:** [showcase](../showcase/README.md), with an eight-slide personal English story, matching 120-second video, PDF and speaker notes.
+- **Present:** [showcase](../showcase/README.md): project title cover + eight personal story slides, matching 120-second video, nine-page PDF and speaker notes.
 
 ## Current contracts
 

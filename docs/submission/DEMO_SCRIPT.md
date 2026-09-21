@@ -1,5 +1,7 @@
 # Two-minute edited demo
 
+Opening update: the current video starts with a quiet two-second **Stack & Survive** title cover before its eight-part personal story. First narration starts at 0:02 and still ends by 0:16; later timestamps stay unchanged. Approved GuyNeural recordings are reused without speedup/truncation. See [current timing](../../showcase/README.md#timing); old alternate plans below remain historical.
+
 **Current submission video:** use the [120-second personal story](../DEMO_VIDEO.md#two-minute-project-introduction--current-source) and [timed narration](../media/PROJECT_INTRO_NARRATION.md). Eight simple slides follow motivation, learning gap, idea, experience, decisions, tradeoffs, reflection and goal. Agent discussion is optional Q&A, not the main story. Internal capture/edit labels are absent from audience frames; source evidence stays in the manifest. The older alternate live-demo plan below is not this video's timeline.
 
 This describes the historical overview format, not the only available demo. For current scaling/compact SQL use the [53.4-second continuous tradeoff clip and narration](../DEMO_VIDEO.md#current-rules-04-the-bottleneck-tradeoff). [Current status](../CURRENT_STATUS.md) owns release/API evidence. Draft #316 Export/Learn is not a live demo beat until merged, configured and actually verified.
