@@ -4,9 +4,9 @@
 
 The current player challenge now uses rules0.4. Selected App exposes ±Instance and ±Tier; SQL exposes ±Tier and ±Read replica. App stays1–4 physical bays; a tier strengthens the same facility. SQL replicas add reads only, not primary writes. Old capacity/cost remain until deterministic activation: App out8s/in3s, App tier6s, SQL tier10s, replica add8s/remove3s. Existing Cache/Edge/traffic/scoring rules remain. See [complete scaling values and asset contract](INFRASTRUCTURE_SCALING.md).
 
-This update supersedes the fixed-SQL/no-live-scale-in restrictions in the historical0.3 sections below. New history/progress use separate0.4 keys; old data is not overwritten or relabeled. Final Architecture reports actual active tiers/counts/replicas. No optional art availability can affect capacity or outcome.
+New history/progress use separate 0.4 keys; old data is not overwritten or relabeled. Final Architecture reports actual active tiers/counts/replicas. No optional art availability can affect capacity or outcome. This document describes current ordinary play; explicit QA notes and historical numerical references remain separate.
 
-Version: 1.3. Ordinary behavior includes balance0.3 final game-feel sprint #212. [Simulation](SIMULATION_SPEC.md) owns calculations; [Roadmap](PRODUCT_ROADMAP.md) marks future features. QA editor defaults to explicit legacy0.2 for historical numerical comparisons.
+Version: 1.4. Reviewed `c68ec0c`, rules 0.4 including scaling, mission HUD and service guide. [Simulation](SIMULATION_SPEC.md) owns calculations; [Roadmap](PRODUCT_ROADMAP.md) marks future features. QA editor defaults to explicit legacy 0.2 for historical numerical comparisons.
 
 ## 1. Normal-player journey
 
@@ -32,15 +32,19 @@ Browse reads may terminate successfully at Cache; misses/overflow reach SQL. Ord
 
 | Control | Runtime action | Existing effect |
 |---|---|---|
-| Next physical App bay/local capacity action | `SCALE_OUT` | +1 instance after 8s, max four; +5 credits/min active cost |
+| Next physical App bay / App scaling → Scale out | `SCALE_OUT` | +1 instance after 8s, max four; active cost increases by current App-tier cost |
+| App scaling → Scale in | `SCALE_IN` | −1 instance after 3s, minimum one; no purchase refund or real FIFO |
+| App scaling → Scale up/down | `SCALE_UP_APP` / `SCALE_DOWN_APP` | Change among tiers 1–3 after 6s; capacity and per-instance cost change together |
+| SQL scaling → Scale up/down | `SCALE_UP_DATABASE` / `SCALE_DOWN_DATABASE` | Change among tiers 1–3 after 10s |
+| SQL scaling → Add/remove replica | `ADD_READ_REPLICA` / `REMOVE_READ_REPLICA` | 0–2 replicas; add 8s/remove 3s, reads only |
 | Cache world footprint | `DEPLOY_RESOURCE` cache | One-time deployment after 5s; +8 credits/min active cost |
 | Edge world footprint | `DEPLOY_RESOURCE` edge | One-time deployment after 4s; +3 credits/min active cost |
 | Intake Limit/Restore | `RATE_LIMIT` | 5% broad rejection after 2s; existing toggle interval applies |
 | Active Edge Boost | `EMERGENCY_WAF` | Once per run; 8 credits, 1s delay, 30s effect, higher bot filtering and 3% customer false positives |
 
-These summaries do not redefine [numerical rules](SIMULATION_SPEC.md). Acceptance, ordering, affordability and exact activation ticks remain in that contract. Live actions require RUNNING; duplicates/pending conflicts are rejected. No runtime scale-in, SQL/Cache scaling, uninstall, move or disconnect exists.
+These summaries do not redefine [numerical rules](SIMULATION_SPEC.md). Live actions require RUNNING; duplicates/pending conflicts are rejected. One capacity change per facility may be pending, while independent App/SQL changes may overlap. Cache scaling, uninstall, free move/disconnect and failover are not player actions.
 
-Click physical facilities to inspect; click the next empty App bay or absent Cache/Edge footprint **once** to request construction. No second confirmation. A short local message acknowledges request/delay or rejection. Keyboard equivalents reveal on focus and use the same guarded controller commands. Repeated/paused/unaffordable requests remain unavailable; real ticks still decide acceptance and activation. Costs/delays remain available in controls and Learn; no purchase cost is invented. SQL has no scaling control.
+Click facilities to inspect, or use always-visible **App scaling / SQL scaling** at the bottom. Click the next empty App bay or absent Cache/Edge footprint once to request construction. Keyboard equivalents use the same guarded commands. Cards show queued versus accepted changes, real remaining time, limits and unavailable reasons; their scrollable body stays within the viewport. The upper-right **Azure service guide** explains all represented services, supports inspection and has explicit action buttons; opening it alone changes no capacity. It is not an App-only button.
 
 ### Camera navigation
 
@@ -60,7 +64,7 @@ Cache/Edge lifecycle is exclusive: absent pad, provisioning construction, or ins
 
 HUD: Upgrade Funds, demand, availability, pressure, lost legitimate sales/sec and next-wave countdown/RPS/bot share. Balance0.3 starts at75 funds and reinvests10% of successful sales. Last5 seconds of the next-wave countdown are highlighted only while RUNNING; pause freezes it. No future income is credited. Final/no-next phase hides the panel. Lost sales excludes bots and labels paused/final readings.
 
-The local mission-HUD follow-up (not yet deployed; see [checkpoint](submission/RELEASE_CHECKPOINT.md)) adds the remaining `mm:ss`, objective, named current phase and duration-proportional progress segments. Remaining time/progress use authoritative runtime elapsed time; the current phase uses the latest processed snapshot so it agrees with visible demand, not the next tick. The challenge determines duration, phase count and availability objective rather than hard-coded Black Friday assumptions. Current-phase/status announcements exclude the per-second countdown; reduced motion removes arrival animation, and pause/error suppress emphasis without spending time.
+The deployed mission HUD shows remaining `mm:ss`, objective, named current phase and duration-proportional progress segments. Remaining time/progress use authoritative runtime elapsed time; phase uses the latest processed snapshot so it agrees with visible demand, not the next tick. The challenge determines duration, phase count and availability objective. Announcements exclude the per-second countdown; reduced motion removes arrival animation, and pause/error suppress emphasis without spending time.
 
 When an actual availability/order loss streak is active, the mission shows the smaller applicable engine interruption countdown, explicitly conditional on losses continuing. This is not a forecast or a new failure rule. Pause holds the value, cleared streaks remove the corresponding risk, and results remove the risk notice. No global timer, financial reward or capacity change is introduced by these indicators.
 
@@ -98,7 +102,7 @@ Explicit QA/development defaults to the manual editor; `?tycoon` selects player 
 
 QA retains preparation free placement/move/remove, validated manual connections, initial instance choice, delayed preparation scaling, start validation, Build/Manage, manual steps, architecture save/reset, redesign/retry and session comparison. Required resources complete preparation before editor Start. Active disconnected optional resources cost money but do not process traffic; partial optional paths are invalid.
 
-The QA shell is a full alternate application path, not merely a debug overlay. When its storage repository is available it loads the saved architecture at startup and automatically saves architecture changes, in addition to explicit Save/Clear controls. The versioned save stores architecture, not runtime progress. Redesign preserves completed resources/instances and clears scenario counters; unfinished scale-out grants no capacity. Existing session comparison labels different duration/status rather than calling an early failure more efficient. These QA tools are distinct from normal-player challenge progression and history; profiles remain planned.
+The QA shell is a full alternate application path, not merely a debug overlay. When its storage repository is available it loads the saved architecture at startup and automatically saves architecture changes, in addition to explicit Save/Clear controls. The versioned save stores architecture, not runtime progress. Redesign preserves completed resources/instances and clears scenario counters; unfinished scale-out grants no capacity. Existing session comparison labels different duration/status rather than calling an early failure more efficient. These QA tools are distinct from implemented normal-player challenge progression, history and descriptive profiles.
 
 ## Appendix B — Remaining replay scope
 

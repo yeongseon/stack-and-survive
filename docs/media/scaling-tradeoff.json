@@ -1,0 +1,112 @@
+{
+  "sourceCommit": "ff93cd634e185d869d96462518405e09450a3310",
+  "dirtyTree": true,
+  "bundles": [
+    {
+      "path": "/assets/index-BcnlRXpl.js",
+      "sha256": "d5e3e35918fdb3ac229a9d65353a00047294d6e493cf438370cdd2e6353276fb"
+    },
+    {
+      "path": "/assets/index-Bn0hAqdm.css",
+      "sha256": "e7c1b750e5a0eaa8508d691da37ee12d8f4596c1b78dc87c58c9547cd04ff0e5"
+    }
+  ],
+  "capturedAt": "2026-09-20T08:54:23.343Z",
+  "status": "complete",
+  "operator": "Automated ordinary-player input, NOT a human participant",
+  "mode": "Continuous real-time local production gameplay; final inspection is paused. No state injection, acceleration, name or score submission.",
+  "errors": [],
+  "blockedExternalRequests": 0,
+  "leaderboardPosts": 0,
+  "observations": [
+    {
+      "name": "01-title",
+      "approximateVideoSeconds": 0.145322583,
+      "readouts": {},
+      "card": null
+    },
+    {
+      "name": "02-compact-sql",
+      "approximateVideoSeconds": 9.125902041000002,
+      "readouts": {
+        "traffic": "100 req/s",
+        "availability": "100.0%",
+        "budget": "$74.83K",
+        "lost-sales": "$0/s",
+        "mission-clock": "02:59"
+      },
+      "card": null
+    },
+    {
+      "name": "03-more-app",
+      "approximateVideoSeconds": 17.785383833,
+      "readouts": {
+        "traffic": "100 req/s",
+        "availability": "100.0%",
+        "budget": "$73.24K",
+        "lost-sales": "$0/s",
+        "mission-clock": "02:50"
+      },
+      "card": "Close resource\nAzure App Service\nTier 1 · Standard I\n\n■■□□ · 2/4 instances\n\nNo change pending\nScale in\n− Instance\nRemove one machine · 3s\nScale out\n+ Instance\nAdd one machine · 8s\nScale down\n↓ App tier\nAlready at minimum tier\nScale up\n↑ App tier\nStronger machines · 6s\n\nApp pressure: 33%\nCapacity: 300 req/s\n\nRunning $10K/min\n\nMore machines: +8s / −3s. Stronger machines: 6s tier change, higher cost per instance. Current capacity and cost remain until activation."
+    },
+    {
+      "name": "04-sql-bottleneck",
+      "approximateVideoSeconds": 33.958769499999995,
+      "readouts": {
+        "traffic": "260 req/s",
+        "availability": "89.2%",
+        "budget": "$69.41K",
+        "lost-sales": "$56/s",
+        "mission-clock": "02:34"
+      },
+      "card": "Close resource\nAzure SQL\nTier 1 · General Purpose I\n\nPrimary ×1 · Read replicas 0/2\n\nNo change pending\nScale down\n↓ SQL tier\nAlready at minimum tier\nScale up\n↑ SQL tier\nMore reads and writes · 10s\nRemove replica\n− Read replica\nNo read replica to remove\nAdd replica\n+ Read replica\nReads only · 8s\n\nReads: 116% · 180/s\nWrites: 74% · 70/s\n\nRunning $12K/min\n\nTier change: 10s. Read replica: +8s / −3s, +$8K/min each. Replicas never add write capacity. Current capacity and cost remain until activation."
+    },
+    {
+      "name": "05-sql-upgrade-pending",
+      "approximateVideoSeconds": 36.729691708,
+      "readouts": {
+        "traffic": "260 req/s",
+        "availability": "89.2%",
+        "budget": "$69.27K",
+        "lost-sales": "$56/s",
+        "mission-clock": "02:32"
+      },
+      "card": "Close resource\nAzure SQL\nTier 1 · General Purpose I\n\nPrimary ×1 · Read replicas 0/2\n\nRequest queued · starts next tick\nScale down\n↓ SQL tier\nA change is already pending or the resource is inactive\nScale up\n↑ SQL tier\nA change is already pending or the resource is inactive\nRemove replica\n− Read replica\nA change is already pending or the resource is inactive\nAdd replica\n+ Read replica\nA change is already pending or the resource is inactive\n\nReads: 116% · 180/s\nWrites: 74% · 70/s\n\nRunning $12K/min\n\nTier change: 10s. Read replica: +8s / −3s, +$8K/min each. Replicas never add write capacity. Current capacity and cost remain until activation."
+    },
+    {
+      "name": "06-same-demand-recovered",
+      "approximateVideoSeconds": 46.832335041,
+      "readouts": {
+        "traffic": "260 req/s",
+        "availability": "100.0%",
+        "budget": "$68.33K",
+        "lost-sales": "$0/s",
+        "mission-clock": "02:21"
+      },
+      "card": "Close resource\nAzure SQL\nTier 2 · General Purpose II\n\nPrimary ×1 · Read replicas 0/2\n\nNo change pending\nScale down\n↓ SQL tier\nLower reads/writes and cost · 10s\nScale up\n↑ SQL tier\nMore reads and writes · 10s\nRemove replica\n− Read replica\nNo read replica to remove\nAdd replica\n+ Read replica\nReads only · 8s\n\nReads: 69% · 300/s\nWrites: 47% · 110/s\n\nRunning $22K/min\n\nTier change: 10s. Read replica: +8s / −3s, +$8K/min each. Replicas never add write capacity. Current capacity and cost remain until activation."
+    },
+    {
+      "name": "07-paused-review",
+      "approximateVideoSeconds": 47.208973332999996,
+      "readouts": {
+        "traffic": "260 req/s",
+        "availability": "100.0%",
+        "budget": "$68.33K",
+        "lost-sales": "$0/s",
+        "mission-clock": "02:21"
+      },
+      "card": "Close resource\nAzure SQL\nTier 2 · General Purpose II\n\nPrimary ×1 · Read replicas 0/2\n\nNo change pending\nScale down\n↓ SQL tier\nLive actions require running traffic; resume first if paused.\nScale up\n↑ SQL tier\nLive actions require running traffic; resume first if paused.\nRemove replica\n− Read replica\nLive actions require running traffic; resume first if paused.\nAdd replica\n+ Read replica\nLive actions require running traffic; resume first if paused.\n\nReads: 69% · 300/s\nWrites: 47% · 110/s\n\nRunning $22K/min\n\nTier change: 10s. Read replica: +8s / −3s, +$8K/min each. Replicas never add write capacity. Current capacity and cost remain until activation."
+    }
+  ],
+  "rawVideo": "page@a1f0a233cc4910528cd36a1f5aff5b09.webm",
+  "movie": {
+    "file": "scaling-tradeoff.mp4",
+    "sha256": "20ea612ee3a540a086a07f8a470a78d1a6ae851f662d6c0c65974682bf043dfd",
+    "duration": 53.4,
+    "width": 1440,
+    "height": 1000,
+    "audio": "silent; presenter script in docs/DEMO_VIDEO.md",
+    "decode": "complete decode passed"
+  },
+  "captureWorkspaceNote": "Source commit names the runtime; see dirtyTree and bundle hashes for capture identity. This is a locally built candidate, not proof of deployment."
+}

@@ -8,6 +8,8 @@ A real-time cloud infrastructure strategy game: survive a 180-second traffic sur
 
 [**Play the game →**](https://yeongseon.github.io/stack-and-survive/) · [Illustrated guide](docs/PLAYER_GUIDE.md) · [Run locally](#run-locally) · [Development](docs/DEVELOPMENT.md) · [Contributing](CONTRIBUTING.md)
 
+**Implementation status:** [Current release, draft features and remaining issues](docs/CURRENT_STATUS.md). The verified deployed game is `c68ec0c` / rules 0.4. Export to Azure and curated Microsoft Learn result links are implemented only in **unmerged draft PR #316**, not available in the public game. Current global API compatibility is blocked in #306; local play works independently.
+
 ## Watch the two-minute demo
 
 [![Watch the Stack & Survive gameplay demo](docs/media/demo-preview.jpg)](https://raw.githubusercontent.com/yeongseon/stack-and-survive/main/docs/media/stack-and-survive-demo.mp4)
@@ -26,6 +28,8 @@ The official game URL is the GitHub Pages link above. No custom domain is requir
 
 More servers are not always the best answer. App expansion takes time; Cache helps eligible reads but not SQL writes; Protected Edge filters bots but can reject legitimate customers. Your choices change availability, operating costs and the final score.
 
+**See one decision change the outcome:** [53-second current-feature demo and narration](docs/DEMO_VIDEO.md#current-rules-04-the-bottleneck-tradeoff) — App expansion leaves a SQL bottleneck; a delayed SQL tier change restores service at a higher running cost. Continuous automated local gameplay, not a human learning study.
+
 **Current rules 0.4:** App scale-in/out and tier changes, SQL tiers and read replicas are now available through facility inspection. [Scaling guide and actual captured examples](docs/INFRASTRUCTURE_SCALING.md). The video and overview screenshots below document the earlier `24ca388` / rules 0.3 release, not the current interface. See the [dated presentation handoff](docs/submission/HACKATHON_HANDOFF.md) for current verification and release blockers.
 
 - **One living data center:** click facilities and empty bays directly; routes are automatic.
@@ -42,6 +46,7 @@ More servers are not always the best answer. App expansion takes time; Cache hel
 2. Optionally set **Player name**, choose an unlocked challenge and select **Start Game**. A name is never required to play.
 3. Watch **Demand**, **System pressure** and **Next**. Click an empty App bay or the Cache/Edge footprint once to request construction. Capacity becomes available only after its activation delay.
 4. Use **Learn** for capacity and routing explanations. **Pause** or **Escape** opens the game menu; **Inspect paused world** keeps time stopped. **Resume** restarts it explicitly.
+   Use bottom **App scaling / SQL scaling** for instance, tier and read-replica controls; the upper-right **Azure service guide** explains all represented roles and opens inspection. SQL starts compact and grows only after tier activation. Scale-in/down reduces future capacity/cost; it does not refund past expense.
 5. Inspect the score and **Details**. A qualifying result shows **Player name → Join Leaderboard** when no valid name is saved. A saved name may submit the next qualifying run automatically; it is shown beside the result. Name changes do not rename old entries.
 6. Try another architecture or advance to the next unlocked objective. Each attempt starts with fresh infrastructure; history and unlocked challenges remain on this device.
 

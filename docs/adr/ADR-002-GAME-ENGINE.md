@@ -17,7 +17,7 @@ Stack & Survive requires:
 - React HUD integration
 - A renderer-independent simulation
 
-See [Technical Design, sections 17–21](../TECHNICAL_DESIGN.md#17-game-engine-decision).
+See [the current Technical Design architecture](../TECHNICAL_DESIGN.md#architecture); the original decision and measurements in this ADR remain historical evidence.
 
 ## Candidates
 

@@ -102,6 +102,12 @@ Label paused gameplay and recorded footage honestly. If the API is unavailable, 
 
 “It helped with implementation, art iteration, test writing and documentation. We ran the tests and checked the output. AI review doesn't replace real player feedback, listening checks or rights decisions.”
 
+If asked about Export to Azure: “There is an implemented draft for post-run Bicep generation through Azure OpenAI and curated Microsoft Learn links. It is not deployed; real-model generation/compilation needs verification and server resources/settings.” Do not show mock output as a live response. [Current status](../docs/CURRENT_STATUS.md) owns the boundary.
+
+### Can you reduce capacity or strengthen SQL?
+
+“Yes. App scaling controls instance count and tier; SQL scaling controls tier and read replicas. Changes take time and alter running cost. Read replicas do not add write capacity.” The 53.4-second clip shows this current tradeoff; slides retain older screenshot provenance.
+
 ### Is this official Microsoft training material?
 
 “No. This is my own idea from working in support. It isn't Microsoft's assessment of Microsoft Learn or an endorsed training product. The presentation includes no identifying customer information or private support cases.”

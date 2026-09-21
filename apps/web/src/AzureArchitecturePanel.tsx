@@ -17,10 +17,11 @@ export function AzureArchitecturePanel({ controller, view, navigation, onInspect
   const dismiss = () => { setOpen(false); trigger.current?.focus(); };
   const nodes = azureNodePresentations(view);
   return <aside className="azure-catalog" aria-label="Azure architecture catalog">
-    <button ref={trigger} type="button" className="azure-catalog-toggle" aria-expanded={open} aria-controls={id} onClick={() => setOpen(!open)}>Azure services</button>
+    <button ref={trigger} type="button" className="azure-catalog-toggle" aria-label="Azure service guide" aria-describedby={`${id}-hint`} aria-expanded={open} aria-controls={id} onClick={() => setOpen(!open)}><span aria-hidden="true">ⓘ </span>Azure service guide<small id={`${id}-hint`}>Resource roles &amp; status</small></button>
     {open && <section id={id} className="azure-services-panel" aria-label="Azure services panel" onKeyDown={event => { if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); dismiss(); } }}>
-      <header><div><small>ARCHITECTURE</small><h2>Service roles</h2></div><button ref={close} type="button" onClick={dismiss}>Close services</button></header>
-      <p className="azure-catalog-note">{view.state.runtime.status === 'PAUSED' ? 'Paused · last measured state.' : 'Read-only status; actions below use the existing game rules.'} Utilization is request pressure, not CPU. Costs are simulated.</p>
+      <header><div><small>SERVICE GUIDE</small><h2>Service roles</h2></div><button ref={close} type="button" onClick={dismiss}>Close services</button></header>
+      <p className="azure-catalog-note">Select a service to inspect it. Use App scaling or SQL scaling at the bottom of the world for tier and capacity controls.</p>
+      <p className="azure-catalog-note">{view.state.runtime.status === 'PAUSED' ? 'Paused · last measured state.' : 'Live status; explicit action buttons below change the game.'} Utilization is request pressure, not CPU. Costs are simulated.</p>
       {nodes.map(node => {
         const service = azureServices[node.service];
         const resource = view.state.runtime.architecture.resources.find(r => r.kind === node.kind);

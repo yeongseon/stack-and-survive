@@ -4,6 +4,8 @@ All operational metrics are read-only projections of existing simulation state. 
 
 These values do NOT represent real Azure Monitor telemetry. They are educational approximations derived from the game simulation.
 
+The CPU/p95 field names below describe the additive operations helper, **not measured CPU or a measured latency percentile**. Ordinary UI uses request utilization and actual average latency; do not label these synthetic fields as telemetry. Provisioning is shown as lifecycle/unknown measurement rather than a proven outage. At `c68ec0c`, tier/replica capacity and running cost use the active resource definition.
+
 ## Metric Derivations
 
 | Metric | Source | Formula |
@@ -41,6 +43,6 @@ These values do NOT represent real Azure Monitor telemetry. They are educational
 
 Uses existing simulation educational cost units. NOT based on Azure pricing.
 
-Infrastructure costs per minute: App Service 5, Azure SQL 12, Redis Cache 8, WAF/Edge 3.
+Base-tier costs per minute: App instance 5, SQL primary 12, Cache 8, Edge 3. App/SQL higher tiers and read replicas use [current scaling costs](INFRASTRUCTURE_SCALING.md#mechanics); the base figures are not fixed prices for every architecture.
 Emergency WAF: 8 units per activation (30-tick duration).
 Revenue: browse 0.002 per request, order 0.05 per request.

@@ -39,7 +39,7 @@ The development root is intentionally the QA/editor. Seeing it is not a broken p
 
 ![Production player view, distinct from the development QA editor.](images/opening.webp)
 
-The image above is an actual production capture, not an editor screenshot. The [player guide](PLAYER_GUIDE.md) describes the UI you should see at `/?tycoon` during development or `/` in production.
+The image above is a **historical rules 0.3 / `24ca388`** production capture, not the current 0.4 interface. The [player guide](PLAYER_GUIDE.md) and [scaling guide](INFRASTRUCTURE_SCALING.md) describe current controls; [Current status](CURRENT_STATUS.md) distinguishes main from draft Export/Learn work.
 
 ## Workspace map and change boundaries
 
@@ -90,6 +90,8 @@ On Linux CI, Playwright may also require system dependencies (`pnpm exec playwri
 | Focused unit test | `pnpm exec vitest run apps/web/src/money.test.ts` | Fast pure/UI contract checks |
 | Real ordinary-player loop | `pnpm build` then `pnpm test:player` | Real-time runs; full suite can take many minutes |
 | Client API/identity | `pnpm test:release` | Starts isolated dev server; mock API, no production POST |
+| Infrastructure scaling | `pnpm build` then `pnpm exec playwright test --config playwright.scaling.config.ts` | Real scaling, viewport and mouse/touch regressions |
+| Azure service guide/tutorial | `pnpm build` then `pnpm exec playwright test --config playwright.azure-visual.config.ts` | Service roles, focus, unchanged actions and responsive drawer |
 | QA integration | `pnpm build:qa` then `pnpm test:browser` | Controlled-state coverage, not human gameplay evidence |
 | Pages | `pnpm build:pages` then `pnpm test:pages` | Project base, assets, metadata, reload and 404 recovery |
 | Hardware smoke | `pnpm build:qa` then `pnpm test:performance` | Device-specific; macOS ANGLE/Metal configuration is not a portable FPS promise |
@@ -128,6 +130,8 @@ Open the printed frontend origin with `/?tycoon`. `VITE_LEADERBOARD_API` is **bu
 Do not add credentials to `VITE_*`, commit `.env` or use real public submissions as routine tests. Score computation, supported challenges and nickname rules must remain aligned with [the API contract](LEADERBOARD_API_CONTRACT.md). Azure restart/deployment/storage changes require backend-owner coordination.
 
 ## Screenshots and demo evidence
+
+For the current-feature tradeoff recording: `node scripts/capture-tradeoff.mjs` rebuilds production, performs ordinary inputs and records observed App/SQL behavior. FFmpeg/ffprobe and Chromium are required; capture uses port 43879. Inspect frames/manifest, then `node scripts/publish-tradeoff.mjs <capture-directory>` copies verified media into docs; `node scripts/check-tradeoff.mjs` checks hash, format, measurements and full decode. This is local publication preparation, not submission or human evidence. [Demo provenance](DEMO_VIDEO.md) distinguishes the 53.4-second clip from the historical two-minute edit.
 
 ```bash
 pnpm exec playwright install chromium

@@ -8,7 +8,7 @@
 
 Due changes activate before the tick's actions and traffic. Conflicting changes on one facility serialize; App and SQL may change concurrently. In-flight scale-in retains old capacity/cost for3ticks, then removes the highest bay. Vertical updates retain old capacity/cost during their delay and do not add buildings. Read replicas add180read/s each, zero write/s. New history and leaderboard identities distinguish rules0.4.
 
-## Current balance 0.3 — Final Hackathon sprint #212
+## Historical balance 0.3 foundation — Final Hackathon sprint #212
 
 This section supersedes conflicting budget/workload/version statements in the historical v0.2 specification below. The v0.2 rules and arithmetic reference remain explicitly supported for old replay regression and the QA editor; they are not current ordinary-player balance. No scoring formula, resource capacity, delay, routing, failure streak or per-success revenue value changes in v0.3.
 
@@ -48,7 +48,7 @@ Measured live schedules start Internet/App1/SQL. A=scale, C=Cache, E=Edge; reque
 
 These are measured references in `sprint-balance.test.ts`, not global optimality or human evidence. Candidate100 funds left >50cr for efficient plans;75 preserves headroom differences and existing99%/99.9% objective reachability. Old reference tests continue against frozen `black-friday-v02.json`; no tests skipped.
 
-Challenge rulesVersion must equal workload balanceVersion. Ordinary ladder uses0.3; history/progress keys include `balance-0.3`, leaving old keys untouched. Old identity cannot compare/unlock new balance; never relabel old metrics as0.3.
+Challenge rulesVersion must equal workload balanceVersion. At the historical #212 release the ladder/history/progress used 0.3. Current ordinary play uses 0.4 and `balance-0.4` keys under #305; legacy keys remain untouched. Never relabel old metrics or compare/unlock across versions.
 
 ## Historical balance 0.2 specification and references
 

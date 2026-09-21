@@ -1,4 +1,4 @@
-.scaling-controls { display: grid; gap: 6px; font-size: 13px; }
+.scaling-controls { display: grid; gap: 6px; font-size: 13px; clear: both; }
 .scaling-controls p { margin: 3px 0; line-height: 1.5; }
 .scaling-controls > strong { font-size: 15px; }
 .scaling-action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }

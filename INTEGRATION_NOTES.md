@@ -1,5 +1,7 @@
 # Cross-branch integration requirements
 
+Current checkpoint: merged main `c68ec0c`. Azure visual/operations and rules 0.4 scaling are integrated; original handoff notes below are boundaries, not pending merge instructions. **Azure service guide**, visible scaling/compact SQL and bounded inspector are delivered. Export plus Microsoft Learn exists only in draft PR #316 (head `5ed4b9e`), not main. AI Coach remains separate and unmerged. [Current status](docs/CURRENT_STATUS.md) owns release/gate evidence.
+
 ## Computer 2 — telemetry and simulation owner
 
 - Computer 1 adds `azure-presentation.ts`, a read-only adapter over existing `View` and `resourceVisualState`. Do not feed fabricated `appCpuPercent` or `p95LatencyMs` into it: current data is **request utilization** and **average latency**, not CPU or percentile latency. The proposed `SimulationMetrics` interface needs optional/unavailable support or genuine observations before those fields can be displayed.
@@ -21,7 +23,7 @@
 
 ## Infrastructure scaling (Computer 1 → Computer 3 art)
 
-Rules0.4 is implemented on `feat/infrastructure-scaling`; exact mechanics, server-first release requirement and optional image names are in `docs/INFRASTRUCTURE_SCALING.md`. Optional inventory record names: `app-service-tier-1/2/3`, `app-module-tier-1/2/3`, `azure-sql-tier-1/2/3`, `azure-sql-replica`. Preserve existing canvas/origin/bay geometry. Unregistered or failed optional textures fall back to original assets; no engine state depends on images. Computer1 has not edited `art/**` or public assets.
+Rules 0.4 is merged through #305; exact mechanics and optional names are in `docs/INFRASTRUCTURE_SCALING.md`. Deployment compatibility is blocked in #306. Optional names: `app-service-tier-1/2/3`, `app-module-tier-1/2/3`, `azure-sql-tier-1/2/3`, `azure-sql-replica`. Preserve canvas/origin/bay geometry; unavailable textures fall back to originals. SQL active-tier size is shared with hit/label/lighting anchors; engine state never depends on images.
 
 The operations resource projection now reads actual tier/replica capacity and cost; SQL peak utilization remains a ratio (not divided by capacity again). Existing synthetic CPU/p95 fields are not used as measured values by scaling UI. Typed incidents for tier/draining/replica transitions can be added by the observation owner later; current runtime pending changes are authoritative and available without timers.
 

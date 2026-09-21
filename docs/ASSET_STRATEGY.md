@@ -1,6 +1,6 @@
 # Asset strategy
 
-Version: 1.1. Policy for Epic #142. Current originals and Azure files are documented in [ATTRIBUTION](../apps/web/public/assets/ATTRIBUTION.md). The inventory/validation implementation for #143 uses [art/asset-manifest.json](../art/asset-manifest.json) and [scripts/asset-manifest.mjs](../scripts/asset-manifest.mjs).
+Version: 1.2. Current policy retains delivered #142/#143 safeguards. V3 sources/outputs are in `art/v3/` and `public/assets/v3/`; [ATTRIBUTION](../apps/web/public/assets/ATTRIBUTION.md), [manifest](../art/asset-manifest.json) and [checker](../scripts/asset-manifest.mjs) own exact inventory. Historical V2 development notes below are not outstanding tasks.
 
 ## Sourcing policy
 
@@ -22,7 +22,7 @@ No competitor logos, screenshots, copied UI, characters, sounds or extracted ass
 | Edge | Original gateway | Pass-through/scanning state clarity / #145, #148 |
 | Props | Procedural indoor equipment | Selected coherent free variants / #146 |
 | Light/shadow | Procedural overlays | Reusable low-cost pools/shadows / #147 |
-| Audio | None | Original synthesis or reviewed free cues / #149 |
+| Audio | Delivered original code synthesis, no external sound files | Actual listening/device acceptance remains #149 |
 | UI/title | Original React/CSS/SVG | Consistent materials and accessible controls |
 
 Reuse only if perspective, pixels-per-unit, palette, contrast and lighting direction fit. Do not fill the floor randomly. No roads/cars/forklifts/trees/warehouse pallets. Background props frame the working aisle, not compete with interactive services.
@@ -33,7 +33,7 @@ Manifest version 1 separates reusable provenance records from individual output 
 
 New external runtime files require an approved CC0-1.0 or CC-BY-4.0 declaration with local license/review evidence; CC-BY additionally requires explicit attribution text. Unreviewed candidates stay outside public runtime assets and outside the approved inventory. Approval fields document a human decision; the checker cannot decide legal applicability or verify the truth of a license declaration.
 
-Existing owner-directed Azure V24 files have a narrow exception in integrity mode: only the five exact IDs, local paths, archive member paths and hashes from the pinned V24 archive may retain their current `rights-pending` declaration. This is **not** an import permission or clearance. Original buildings have `LicenseRef-Project-Unselected`, also pending. `pnpm check:assets:release` currently fails intentionally for all ten files until #164 resolves rights and the policy/manifest is explicitly reviewed. Do not change pending to approved just to make the command green.
+Existing Azure V24 files retain a narrow integrity exception for five exact IDs/paths/hashes. This is not rights clearance. Original building and later V3 provenance remains project-license-unselected. General `check:assets:release` intentionally rejects unresolved rights across the current inventory, not just the historical ten-file baseline. Never mark approval merely to make a command green.
 
 Current layout: `art/buildings/` editable originals/bounds, `apps/web/public/assets/buildings/` PNGs, `azure-icons/` original badges/terms, and `ATTRIBUTION.md`. Future environment/audio directories are added only when real reviewed files exist. Generated scripts must not require secret tokens in source.
 
@@ -63,4 +63,4 @@ Capture reachable normal/pending/active/pressure fixtures at five supported widt
 
 ## Audio / accessibility
 
-Future audio starts only after an explicit user gesture, offers mute/volume and bounded cues, and cleans up on reset/pause/dispose as specified. Haptics are optional and feature-detected, never required to understand state. All audio/motion effects need visual/static equivalents. No event per simulated request or repetitive critical alarm spam.
+Implemented audio starts only after an explicit user gesture, offers mute/volume and bounded cues, and cleans up on reset/pause/dispose. Haptics are optional and feature-detected; visual/static equivalents remain. No per-request alarm spam is intended. Actual listening/physical-device acceptance is still required; see [Audio feedback](AUDIO_FEEDBACK.md).

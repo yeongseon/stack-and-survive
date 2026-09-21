@@ -1,6 +1,6 @@
 # Local run records and personal bests
 
-Implementation scope: #156/#212. Current0.3 records use `stack-and-survive.history.balance-0.3.v1`, and progress uses `stack-and-survive.progress.balance-0.3.v1`. Old v1 keys remain untouched; no silent relabeling/deletion. Only exact current ladder identities can populate current bests/unlocks. The record schema stays unchanged; rulesVersion/workload balance must agree. Legacy0.2 replay remains supported explicitly but cannot establish0.3 records. These browser records are not accounts, anti-cheat evidence or a saved running game.
+Implementation scope: #156/#212/#305. Current 0.4 history uses `stack-and-survive.history.balance-0.4.v1`, progress uses `stack-and-survive.progress.balance-0.4.v1`. Legacy 0.2/0.3 keys remain untouched; no silent relabeling/deletion. Only exact current ladder identities populate current bests/unlocks. RulesVersion and workload balance must agree; tier/instance/replica state and actions survive validated replay. These records are not accounts, anti-cheat evidence or a saved running game.
 
 ## Storage and comparison
 

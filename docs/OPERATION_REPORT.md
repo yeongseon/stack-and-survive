@@ -1,5 +1,7 @@
 # Player console and operation report
 
+Current rules 0.4 additionally show final active App/SQL tiers, instances/read replicas and optional-resource provisioning. Optional global ranking is distinct from local records and currently blocked for 0.4 by #306. Export to Azure/Microsoft Learn panels remain draft-only #316; they are not part of this deployed report. See [Current status](CURRENT_STATUS.md).
+
 Issues #157/#158 and owner feedback on low gameplay UI quality. The existing engine, workload, resource geometry, Azure badges and asset inventory remain unchanged.
 
 ## Presentation

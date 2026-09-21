@@ -1,5 +1,7 @@
 # Balance Simulation Report
 
+> Historical rules 0.3 strategy observations. Do not recalculate or relabel these numbers as current 0.4 benchmarks. Current tier/instance/replica measurements are in [Infrastructure Scaling](INFRASTRUCTURE_SCALING.md); [Current status](CURRENT_STATUS.md) owns deployment and evidence limits.
+
 ## Test Configuration
 
 - Commit: `47188e2` (adversarial QA baseline, updated in strengthening pass)

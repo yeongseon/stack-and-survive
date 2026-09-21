@@ -2,19 +2,21 @@
 
 ## Current deployment
 
-- **Service:** Azure App Service (`stack-survive-leaderboard`)
+- **Service:** MCAPS Azure App Service `stack-survive-mcaps-ychoe`, resource group `rg-stack-survive`
 - **Storage:** FileStorage at `/home/data/leaderboard.json`
-- **Persistent path:** `/home/` survives restarts and redeploys
+- **Persistent path:** `/home/` is intended persistent storage; actual restart-event durability evidence is still required
 - **Replicas:** Single instance (required for file-based storage)
 
 ## Pre-demo backup
+
+Read [current status](CURRENT_STATUS.md) first: current 0.4 reads are blocked (#306), deployment access returned 403, and backup/restart instructions are not proof or authorization to execute them. Preserve raw backups privately; never commit public-board data or credentials.
 
 Before any demo or presentation:
 
 ```bash
 # 1. Record current state
 TIMESTAMP=$(date +%Y%m%dT%H%M%S)
-API=https://stack-survive-leaderboard.azurewebsites.net
+API=https://stack-survive-mcaps-ychoe.azurewebsites.net
 
 curl -s "$API/api/health" | jq .
 curl -s "$API/api/leaderboard?challenge=<hash>" | jq '.entries[:10]'
@@ -53,7 +55,7 @@ The server automatically quarantines corrupt files on startup, renaming them to 
 
 Recovery sequence:
 
-1. Stop accepting new submissions if necessary (scale to 0 instances or block POST at App Service networking level)
+1. Arrange authorized maintenance and stop/block writes through the approved operational path; do not assume scaling the App Service plan to zero is available.
 2. SSH into the App Service via Azure Portal
 3. Preserve the current file:
    ```bash
@@ -77,7 +79,7 @@ Recovery sequence:
    ```
 7. Restart the App Service:
    ```bash
-   az webapp restart --name stack-survive-leaderboard --resource-group <rg>
+    az webapp restart --subscription <confirmed-mcaps-subscription-id> --name stack-survive-mcaps-ychoe --resource-group rg-stack-survive
    ```
 8. Verify:
    ```bash
@@ -102,12 +104,12 @@ After any restart, verify entries survive:
 curl -s ".../api/leaderboard?challenge=<hash>" | jq '.entries | length'
 
 # Restart
-az webapp restart --name stack-survive-leaderboard --resource-group <rg>
+az webapp restart --subscription <confirmed-mcaps-subscription-id> --name stack-survive-mcaps-ychoe --resource-group rg-stack-survive
 
 # Wait for health
 until curl -sf .../api/health > /dev/null; do sleep 5; done
 
-# Verify entries are identical
+# Compare complete entries/identities/ranks to the saved snapshot; count alone is insufficient
 curl -s ".../api/leaderboard?challenge=<hash>" | jq '.entries | length'
 ```
 

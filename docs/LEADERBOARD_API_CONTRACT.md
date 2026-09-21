@@ -1,5 +1,7 @@
 # Leaderboard API Contract
 
+Leaderboard contract follows merged `c68ec0c` and is unchanged by this branch. Deployed MCAPS compatibility remains blocked in #306; see [Current status](CURRENT_STATUS.md). This draft #316 branch adds `/api/export-bicep` and `ai` health status as documented in [deployment guidance](LEADERBOARD_DEPLOYMENT.md); neither is claimed deployed. Agent #323 adds its separate endpoint only on the stacked branch.
+
 ## POST /api/leaderboard
 
 Submit a completed run for server-verified scoring.
@@ -23,7 +25,7 @@ The server ignores any client-provided `score`, `availability`, `objectiveMet`, 
 ### Server processing
 
 1. Validate nickname (2-16 alphanumeric/hyphen/underscore)
-2. Validate clientRunId (8-64 alphanumeric)
+2. Validate clientRunId (8–64 ASCII letters/digits, underscore or hyphen)
 3. Resolve challenge by contentHash (must be in supported list)
 4. Parse and validate action schedule
 5. Load canonical starting architecture
@@ -92,6 +94,8 @@ Returns `available: true` even for empty boards (server is reachable).
 | 429 | Rate limit exceeded (60 GET/min per IP) |
 
 ## GET /api/health
+
+An optional `version` field is included when `BUILD_SHA` is set. Its absence is not a verified source identity. A healthy response does not prove the currently played challenge is supported.
 
 ```json
 { "status": "ok", "storage": "file", "requests": 42, "uptimeSeconds": 3600 }

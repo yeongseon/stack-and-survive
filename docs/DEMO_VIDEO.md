@@ -1,6 +1,33 @@
 # Stack & Survive — demo video
 
+[Current status](CURRENT_STATUS.md) distinguishes deployed `c68ec0c`, local recording sources below and unmerged AI Export/Learn #316. The 0.4 clip's inspector fix is incorporated through #319; the video still records its original `ff93cd6` local run, not a new public-site recording.
+
 [Back to README](../README.md) · [Play the game](https://yeongseon.github.io/stack-and-survive/)
+
+## Current rules 0.4: the bottleneck tradeoff
+
+[![SQL bottleneck on the current scaling interface](media/scaling-tradeoff-preview.jpg)](https://raw.githubusercontent.com/yeongseon/stack-and-survive/main/docs/media/scaling-tradeoff.mp4)
+
+**[Watch the 53.4-second current-feature clip](https://raw.githubusercontent.com/yeongseon/stack-and-survive/main/docs/media/scaling-tradeoff.mp4)** · [machine-readable provenance](media/scaling-tradeoff.json)
+
+One continuous, unaccelerated local production recording from runtime source `ff93cd6` (released `4c3e1e7` plus the inspector-boundary fix). Automated ordinary-player controls; no state injection, player name or public score submission. Silent H.264, 1440×1000, 25fps, 53.4 seconds; full-file decode verified. The 1440×900 game is preserved above a provenance footer. Final inspection is **paused**, not a completed 180-second run. This recording proves the observed game behavior, not human learning, real Azure performance or deployment status.
+
+| Approximate clip time | Actual observation | Suggested spoken English |
+|---|---|---|
+| 0–9s | Title, countdown, compact Tier 1 SQL | “Infrastructure decisions are easier to understand when you can see their consequences.” |
+| 9–18s | App scale-out request and real activation delay | “I add another App machine. More capacity arrives after construction, not immediately.” |
+| 18–34s | SQL inspection; demand rises to 260 req/s | “The App now has enough capacity, but SQL reads are at 116%. Availability falls to 89.2%, losing 56 simulated dollars per second.” |
+| 34–47s | SQL tier upgrade requested; old capacity remains during the delay | “More App machines won't fix this database bottleneck. I scale up SQL and wait for the change to take effect.” |
+| 47–53.4s | Same 260 req/s, SQL reads 69%, availability 100%, losses zero; final inspection paused | “The same workload now recovers. But SQL running cost rises from 12 to 22 thousand simulated dollars per minute. The game is about the right tradeoff—not building everything.” |
+
+The suggested narration is a descriptive transcript, not a timed human read-aloud. Shorten it for a live delivery. These are current tick values, not full-run averages. Cache or a read replica can be other choices for a read bottleneck; this clip does not establish SQL tier-up as optimal. Counts, prices and delays are game abstractions, not Azure pricing or benchmarks.
+
+- MP4 SHA256: `20ea612ee3a540a086a07f8a470a78d1a6ae851f662d6c0c65974682bf043dfd`.
+- Captured 2026-09-20 UTC; workspace contained uncommitted capture/docs work, disclosed as `dirtyTree: true`. Runtime source was committed; JS/CSS hashes and raw observations are in the manifest. Raw files remain under ignored `test-results-submission/`.
+- Reproduce: `pnpm build`, then `node scripts/capture-tradeoff.mjs`. Requires FFmpeg/ffprobe and installed Chromium. Inspect frames, then run `node scripts/publish-tradeoff.mjs <successful capture directory>`. Publishing here means copying verified files into the repository, not deploying or submitting to an event.
+- Current global API compatibility remains blocked in #306. This clip makes no leaderboard-success claim.
+
+## Historical two-minute overview — rules 0.3
 
 [![Open the gameplay video](media/demo-preview.jpg)](https://raw.githubusercontent.com/yeongseon/stack-and-survive/main/docs/media/stack-and-survive-demo.mp4)
 

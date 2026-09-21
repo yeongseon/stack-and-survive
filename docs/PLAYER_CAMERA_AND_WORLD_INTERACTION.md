@@ -8,7 +8,7 @@ The data-center world is the primary interaction surface. Players notice pressur
 
 **Camera is presentation state, not runtime state.**
 
-This contract owns cross-layer camera/gesture/interaction rules. A narrower math or implementation note such as `PLAYER_CAMERA.md`, when merged with #187, must explain its implementation of this contract rather than establish competing ownership or promise features not yet integrated.
+This contract owns cross-layer camera/gesture/interaction rules. The merged `PLAYER_CAMERA.md` note explains this contract's implementation rather than competing ownership. Current SQL active-tier art/hit scale changes are independent of canonical camera framing; visible App/SQL scaling and Azure service guide supplement direct-world interaction.
 
 ## State ownership and coordinates
 
@@ -124,7 +124,7 @@ After the relevant implementation merges:
 
 SIMULATION_SPEC, strategy balance, run-history/challenge semantics and asset policy/inventory need no changes for this epic. A proposed change there requires separate scope review, not a camera shortcut. Archives remain historical.
 
-Actual unfamiliar-person review follows Production Art V3 and records #25/#195/#159 questions verbatim without prompting replay. #151 is retired; do not reconstruct a historical baseline. #132/#160–#163 are not planned in current Hackathon scope. Never substitute AI scores or screenshots for human evidence.
+Actual unfamiliar-person review uses the delivered build and records #25/#195/#159 verbatim without prompting replay. #151 is retired; do not reconstruct a baseline. #160–#163 remain not planned. Original #132 is historical; separate #305 delivered scale-in under 0.4. Never substitute AI scores/screenshots for human evidence.
 
 ## Reference basis
 

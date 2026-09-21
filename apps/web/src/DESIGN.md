@@ -1,5 +1,7 @@
 # First-run clarity presentation contract
 
+Merged scope note: this records #294's first-run presentation work, integrated before current `c68ec0c`. The adaptive WorldGuide coexists with a separate optional four-step Azure architecture tutorial; the original “only tutorial” wording below means no additional onboarding was introduced by #294. Later visible App/SQL scaling and **Azure service guide** are documented in [Gameplay](../../../docs/GAMEPLAY_SPEC.md). No AI Export/Learn UI is merged in this runtime; see [Current status](../../../docs/CURRENT_STATUS.md).
+
 ## Scope and audience
 Computer B owns title, briefing, opening, WorldGuide copy, phase arrival and local action explanations. First-time judges must see Black Friday, duration, rising demand/bots and App/Cache/Edge choices before Learn. Preserve existing components; no GameResult, backend, simulation, economy, art or submission changes.
 
