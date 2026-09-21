@@ -21,7 +21,7 @@ The video is a narrated slide presentation with real screenshots, **not moving/l
 | 1:30–1:45 | Reflect, try again, return to Microsoft Learn |
 | 1:45–2:00 | Make the first step into Azure easier |
 
-Current audio is an **offline synthetic draft, macOS Samantha at 155 words/minute**, not the developer's recorded voice or an impersonation. A personal recording is recommended for final delivery. The renderer supports eight owner-provided WAV files and rejects recordings that exceed their allotted duration. No music, game audio or dramatic transitions are added. English captions are selectable and available as SRT; their sentence timing is approximate, not forced-aligned. Provenance is not burned onto the audience frames. Human listening, pronunciation, consent/voice rights and event review remain separate.
+Current audio is **stock neural English `en-US-GuyNeural` at default rate and pitch**, replacing the basic macOS Samantha version after owner feedback. **[Listen to the opening sample](media/narration-sample.mp3)** before downloading the full video. It is synthetic—not the developer, voice cloning or proof of a human performance. Voice selection is not a claim of independently measured popularity or guaranteed naturalness. No music, game audio or dramatic transitions are added. English captions remain selectable and available as SRT; sentence timing is approximate, not forced-aligned. Audio provenance stays in companion files. Human listening, pronunciation, provider/voice rights and event review remain separate.
 
 The new video has 3,000 frames at 25fps, **1440×900**, H.264/AAC, and a 120.000s video/audio duration. Exact bytes, source hashes and audio origin are in the manifest. It intentionally replaces the previous overly mechanical introduction at the same URL; that version remains in Git history. Historical technical recordings below are separate evidence, not the final presentation.
 
@@ -33,12 +33,27 @@ node showcase/check.mjs
 node showcase/export-pdf.mjs
 # Best: record slide-1.wav through slide-8.wav in your own voice
 node scripts/render-project-video.mjs --narration-dir=/absolute/path/to/recordings
-# Alternative: offline synthetic draft on macOS
+# Basic offline fallback only, not the current published neural voice
 node scripts/render-project-video.mjs --voice
 node scripts/check-project-media.mjs
 ```
 
-`showcase/story.json` owns narration and timings; the renderer uses `slides.html`/CSS directly, hides navigation and rejects forbidden visible production/marketing labels. It preserves the existing screenshot pack and its provenance rather than re-encoding images. With neither audio option, output is silent with transcript/SRT/selectable subtitles. FFmpeg/ffprobe and Chromium are required; no network voice or runtime dependency is added. Regenerating raw screenshots is a separate task via `capture-current-media.mjs`, not a side effect of rendering this talk.
+`showcase/story.json` owns narration and timings; the renderer uses `slides.html`/CSS directly, hides navigation and rejects forbidden visible production/marketing labels. It preserves the existing screenshot pack and its provenance rather than re-encoding images. With neither audio option, output is silent with transcript/SRT/selectable subtitles. FFmpeg/ffprobe and Chromium are required. Rendering existing WAVs is local; the separately opted-in neural generator below uses network speech. No application/runtime dependency is added. Regenerating raw screenshots is a separate task, not a side effect of rendering this talk.
+
+### Neural narration regeneration
+
+This is **not offline synthesis**. With explicit `--allow-network`, only the public `showcase/story.json` narration is sent to Microsoft Edge's online TTS service using the third-party [edge-tts](https://github.com/rany2/edge-tts) CLI, pinned to 7.2.7. No Azure account/resource/key is created or configured, and no npm/application dependency changes. Network availability, service behavior and applicable provider terms are outside this repository's guarantees.
+
+```bash
+python3 -m venv test-results-submission/neural-tts-env
+test-results-submission/neural-tts-env/bin/python -m pip install edge-tts==7.2.7
+node scripts/generate-neural-narration.mjs --allow-network --cli=/absolute/path/to/neural-tts-env/bin/edge-tts
+# Use the generated output path printed by the command above:
+node scripts/render-project-video.mjs --narration-dir=/absolute/path/to/neural-narration-output
+node scripts/check-project-media.mjs
+```
+
+The generator preserves default `+0%` rate / `+0Hz` pitch. It fails if a segment does not fit—shorten the script or adjust slide allocations, not the audio playback speed. The source manifest binds voice/provider/version, full story, individual text and WAV hashes. Render checks that manifest and discloses neural generation in the video manifest/transcript. The sample is the same first-slide audio, normalized like the full track. Individual source audio stays in ignored local folders; only final video/sample/provenance are published. A missing/blocked neural service does not silently fall back to Samantha. Confirm terms and listen before submission.
 
 Each render uses a fresh ignored output folder. The manifest binds deck/story/image hashes to the video, records the toolchain and audio origin, and lets the checker reject an out-of-date video. This is workflow reproducibility, not cross-platform byte identity or signed provenance. Human pacing and subtitle alignment still need review.
 

@@ -20,13 +20,35 @@ assert.equal(story.slides.length, 8);
 assert.equal(story.slides.reduce((sum, slide) => sum + slide.duration, 0), 120);
 assert.equal(images.status, 'complete'); assert.equal(images.publicScorePosts, 0);
 const sha256 = bytes => createHash('sha256').update(bytes).digest('hex');
+let narrationSource = null;
+if (narrationDirectory) {
+  try { narrationSource = JSON.parse(await readFile(resolve(narrationDirectory, 'narration-source.json'), 'utf8')); }
+  catch (error) { if (error.code !== 'ENOENT') throw error; }
+  if (narrationSource) {
+    assert.equal(narrationSource.version, 1); assert.equal(narrationSource.kind, 'synthetic');
+    assert.equal(narrationSource.voice, 'en-US-GuyNeural');
+    assert.equal(narrationSource.rate, '+0%'); assert.equal(narrationSource.pitch, '+0Hz');
+    assert.equal(typeof narrationSource.provider, 'string'); assert.ok(narrationSource.provider.length <= 200);
+    assert.equal(narrationSource.storySha256, sha256(await readFile(`${root}showcase/story.json`)));
+    assert.equal(narrationSource.slides.length, 8);
+    assert.deepEqual(narrationSource.slides.map(slide => slide.id), story.slides.map(slide => slide.id));
+    for (const slide of story.slides) {
+      const recorded = narrationSource.slides.find(item => item.id === slide.id);
+      assert.equal(recorded.textSha256, sha256(Buffer.from(slide.narration)));
+      assert.equal(recorded.wavSha256, sha256(await readFile(resolve(narrationDirectory, `${slide.id}.wav`))));
+    }
+  }
+}
 const ffmpeg = args => execFileSync('ffmpeg', ['-hide_banner', '-loglevel', 'error', '-y', ...args], { stdio: 'inherit' });
 const probe = file => JSON.parse(execFileSync('ffprobe', ['-v', 'error', '-show_format', '-show_streams', '-of', 'json', file], { encoding: 'utf8' }));
 const parent = `${root}test-results-submission`; await mkdir(parent, { recursive: true });
 const output = await mkdtemp(`${parent}/personal-story-`);
 const files = ['showcase/slides.html', 'showcase/slides.css', 'showcase/slides.js', 'showcase/story.json'];
 const sourceFiles = await Promise.all(files.map(async file => ({ file, sha256: sha256(await readFile(`${root}${file}`)) })));
-const toolchain = { node: process.version, platform: process.platform, chromium: '', ffmpeg: execFileSync('ffmpeg', ['-version'], { encoding: 'utf8' }).split('\n')[0], voice: voice ? 'macOS Samantha, 155 words/minute' : narrationDirectory ? 'Presenter-supplied per-slide WAV recordings' : 'none' };
+const audioDescription = voice ? 'Synthetic offline macOS Samantha fallback narration, 155 words/minute; not the developer recording his own voice.'
+  : narrationSource ? `Neural synthetic narration: ${narrationSource.voice}, ${narrationSource.provider}, unchanged rate/pitch. Not the developer recording his own voice; no cloning. Human listening and usage review required.`
+  : narrationDirectory ? 'User-supplied recordings; speaker/source identity, consent and rights are not automatically verified.' : 'Silent presentation with transcript and subtitles.';
+const toolchain = { node: process.version, platform: process.platform, chromium: '', ffmpeg: execFileSync('ffmpeg', ['-version'], { encoding: 'utf8' }).split('\n')[0], voice: voice ? 'macOS Samantha, 155 words/minute' : narrationSource ? narrationSource.voice : narrationDirectory ? 'User-supplied per-slide WAV recordings' : 'none' };
 const forbidden = /LOCAL PRODUCTION CAPTURE|capture|source [a-f0-9]{7}|automated|EDIT:|not a live model demo|revolutionary|next-generation|powered by AI|unlock|seamless|reimagine/i;
 const browser = await chromium.launch({ headless: true });
 const segments = [], usedImages = [];
@@ -97,11 +119,16 @@ const manifest = { version: 2, story: 'Personal Azure learning experience; not a
   screenshotSourceCommit: images.sourceCommit, screenshotCapturedAt: images.capturedAt, sourceFiles, usedImages,
   mode: 'Eight static annotated slides built from actual screenshots. Not live gameplay footage. No model invocation or public score submission.',
   segments, file: 'project-introduction-120s.mp4', sha256: sha256(await readFile(final)), bytes: Number(metadata.format.size), duration: 120, width: 1440, height: 900, frames: 3000,
-  audio: voice ? 'Synthetic offline macOS Samantha draft narration, 155 words/minute; not the developer recording his own voice. Prefer presenter recordings for final delivery.' : narrationDirectory ? 'Presenter-supplied recordings; identity, consent and rights must be checked by the owner.' : 'Silent presentation with transcript and subtitles.',
+  audio: audioDescription, narrationSource,
   narrated, captions: 'Selectable English subtitles and sidecar SRT. Sentence timing is approximate; human listening and alignment review required.',
   provenance: 'Production/build/source labels intentionally appear only here and in documentation, never in audience slides or video. Hashes are integrity comparisons, not signatures.',
   toolchain, validation: 'Exact120seconds/3000frames/full decode; all voice segments fit without truncation or tempo changes. No proven learning or live AI claim.' };
 const published = `${root}docs/media/`;
+if (narrationSource) {
+  const sample = `${published}narration-sample.mp3`;
+  ffmpeg(['-i', resolve(narrationDirectory, 'slide-1.wav'), '-af', 'loudnorm=I=-18:TP=-2:LRA=7', '-ar', '48000', '-ac', '1', '-c:a', 'libmp3lame', '-b:a', '128k', sample]);
+  manifest.audioSample = { file: 'narration-sample.mp3', sha256: sha256(await readFile(sample)), duration: Number(probe(sample).format.duration), text: story.slides[0].narration };
+}
 await copyFile(final, `${published}${manifest.file}`);
 await copyFile(`${output}/captions.srt`, `${published}project-introduction-120s.srt`);
 ffmpeg(['-i', `${output}/slide-1.png`, '-frames:v', '1', '-update', '1', `${published}project-introduction-preview.jpg`]);

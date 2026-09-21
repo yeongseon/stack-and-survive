@@ -15,6 +15,21 @@ const video = probe.streams.find(stream => stream.codec_type === 'video');
 assert.equal(Number(probe.format.duration), 120); assert.equal(video.nb_frames, '3000');
 assert.equal(video.codec_name, 'h264'); assert.equal(video.width, 1440); assert.equal(video.height, 900);
 assert.equal(manifest.version, 2);
+if (manifest.narrationSource) {
+  const source = manifest.narrationSource;
+  assert.equal(source.kind, 'synthetic'); assert.equal(source.voice, 'en-US-GuyNeural');
+  assert.equal(source.rate, '+0%'); assert.equal(source.pitch, '+0Hz');
+  assert.equal(source.storySha256, createHash('sha256').update(await readFile(`${root}showcase/story.json`)).digest('hex'));
+  assert.equal(source.slides.length, 8);
+  for (const [index, slide] of manifest.segments.entries()) {
+    assert.equal(source.slides[index].id, slide.id);
+    assert.equal(source.slides[index].textSha256, createHash('sha256').update(slide.narration).digest('hex'));
+  }
+  assert.equal(manifest.audioSample.file, 'narration-sample.mp3');
+  assert.equal(createHash('sha256').update(await readFile(`${media}${manifest.audioSample.file}`)).digest('hex'), manifest.audioSample.sha256);
+  assert.equal(manifest.audioSample.text, manifest.segments[0].narration);
+  assert.ok(manifest.audioSample.duration > 0 && manifest.audioSample.duration <= manifest.segments[0].duration);
+}
 const narrated = manifest.narrated;
 assert.ok(probe.streams.some(stream => stream.codec_type === 'subtitle'));
 if (narrated) {

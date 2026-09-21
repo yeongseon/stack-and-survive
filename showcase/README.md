@@ -23,7 +23,7 @@ Open `http://127.0.0.1:8080/showcase/slides.html`; stop the temporary server whe
 | Navigation buttons | Mouse, touch and keyboard operation |
 | Print / PDF | All eight A4 landscape pages |
 
-Without JavaScript, all slides appear in order. There is no autoplay, excessive motion, external font or presentation library. The layout uses paper-like space, actual screenshots and short annotation-style questions. Source/build/production labels are deliberately absent from audience frames.
+Without JavaScript, all slides appear in order. There is no autoplay, excessive motion, external font or presentation library. The personal story and simple annotations remain, with the owner's preferred earlier palette restored: dark navy, pale text, teal service names and warm yellow notes. No marketing cards, glow or gradients were restored. Source/build/production labels remain absent from audience frames.
 
 ## One story for deck, video and notes
 
@@ -34,12 +34,16 @@ node showcase/check.mjs
 node showcase/export-pdf.mjs
 # Prefer your own voice: eight files named slide-1.wav through slide-8.wav
 node scripts/render-project-video.mjs --narration-dir=/absolute/path/to/recordings
-# Or make an explicitly synthetic offline draft on macOS:
+# Basic offline fallback only (not the current published voice):
 node scripts/render-project-video.mjs --voice
 node scripts/check-project-media.mjs
 ```
 
-Omit both audio flags for a silent version with selectable English subtitles and SRT. Own-voice files must fit each section with 0.3 seconds spare; the renderer rejects long recordings rather than cutting off or accelerating speech. Synthetic output uses installed Samantha at 155 words/minute; it is not the developer's voice. Its origin is disclosed in companion documentation and metadata, not as an internal on-screen banner. For an authentic final delivery, rehearse and record the speaker's own voice.
+The current video uses **Microsoft `en-US-GuyNeural`**, a stock neural English voice at its default rate/pitch, replacing basic macOS Samantha. [Listen to the first-slide sample](../docs/media/narration-sample.mp3). This is synthetic—not the developer's voice, a cloned voice or a guarantee of naturalness. The owner should judge the sample's pronunciation and tone; waveform/duration checks cannot do that.
+
+Neural generation is an explicit network operation through the third-party `edge-tts` 7.2.7 media CLI. It sends the already-public narration to Microsoft Edge's online TTS service; it does not provision or configure Azure Speech. No application/runtime dependency is added. Confirm provider and event usage terms separately. [Reproduction instructions](../docs/DEMO_VIDEO.md#neural-narration-regeneration).
+
+Omit both rendering audio options for a silent captioned version. Own-voice or generated WAV files must fit each section with 0.3 seconds spare; the renderer rejects long audio rather than truncating or accelerating it. Generated files include a source manifest with voice/text/WAV hashes so they cannot be labeled as a human recording. The offline `--voice` mode remains a basic fallback, not a silent fallback when neural generation fails.
 
 Render intermediates remain in a new ignored `test-results-submission/personal-story-*` folder for inspection; they are not uploaded and may be removed after reviewing the published files. The WAV-input path was exercised with silent test fixtures, not a human recording. Browser playback/decode tests cannot judge the human delivery or pronunciation.
 

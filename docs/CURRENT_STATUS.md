@@ -2,6 +2,8 @@
 
 ## Latest merge and media checkpoint — 2026-09-21
 
+Narration/palette refinement (#330): the same personal eight-slide story now uses the earlier dark navy/teal/warm-yellow colors and stock `en-US-GuyNeural` at default rate/pitch. This replaces the rejected basic macOS voice; public narration text is sent through the separately opted-in Edge TTS tool, not a provisioned Azure service. [Listening sample](media/narration-sample.mp3) and voice/text/file hashes accompany the video. This records the actual generated provider voice, not a human naturalness or usage-rights approval. No game/runtime/cloud configuration changes.
+
 **Source `a6f6956` includes merged #316 Export/Learn and #323 Agent.** Owner approved code-first merge with separate activation; implementation #315/#322 is closed and actual AI model/configuration/isolation acceptance lives in #325. The older unmerged/draft statements below describe the pre-merge review and are superseded by this checkpoint. AI Coach remains separate. No live model or cloud provisioning was performed.
 
 Latest confirmed hosted deployment at capture time was docs-only `faf5444`, actual Pages 35551003162 (gameplay baseline `c68ec0c`). Do not infer a later deployment from a merge. Export reviewed head `db34045` passed 721 tests/Quality 35560038290; Agent `c31298b` passed 764 tests/Quality 35560038523 and rerun 35560038214. The initial timing race remains #324, not erased by rerun success.

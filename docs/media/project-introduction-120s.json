@@ -10,7 +10,7 @@
     },
     {
       "file": "showcase/slides.css",
-      "sha256": "96e683dbc9d8ea11c4b4b78e559399b00bd8d8a31ec3c58311d935347870ce2d"
+      "sha256": "8a443131cdaeddb1ba4945733d28b08fca3e37fba97ad9fab604bba0ae18e28a"
     },
     {
       "file": "showcase/slides.js",
@@ -18,7 +18,7 @@
     },
     {
       "file": "showcase/story.json",
-      "sha256": "d6c1b3ae1fa86bd8ff7ab43bff0f3147297c213d90509f20c615f9a1a1623860"
+      "sha256": "df3014191274687337373f3efbb910760205493121641ca5d981ca35894a52c9"
     }
   ],
   "usedImages": [
@@ -52,7 +52,7 @@
       "start": 0,
       "title": "Learning Azure\nfor the first time\nfelt overwhelming.",
       "visibleText": "Learning Azure\nfor the first time\nfelt overwhelming.\n\nMicrosoft Learn and documentation\ngave me the concepts.\n\nConnecting them together\nwas harder.\n\nWhat if traffic doubles?\n\nApp Service\n→\nAzure SQL\n\nscale here? ↖\n\nWould cache help?\nWhat happens to cost?",
-      "voiceSeconds": 11.112608
+      "voiceSeconds": 12.696
     },
     {
       "id": "slide-2",
@@ -61,7 +61,7 @@
       "start": 16,
       "title": "I knew what the services were.\nI didn't know how they behaved together.",
       "visibleText": "I knew what the services were.\nI didn't know how they behaved together.\n\ntraffic ↑\n\nUsers\n→\nApp Service\n→\nAzure SQL\nscale here?\nDB bottleneck?\n↳\nCache\nhelps reads?\n\nKnowing a definition wasn't the same as knowing what to do next.",
-      "voiceSeconds": 12.60458
+      "voiceSeconds": 14.808
     },
     {
       "id": "slide-3",
@@ -70,7 +70,7 @@
       "start": 32,
       "title": "So I built this.",
       "visibleText": "So I built this.\n\nA simple game for experiencing Azure architecture decisions.",
-      "voiceSeconds": 8.95415
+      "voiceSeconds": 9.96
     },
     {
       "id": "slide-4",
@@ -79,16 +79,16 @@
       "start": 44,
       "title": "You make a change.\nThe system reacts.",
       "visibleText": "You make a change.\nThe system reacts.\n\n← Traffic comes in\n\n← You change\nthe architecture\n\nAvailability & cost\nreact ↑\n\nBuild before the next wave.",
-      "voiceSeconds": 11.795964
+      "voiceSeconds": 13.2
     },
     {
       "id": "slide-5",
       "duration": 17,
-      "narration": "This is the part I care about. What would you change? More App instances? A stronger database? The interesting part is not clicking Scale Out. It is noticing which layer is actually under pressure, and why.",
+      "narration": "This is the part I care about. What would you change? More App instances? A stronger database? It isn't about clicking Scale Out. It's about noticing which layer is under pressure, and why.",
       "start": 59,
       "title": "What would you change?",
       "visibleText": "What would you change?\n\nMore App instances?\n\nScale the database?\n\nAdd cache?\n\nProtect the edge?\n\nThe interesting part isn't clicking Scale Out.\nIt's deciding which layer is actually under pressure.",
-      "voiceSeconds": 12.316553
+      "voiceSeconds": 16.032
     },
     {
       "id": "slide-6",
@@ -97,7 +97,7 @@
       "start": 76,
       "title": "It survived.",
       "visibleText": "It survived.\n\nBut was it a good\narchitecture?\n\nDid I build too much?\nWhat did it cost?\n\nAvailability is only part of the story.",
-      "voiceSeconds": 10.099048
+      "voiceSeconds": 13.2
     },
     {
       "id": "slide-7",
@@ -106,7 +106,7 @@
       "start": 90,
       "title": "What would you change next time?",
       "visibleText": "What would you change next time?\n\nLook back at the run.\n\nTry a different choice.\n\nReturn to Microsoft Learn\nwith a more concrete question.\n\nplay → observe\nreflect → try again",
-      "voiceSeconds": 11.536961
+      "voiceSeconds": 12.84
     },
     {
       "id": "slide-8",
@@ -115,17 +115,79 @@
       "start": 105,
       "title": "Making the first step\ninto Azure easier.",
       "visibleText": "Making the first step\ninto Azure easier.\n\nI hope this helps customers become more familiar\nwith Azure through a simple, interactive experience.\n\nNot a replacement for Microsoft Learn.\nJust another way to get started.\n\nStack & Survive\nyeongseon.github.io/stack-and-survive\n\nWhat would you change?",
-      "voiceSeconds": 11.260045
+      "voiceSeconds": 12
     }
   ],
   "file": "project-introduction-120s.mp4",
-  "sha256": "b612bb1795814f4e3a8a0895e7167744db6f289412ef70522a0eeb5279714b9b",
-  "bytes": 2784465,
+  "sha256": "277a7f587bd49ea42eabba8baf51637439d4d2786277debce9aa428ced608237",
+  "bytes": 2809201,
   "duration": 120,
   "width": 1440,
   "height": 900,
   "frames": 3000,
-  "audio": "Synthetic offline macOS Samantha draft narration, 155 words/minute; not the developer recording his own voice. Prefer presenter recordings for final delivery.",
+  "audio": "Neural synthetic narration: en-US-GuyNeural, Microsoft Edge online text-to-speech via edge-tts (third-party client, not Azure Speech provisioning), unchanged rate/pitch. Not the developer recording his own voice; no cloning. Human listening and usage review required.",
+  "narrationSource": {
+    "version": 1,
+    "kind": "synthetic",
+    "provider": "Microsoft Edge online text-to-speech via edge-tts (third-party client, not Azure Speech provisioning)",
+    "voice": "en-US-GuyNeural",
+    "rate": "+0%",
+    "pitch": "+0Hz",
+    "tool": "edge-tts 7.2.7",
+    "storySha256": "df3014191274687337373f3efbb910760205493121641ca5d981ca35894a52c9",
+    "createdAt": "2026-09-21T13:19:23.580Z",
+    "disclosure": "Stock neural synthetic voice; not the developer, not voice cloning. Only the public narration text is sent to the provider. Human listening, usage terms and event review remain necessary.",
+    "slides": [
+      {
+        "id": "slide-1",
+        "duration": 12.696,
+        "textSha256": "f4cb9afe57bd841902ff7f6e674afd8100fba8addb1c935deed1205953db07fd",
+        "wavSha256": "296f7b375997f5753644a44759ed9291ec55d7a19d15cdcba99b8a938f95b1a3"
+      },
+      {
+        "id": "slide-2",
+        "duration": 14.808,
+        "textSha256": "9c398900338d647ebb1d2e0f3f049a5bef33926e4bc410b34d361b132352878b",
+        "wavSha256": "685f6e1f0bcb59eac593ebc4205dc5debf9f4ce9a3ae986e2bb9bbe5d45ac8ab"
+      },
+      {
+        "id": "slide-3",
+        "duration": 9.96,
+        "textSha256": "b1b76f3191b3810f80c330a1eb9d762f3f02f3e47729d4b0a448c970582ae5c8",
+        "wavSha256": "e5448d045342612ffd87917233e402ee47f67258e62f700648fe1cb556ee91bd"
+      },
+      {
+        "id": "slide-4",
+        "duration": 13.2,
+        "textSha256": "fe3978ef9a6cc731859e6709e98fda89d5184d3798734e6a781655f9b6139427",
+        "wavSha256": "6c3f63a812910655b1c8b3c879b08c653a2c0406a0b14b78380508f6cd1b4925"
+      },
+      {
+        "id": "slide-5",
+        "duration": 16.032,
+        "textSha256": "d38fdd74d684eb93c55db423cbf0aa3f8251a2c8ee68b13e1bd9833d19405c4d",
+        "wavSha256": "cc382db10657e8d2ebed640f036d7b39a88496985b004dcbf0807fa56b0ef7b4"
+      },
+      {
+        "id": "slide-6",
+        "duration": 13.2,
+        "textSha256": "4f3a890b76070d7536a9ebb1703e5338b0695caebc27775404f02260879a04e1",
+        "wavSha256": "70e59d4e40c5b781add77f912dadc8fe65a6099a83143441c0d38b7512563664"
+      },
+      {
+        "id": "slide-7",
+        "duration": 12.84,
+        "textSha256": "87f9abbd00aa159208bae3b7e3898bf1a822f0f30298f77cb15ebbea008c0462",
+        "wavSha256": "9f99e35bd015fe6322178a2de451cfeee0a89c71b3b7ebe402e88768dec7f549"
+      },
+      {
+        "id": "slide-8",
+        "duration": 12,
+        "textSha256": "b933af623e719f500e741c670ccc58a063848842f93e8f7d8e76780257bde056",
+        "wavSha256": "3bf1cb54a68e45395dada4421dd8c411e715936c6a3e7b7e7906c7f0ec70b99e"
+      }
+    ]
+  },
   "narrated": true,
   "captions": "Selectable English subtitles and sidecar SRT. Sentence timing is approximate; human listening and alignment review required.",
   "provenance": "Production/build/source labels intentionally appear only here and in documentation, never in audience slides or video. Hashes are integrity comparisons, not signatures.",
@@ -134,7 +196,13 @@
     "platform": "darwin",
     "chromium": "153.0.8010.12",
     "ffmpeg": "ffmpeg version 8.0.1 Copyright (c) 2000-2025 the FFmpeg developers",
-    "voice": "macOS Samantha, 155 words/minute"
+    "voice": "en-US-GuyNeural"
   },
-  "validation": "Exact120seconds/3000frames/full decode; all voice segments fit without truncation or tempo changes. No proven learning or live AI claim."
+  "validation": "Exact120seconds/3000frames/full decode; all voice segments fit without truncation or tempo changes. No proven learning or live AI claim.",
+  "audioSample": {
+    "file": "narration-sample.mp3",
+    "sha256": "6ff7c957a0e86c4179382711ad8a9d988eb6d4c0db6fddafe5a3eafc1f1a80f9",
+    "duration": 12.696,
+    "text": "When I first started learning Azure, I mainly used Microsoft Learn and the documentation. They gave me useful concepts. But as a beginner, I found it harder to connect those concepts together."
+  }
 }

@@ -24,7 +24,7 @@ Traffic comes in, and you change the architecture. You can add capacity, introdu
 
 ## 5 · The decision · 0:59–1:16
 
-This is the part I care about. What would you change? More App instances? A stronger database? The interesting part is not clicking Scale Out. It is noticing which layer is actually under pressure, and why.
+This is the part I care about. What would you change? More App instances? A stronger database? It isn't about clicking Scale Out. It's about noticing which layer is under pressure, and why.
 
 *Leave a beat after the question. In this screenshot App is saturated; the choices are questions, not four equally correct fixes.*
 
@@ -60,4 +60,6 @@ This is not a replacement for Microsoft Learn. I hope it gives customers a simpl
 
 Screenshots are actual automated local game states from `a6f6956`, retained in [image provenance](../docs/images/README.md). The success and overload screenshots are separate runs. This deck intentionally juxtaposes examples; it is not continuous live gameplay. No internal production labels are burned into the deck or video.
 
-For the most natural final presentation, record yourself as `slide-1.wav` through `slide-8.wav`, each within its allotted time, then run `node scripts/render-project-video.mjs --narration-dir=/absolute/path`. `--voice` generates only an offline synthetic draft voice, not an impersonation of the developer. Its provenance is disclosed in the companion media manifest rather than on audience frames. Rehearse, listen and check event/rights requirements before submission.
+The current video uses stock **en-US-GuyNeural** at default rate/pitch, replacing the mechanical macOS fallback. [First-slide listening sample](../docs/media/narration-sample.mp3). It is synthetic, not the developer or a cloned identity; human listening remains required. Public narration is sent to Microsoft Edge TTS through a pinned third-party media tool, not a newly provisioned Azure service.
+
+For your own delivery, record `slide-1.wav` through `slide-8.wav`, each within its slot, then run `node scripts/render-project-video.mjs --narration-dir=/absolute/path`. Generated narration has a manifest so the renderer identifies it correctly. `--voice` still produces the basic offline fallback explicitly. Audio origin is disclosed in companion files rather than on audience frames. Rehearse, listen and check provider/event/rights requirements before submission.

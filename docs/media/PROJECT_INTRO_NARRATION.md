@@ -1,6 +1,6 @@
 # Why I built Stack & Survive — 120-second narration
 
-The same eight-slide personal story drives the deck, PDF and video. Synthetic offline macOS Samantha draft narration, 155 words/minute; not the developer recording his own voice. Prefer presenter recordings for final delivery. Provenance is kept in the JSON manifest, not audience-facing frames. Rehearse in your own voice before submission.
+The same eight-slide personal story drives the deck, PDF and video. Neural synthetic narration: en-US-GuyNeural, Microsoft Edge online text-to-speech via edge-tts (third-party client, not Azure Speech provisioning), unchanged rate/pitch. Not the developer recording his own voice; no cloning. Human listening and usage review required. Provenance is kept in the JSON manifest, not audience-facing frames. Rehearse in your own voice before submission.
 
 ## 00:00:00–00:00:16 · Learning Azure for the first time felt overwhelming.
 
@@ -20,7 +20,7 @@ Traffic comes in, and you change the architecture. You can add capacity, introdu
 
 ## 00:00:59–00:01:16 · What would you change?
 
-This is the part I care about. What would you change? More App instances? A stronger database? The interesting part is not clicking Scale Out. It is noticing which layer is actually under pressure, and why.
+This is the part I care about. What would you change? More App instances? A stronger database? It isn't about clicking Scale Out. It's about noticing which layer is under pressure, and why.
 
 ## 00:01:16–00:01:30 · It survived.
 
