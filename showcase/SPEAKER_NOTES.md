@@ -1,8 +1,12 @@
 # Why I built Stack & Survive — speaker notes
 
-The owner's personal learning account drives this eight-slide story. This is not a startup pitch, a criticism of Microsoft Learn, or evidence of measured educational improvement. Speak as yourself; take short pauses and avoid reciting feature lists. The exact canonical narration and timing live in [story.json](story.json), which also drives the video. Total allocation: **120 seconds**. Human rehearsal timing is still required.
+The owner's personal learning account drives eight story slides after a two-second title cover. This is not a startup pitch, criticism of Microsoft Learn, or evidence of educational improvement. Canonical timing is in [story.json](story.json): **120 seconds**, nine PDF/browser pages. Approved GuyNeural recordings are unchanged; human rehearsal timing remains separate.
 
-## 1 · Motivation · 0:00–0:16
+## Cover · Stack & Survive · 0:00–0:02
+
+Let the project name appear briefly. No narration, music or dramatic opening.
+
+## 1 · Motivation · 0:02–0:16
 
 When I first started learning Azure, I mainly used Microsoft Learn and the documentation. They gave me useful concepts. But as a beginner, I found it harder to connect those concepts together.
 

@@ -1,13 +1,13 @@
 1
-00:00:00,150 --> 00:00:05,705
+00:00:02,150 --> 00:00:07,704
 When I first started learning Azure, I mainly used Microsoft Learn and the documentation.
 
 2
-00:00:05,705 --> 00:00:07,688
+00:00:07,704 --> 00:00:09,688
 They gave me useful concepts.
 
 3
-00:00:07,688 --> 00:00:12,846
+00:00:09,688 --> 00:00:14,846
 But as a beginner, I found it harder to connect those concepts together.
 
 4

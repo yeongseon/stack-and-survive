@@ -1,8 +1,12 @@
 # Why I built Stack & Survive — 120-second narration
 
-The same eight-slide personal story drives the deck, PDF and video. Neural synthetic narration: en-US-GuyNeural, Microsoft Edge online text-to-speech via edge-tts (third-party client, not Azure Speech provisioning), unchanged rate/pitch. Not the developer recording his own voice; no cloning. Human listening and usage review required. Provenance is kept in the JSON manifest, not audience-facing frames. Rehearse in your own voice before submission.
+A two-second silent project title precedes the same eight-slide personal story in the deck, PDF and video. Neural synthetic narration: en-US-GuyNeural, Microsoft Edge online text-to-speech via edge-tts (third-party client, not Azure Speech provisioning), unchanged rate/pitch. Not the developer recording his own voice; no cloning. Human listening and usage review required. Provenance is kept in the JSON manifest, not audience-facing frames.
 
-## 00:00:00–00:00:16 · Learning Azure for the first time felt overwhelming.
+## 00:00:00–00:00:02 · Stack & Survive
+
+
+
+## 00:00:02–00:00:16 · Learning Azure for the first time felt overwhelming.
 
 When I first started learning Azure, I mainly used Microsoft Learn and the documentation. They gave me useful concepts. But as a beginner, I found it harder to connect those concepts together.
 
