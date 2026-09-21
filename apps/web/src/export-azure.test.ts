@@ -51,6 +51,24 @@ describe('read-only export client', () => {
       { ...exportResponseFixture, resources: exportResponseFixture.resources.map(r => ({ ...r, extra: true })) },
       { ...exportResponseFixture, resources: exportResponseFixture.resources.map(r => ({ ...r, reason: '' })) }]) expect(validExportResponse(response)).toBe(false);
   });
+  it('sorts accepted actions by time then sequence before truncation without changing the log', () => {
+    const { result, run, architecture } = finished();
+    run.actionLog = [
+      ...Array.from({ length: 40 }, (_, index) => ({ action: { type: 'RATE_LIMIT' as const, enabled: true, time: index + 2, sequence: index + 10 }, accepted: true, reason: null })),
+      { action: { type: 'RATE_LIMIT', enabled: false, time: 1, sequence: 2 }, accepted: true, reason: null },
+      { action: { type: 'SCALE_OUT', time: 1, sequence: 1 }, accepted: true, reason: null },
+    ];
+    const before = structuredClone(run.actionLog);
+    const request = buildExportRequest(result, run, architecture);
+    expect(request.timeline).toHaveLength(40);
+    expect(request.timeline.slice(0, 2)).toEqual([{ t: 1, action: 'SCALE_OUT' }, { t: 1, action: 'RATE_LIMIT_OFF' }]);
+    expect(request.timeline.at(-1)?.t).toBe(39); expect(run.actionLog).toEqual(before);
+  });
+  it('enforces UTF-8 parameter bytes, not just JavaScript character length', () => {
+    const parametersJson = JSON.stringify({ value: '가'.repeat(4000) });
+    expect(parametersJson.length).toBeLessThan(12000);
+    expect(validExportResponse({ ...exportResponseFixture, parametersJson })).toBe(false);
+  });
   it('uses configured optional API and returns null on network, HTTP and validation failure', async () => {
     vi.stubEnv('VITE_LEADERBOARD_API', 'https://export.invalid'); vi.resetModules();
     const client = await import('./export-azure'); const fixture = finished(); const request = buildExportRequest(fixture.result, fixture.run, fixture.architecture);

@@ -62,6 +62,7 @@ const types = new Set(['Microsoft.Web/serverfarms', 'Microsoft.Web/sites', 'Micr
 export function validateExportResponse(value: unknown, request: ExportRequest): ExportResponse {
   const r = exact(value, ['title', 'bicep', 'parametersJson', 'resources', 'caveats']);
   const title = bounded(r.title, 80), bicep = bounded(r.bicep, 12000), parametersJson = bounded(r.parametersJson, 12000);
+  if (Buffer.byteLength(parametersJson) > 12000) throw new Error('Parameters exceed UTF-8 byte budget');
   if (Buffer.byteLength(bicep) > 12000 || !/(?:targetScope|resource\s)/.test(bicep)
     || /https?:\/\/|secret|password|key\s*=|<[^>\n]+>|\b(?:module|import|extension|loadTextContent|loadJsonContent|loadFileAsBase64)\b|\b(?:list\w*|reference)\s*\(|\/\*/i.test(bicep)) throw new Error('Unsafe template');
   const declarations = [...bicep.matchAll(/^\s*resource\s+(\w+)\s+'(Microsoft\.[\w/]+)@(20(?:2[3-9]|[3-9]\d)-\d{2}-\d{2}(?:-preview)?)'\s*=/gm)];

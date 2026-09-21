@@ -32,6 +32,11 @@ describe('read-only Bicep export boundary', () => {
   it('counts UTF-8 request bytes', async () => {
     await expect(handleExportBicep('é'.repeat(10001), { createResponse: vi.fn() })).rejects.toMatchObject({ statusCode: 413 });
   });
+  it('rejects oversized UTF-8 parameter bytes before parsing the document', () => {
+    const parametersJson = JSON.stringify({ value: '가'.repeat(4000) });
+    expect(parametersJson.length).toBeLessThan(12000);
+    expect(() => validateExportResponse({ ...output, parametersJson }, input)).toThrow('Parameters exceed UTF-8 byte budget');
+  });
   it.each(['https://example.invalid', 'http://example.invalid', '@secure()', 'password', 'secret', 'key=abc', 'listKeys(resourceId)', "module remote 'br:example:v1' = {}"])(
     'rejects unsafe Bicep %s', async unsafe => {
       await expect(handleExportBicep(JSON.stringify(input), { createResponse: async () => ({ ...output, bicep: `${output.bicep}\n// ${unsafe}` }) })).rejects.toMatchObject({ statusCode: 502, message: 'AI output rejected' });
