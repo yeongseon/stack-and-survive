@@ -1,0 +1,111 @@
+1
+00:00:00,150 --> 00:00:02,075
+Cloud diagrams explain the components.
+
+2
+00:00:02,075 --> 00:00:06,311
+But beginners also need to see why those components work together.
+
+3
+00:00:06,311 --> 00:00:09,006
+Stack and Survive makes those decisions playable.
+
+4
+00:00:12,150 --> 00:00:17,139
+You operate a data center through one hundred eighty seconds of Black Friday.
+
+5
+00:00:17,139 --> 00:00:21,744
+Traffic spikes, bots arrive, and every infrastructure choice affects customers and cost.
+
+6
+00:00:24,150 --> 00:00:27,218
+Start small, then build before the next wave.
+
+7
+00:00:27,218 --> 00:00:29,902
+Adding an App machine takes eight seconds.
+
+8
+00:00:29,902 --> 00:00:34,120
+Cache reduces eligible database reads, but order writes still reach SQL.
+
+9
+00:00:34,120 --> 00:00:37,571
+Scale in or change tiers when your needs change.
+
+10
+00:00:37,571 --> 00:00:40,638
+The current state, not the animation, determines capacity.
+
+11
+00:00:44,150 --> 00:00:49,876
+During the bot attack, Protected Edge filters malicious requests, with a tradeoff in legitimate traffic.
+
+12
+00:00:49,876 --> 00:00:53,312
+More App machines do not fix every database bottleneck.
+
+13
+00:00:53,312 --> 00:00:58,275
+Watch the next wave, read the pressure, and choose which layer needs attention.
+
+14
+00:01:02,150 --> 00:01:05,490
+The final wave reaches six hundred requests per second.
+
+15
+00:01:05,490 --> 00:01:09,573
+This is edited footage of a real run, not accelerated simulation.
+
+16
+00:01:09,573 --> 00:01:13,284
+Clear the full operation, then inspect what your decisions achieved.
+
+17
+00:01:16,150 --> 00:01:19,020
+This full run scored 9473 points.
+
+18
+00:01:19,020 --> 00:01:21,411
+Compare availability, cost and architecture.
+
+19
+00:01:21,411 --> 00:01:28,107
+Try a different strategy, then follow Microsoft Learn links to explore the real services.
+
+20
+00:01:30,150 --> 00:01:34,428
+The implemented Export Agent connects finished runs to infrastructure as code.
+
+21
+00:01:34,428 --> 00:01:39,873
+It can select mapping and validation tools, then repair a candidate using compiler feedback.
+
+22
+00:01:39,873 --> 00:01:44,151
+These are real tool boundaries, not a chatbot controlling the game.
+
+23
+00:01:44,151 --> 00:01:46,873
+Live Azure model verification is still pending.
+
+24
+00:01:46,873 --> 00:01:48,040
+Nothing is deployed.
+
+25
+00:01:50,150 --> 00:01:50,885
+Play first.
+
+26
+00:01:50,885 --> 00:01:51,987
+Question the tradeoff.
+
+27
+00:01:51,987 --> 00:01:53,457
+Then explore Microsoft Learn.
+
+28
+00:01:53,457 --> 00:01:58,600
+Try Stack and Survive, and see what you would change in the next architecture.
