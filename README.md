@@ -103,6 +103,8 @@ Gameplay **does not provision cloud resources**. Azure badges identify represent
 
 The result also links to **Microsoft Learn** for each service present in your final architecture and for Bicep. These fixed official links work without an API or AI configuration; the model cannot choose their destinations.
 
+**Agent follow-up (#322, unmerged and not deployed):** the [Architecture Export Agent](docs/ARCHITECTURE_EXPORT_AGENT.md) implements model-selected mapping/validation tools and bounded repair. Mocked-model tests with a real local compiler verify the flow; live Azure model behavior is still unverified. The implemented download gate requires exact-artifact compilation and bounded compiled-architecture checks, with completed tool outcomes rather than hidden reasoning. Public enablement still needs authorized AI configuration, an approved isolated compiler and real-model smoke. Nothing was deployed and game outcomes are unchanged.
+
 ## Develop and contribute
 
 Start with [CONTRIBUTING.md](CONTRIBUTING.md) for issue selection, small PRs, verification and rights boundaries. The [development guide](docs/DEVELOPMENT.md) covers workspace structure, player/QA modes, API configuration, tests and screenshot generation.

@@ -14,6 +14,8 @@ Record from the actual release candidate and label edits. A complete operation l
 
 Use the Export beat only after the configured API and actual model have passed the recorded local compilation smoke. If unavailable, keep the result demo; do not replace it with a mocked response while claiming live AI generation. Model latency needs separate time in the presentation.
 
+For #322 agent work, show the actual completed tool record: mapping (if requested), candidate policy, Bicep compilation and final architecture check. A failed first compile and corrected second candidate is a valid agent demonstration **only if actually observed**. A first-pass success must say no repair was needed. Current offline fixtures use a mocked model and are not a live Azure agent demo; no internal reasoning is shown and no infrastructure is deployed.
+
 Do not call local rank global or server-verified. If including an API demonstration, the backend owner must first supply exact endpoint/revision/health/replay evidence. Hide secrets, browser profiles and unrelated personal data. State that capacities/prices are game assumptions, not Azure benchmarks. Use the project's own favicon/art, not Microsoft marks as the product logo.
 
 Recording checklist: [ ] exact SHA [ ] clean browser profile [ ] actual state screenshots [ ] clearly labeled cuts [ ] readable1440×900 capture [ ] narration matches UI [ ] known limitations included [ ] rights review appropriate for submission [ ] actual video reviewed. These boxes start unchecked.
