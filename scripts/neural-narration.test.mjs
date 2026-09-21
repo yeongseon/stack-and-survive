@@ -17,6 +17,23 @@ test('renderer rejects ambiguous audio sources', () => {
   const result = run('render-project-video.mjs', ['--voice', '--narration-dir=/does-not-exist']);
   assert.notEqual(result.status, 0); assert.match(result.stderr, /Choose synthetic voice OR presenter recordings/);
 });
+test('title cover preserves total timing and contains no spoken words', async () => {
+  const story = JSON.parse(await readFile(join(root, 'showcase/story.json'), 'utf8'));
+  assert.deepEqual(story.cover, { id: 'cover', duration: 2, narration: '' });
+  assert.equal(story.slides.length, 8); assert.equal(story.slides[0].duration, 14);
+  assert.equal(story.cover.duration + story.slides.reduce((sum, slide) => sum + slide.duration, 0), 120);
+});
+test('retiming rejects changed narration words before copying or processing audio', async () => {
+  const directory = await mkdtemp(join(tmpdir(), 'retiming-check-'));
+  try {
+    const story = JSON.parse(await readFile(join(root, 'showcase/story.json'), 'utf8'));
+    const source = { version: 1, kind: 'synthetic', voice: 'en-US-GuyNeural', rate: '+0%', pitch: '+0Hz',
+      slides: story.slides.map(slide => ({ id: slide.id, textSha256: 'different-words', wavSha256: 'not-read' })) };
+    await writeFile(join(directory, 'narration-source.json'), JSON.stringify(source));
+    const result = run('retime-neural-narration.mjs', [directory]);
+    assert.notEqual(result.status, 0); assert.match(result.stderr, /Words changed: regenerate speech/);
+  } finally { await rm(directory, { recursive: true, force: true }); }
+});
 test('synthetic recordings cannot use stale text or mismatched audio bytes', async () => {
   const directory = await mkdtemp(join(tmpdir(), 'narration-check-'));
   try {

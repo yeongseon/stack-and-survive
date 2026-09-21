@@ -17,7 +17,9 @@ const narrationDirectory = narrationArgument ? resolve(narrationArgument.slice('
 assert.ok(!(voice && narrationDirectory), 'Choose synthetic voice OR presenter recordings, not both');
 if (voice) assert.equal(process.platform, 'darwin', '--voice uses an already installed macOS voice');
 assert.equal(story.slides.length, 8);
-assert.equal(story.slides.reduce((sum, slide) => sum + slide.duration, 0), 120);
+const sequence = story.cover ? [story.cover, ...story.slides] : story.slides;
+if (story.cover) { assert.equal(story.cover.id, 'cover'); assert.equal(story.cover.duration, 2); assert.equal(story.cover.narration, ''); }
+assert.equal(sequence.reduce((sum, slide) => sum + slide.duration, 0), 120);
 assert.equal(images.status, 'complete'); assert.equal(images.publicScorePosts, 0);
 const sha256 = bytes => createHash('sha256').update(bytes).digest('hex');
 let narrationSource = null;
@@ -58,7 +60,7 @@ try {
   await page.goto(new URL('../showcase/slides.html', import.meta.url).href);
   await page.evaluate(async () => { await document.fonts.ready; await Promise.all([...document.images].map(image => image.decode())); document.body.classList.add('video-mode'); });
   let elapsed = 0;
-  for (const [index, slide] of story.slides.entries()) {
+  for (const [index, slide] of sequence.entries()) {
     await page.evaluate(id => { location.hash = `#${id}`; }, slide.id);
     const element = page.locator(`#${slide.id}`); await element.waitFor({ state: 'visible' });
     const text = await element.innerText(); assert.equal(forbidden.test(text), false, 'Audience frame contains internal or marketing labels');
@@ -84,16 +86,19 @@ for (const [index, slide] of segments.entries()) {
   ffmpeg(['-loop', '1', '-i', `${output}/slide-${index + 1}.png`, '-t', String(slide.duration), '-r', '25', '-an', '-c:v', 'libx264', '-preset', 'fast', '-crf', '19', '-pix_fmt', 'yuv420p', `${output}/video-${index}.mp4`]);
   if (voice || narrationDirectory) {
     let recording;
-    if (voice) {
+    if (!slide.narration) {
+      recording = `${output}/cover-silence.wav`;
+      ffmpeg(['-f', 'lavfi', '-i', 'anullsrc=r=48000:cl=mono', '-t', String(slide.duration), recording]);
+    } else if (voice) {
       await writeFile(`${output}/voice-${index}.txt`, slide.narration);
       recording = `${output}/voice-${index}.aiff`;
       execFileSync('say', ['-v', 'Samantha', '-r', '155', '-f', `${output}/voice-${index}.txt`, '-o', recording], { stdio: 'inherit' });
-    } else recording = resolve(narrationDirectory, `slide-${index + 1}.wav`);
-    slide.voiceSeconds = Number(probe(recording).format.duration);
-    assert.ok(slide.voiceSeconds > 0 && slide.voiceSeconds <= slide.duration - .3, `Slide ${index + 1} voice is ${slide.voiceSeconds}s; shorten the delivery, never truncate or speed it up`);
+    } else recording = resolve(narrationDirectory, `${slide.id}.wav`);
+    slide.voiceSeconds = slide.narration ? Number(probe(recording).format.duration) : 0;
+    assert.ok(!slide.narration || (slide.voiceSeconds > 0 && slide.voiceSeconds <= slide.duration - .3), `Slide ${slide.id} voice is ${slide.voiceSeconds}s; shorten the delivery, never truncate or speed it up`);
     ffmpeg(['-i', recording, '-af', 'adelay=150,apad', '-t', String(slide.duration), '-ar', '48000', '-ac', '1', `${output}/audio-${index}.wav`]);
   }
-  const sentences = slide.narration.match(/[^.!?]+[.!?]+/g) ?? [slide.narration];
+  const sentences = slide.narration ? slide.narration.match(/[^.!?]+[.!?]+/g) ?? [slide.narration] : [];
   const words = sentences.reduce((sum, sentence) => sum + sentence.trim().split(/\s+/).length, 0);
   let offset = slide.start + .15;
   for (const sentence of sentences) {
@@ -117,7 +122,7 @@ assert.equal(Number(metadata.format.duration), 120); assert.equal(video.nb_frame
 ffmpeg(['-i', final, '-f', 'null', '-']);
 const manifest = { version: 2, story: 'Personal Azure learning experience; not a commercial or agent demonstration',
   screenshotSourceCommit: images.sourceCommit, screenshotCapturedAt: images.capturedAt, sourceFiles, usedImages,
-  mode: 'Eight static annotated slides built from actual screenshots. Not live gameplay footage. No model invocation or public score submission.',
+  mode: 'A two-second silent project-title cover, followed by eight static annotated story slides. Not live gameplay footage. No model invocation or public score submission.',
   segments, file: 'project-introduction-120s.mp4', sha256: sha256(await readFile(final)), bytes: Number(metadata.format.size), duration: 120, width: 1440, height: 900, frames: 3000,
   audio: audioDescription, narrationSource,
   narrated, captions: 'Selectable English subtitles and sidecar SRT. Sentence timing is approximate; human listening and alignment review required.',
@@ -133,5 +138,5 @@ await copyFile(final, `${published}${manifest.file}`);
 await copyFile(`${output}/captions.srt`, `${published}project-introduction-120s.srt`);
 ffmpeg(['-i', `${output}/slide-1.png`, '-frames:v', '1', '-update', '1', `${published}project-introduction-preview.jpg`]);
 await writeFile(`${published}project-introduction-120s.json`, `${JSON.stringify(manifest, null, 2)}\n`);
-await writeFile(`${published}PROJECT_INTRO_NARRATION.md`, `# Why I built Stack & Survive — 120-second narration\n\nThe same eight-slide personal story drives the deck, PDF and video. ${manifest.audio} Provenance is kept in the JSON manifest, not audience-facing frames. Rehearse in your own voice before submission.\n\n${transcript.join('\n')}`);
-console.log(JSON.stringify({ output, duration: 120, bytes: manifest.bytes, slides: 8, narrated, voice: toolchain.voice }, null, 2));
+await writeFile(`${published}PROJECT_INTRO_NARRATION.md`, `# Why I built Stack & Survive — 120-second narration\n\nA two-second silent project title precedes the same eight-slide personal story in the deck, PDF and video. ${manifest.audio} Provenance is kept in the JSON manifest, not audience-facing frames.\n\n${transcript.join('\n')}`);
+console.log(JSON.stringify({ output, duration: 120, bytes: manifest.bytes, pages: sequence.length, storySlides: 8, narrated, voice: toolchain.voice }, null, 2));
