@@ -2,9 +2,9 @@
 
 [Play now](https://yeongseon.github.io/stack-and-survive/) · [README](../README.md) · [Development guide](DEVELOPMENT.md)
 
-Follow one operation from the title to its result. Screenshots below are actual automated captures from **`24ca388`**, resized for documentation. They illustrate behavior—not a guarantee that copying approximate timing produces the same score. The final overload example is a **separate** run. [Full provenance](images/README.md).
+Follow one operation from title to result. Screenshots are refreshed actual automated local captures from **`a6f6956`**, rules 0.4, resized without changing UI values. They illustrate behavior—not a guarantee that approximate timing produces the same score. The final overload is a **separate** run. [Full provenance](images/README.md).
 
-**Current controls (rules 0.4):** the screenshots are historical 0.3. Use bottom **App scaling / SQL scaling** for instance/tier/replica controls; upper-right **Azure service guide** explains all service roles and supports inspection, not only App Service. SQL starts compact and grows after an activated tier change. [Current-feature video](DEMO_VIDEO.md#current-rules-04-the-bottleneck-tradeoff) shows the newer interface. [Release status](CURRENT_STATUS.md) separates the live game from draft-only AI Export/Learn links.
+Use bottom **App scaling / SQL scaling** for instance/tier/replica controls; upper-right **Azure service guide** explains all roles. SQL starts compact and grows after an activated tier change. [New two-minute introduction](DEMO_VIDEO.md#two-minute-project-introduction--current-source) includes the project explanation. Export/Agent code and Learn links are merged; live AI activation remains unverified (#325), so the capture shows no generated response.
 
 ## 1. Start without an account
 
@@ -46,7 +46,11 @@ Click the empty **Cache** footprint to request deployment. It takes **5 seconds*
 
 More App capacity can move pressure downstream to SQL. Avoid treating every failure as an instruction to add another App.
 
+![Current App instance and tier controls](images/app-scaling.webp)
+
 Use **SQL scaling → Scale up/down** to change read/write capacity after 10 seconds. **Add/remove replica** changes read capacity only (8s add, 3s remove; maximum two). Tier and replica running costs are in the [scaling table](INFRASTRUCTURE_SCALING.md#mechanics). Existing capacity/cost remains until activation; the card shows queued/pending time and why an action is disabled. Cache and replicas do not solve write pressure.
+
+![Current SQL tier and replica controls](images/sql-scaling.webp)
 
 ## 5. Watch the warning, then the consequence
 
@@ -93,6 +97,12 @@ The result appears without waiting for a server. If you met the objective and ha
 The images show **local-only automation**, not a live public submission. The online list can differ.
 
 Current operational limitation: the configured API rejects current rules 0.4 challenge reads (#306), so do not promise a global submission until backend compatibility is verified. Local results remain available.
+
+### Continue learning
+
+![Curated Microsoft Learn links from the actual result screen](images/learn.webp)
+
+Official links follow the services in your final architecture and work without AI configuration. AI generation requires separately configured, verified server services; this capture does not simulate their success.
 
 ## 9. Use landscape and scroll results when needed
 

@@ -39,7 +39,7 @@ The development root is intentionally the QA/editor. Seeing it is not a broken p
 
 ![Production player view, distinct from the development QA editor.](images/opening.webp)
 
-The image above is a **historical rules 0.3 / `24ca388`** production capture, not the current 0.4 interface. The [player guide](PLAYER_GUIDE.md) and [scaling guide](INFRASTRUCTURE_SCALING.md) describe current controls; [Current status](CURRENT_STATUS.md) distinguishes main from draft Export/Learn work.
+The image above is a refreshed **rules 0.4 / `a6f6956`** local production capture. [Provenance](images/README.md) records its source/build and automation limits. [Current status](CURRENT_STATUS.md) separates merged AI code from live activation.
 
 ## Workspace map and change boundaries
 
@@ -130,6 +130,8 @@ Open the printed frontend origin with `/?tycoon`. `VITE_LEADERBOARD_API` is **bu
 Do not add credentials to `VITE_*`, commit `.env` or use real public submissions as routine tests. Score computation, supported challenges and nickname rules must remain aligned with [the API contract](LEADERBOARD_API_CONTRACT.md). Azure restart/deployment/storage changes require backend-owner coordination.
 
 ## Screenshots and demo evidence
+
+Latest automation: `node scripts/capture-current-media.mjs` builds API-disabled production and records a real 180-second operation plus a separate paused-overload example. `node scripts/render-project-video.mjs <capture-directory> --voice` creates 19 WebP images and the exact 120-second project-introduction edit with local synthetic narration (macOS); omit `--voice` for silent output. `node scripts/check-project-media.mjs` verifies hashes, frames, decode, playback/seeks and narration lengths. See [instructions](DEMO_VIDEO.md#automatic-regeneration). No game-state/time injection or fake model response is used.
 
 For the current-feature tradeoff recording: `node scripts/capture-tradeoff.mjs` rebuilds production, performs ordinary inputs and records observed App/SQL behavior. FFmpeg/ffprobe and Chromium are required; capture uses port 43879. Inspect frames/manifest, then `node scripts/publish-tradeoff.mjs <capture-directory>` copies verified media into docs; `node scripts/check-tradeoff.mjs` checks hash, format, measurements and full decode. This is local publication preparation, not submission or human evidence. [Demo provenance](DEMO_VIDEO.md) distinguishes the 53.4-second clip from the historical two-minute edit.
 

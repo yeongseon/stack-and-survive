@@ -8,15 +8,15 @@ A real-time cloud infrastructure strategy game: survive a 180-second traffic sur
 
 [**Play the game →**](https://yeongseon.github.io/stack-and-survive/) · [Illustrated guide](docs/PLAYER_GUIDE.md) · [Run locally](#run-locally) · [Development](docs/DEVELOPMENT.md) · [Contributing](CONTRIBUTING.md)
 
-**Implementation status:** [Current release, draft features and remaining issues](docs/CURRENT_STATUS.md). The verified deployed game is `c68ec0c` / rules 0.4. Export to Azure and curated Microsoft Learn result links are implemented only in **unmerged draft PR #316**, not available in the public game. Current global API compatibility is blocked in #306; local play works independently.
+**Implementation status:** [Current release and activation gates](docs/CURRENT_STATUS.md). Export, Agent and Microsoft Learn code merged through #316/#323 (`a6f6956`). Live AI configuration/verification remains pending in #325; code merge is not activation. Current global API compatibility is blocked in #306; local play works independently.
 
-## Watch the two-minute demo
+## Watch the two-minute project introduction
 
-[![Watch the Stack & Survive gameplay demo](docs/media/demo-preview.jpg)](https://raw.githubusercontent.com/yeongseon/stack-and-survive/main/docs/media/stack-and-survive-demo.mp4)
+[![Stack & Survive project introduction and gameplay](docs/media/project-introduction-preview.jpg)](https://raw.githubusercontent.com/yeongseon/stack-and-survive/main/docs/media/project-introduction-120s.mp4)
 
-**[Watch / download the demo (MP4, 2:00, 5.9 MiB)](https://raw.githubusercontent.com/yeongseon/stack-and-survive/main/docs/media/stack-and-survive-demo.mp4)** · [Transcript, chapter guide and recording details](docs/DEMO_VIDEO.md)
+**[Watch / download the introduction (MP4, 2:00, about 11.8 MiB)](https://raw.githubusercontent.com/yeongseon/stack-and-survive/main/docs/media/project-introduction-120s.mp4)** · [Transcript, English captions and automatic regeneration](docs/DEMO_VIDEO.md)
 
-Real gameplay from released build `24ca388`, edited from **two separate runs**: normal traffic → overload and service risk → actual failure → retry → infrastructure expansion → successful completion → Player Name and API-failure local fallback. **Silent video** for presenter narration, with labeled title/fallback screenshots. Global rows are existing verified scores, not these runs publicly submitted. A complete operation lasts 180 seconds; this is not a continuous two-minute run.
+**Project introduction + real gameplay + implemented agent design + closing**, automatically edited with synthetic English narration, captions and transcript. Footage is ordinary real-time play of local production source `a6f6956`, scoring **9,473 points** after a real 180-second completion. Cuts are labeled; this is not a continuous two-minute operation. The agent segment is an architecture explanation, **not a live AI demonstration**. No public score was submitted. Historical silent videos remain linked in the recording notes.
 
 The official game URL is the GitHub Pages link above. No custom domain is required.
 
@@ -30,7 +30,7 @@ More servers are not always the best answer. App expansion takes time; Cache hel
 
 **See one decision change the outcome:** [53-second current-feature demo and narration](docs/DEMO_VIDEO.md#current-rules-04-the-bottleneck-tradeoff) — App expansion leaves a SQL bottleneck; a delayed SQL tier change restores service at a higher running cost. Continuous automated local gameplay, not a human learning study.
 
-**Current rules 0.4:** App scale-in/out and tier changes, SQL tiers and read replicas are now available through facility inspection. [Scaling guide and actual captured examples](docs/INFRASTRUCTURE_SCALING.md). The video and overview screenshots below document the earlier `24ca388` / rules 0.3 release, not the current interface. See the [dated presentation handoff](docs/submission/HACKATHON_HANDOFF.md) for current verification and release blockers.
+**Current rules 0.4:** App scale-in/out and tiers, SQL tiers/read replicas are available through visible scaling controls. [Scaling guide](docs/INFRASTRUCTURE_SCALING.md). Images and the new introduction show source `a6f6956`; separate old videos retain their original revisions. See [capture provenance](docs/images/README.md) and [release boundaries](docs/CURRENT_STATUS.md).
 
 - **One living data center:** click facilities and empty bays directly; routes are automatic.
 - **Eight traffic phases:** anticipate spikes, bot attacks, recovery windows and the final wave.
@@ -40,7 +40,7 @@ More servers are not always the best answer. App expansion takes time; Cache hel
 
 ## How to play
 
-**[Follow the screenshot walkthrough →](docs/PLAYER_GUIDE.md)** — 16 actual screens covering the opening, construction, attacks, recovery, name entry, results and settings.
+**[Follow the screenshot walkthrough →](docs/PLAYER_GUIDE.md)** — refreshed screens covering opening, construction, scaling, attacks, recovery, results, Learn and settings.
 
 1. Open the [browser demo](https://yeongseon.github.io/stack-and-survive/). A desktop browser is recommended; phone gameplay requires landscape.
 2. Optionally set **Player name**, choose an unlocked challenge and select **Start Game**. A name is never required to play.
@@ -62,7 +62,7 @@ At the base tier, each App instance costs **$5K/min**; Cache and Edge cost **$8K
 |---|---|
 | ![Title screen with Start Game and optional player-name controls.](docs/images/title.webp) | ![Completed operation with an explicit local leaderboard and the recorded DEMO identity.](docs/images/result.webp) |
 
-These are real automated captures from a clean production build of **`24ca388`**, not mockups. The result is a **local** score, and `DEMO` is an automation label—not a participant. Images are resized for this README. [Capture provenance](docs/images/README.md) · [Create your own screenshots](docs/DEVELOPMENT.md#screenshots-and-demo-evidence).
+These are actual automated local production captures of **`a6f6956`**, not mockups. Runtime source was clean; capture tooling was in the working tree and is disclosed. The result is **local**, and `DEMO` denotes automation—not a participant. Images are resized without cropping. [Capture provenance](docs/images/README.md) · [Regenerate images/video](docs/DEMO_VIDEO.md#automatic-regeneration).
 
 | Build before demand rises | Pause without losing your place |
 |---|---|
@@ -108,7 +108,7 @@ Gameplay **does not provision cloud resources**. Azure badges identify represent
 
 The result also links to **Microsoft Learn** for each service present in your final architecture and for Bicep. These fixed official links work without an API or AI configuration; the model cannot choose their destinations.
 
-**Agent follow-up (#322, unmerged and not deployed):** the [Architecture Export Agent](docs/ARCHITECTURE_EXPORT_AGENT.md) implements model-selected mapping/validation tools and bounded repair. Mocked-model tests with a real local compiler verify the flow; live Azure model behavior is still unverified. The implemented download gate requires exact-artifact compilation and bounded compiled-architecture checks, with completed tool outcomes rather than hidden reasoning. Public enablement still needs authorized AI configuration, an approved isolated compiler and real-model smoke. Nothing was deployed and game outcomes are unchanged.
+**Agent implementation (#322/#323 merged; activation #325 pending):** the [Architecture Export Agent](docs/ARCHITECTURE_EXPORT_AGENT.md) implements model-selected mapping/validation and bounded repair. Mocked-model tests with a real compiler verify the flow; live Azure model behavior remains unverified. Downloads require exact-artifact compilation and property checks. Public enablement still needs authorized AI configuration, compiler isolation and real-model smoke. Code merge creates no Azure resources and changes no game outcome.
 
 ## Develop and contribute
 
