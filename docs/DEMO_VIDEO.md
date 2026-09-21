@@ -2,41 +2,45 @@
 
 ## Two-minute project introduction — current source
 
-[![Project introduction: Architecture is a decision. Make it playable.](media/project-introduction-preview.jpg)](https://raw.githubusercontent.com/yeongseon/stack-and-survive/main/docs/media/project-introduction-120s.mp4)
+[![Learning Azure for the first time felt overwhelming.](media/project-introduction-preview.jpg)](https://raw.githubusercontent.com/yeongseon/stack-and-survive/main/docs/media/project-introduction-120s.mp4)
 
 **[Watch/download the new project introduction (MP4, exactly 2:00)](https://raw.githubusercontent.com/yeongseon/stack-and-survive/main/docs/media/project-introduction-120s.mp4)** · [English transcript](media/PROJECT_INTRO_NARRATION.md) · [English SRT](media/project-introduction-120s.srt) · [Edit/provenance manifest](media/project-introduction-120s.json)
 
-This is not gameplay-only: **24s project/problem introduction → 66s edited real gameplay/result → 20s implemented agent design → 10s closing**. Source `a6f6956` includes the merged Export/Agent and Learn code. Captured from a local production build with API empty, not a hosted or live-model run. The runtime was clean; capture tooling was uncommitted and is disclosed in the manifests. The 180-second operation really completed at 9,473 points / 99.61% availability; edits are labeled and playback is not accelerated. No external score was submitted.
+This is now a personal developer story, using the **same eight slides as the presentation**: motivation → learning gap → idea → experience → decisions → tradeoffs → reflection → goal. It credits Microsoft Learn and describes the game as an additional way to approach Azure, not a replacement or a proven education product. There is no feature-card pitch, AI segment, animated counter or marketing CTA.
+
+The video is a narrated slide presentation with real screenshots, **not moving/live gameplay or one continuous run**. Screenshots retain source `a6f6956` and their original manifest. The 180-second result really scored 9,473 / 99.61% availability; the overload example is a different run. The deck does not invent hourly cost or mislabel lost sales. All internal capture/source/production/editing banners were removed from the audience deck and new video; provenance stays here and in the JSON manifest.
 
 | Time | Content |
 |---|---|
-| 0:00–0:12 | Why a playable architecture experience: components versus decisions |
-| 0:12–0:24 | Project introduction: 180 seconds, eight phases, availability/cost tradeoffs |
-| 0:24–0:44 | Actual App construction and Cache activation |
-| 0:44–1:02 | Later real bot attack; protection and bottlenecks |
-| 1:02–1:16 | Later real final wave; 600 req/s |
-| 1:16–1:30 | Actual completed result and local score |
-| 1:30–1:50 | Agent architecture explanation **not a live AI demo**; activation verification pending |
-| 1:50–2:00 | Technology, learning links and game URL |
+| 0:00–0:16 | My first experience learning Azure; Microsoft Learn gave me concepts |
+| 0:16–0:32 | I knew the services, but not how they behaved together |
+| 0:32–0:44 | “So I built this.” — one large real screenshot |
+| 0:44–0:59 | Change the architecture and observe availability/cost |
+| 0:59–1:16 | “What would you change?” — find the layer under pressure |
+| 1:16–1:30 | “It survived. But was it a good architecture?” |
+| 1:30–1:45 | Reflect, try again, return to Microsoft Learn |
+| 1:45–2:00 | Make the first step into Azure easier |
 
-Audio: **offline macOS Samantha synthetic English narration at 175 words/minute**, normalized to a target −18 LUFS / −2 dBTP; no music, game audio muted. Each original voice segment fits its chapter without truncation. Full English captions are supplied as SRT and embedded selectable subtitle track; chapter captions are burned in. Sentence subtitle timing is word-weighted, not forced-aligned. Automated decode/level/playback checks are not a human listening or pronunciation review. The owner must check voice/asset use and event rules before submission; no new license clearance is implied.
+Current audio is an **offline synthetic draft, macOS Samantha at 155 words/minute**, not the developer's recorded voice or an impersonation. A personal recording is recommended for final delivery. The renderer supports eight owner-provided WAV files and rejects recordings that exceed their allotted duration. No music, game audio or dramatic transitions are added. English captions are selectable and available as SRT; their sentence timing is approximate, not forced-aligned. Provenance is not burned onto the audience frames. Human listening, pronunciation, consent/voice rights and event review remain separate.
 
-The video has 3,000 video frames at 25fps, 1440×1000, H.264/AAC, and a 120.000s container/video/audio duration. Exact bytes and SHA256 are recorded in the manifest. Prior media below is retained, not silently overwritten.
+The new video has 3,000 frames at 25fps, **1440×900**, H.264/AAC, and a 120.000s video/audio duration. Exact bytes, source hashes and audio origin are in the manifest. It intentionally replaces the previous overly mechanical introduction at the same URL; that version remains in Git history. Historical technical recordings below are separate evidence, not the final presentation.
 
 ### Automatic regeneration
 
 ```bash
 pnpm install --frozen-lockfile
-node scripts/capture-current-media.mjs
-node scripts/render-project-video.mjs test-results-submission/current-<timestamp> --voice
-node scripts/check-project-media.mjs
 node showcase/check.mjs
 node showcase/export-pdf.mjs
+# Best: record slide-1.wav through slide-8.wav in your own voice
+node scripts/render-project-video.mjs --narration-dir=/absolute/path/to/recordings
+# Alternative: offline synthetic draft on macOS
+node scripts/render-project-video.mjs --voice
+node scripts/check-project-media.mjs
 ```
 
-Capture rebuilds production with the optional API disabled, records ordinary inputs, blocks external requests and stores frame observations/build hashes. The renderer creates intro/outro cards, chapter captions, eight narrated segments and 19 refreshed WebP images. `--voice` requires installed macOS `say`/Samantha; omit it for a silent edit with transcript and SRT. FFmpeg/ffprobe and installed Playwright Chromium are required; no paid/network voice or new runtime dependency. Raw footage remains ignored locally; committed outputs are in `docs/images/` and `docs/media/`.
+`showcase/story.json` owns narration and timings; the renderer uses `slides.html`/CSS directly, hides navigation and rejects forbidden visible production/marketing labels. It preserves the existing screenshot pack and its provenance rather than re-encoding images. With neither audio option, output is silent with transcript/SRT/selectable subtitles. FFmpeg/ffprobe and Chromium are required; no network voice or runtime dependency is added. Regenerating raw screenshots is a separate task via `capture-current-media.mjs`, not a side effect of rendering this talk.
 
-Each render uses a fresh temporary output folder within the capture directory, avoiding stale intermediate clips. The manifest records Node/Chromium/FFmpeg/OS/voice details. This is a repeatable workflow, not a guarantee of byte-identical codecs/voice across toolchain versions. Checks compare committed artifacts to their reviewed manifest; hashes are not signed provenance or protection against someone altering both. Subtitle alignment is approximate, so review the supplied SRT and narration before submission.
+Each render uses a fresh ignored output folder. The manifest binds deck/story/image hashes to the video, records the toolchain and audio origin, and lets the checker reject an out-of-date video. This is workflow reproducibility, not cross-platform byte identity or signed provenance. Human pacing and subtitle alignment still need review.
 
 [Current status](CURRENT_STATUS.md) distinguishes confirmed hosted releases, local recording sources and merged-but-unactivated AI code. Older videos below retain their original `ff93cd6` and `24ca388` local recordings; neither was overwritten by the new introduction.
 
