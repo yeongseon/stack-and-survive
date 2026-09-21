@@ -1,5 +1,7 @@
 # Two-minute edited demo
 
+**Current submission video:** use the automated [120-second project introduction](../DEMO_VIDEO.md#two-minute-project-introduction--current-source) and its [timed narration](../media/PROJECT_INTRO_NARRATION.md). It includes 24s introduction, 66s real gameplay/result, 20s agent-design explanation and 10s closing, with disclosed synthetic English voice. The table below is an older alternate demo plan, not the generated video's current timeline. Never claim a live AI response when only the design explanation is shown.
+
 This describes the historical overview format, not the only available demo. For current scaling/compact SQL use the [53.4-second continuous tradeoff clip and narration](../DEMO_VIDEO.md#current-rules-04-the-bottleneck-tradeoff). [Current status](../CURRENT_STATUS.md) owns release/API evidence. Draft #316 Export/Learn is not a live demo beat until merged, configured and actually verified.
 
 Record from the actual release candidate and label edits. A complete operation lasts180seconds plus introduction/countdown; it cannot truthfully fit into a continuous two-minute recording. `capture:submission` is a real-time scripted capture, not a participant or speed mode.

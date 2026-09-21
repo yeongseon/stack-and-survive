@@ -1,6 +1,6 @@
 # Submission asset pack
 
-Start with [Current status](../CURRENT_STATUS.md) for `c68ec0c` deployment, API #306 and draft-only Export/Learn #316. Both demo videos and the English PDF are public; event submission remains unconfirmed. Historical checkpoint reports are not current task lists.
+Start with [Current status](../CURRENT_STATUS.md). Source `a6f6956` includes merged Export/Agent/Learn; live AI activation is pending #325. The new [two-minute project introduction](../DEMO_VIDEO.md#two-minute-project-introduction--current-source), 19 screenshots and rebuilt PDF use fresh local captures. Old videos remain historical; actual submission and voice/rights approval remain unconfirmed.
 
 These guides are preparation material, not proof that a submission, listening or human session occurred. Recording/capture completion is revision-specific and recorded in the [live checklist #7](https://github.com/yeongseon/stack-and-survive/issues/7). Record the exact release SHA and Pages artifact before using media. The client/release owner maintains this pack; the backend owner maintains API deployment and its evidence.
 

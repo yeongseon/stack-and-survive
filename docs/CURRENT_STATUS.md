@@ -1,5 +1,13 @@
 # Current implementation and release status
 
+## Latest merge and media checkpoint — 2026-09-21
+
+**Source `a6f6956` includes merged #316 Export/Learn and #323 Agent.** Owner approved code-first merge with separate activation; implementation #315/#322 is closed and actual AI model/configuration/isolation acceptance lives in #325. The older unmerged/draft statements below describe the pre-merge review and are superseded by this checkpoint. AI Coach remains separate. No live model or cloud provisioning was performed.
+
+Latest confirmed hosted deployment at capture time was docs-only `faf5444`, actual Pages 35551003162 (gameplay baseline `c68ec0c`). Do not infer a later deployment from a merge. Export reviewed head `db34045` passed 721 tests/Quality 35560038290; Agent `c31298b` passed 764 tests/Quality 35560038523 and rerun 35560038214. The initial timing race remains #324, not erased by rerun success.
+
+**Latest presentation media:** [two-minute project introduction](DEMO_VIDEO.md#two-minute-project-introduction--current-source) and [19 fresh images](images/README.md) from local production `a6f6956`, API disabled, runtime clean. Synthetic English voice and captions accompany introduction, real gameplay excerpts/results, implemented-agent explanation and closing. AI was not invoked or mocked into gameplay. The seven-slide PDF is rebuilt from these images. Historical videos remain at their original paths and revisions. Actual model, participant, listening/voice-use, rights and event submission checks remain separate.
+
 Snapshot: **2026-09-21**, audited against merged runtime **`c68ec0cb7a894f6ffd909d7ab7804a425a456dd5`**. This is a dated checkpoint, not a promise that a remote service will remain healthy. Numerical rules belong to [Simulation](SIMULATION_SPEC.md) and [Infrastructure scaling](INFRASTRUCTURE_SCALING.md); this page owns the current release/branch distinction.
 
 Review update: docs-only main `faf5444` also completed actual Pages build/deploy 35551003162; gameplay remains the `c68ec0c` baseline. This working branch contains unmerged Export #316 with later review fixes. Its previously green head `5ed4b9e` below is historical check evidence, not proof of validation for newer commits. Stacked Agent #323/#322 is also unmerged and requires actual model/operator acceptance. See `docs/PROJECT_REVIEW.md` for the whole-project review findings and new verification results.

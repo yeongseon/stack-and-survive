@@ -8,16 +8,16 @@ This is a review-ready draft, **not a completed submission or verified event-com
 - [Repository and illustrated overview](https://github.com/yeongseon/stack-and-survive)
 - [English presentation and PDF](../../showcase/README.md)
 - [English speaker notes, short version and Q&A](../../showcase/SPEAKER_NOTES.md)
-- [Current 53.4-second tradeoff clip and historical two-minute overview](../DEMO_VIDEO.md)
+- [New narrated two-minute project introduction, captions and transcript](../DEMO_VIDEO.md#two-minute-project-introduction--current-source)
 - [Screenshot walkthrough](../PLAYER_GUIDE.md)
 - [Technical explanation](../SUBMISSION_TECHNICAL_NOTES.md)
 - [Demo fallback](DEMO_FALLBACK.md) and [known limitations](KNOWN_LIMITATIONS.md)
 
-The deck is seven slides with no standalone architecture slide. Choose either the current-feature 53.4-second continuous automated clip (final review paused, not a completed operation) or the historical silent 120-second edit of two runs. Neither is a recording of the spoken presentation. Captures retain exact provenance; current-feature media is not evidence of a current live AI service.
+The deck is seven slides with no standalone architecture slide. The new 120-second introduction combines project explanation, real gameplay/result excerpts, agent-design boundary and closing with synthetic English voice. Separate 53.4-second/old 120-second clips remain historical references. None is evidence of human learning or a live AI service; confirm synthetic narration and file specifications against event rules.
 
 Read the [dated release handoff](HACKATHON_HANDOFF.md) before presenting: rules 0.4 are implemented, but production API compatibility is blocked in #306. Historical media does not prove the current global leaderboard works.
 
-[Current status](../CURRENT_STATUS.md) is the latest authority. Export to Azure and curated Microsoft Learn result links are implemented only in draft #316; do not list them as deployed capabilities or demonstrate mocked output as live AI. Real model configuration/compilation and human review remain pending.
+[Current status](../CURRENT_STATUS.md) is the authority. Export/Agent and Learn code merged in #316/#323; live AI activation remains pending #325. The new video explains the agent design but does not demonstrate a live model or use mocked output.
 
 ## One-sentence pitch
 
@@ -45,7 +45,7 @@ AI assisted implementation, original-art iteration, test writing and documentati
 
 ## Evidence boundaries
 
-- Existing screenshots are from source `24ca388`; their `DEMO` score is automated and local. See [image provenance](../images/README.md).
+- Current screenshots are local source `a6f6956`; the 9,473-point `DEMO` run is automated/local. See [provenance](../images/README.md). Old videos retain their original sources.
 - The published video's recorded outcomes and observed global rows have separate provenance in [DEMO_VIDEO.md](../DEMO_VIDEO.md). Neither recorded run was submitted publicly by that capture.
 - The presenter reported placing in the Korea regional event. Do not invent an award title, rank, organizer endorsement or measured learning result; add a public announcement only after its exact wording is confirmed.
 - Human comprehension, voluntary replay, listening/device and rights gates remain separately tracked. A regional presentation or award does not automatically satisfy those criteria.

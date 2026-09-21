@@ -1,6 +1,44 @@
 # Stack & Survive — demo video
 
-[Current status](CURRENT_STATUS.md) distinguishes deployed `c68ec0c`, local recording sources below and unmerged AI Export/Learn #316. The 0.4 clip's inspector fix is incorporated through #319; the video still records its original `ff93cd6` local run, not a new public-site recording.
+## Two-minute project introduction — current source
+
+[![Project introduction: Architecture is a decision. Make it playable.](media/project-introduction-preview.jpg)](https://raw.githubusercontent.com/yeongseon/stack-and-survive/main/docs/media/project-introduction-120s.mp4)
+
+**[Watch/download the new project introduction (MP4, exactly 2:00)](https://raw.githubusercontent.com/yeongseon/stack-and-survive/main/docs/media/project-introduction-120s.mp4)** · [English transcript](media/PROJECT_INTRO_NARRATION.md) · [English SRT](media/project-introduction-120s.srt) · [Edit/provenance manifest](media/project-introduction-120s.json)
+
+This is not gameplay-only: **24s project/problem introduction → 66s edited real gameplay/result → 20s implemented agent design → 10s closing**. Source `a6f6956` includes the merged Export/Agent and Learn code. Captured from a local production build with API empty, not a hosted or live-model run. The runtime was clean; capture tooling was uncommitted and is disclosed in the manifests. The 180-second operation really completed at 9,473 points / 99.61% availability; edits are labeled and playback is not accelerated. No external score was submitted.
+
+| Time | Content |
+|---|---|
+| 0:00–0:12 | Why a playable architecture experience: components versus decisions |
+| 0:12–0:24 | Project introduction: 180 seconds, eight phases, availability/cost tradeoffs |
+| 0:24–0:44 | Actual App construction and Cache activation |
+| 0:44–1:02 | Later real bot attack; protection and bottlenecks |
+| 1:02–1:16 | Later real final wave; 600 req/s |
+| 1:16–1:30 | Actual completed result and local score |
+| 1:30–1:50 | Agent architecture explanation **not a live AI demo**; activation verification pending |
+| 1:50–2:00 | Technology, learning links and game URL |
+
+Audio: **offline macOS Samantha synthetic English narration at 175 words/minute**, normalized to a target −18 LUFS / −2 dBTP; no music, game audio muted. Each original voice segment fits its chapter without truncation. Full English captions are supplied as SRT and embedded selectable subtitle track; chapter captions are burned in. Sentence subtitle timing is word-weighted, not forced-aligned. Automated decode/level/playback checks are not a human listening or pronunciation review. The owner must check voice/asset use and event rules before submission; no new license clearance is implied.
+
+The video has 3,000 video frames at 25fps, 1440×1000, H.264/AAC, and a 120.000s container/video/audio duration. Exact bytes and SHA256 are recorded in the manifest. Prior media below is retained, not silently overwritten.
+
+### Automatic regeneration
+
+```bash
+pnpm install --frozen-lockfile
+node scripts/capture-current-media.mjs
+node scripts/render-project-video.mjs test-results-submission/current-<timestamp> --voice
+node scripts/check-project-media.mjs
+node showcase/check.mjs
+node showcase/export-pdf.mjs
+```
+
+Capture rebuilds production with the optional API disabled, records ordinary inputs, blocks external requests and stores frame observations/build hashes. The renderer creates intro/outro cards, chapter captions, eight narrated segments and 19 refreshed WebP images. `--voice` requires installed macOS `say`/Samantha; omit it for a silent edit with transcript and SRT. FFmpeg/ffprobe and installed Playwright Chromium are required; no paid/network voice or new runtime dependency. Raw footage remains ignored locally; committed outputs are in `docs/images/` and `docs/media/`.
+
+Each render uses a fresh temporary output folder within the capture directory, avoiding stale intermediate clips. The manifest records Node/Chromium/FFmpeg/OS/voice details. This is a repeatable workflow, not a guarantee of byte-identical codecs/voice across toolchain versions. Checks compare committed artifacts to their reviewed manifest; hashes are not signed provenance or protection against someone altering both. Subtitle alignment is approximate, so review the supplied SRT and narration before submission.
+
+[Current status](CURRENT_STATUS.md) distinguishes confirmed hosted releases, local recording sources and merged-but-unactivated AI code. Older videos below retain their original `ff93cd6` and `24ca388` local recordings; neither was overwritten by the new introduction.
 
 [Back to README](../README.md) · [Play the game](https://yeongseon.github.io/stack-and-survive/)
 

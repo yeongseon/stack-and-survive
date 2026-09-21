@@ -1,0 +1,733 @@
+{
+  "sourceCommit": "a6f69560d063ae1454c12edc0532bbfc93424679",
+  "dirtyTree": true,
+  "capturedAt": "2026-09-21T08:40:19.355Z",
+  "bundles": [
+    {
+      "path": "/assets/index-BZqQHE_V.js",
+      "sha256": "10fa3f8b62791e975cf46beeb9659a2a5da2732f848069d3cbe73557c4272aea"
+    },
+    {
+      "path": "/assets/index-CMkT-4n0.css",
+      "sha256": "b83c3f31fafbd28936b3a470c9f5cf91c3c20333157aefc10809382bbaa8fdff"
+    }
+  ],
+  "runtimeClean": true,
+  "status": "complete",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "mode": "Local production build, ordinary real-time controls. No state injection or acceleration. Local board only. AI is unconfigured and never mocked into gameplay.",
+  "operator": "Automated capture, not a human participant",
+  "frames": [
+    {
+      "name": "title",
+      "observation": "Fresh production title; no saved identity",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "before": {
+        "budget": null,
+        "traffic": null,
+        "availability": null,
+        "lost-sales": null,
+        "mission-clock": null
+      },
+      "after": {
+        "budget": null,
+        "traffic": null,
+        "availability": null,
+        "lost-sales": null,
+        "mission-clock": null
+      }
+    },
+    {
+      "name": "opening",
+      "observation": "Current compact Tier 1 SQL, visible scaling and Azure service guide",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "before": {
+        "budget": "$74.83K",
+        "traffic": "100 req/s",
+        "availability": "100.0%",
+        "lost-sales": "$0/s",
+        "mission-clock": "02:59"
+      },
+      "after": {
+        "budget": "$74.83K",
+        "traffic": "100 req/s",
+        "availability": "100.0%",
+        "lost-sales": "$0/s",
+        "mission-clock": "02:59"
+      }
+    },
+    {
+      "name": "construction",
+      "observation": "Actual accepted App construction; capacity not active yet",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "before": {
+        "budget": "$74.33K",
+        "traffic": "100 req/s",
+        "availability": "100.0%",
+        "lost-sales": "$0/s",
+        "mission-clock": "02:56"
+      },
+      "after": {
+        "budget": "$74.33K",
+        "traffic": "100 req/s",
+        "availability": "100.0%",
+        "lost-sales": "$0/s",
+        "mission-clock": "02:56"
+      }
+    },
+    {
+      "name": "cache",
+      "observation": "Cache active after real provisioning",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "before": {
+        "budget": "$73.19K",
+        "traffic": "100 req/s",
+        "availability": "100.0%",
+        "lost-sales": "$0/s",
+        "mission-clock": "02:50"
+      },
+      "after": {
+        "budget": "$73.19K",
+        "traffic": "100 req/s",
+        "availability": "100.0%",
+        "lost-sales": "$0/s",
+        "mission-clock": "02:50"
+      }
+    },
+    {
+      "name": "app-scaling",
+      "observation": "Actual active App tier and instance controls",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "before": {
+        "budget": "$72.51K",
+        "traffic": "100 req/s",
+        "availability": "100.0%",
+        "lost-sales": "$0/s",
+        "mission-clock": "02:48"
+      },
+      "after": {
+        "budget": "$72.51K",
+        "traffic": "100 req/s",
+        "availability": "100.0%",
+        "lost-sales": "$0/s",
+        "mission-clock": "02:48"
+      }
+    },
+    {
+      "name": "warning",
+      "observation": "Actual countdown approaching the first spike",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "before": {
+        "budget": "$69.44K",
+        "traffic": "100 req/s",
+        "availability": "100.0%",
+        "lost-sales": "$0/s",
+        "mission-clock": "02:40"
+      },
+      "after": {
+        "budget": "$69.44K",
+        "traffic": "100 req/s",
+        "availability": "100.0%",
+        "lost-sales": "$0/s",
+        "mission-clock": "02:40"
+      }
+    },
+    {
+      "name": "spike",
+      "observation": "First customer spike with prepared capacity",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "before": {
+        "budget": "$67.32K",
+        "traffic": "260 req/s",
+        "availability": "100.0%",
+        "lost-sales": "$0/s",
+        "mission-clock": "02:34"
+      },
+      "after": {
+        "budget": "$67.32K",
+        "traffic": "260 req/s",
+        "availability": "100.0%",
+        "lost-sales": "$0/s",
+        "mission-clock": "02:34"
+      }
+    },
+    {
+      "name": "edge",
+      "observation": "Protected Edge active before the malicious wave",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "before": {
+        "budget": "$58.76K",
+        "traffic": "160 req/s",
+        "availability": "99.5%",
+        "lost-sales": "$9.28/s",
+        "mission-clock": "02:01"
+      },
+      "after": {
+        "budget": "$58.76K",
+        "traffic": "160 req/s",
+        "availability": "99.5%",
+        "lost-sales": "$9.28/s",
+        "mission-clock": "02:01"
+      }
+    },
+    {
+      "name": "gameplay",
+      "observation": "Actual bot phase, three App instances, Cache and Edge",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "before": {
+        "budget": "$55.76K",
+        "traffic": "440 req/s",
+        "availability": "99.5%",
+        "lost-sales": "$16.59/s",
+        "mission-clock": "01:54"
+      },
+      "after": {
+        "budget": "$55.76K",
+        "traffic": "440 req/s",
+        "availability": "99.5%",
+        "lost-sales": "$16.59/s",
+        "mission-clock": "01:54"
+      }
+    },
+    {
+      "name": "recovery",
+      "observation": "Actual recovery phase at 200 req/s",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "before": {
+        "budget": "$46.56K",
+        "traffic": "200 req/s",
+        "availability": "99.5%",
+        "lost-sales": "$11.02/s",
+        "mission-clock": "01:24"
+      },
+      "after": {
+        "budget": "$46.56K",
+        "traffic": "200 req/s",
+        "availability": "99.5%",
+        "lost-sales": "$11.02/s",
+        "mission-clock": "01:24"
+      }
+    },
+    {
+      "name": "sql-scaling",
+      "observation": "Compact base SQL with available tier/replica controls",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "before": {
+        "budget": "$46.56K",
+        "traffic": "200 req/s",
+        "availability": "99.5%",
+        "lost-sales": "$11.02/s",
+        "mission-clock": "01:24"
+      },
+      "after": {
+        "budget": "$46.56K",
+        "traffic": "200 req/s",
+        "availability": "99.5%",
+        "lost-sales": "$11.02/s",
+        "mission-clock": "01:24"
+      }
+    },
+    {
+      "name": "final-wave",
+      "observation": "Actual final-wave warning before 600 req/s",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "before": {
+        "budget": "$28.25K",
+        "traffic": "240 req/s",
+        "availability": "99.5%",
+        "lost-sales": "$13.92/s",
+        "mission-clock": "00:24"
+      },
+      "after": {
+        "budget": "$27.89K",
+        "traffic": "240 req/s",
+        "availability": "99.5%",
+        "lost-sales": "$13.92/s",
+        "mission-clock": "00:23"
+      }
+    },
+    {
+      "name": "join",
+      "observation": "Actual completed result before optional local name",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "before": {
+        "budget": "$21.77K",
+        "traffic": "600 req/s",
+        "availability": "99.5%",
+        "lost-sales": "$19.14/s",
+        "mission-clock": "00:00"
+      },
+      "after": {
+        "budget": "$21.77K",
+        "traffic": "600 req/s",
+        "availability": "99.5%",
+        "lost-sales": "$19.14/s",
+        "mission-clock": "00:00"
+      }
+    },
+    {
+      "name": "learn",
+      "observation": "Actual curated Learn links, available without AI configuration",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "before": {
+        "budget": "$21.77K",
+        "traffic": "600 req/s",
+        "availability": "99.5%",
+        "lost-sales": "$19.14/s",
+        "mission-clock": "00:00"
+      },
+      "after": {
+        "budget": "$21.77K",
+        "traffic": "600 req/s",
+        "availability": "99.5%",
+        "lost-sales": "$19.14/s",
+        "mission-clock": "00:00"
+      }
+    },
+    {
+      "name": "result",
+      "observation": "Actual completed local-only DEMO result; no public submission",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "before": {
+        "budget": "$21.77K",
+        "traffic": "600 req/s",
+        "availability": "99.5%",
+        "lost-sales": "$19.14/s",
+        "mission-clock": "00:00"
+      },
+      "after": {
+        "budget": "$21.77K",
+        "traffic": "600 req/s",
+        "availability": "99.5%",
+        "lost-sales": "$19.14/s",
+        "mission-clock": "00:00"
+      }
+    },
+    {
+      "name": "landscape-result",
+      "observation": "Same actual result in small landscape",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "before": {
+        "budget": "$21.77K",
+        "traffic": "600 req/s",
+        "availability": "99.5%",
+        "lost-sales": "$19.14/s",
+        "mission-clock": "00:00"
+      },
+      "after": {
+        "budget": "$21.77K",
+        "traffic": "600 req/s",
+        "availability": "99.5%",
+        "lost-sales": "$19.14/s",
+        "mission-clock": "00:00"
+      }
+    },
+    {
+      "name": "overload",
+      "observation": "Separate no-action operation, actual App bottleneck",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "before": {
+        "budget": "$70.71K",
+        "traffic": "260 req/s",
+        "availability": "57.7%",
+        "lost-sales": "$1,276/s",
+        "mission-clock": "02:34"
+      },
+      "after": {
+        "budget": "$70.71K",
+        "traffic": "260 req/s",
+        "availability": "57.7%",
+        "lost-sales": "$1,276/s",
+        "mission-clock": "02:34"
+      }
+    },
+    {
+      "name": "pause",
+      "observation": "Separate operation paused by an ordinary action; menu animation finished",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "before": {
+        "budget": "$70.71K",
+        "traffic": "260 req/s",
+        "availability": "57.7%",
+        "lost-sales": "$1,276/s",
+        "mission-clock": "02:34"
+      },
+      "after": {
+        "budget": "$70.71K",
+        "traffic": "260 req/s",
+        "availability": "57.7%",
+        "lost-sales": "$1,276/s",
+        "mission-clock": "02:34"
+      }
+    },
+    {
+      "name": "settings",
+      "observation": "Existing sound/motion settings; no listening/device acceptance claimed",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "before": {
+        "budget": "$70.71K",
+        "traffic": "260 req/s",
+        "availability": "57.7%",
+        "lost-sales": "$1,276/s",
+        "mission-clock": "02:34"
+      },
+      "after": {
+        "budget": "$70.71K",
+        "traffic": "260 req/s",
+        "availability": "57.7%",
+        "lost-sales": "$1,276/s",
+        "mission-clock": "02:34"
+      }
+    }
+  ],
+  "markers": {
+    "title": 0.49,
+    "opening": 9.559,
+    "construction-start": 11.421,
+    "construction": 12.493,
+    "cache": 18.195,
+    "app-scaling": 20.237,
+    "warning": 28.422,
+    "spike-start": 34.227,
+    "spike": 34.48,
+    "edge": 67.183,
+    "bot-start": 74.022,
+    "gameplay": 74.277,
+    "recovery": 104.42,
+    "sql-scaling": 104.694,
+    "final-wave": 165.088,
+    "final-start": 169.396,
+    "result-start": 188.352,
+    "join": 188.506,
+    "learn": 188.708,
+    "result": 188.926,
+    "landscape-result": 207.001,
+    "overload-start": 240.425,
+    "overload": 240.67,
+    "pause": 241.059,
+    "settings": 241.238
+  },
+  "errors": [],
+  "blockedExternalRequests": 0,
+  "publicScorePosts": 0,
+  "score": "Score 9473/ 10,000",
+  "actualRunSha256": "83625b7bcd7a62534f9a31ee74d7a87ad2659cb0bb55c0ec7fead576d00e8598",
+  "rawVideo": "page@c77e3d9ecc545a15e9e80e6ab99ed4d6.webm",
+  "captureDirectory": "current-2026-09-21T08-40-19.305Z",
+  "finalResult": {
+    "score": 9473,
+    "elapsed": 180,
+    "status": "COMPLETED",
+    "objectiveMet": true,
+    "availability": 0.996147577584282
+  },
+  "images": [
+    {
+      "name": "title",
+      "sourceSha256": "52f2178015634044e3086a4f36282d82671bf588defb67f3cf766dfd54dc48a0",
+      "sha256": "059f0167afcf57decf53749f9b3cdcf30f67ec689c1aa1ace370933ea17b403d",
+      "observation": "Fresh production title; no saved identity",
+      "readouts": {
+        "budget": null,
+        "traffic": null,
+        "availability": null,
+        "lost-sales": null,
+        "mission-clock": null
+      }
+    },
+    {
+      "name": "opening",
+      "sourceSha256": "8e5a95bb4a8769bcad816a314dbc0225e25f280ce74f2f5100a66dc61ec15449",
+      "sha256": "bd49abc5731fbfeab1ddb33cca921f14edf04cbad1e19624c7535c8755accfc1",
+      "observation": "Current compact Tier 1 SQL, visible scaling and Azure service guide",
+      "readouts": {
+        "budget": "$74.83K",
+        "traffic": "100 req/s",
+        "availability": "100.0%",
+        "lost-sales": "$0/s",
+        "mission-clock": "02:59"
+      }
+    },
+    {
+      "name": "construction",
+      "sourceSha256": "d39c9b5255dafae7766cf135c0aaf3b2969e8628e6153b910dbd6b0220e0e7a2",
+      "sha256": "75e1c3cc9ec79f43c26dc2b245d668534d20357fd7017d1148a754183be78242",
+      "observation": "Actual accepted App construction; capacity not active yet",
+      "readouts": {
+        "budget": "$74.33K",
+        "traffic": "100 req/s",
+        "availability": "100.0%",
+        "lost-sales": "$0/s",
+        "mission-clock": "02:56"
+      }
+    },
+    {
+      "name": "cache",
+      "sourceSha256": "a53fc071775285aaa7f93368bb69630cc7ef5afba4b74db2ba105e66deccaa60",
+      "sha256": "362d1b171a15b840e335a70ec75e8ed475d3c818e54603545cb98bf39b124258",
+      "observation": "Cache active after real provisioning",
+      "readouts": {
+        "budget": "$73.19K",
+        "traffic": "100 req/s",
+        "availability": "100.0%",
+        "lost-sales": "$0/s",
+        "mission-clock": "02:50"
+      }
+    },
+    {
+      "name": "app-scaling",
+      "sourceSha256": "8e6893416411cae8466000eda4227daa5c5fc2fa923f56175992b2b6fafc75a7",
+      "sha256": "252b77223299cc029db8fa9fc79fdefa66960f54a411e94d08e408734037e2a0",
+      "observation": "Actual active App tier and instance controls",
+      "readouts": {
+        "budget": "$72.51K",
+        "traffic": "100 req/s",
+        "availability": "100.0%",
+        "lost-sales": "$0/s",
+        "mission-clock": "02:48"
+      }
+    },
+    {
+      "name": "warning",
+      "sourceSha256": "9306641fb23031d1f7c8e19bbde358526765109ab903ac153b0fd9c1e7c3abed",
+      "sha256": "197370b5886b7606cb811354300046710ea4e76e1b8d86eaf6cf9ba5a3fabbb0",
+      "observation": "Actual countdown approaching the first spike",
+      "readouts": {
+        "budget": "$69.44K",
+        "traffic": "100 req/s",
+        "availability": "100.0%",
+        "lost-sales": "$0/s",
+        "mission-clock": "02:40"
+      }
+    },
+    {
+      "name": "spike",
+      "sourceSha256": "4864b32d4bbc93c7c7231fa545bc54dd21e27dc7c224dac98502f22b845a5bcc",
+      "sha256": "010ed2673e3eb198e1a82268047ef12d1f4d709033312774c91dc3f6006ccae7",
+      "observation": "First customer spike with prepared capacity",
+      "readouts": {
+        "budget": "$67.32K",
+        "traffic": "260 req/s",
+        "availability": "100.0%",
+        "lost-sales": "$0/s",
+        "mission-clock": "02:34"
+      }
+    },
+    {
+      "name": "edge",
+      "sourceSha256": "84aaf47599be3d1cc2bd10110a6811ce10247fd1e79313baff897ef7981bde7a",
+      "sha256": "33055aa39ff49f748713f002a70fdb56abde1447e2fce9c7878c5e838a1f3065",
+      "observation": "Protected Edge active before the malicious wave",
+      "readouts": {
+        "budget": "$58.76K",
+        "traffic": "160 req/s",
+        "availability": "99.5%",
+        "lost-sales": "$9.28/s",
+        "mission-clock": "02:01"
+      }
+    },
+    {
+      "name": "gameplay",
+      "sourceSha256": "d2f914c58f29d506873e4a8945bf0aac2d077428d066f40e5d75fc06956a8f0f",
+      "sha256": "05f1859b5ef85b85d4a91c90d0120e2c52dfe2039cd1d03e21d441acbbbca96d",
+      "observation": "Actual bot phase, three App instances, Cache and Edge",
+      "readouts": {
+        "budget": "$55.76K",
+        "traffic": "440 req/s",
+        "availability": "99.5%",
+        "lost-sales": "$16.59/s",
+        "mission-clock": "01:54"
+      }
+    },
+    {
+      "name": "recovery",
+      "sourceSha256": "0c32707d5292a37642dd8afe44ee36a1a1ddd9289ff1eb7de66e675677d6879c",
+      "sha256": "ade9dbd4d42ef67946b3f6a69c174bce30ecec3eb490d1327ff51b4a53e206f2",
+      "observation": "Actual recovery phase at 200 req/s",
+      "readouts": {
+        "budget": "$46.56K",
+        "traffic": "200 req/s",
+        "availability": "99.5%",
+        "lost-sales": "$11.02/s",
+        "mission-clock": "01:24"
+      }
+    },
+    {
+      "name": "sql-scaling",
+      "sourceSha256": "9f1f3c7efc2f703f67cf4eb510d2f1f0ced907526f95b5d54869a46c8a45f81c",
+      "sha256": "112972edf9f56b023cd88bf2bfe64887ea4ee957e4dcac9fc46b401778fe5637",
+      "observation": "Compact base SQL with available tier/replica controls",
+      "readouts": {
+        "budget": "$46.56K",
+        "traffic": "200 req/s",
+        "availability": "99.5%",
+        "lost-sales": "$11.02/s",
+        "mission-clock": "01:24"
+      }
+    },
+    {
+      "name": "final-wave",
+      "sourceSha256": "ba1606c6a48683a5840ef20654e03a3d17b6bfc2f13e62c714ef77596685a7be",
+      "sha256": "4297dfe95a03624171ec6e2149c5b4587ca690ddca489cc76774c3d2247b346d",
+      "observation": "Actual final-wave warning before 600 req/s",
+      "readouts": {
+        "budget": "$28.25K",
+        "traffic": "240 req/s",
+        "availability": "99.5%",
+        "lost-sales": "$13.92/s",
+        "mission-clock": "00:24"
+      }
+    },
+    {
+      "name": "join",
+      "sourceSha256": "a33ddb1bb6fe66f6ff077a992d73c9570939f905f19cbce09f2d885e44b353c8",
+      "sha256": "0fead297f281cd6d7e39aee18d74377873ccfabf7776a0cd5f87db68765555ba",
+      "observation": "Actual completed result before optional local name",
+      "readouts": {
+        "budget": "$21.77K",
+        "traffic": "600 req/s",
+        "availability": "99.5%",
+        "lost-sales": "$19.14/s",
+        "mission-clock": "00:00"
+      }
+    },
+    {
+      "name": "learn",
+      "sourceSha256": "e79b0d9cb04a3f1945fd08e136f27a36564a745b531b9687962675e83427a48f",
+      "sha256": "96cea3fafeaac2c463844bab1ae7ed08b7d04fcfebd6b2f79e3212508c17441c",
+      "observation": "Actual curated Learn links, available without AI configuration",
+      "readouts": {
+        "budget": "$21.77K",
+        "traffic": "600 req/s",
+        "availability": "99.5%",
+        "lost-sales": "$19.14/s",
+        "mission-clock": "00:00"
+      }
+    },
+    {
+      "name": "result",
+      "sourceSha256": "0614c17bcb707d70d67c6db850c7e79ae5a32484b518667ce45c016b991fabdb",
+      "sha256": "acb49b439511fb76e89c731abe382797e09413a7ddfe47b53be16dd408894985",
+      "observation": "Actual completed local-only DEMO result; no public submission",
+      "readouts": {
+        "budget": "$21.77K",
+        "traffic": "600 req/s",
+        "availability": "99.5%",
+        "lost-sales": "$19.14/s",
+        "mission-clock": "00:00"
+      }
+    },
+    {
+      "name": "landscape-result",
+      "sourceSha256": "579c06ff64b76a58dff8f6074c933d86283744e0321be9d5627a5073c1ad6403",
+      "sha256": "b4e3e8c4fe5e46ae07472222e14e0f6438d7cb5081ea042dda127566202bf5a0",
+      "observation": "Same actual result in small landscape",
+      "readouts": {
+        "budget": "$21.77K",
+        "traffic": "600 req/s",
+        "availability": "99.5%",
+        "lost-sales": "$19.14/s",
+        "mission-clock": "00:00"
+      }
+    },
+    {
+      "name": "overload",
+      "sourceSha256": "93f9e9e8be94365edd43542ae3145e5ead71a92c0b8a9d2b87b8e113af6e5be9",
+      "sha256": "8d22dabce3853119d783ebffc63aa4a1cea6251e4e41146dbc3b19fc40127cdd",
+      "observation": "Separate no-action operation, actual App bottleneck",
+      "readouts": {
+        "budget": "$70.71K",
+        "traffic": "260 req/s",
+        "availability": "57.7%",
+        "lost-sales": "$1,276/s",
+        "mission-clock": "02:34"
+      }
+    },
+    {
+      "name": "pause",
+      "sourceSha256": "b84165ac8385db78647c8f4bbc0767ba20c231f9cf3cf8a806bbc1438093a12f",
+      "sha256": "d28a02424ec19e2e583b35fb6fc441039cc8cf9a44f4b88c8fc32c3fe916859c",
+      "observation": "Separate operation paused by an ordinary action; menu animation finished",
+      "readouts": {
+        "budget": "$70.71K",
+        "traffic": "260 req/s",
+        "availability": "57.7%",
+        "lost-sales": "$1,276/s",
+        "mission-clock": "02:34"
+      }
+    },
+    {
+      "name": "settings",
+      "sourceSha256": "17a6fd1af3a1a41245aee000e4e6101abf9c34b3067a89d25e3b33aba09215cd",
+      "sha256": "92d29b0d054e0fece32abb6e5fddb2838efc866d06481955a83f9b018ff5e34e",
+      "observation": "Existing sound/motion settings; no listening/device acceptance claimed",
+      "readouts": {
+        "budget": "$70.71K",
+        "traffic": "260 req/s",
+        "availability": "57.7%",
+        "lost-sales": "$1,276/s",
+        "mission-clock": "02:34"
+      }
+    }
+  ]
+}
