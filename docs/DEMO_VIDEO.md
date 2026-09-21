@@ -6,13 +6,14 @@
 
 **[Watch/download the new project introduction (MP4, exactly 2:00)](https://raw.githubusercontent.com/yeongseon/stack-and-survive/main/docs/media/project-introduction-120s.mp4)** · [English transcript](media/PROJECT_INTRO_NARRATION.md) · [English SRT](media/project-introduction-120s.srt) · [Edit/provenance manifest](media/project-introduction-120s.json)
 
-This is now a personal developer story, using the **same eight slides as the presentation**: motivation → learning gap → idea → experience → decisions → tradeoffs → reflection → goal. It credits Microsoft Learn and describes the game as an additional way to approach Azure, not a replacement or a proven education product. There is no feature-card pitch, AI segment, animated counter or marketing CTA.
+The video begins with a quiet **two-second Stack & Survive title cover**, then the same eight personal story slides: motivation → learning gap → idea → experience → decisions → tradeoffs → reflection → goal. It credits Microsoft Learn, not a replacement or proven education product. No feature-card pitch, AI segment, animated counter or marketing CTA. Nine PDF/browser pages; exactly 120 seconds.
 
 The video is a narrated slide presentation with real screenshots, **not moving/live gameplay or one continuous run**. Screenshots retain source `a6f6956` and their original manifest. The 180-second result really scored 9,473 / 99.61% availability; the overload example is a different run. The deck does not invent hourly cost or mislabel lost sales. All internal capture/source/production/editing banners were removed from the audience deck and new video; provenance stays here and in the JSON manifest.
 
 | Time | Content |
 |---|---|
-| 0:00–0:16 | My first experience learning Azure; Microsoft Learn gave me concepts |
+| 0:00–0:02 | Stack & Survive title cover; silence |
+| 0:02–0:16 | My first experience learning Azure; Microsoft Learn gave me concepts |
 | 0:16–0:32 | I knew the services, but not how they behaved together |
 | 0:32–0:44 | “So I built this.” — one large real screenshot |
 | 0:44–0:59 | Change the architecture and observe availability/cost |
@@ -41,6 +42,8 @@ node scripts/check-project-media.mjs
 `showcase/story.json` owns narration and timings; the renderer uses `slides.html`/CSS directly, hides navigation and rejects forbidden visible production/marketing labels. It preserves the existing screenshot pack and its provenance rather than re-encoding images. With neither audio option, output is silent with transcript/SRT/selectable subtitles. FFmpeg/ffprobe and Chromium are required. Rendering existing WAVs is local; the separately opted-in neural generator below uses network speech. No application/runtime dependency is added. Regenerating raw screenshots is a separate task, not a side effect of rendering this talk.
 
 ### Neural narration regeneration
+
+The owner-approved GuyNeural audio was reused **byte for byte** for the cover update. `node scripts/retime-neural-narration.mjs <approved-narration-directory>` verifies unchanged text/WAV hashes and new duration limits, copies the recordings to a fresh output folder and records both prior/current story hashes. It does not call a voice provider, alter audio tempo or relabel changed words. Then render with `--narration-dir=<printed-output-directory>`. The two-second cover is silent; the first spoken section now starts at 0:02.
 
 This is **not offline synthesis**. With explicit `--allow-network`, only the public `showcase/story.json` narration is sent to Microsoft Edge's online TTS service using the third-party [edge-tts](https://github.com/rany2/edge-tts) CLI, pinned to 7.2.7. No Azure account/resource/key is created or configured, and no npm/application dependency changes. Network availability, service behavior and applicable provider terms are outside this repository's guarantees.
 

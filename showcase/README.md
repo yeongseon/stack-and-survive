@@ -1,6 +1,6 @@
 # Why I built Stack & Survive
 
-An eight-slide personal account of learning Azure: **motivation → learning gap → idea → experience → decisions → tradeoffs → reflection → goal**. The owner supplied the learning experience; the presentation does not invent customer stories, research results or education claims.
+A brief **Stack & Survive title cover**, followed by eight personal story slides: **motivation → learning gap → idea → experience → decisions → tradeoffs → reflection → goal**. The owner supplied the learning experience; no customer stories or educational results are invented. PDF/browser: nine pages. Video: silent two-second cover, then unchanged approved GuyNeural speech; still 120 seconds total.
 
 **[English PDF](stack-and-survive-showcase.pdf)** · [Browser slides](slides.html) · [Speaker notes](SPEAKER_NOTES.md) · [120-second video and transcript](../docs/DEMO_VIDEO.md#two-minute-project-introduction--current-source)
 
@@ -21,13 +21,13 @@ Open `http://127.0.0.1:8080/showcase/slides.html`; stop the temporary server whe
 | Arrows / PageUp / PageDown | Previous or next slide |
 | Home / End | First or last slide |
 | Navigation buttons | Mouse, touch and keyboard operation |
-| Print / PDF | All eight A4 landscape pages |
+| Print / PDF | Title cover + eight story slides: nine A4 landscape pages |
 
 Without JavaScript, all slides appear in order. There is no autoplay, excessive motion, external font or presentation library. The personal story and simple annotations remain, with the owner's preferred earlier palette restored: dark navy, pale text, teal service names and warm yellow notes. No marketing cards, glow or gradients were restored. Source/build/production labels remain absent from audience frames.
 
 ## One story for deck, video and notes
 
-`slides.html` and `slides.css` own the visual story. `story.json` owns its eight spoken sections and their **120-second total**. `slides.js` handles navigation; `check.mjs` validates counts, bounds, navigation, print and forbidden audience labels. The video renderer screenshots the same deck, with navigation hidden, so it cannot drift into a separate product pitch. It does not modify or overwrite the underlying game screenshots.
+`slides.html` and `slides.css` own the visual story. `story.json` owns the two-second silent cover plus eight spoken sections totaling another 118 seconds. The opening story allocation is 14 seconds; its approved 12.7-second speech fits without truncation or tempo changes. `slides.js` navigates explicit IDs (`#cover`, `#slide-1` through `#slide-8`), preserving existing story links. The same deck renders to video; underlying images are not modified.
 
 ```bash
 node showcase/check.mjs
@@ -51,7 +51,8 @@ Render intermediates remain in a new ignored `test-results-submission/personal-s
 
 | Slide | Time | Purpose |
 |---|---|---|
-| 1 | 0:00–0:16 | Personal motivation; credit Microsoft Learn |
+| Cover | 0:00–0:02 | Stack & Survive — quiet project introduction |
+| 1 | 0:02–0:16 | Personal motivation; credit Microsoft Learn |
 | 2 | 0:16–0:32 | Definitions versus system behavior |
 | 3 | 0:32–0:44 | “So I built this.” |
 | 4 | 0:44–0:59 | A choice changes the system |
@@ -70,7 +71,7 @@ AI code is merged, but live Azure model/operator acceptance remains #325. The ma
 
 ## Checks before sharing
 
-- [x] Eight slides fit 1920×1080, 1440×900, 1366×768 and 820×1180; navigation, images, local links, print bounds and no-JavaScript order pass.
+- [x] Cover plus eight slides fit 1920×1080, 1440×900, 1366×768 and 820×1180; navigation, images, links, print and no-JavaScript order pass.
 - [x] Video uses the same source/imagery; exact 120 seconds, 3,000 frames, complete decode and browser playback/seeks checked by the media checker.
 - [ ] Listen to the final narration; prefer the presenter's own voice and verify pronunciation/pacing.
 - [ ] Check final PDF/video on the actual presentation device and confirm the event rules.
