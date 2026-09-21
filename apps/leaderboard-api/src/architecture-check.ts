@@ -30,19 +30,28 @@ export function checkCompiledArchitecture(template: unknown, request: ExportRequ
     return `[resourceId('${resource.type}', ${name})]`;
   };
   const plan = get('Microsoft.Web/serverfarms'), planSku = object(plan.sku);
+  const isChildOf = (child: Record<string, unknown>, parent: Record<string, unknown>) => {
+    if (typeof child.name !== 'string' || typeof parent.name !== 'string') return false;
+    if (!parent.name.startsWith('[')) return child.name.startsWith(`${parent.name}/`) && child.name.slice(parent.name.length + 1).length > 0 && !child.name.slice(parent.name.length + 1).includes('/');
+    const prefix = `[format('{0}/{1}', ${parent.name.slice(1, -1)}, `;
+    return child.name.startsWith(prefix) && child.name.endsWith(')]') && Array.isArray(child.dependsOn) && child.dependsOn.includes(reference(parent));
+  };
   if (planSku.name !== ['S1', 'S2', 'P1v3'][f.app.tier - 1] || planSku.capacity !== f.app.instances || object(plan.properties).reserved !== true) errors.push('App plan SKU, Linux setting or instance count differs from the finished run.');
   const app = get('Microsoft.Web/sites'), appProperties = object(app.properties);
   if (appProperties.httpsOnly !== true || !reference(plan) || appProperties.serverFarmId !== reference(plan)) errors.push('App must use HTTPS and reference its generated plan.');
+  if (plan.kind !== 'linux' || app.kind !== 'app,linux') errors.push('App plan and site must explicitly use Linux kinds.');
   const database = get('Microsoft.Sql/servers/databases'), databaseProperties = object(database.properties);
+  if (!isChildOf(database, get('Microsoft.Sql/servers'))) errors.push('SQL database must belong to the generated SQL server.');
   if (object(database.sku).name !== ['GP_S_Gen5_2', 'GP_Gen5_4', 'BC_Gen5_4'][f.sql.tier - 1]) errors.push('SQL SKU differs from the finished tier.');
   if ((f.sql.tier === 3 && f.sql.readReplicas > 0) ? databaseProperties.readScale !== 'Enabled' : databaseProperties.readScale === 'Enabled') errors.push('SQL read-scale configuration does not match supported mapping.');
   const admins = object(object(get('Microsoft.Sql/servers').properties).administrators);
-  if (admins.azureADOnlyAuthentication !== true || admins.administratorType !== 'ActiveDirectory' || admins.sid !== "[parameters('sqlAdminObjectId')]" || admins.login !== "[parameters('sqlAdminLogin')]") errors.push('SQL must use Entra-only parameterized administrators.');
+  if (admins.azureADOnlyAuthentication !== true || admins.administratorType !== 'ActiveDirectory' || admins.sid !== "[parameters('sqlAdminObjectId')]" || admins.login !== "[parameters('sqlAdminLogin')]" || admins.tenantId !== '[subscription().tenantId]') errors.push('SQL must use Entra-only parameterized administrators in the current tenant.');
   const parameters = object(root.parameters);
   for (const key of ['location', 'namePrefix', 'sqlAdminObjectId', 'sqlAdminLogin']) if (object(parameters[key]).type !== 'string') errors.push(`Missing string parameter ${key}.`);
   if (Object.keys(parameters).some(key => !['location', 'namePrefix', 'sqlAdminObjectId', 'sqlAdminLogin'].includes(key))) errors.push('Additional parameters are not allowed.');
   if ('defaultValue' in object(parameters.sqlAdminObjectId) || 'defaultValue' in object(parameters.sqlAdminLogin)) errors.push('SQL administrator defaults are forbidden.');
   if (f.cache.present) {
+    if (!isChildOf(get('Microsoft.Cache/redisEnterprise/databases'), get('Microsoft.Cache/redisEnterprise'))) errors.push('Redis database must belong to the generated Redis cluster.');
     if (object(get('Microsoft.Cache/redisEnterprise').sku).name !== 'Balanced_B1') errors.push('Redis SKU differs from the fixed mapping.');
     const redis = object(get('Microsoft.Cache/redisEnterprise/databases').properties);
     if (redis.clientProtocol !== 'Encrypted' || redis.clusteringPolicy !== 'EnterpriseCluster' || redis.evictionPolicy !== 'VolatileLRU' || redis.port !== 10000) errors.push('Redis protocol, cluster, eviction or port differs from mapping.');

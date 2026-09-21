@@ -1,15 +1,16 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { handleAgentExport, type AgentExportResponse } from './export-agent';
 import { artifactHash, type BicepCompiler } from './bicep-compiler';
+import { checkCompiledArchitecture } from './architecture-check';
 import type { AgentClient, ToolCall, ToolTurn } from './azure-openai';
 import { exportRequestFixture as request, exportResponseFixture as response } from './export-bicep.fixture';
 
 export function compiledFixture(): unknown {
   const tags = { 'stack-and-survive': 'export', challenge: request.challengeId };
   return { $schema: 'https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#', parameters: { location: { type: 'string' }, namePrefix: { type: 'string' }, sqlAdminObjectId: { type: 'string' }, sqlAdminLogin: { type: 'string' } }, resources: [
-    { type: 'Microsoft.Web/serverfarms', name: 'plan', apiVersion: '2023-12-01', tags, sku: { name: 'S1', capacity: 2 }, properties: { reserved: true } },
-    { type: 'Microsoft.Web/sites', name: 'app', apiVersion: '2023-12-01', tags, properties: { httpsOnly: true, serverFarmId: "[resourceId('Microsoft.Web/serverfarms', 'plan')]" } },
-    { type: 'Microsoft.Sql/servers', name: 'sql', apiVersion: '2023-08-01-preview', tags, properties: { administrators: { administratorType: 'ActiveDirectory', azureADOnlyAuthentication: true, sid: "[parameters('sqlAdminObjectId')]", login: "[parameters('sqlAdminLogin')]" } } },
+    { type: 'Microsoft.Web/serverfarms', name: 'plan', kind: 'linux', apiVersion: '2023-12-01', tags, sku: { name: 'S1', capacity: 2 }, properties: { reserved: true } },
+    { type: 'Microsoft.Web/sites', name: 'app', kind: 'app,linux', apiVersion: '2023-12-01', tags, properties: { httpsOnly: true, serverFarmId: "[resourceId('Microsoft.Web/serverfarms', 'plan')]" } },
+    { type: 'Microsoft.Sql/servers', name: 'sql', apiVersion: '2023-08-01-preview', tags, properties: { administrators: { administratorType: 'ActiveDirectory', azureADOnlyAuthentication: true, sid: "[parameters('sqlAdminObjectId')]", login: "[parameters('sqlAdminLogin')]", tenantId: '[subscription().tenantId]' } } },
     { type: 'Microsoft.Sql/servers/databases', name: 'sql/db', apiVersion: '2023-08-01-preview', tags, sku: { name: 'GP_S_Gen5_2' }, properties: {} },
   ] };
 }
@@ -22,6 +23,21 @@ const compiler = (): BicepCompiler => ({ compile: vi.fn().mockResolvedValue({ ok
 afterEach(() => vi.useRealTimers());
 
 describe('bounded Architecture Export Agent', () => {
+  it('rejects wrong Linux kind, detached SQL database and cross-tenant administrators', () => {
+    const template = () => structuredClone(compiledFixture()) as { resources: Record<string, unknown>[] };
+    const wrongKind = template(); wrongKind.resources[1].kind = 'app';
+    expect(checkCompiledArchitecture(wrongKind, request)).toContain('App plan and site must explicitly use Linux kinds.');
+    const detached = template(); detached.resources[3].name = 'unrelated/database';
+    expect(checkCompiledArchitecture(detached, request)).toContain('SQL database must belong to the generated SQL server.');
+    const tenant = template(); tenant.resources[2].properties = { administrators: { administratorType: 'ActiveDirectory', azureADOnlyAuthentication: true, sid: "[parameters('sqlAdminObjectId')]", login: "[parameters('sqlAdminLogin')]", tenantId: 'wrong-tenant' } };
+    expect(checkCompiledArchitecture(tenant, request)).toContain('SQL must use Entra-only parameterized administrators in the current tenant.');
+    const expression = template(); expression.resources[2].name = "[parameters('namePrefix')]";
+    expression.resources[3].name = "[format('{0}/{1}', parameters('namePrefix'), 'db')]";
+    expression.resources[3].dependsOn = ["[resourceId('Microsoft.Sql/servers', parameters('namePrefix'))]"];
+    expect(checkCompiledArchitecture(expression, request)).toEqual([]);
+    expression.resources[3].dependsOn = [];
+    expect(checkCompiledArchitecture(expression, request)).toContain('SQL database must belong to the generated SQL server.');
+  });
   it('executes mapping then actual validation and returns only the exact validated artifact', async () => {
     const client: AgentClient = { createToolResponse: vi.fn().mockResolvedValueOnce(turn('lookup_mapping', {})).mockResolvedValueOnce(turn('validate_export', { candidate: response }, 'call_2')) };
     const build = compiler();

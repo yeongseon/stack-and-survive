@@ -22,6 +22,13 @@ for (const [name, fixture] of [['minimal', { request: exportRequestFixture, resp
   if (!result.ok) throw new Error('Compilation failed');
   const errors = checkCompiledArchitecture(result.template, fixture.request);
   assert.deepEqual(errors, []);
+  const resources = (structuredClone(result.template) as { resources: Record<string, unknown>[] }).resources;
+  const sql = resources.find(resource => resource.type === 'Microsoft.Sql/servers/databases')!;
+  sql.name = 'different-server/database';
+  assert.ok(checkCompiledArchitecture({ ...(result.template as object), resources }, fixture.request).some(error => error.includes('belong')));
+  const wrongPlatform = structuredClone(result.template) as { resources: Record<string, unknown>[] };
+  wrongPlatform.resources.find(resource => resource.type === 'Microsoft.Web/sites')!.kind = 'app';
+  assert.ok(checkCompiledArchitecture(wrongPlatform, fixture.request).some(error => error.includes('Linux')));
   let turns = 0;
   const agent = await handleAgentExport(JSON.stringify(fixture.request), { createToolResponse: async () => {
     const call: ToolCall = { type: 'function_call', call_id: `fixture_${++turns}`, name: 'validate_export', arguments: JSON.stringify({ candidate: turns === 1 ? { ...candidate, bicep: `${candidate.bicep}\nvar incomplete =` } : candidate }) };
