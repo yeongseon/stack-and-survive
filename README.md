@@ -16,7 +16,7 @@ A real-time cloud infrastructure strategy game: survive a 180-second traffic sur
 
 **[Watch / download the personal introduction (MP4, 2:00)](https://raw.githubusercontent.com/yeongseon/stack-and-survive/main/docs/media/project-introduction-120s.mp4)** · [Transcript, English captions and regeneration](docs/DEMO_VIDEO.md)
 
-**Why I built it:** Microsoft Learn gave me the concepts; I wanted an easier way to experience how they work together. This eight-slide, two-minute presentation follows a personal learning experience, real game screenshots, decisions and reflection. It is not live gameplay or a product commercial. The generated audio is a disclosed synthetic draft; the same renderer accepts the presenter's own recordings. Internal production labels and the AI-focused segment have been removed. [Screenshot provenance](docs/images/README.md) remains separate.
+**Why I built it:** Microsoft Learn gave me the concepts; I wanted an easier way to experience how they work together. This eight-slide, two-minute presentation follows a personal learning experience, real game screenshots, decisions and reflection. It is not live gameplay or a product commercial. The previous dark navy/teal/gold palette is restored without changing the personal story. Audio now uses stock **en-US-GuyNeural**, not macOS Samantha: [listen to a short sample](docs/media/narration-sample.mp3). It remains disclosed synthetic narration, not the developer's voice; the renderer also accepts personal recordings. Internal production labels and the AI-focused segment stay removed. [Screenshot provenance](docs/images/README.md) remains separate.
 
 The official game URL is the GitHub Pages link above. No custom domain is required.
 
