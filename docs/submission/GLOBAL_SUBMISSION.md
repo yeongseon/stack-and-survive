@@ -13,7 +13,7 @@ This is a review-ready draft, **not a completed submission or verified event-com
 - [Technical explanation](../SUBMISSION_TECHNICAL_NOTES.md)
 - [Demo fallback](DEMO_FALLBACK.md) and [known limitations](KNOWN_LIMITATIONS.md)
 
-The deck is seven slides with no standalone architecture slide. The new 120-second introduction combines project explanation, real gameplay/result excerpts, agent-design boundary and closing with synthetic English voice. Separate 53.4-second/old 120-second clips remain historical references. None is evidence of human learning or a live AI service; confirm synthetic narration and file specifications against event rules.
+The deck and 120-second video now share eight slides about the developer's Azure learning experience. Actual screenshots support questions and reflection; no AI segment, product pitch or production banner appears in the main talk. Agent details are Q&A only. Current audio is a disclosed synthetic draft; prefer presenter-recorded WAVs for final delivery. Old technical clips remain historical references, not the personal presentation. No learning effect or live AI service is claimed.
 
 Read the [dated release handoff](HACKATHON_HANDOFF.md) before presenting: rules 0.4 are implemented, but production API compatibility is blocked in #306. Historical media does not prove the current global leaderboard works.
 
@@ -64,8 +64,8 @@ AI assisted implementation, original-art iteration, test writing and documentati
 
 - [ ] Review the English copy against the actual form's field limits.
 - [ ] Time the speaker's actual English delivery; the script estimate is not a rehearsal result.
-- [x] Automated desktop checks: seven slides at 1920×1080, 1440×900 and 1366×768, navigation, images, local links, print bounds and no-JavaScript reading order (2026-09-19 UTC). This is not a physical presentation-device check.
-- [ ] Check all seven PDF pages and browser controls on the actual presentation device.
+- [x] Automated: eight slides at 1920×1080, 1440×900, 1366×768 and 820×1180; navigation, images, local links, print bounds, no-JavaScript order and forbidden on-screen labels. This is not physical-device or human delivery validation.
+- [ ] Check all eight PDF pages and browser controls on the actual presentation device.
 - [ ] Download the MP4 and PDF as offline fallbacks; do not claim silent video includes narration.
 - [ ] Check links without relying on private accounts or local file paths.
 
