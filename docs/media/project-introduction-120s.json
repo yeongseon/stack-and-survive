@@ -1,0 +1,154 @@
+{
+  "sourceCommit": "a6f69560d063ae1454c12edc0532bbfc93424679",
+  "capturedAt": "2026-09-21T08:40:19.355Z",
+  "captureDirtyTree": true,
+  "runtimeClean": true,
+  "captureBundles": [
+    {
+      "path": "/assets/index-BZqQHE_V.js",
+      "sha256": "10fa3f8b62791e975cf46beeb9659a2a5da2732f848069d3cbe73557c4272aea"
+    },
+    {
+      "path": "/assets/index-CMkT-4n0.css",
+      "sha256": "b83c3f31fafbd28936b3a470c9f5cf91c3c20333157aefc10809382bbaa8fdff"
+    }
+  ],
+  "mode": "Local production build, ordinary real-time controls. No state injection or acceleration. Local board only. AI is unconfigured and never mocked into gameplay.",
+  "publicScorePosts": 0,
+  "score": 9473,
+  "runDuration": 180,
+  "runAvailability": 0.996147577584282,
+  "captureDirectory": "current-2026-09-21T08-40-19.305Z",
+  "actualRunSha256": "83625b7bcd7a62534f9a31ee74d7a87ad2659cb0bb55c0ec7fead576d00e8598",
+  "rawVideo": "page@c77e3d9ecc545a15e9e80e6ab99ed4d6.webm",
+  "rawVideoSha256": "05222c7c3ba999dffb969ba9973c035f062f60f3d3af0bd76e907c8e6474e947",
+  "segments": [
+    {
+      "duration": 12,
+      "type": "card",
+      "kicker": "01 / PROJECT INTRODUCTION",
+      "title": "Architecture is a decision.\nMake it playable.",
+      "points": [
+        "Stack & Survive",
+        "A browser strategy game for exploring cloud tradeoffs",
+        "Same workload. Different architectures. Different outcomes."
+      ],
+      "narration": "Cloud diagrams explain the components. But beginners also need to see why those components work together. Stack and Survive makes those decisions playable.",
+      "start": 0,
+      "sourceStart": null,
+      "voiceSeconds": 8.856463
+    },
+    {
+      "duration": 12,
+      "type": "card",
+      "kicker": "02 / THE CHALLENGE",
+      "title": "Keep the business flowing.",
+      "points": [
+        "180 seconds of Black Friday demand",
+        "Eight phases: spikes, bots and recovery windows",
+        "Balance availability, lost sales and running cost"
+      ],
+      "narration": "You operate a data center through one hundred eighty seconds of Black Friday. Traffic spikes, bots arrive, and every infrastructure choice affects customers and cost.",
+      "start": 12,
+      "sourceStart": null,
+      "voiceSeconds": 9.593968
+    },
+    {
+      "duration": 20,
+      "type": "game",
+      "marker": "construction-start",
+      "kicker": "03 / REAL GAMEPLAY EXCERPT",
+      "title": "Build now. Capacity arrives later.",
+      "subtitle": "App scaling changes capacity after construction. Cache helps eligible reads, not writes.",
+      "narration": "Start small, then build before the next wave. Adding an App machine takes eight seconds. Cache reduces eligible database reads, but order writes still reach SQL. Scale in or change tiers when your needs change. The current state, not the animation, determines capacity.",
+      "start": 24,
+      "sourceStart": 11.421,
+      "voiceSeconds": 16.488209
+    },
+    {
+      "duration": 18,
+      "type": "game",
+      "marker": "bot-start",
+      "kicker": "04 / EDIT: LATER BOT ATTACK",
+      "title": "Protect the right layer.",
+      "subtitle": "Actual 440 req/s phase · representative packets · simulated money, not Azure pricing",
+      "narration": "During the bot attack, Protected Edge filters malicious requests, with a tradeoff in legitimate traffic. More App machines do not fix every database bottleneck. Watch the next wave, read the pressure, and choose which layer needs attention.",
+      "start": 44,
+      "sourceStart": 74.022,
+      "voiceSeconds": 14.124989
+    },
+    {
+      "duration": 14,
+      "type": "game",
+      "marker": "final-start",
+      "kicker": "05 / EDIT: FINAL WAVE",
+      "title": "Survive changing demand.",
+      "subtitle": "The final 20 seconds reach 600 req/s and 45% bots. This video cuts time; the game does not.",
+      "narration": "The final wave reaches six hundred requests per second. This is edited footage of a real run, not accelerated simulation. Clear the full operation, then inspect what your decisions achieved.",
+      "start": 62,
+      "sourceStart": 169.396,
+      "voiceSeconds": 11.134422
+    },
+    {
+      "duration": 14,
+      "type": "game",
+      "marker": "result",
+      "kicker": "06 / EDIT: ACTUAL COMPLETED RESULT",
+      "title": "9,473 points. One real completed run.",
+      "subtitle": "Local-only automated run · score unchanged · no public submission · no human study claim",
+      "narration": "This full run scored 9473 points. Compare availability, cost and architecture. Try a different strategy, then follow Microsoft Learn links to explore the real services.",
+      "start": 76,
+      "sourceStart": 188.926,
+      "voiceSeconds": 11.956644
+    },
+    {
+      "duration": 20,
+      "type": "card",
+      "kicker": "07 / IMPLEMENTED AGENT DESIGN — NOT A LIVE MODEL DEMO",
+      "title": "From a decision\nto a checked blueprint.",
+      "points": [
+        "Finished run → fixed Azure mapping → Bicep candidate",
+        "Compiler + architecture checks → bounded repair",
+        "Exact verified file → human review, never deployment"
+      ],
+      "narration": "The implemented Export Agent connects finished runs to infrastructure as code. It can select mapping and validation tools, then repair a candidate using compiler feedback. These are real tool boundaries, not a chatbot controlling the game. Live Azure model verification is still pending. Nothing is deployed.",
+      "start": 90,
+      "sourceStart": null,
+      "voiceSeconds": 17.889569
+    },
+    {
+      "duration": 10,
+      "type": "card",
+      "kicker": "08 / TRY IT",
+      "title": "Play. Question. Learn.",
+      "points": [
+        "React + Phaser + deterministic TypeScript engine",
+        "Local gameplay works without an account",
+        "yeongseon.github.io/stack-and-survive/"
+      ],
+      "narration": "Play first. Question the tradeoff. Then explore Microsoft Learn. Try Stack and Survive, and see what you would change in the next architecture.",
+      "start": 110,
+      "sourceStart": null,
+      "voiceSeconds": 8.450113
+    }
+  ],
+  "file": "project-introduction-120s.mp4",
+  "sha256": "c02d1943d608088386885addc071b97659a4d8b3c64a1d67c9cdc0ee57a4415e",
+  "bytes": 12336032,
+  "duration": 120,
+  "width": 1440,
+  "height": 1000,
+  "frames": 3000,
+  "toolchain": {
+    "node": "v22.22.0",
+    "platform": "darwin",
+    "ffmpeg": "ffmpeg version 8.0.1 Copyright (c) 2000-2025 the FFmpeg developers",
+    "ffprobe": "ffprobe version 8.0.1 Copyright (c) 2007-2025 the FFmpeg developers",
+    "os": "26.6.2",
+    "voice": "Installed macOS Samantha; OS-provided voice version not separately exposed by say",
+    "chromium": "153.0.8010.12"
+  },
+  "audio": "Offline macOS Samantha synthetic English narration, 175 words/minute, no music, game sound muted. Not human voice or hearing acceptance.",
+  "captions": "English SRT and optional embedded track; word-weighted sentence timing, not speech-alignment certification. Visible chapter captions are burned in.",
+  "validation": "Full ffmpeg decode passed; exact120seconds/3000frames; each voice segment fits its allotted time. Human narration/listening and rights/event review remain required."
+}
