@@ -7,6 +7,10 @@ h1,h2,p,figure { margin:0; }
 h1,h2 { font-weight:600; letter-spacing:-.035em; line-height:1.12; }
 h1 { font-size:clamp(34px,3.8vw,68px); }
 h2 { font-size:clamp(32px,3.5vw,62px); }
+.motivation h2 { font-size:clamp(34px,3.8vw,68px); }
+.title-cover { align-items:flex-start; gap:3vh; }
+.title-cover h1 { font-size:clamp(46px,6.4vw,108px); }
+.title-cover p { color:var(--muted); font-size:clamp(20px,2vw,34px); }
 p { font-size:clamp(18px,1.85vw,31px); line-height:1.5; }
 .copy { display:flex; flex-direction:column; gap:3vh; }
 .quiet { font-size:clamp(16px,1.35vw,23px); color:var(--muted); }
@@ -69,7 +73,7 @@ body.video-mode .slide { height:100vh; min-height:100vh; }
   .slide { padding:4vh 5vw; gap:3vh; }
   .motivation { grid-template-columns:1fr; grid-template-rows:auto 1fr; gap:0; }
   .motivation .copy { gap:1.5vh; }
-  .motivation h1 br:first-child { display:none; }
+  .motivation h2 br:first-child { display:none; }
   .sketch { width:85%; justify-self:center; padding:2vh 0; }
   .sketch-row { margin:2vh 0; }
   .note-bottom { margin-top:2vh; }
@@ -98,6 +102,7 @@ body.video-mode .slide { height:100vh; min-height:100vh; }
   .slide:last-child { break-after:auto; }
   .motivation,.result-slide { display:grid !important; }
   h1 { font-size:34pt; } h2 { font-size:30pt; } p { font-size:16pt; } .note { font-size:18pt; }
+  .title-cover h1 { font-size:54pt; } .title-cover p { font-size:20pt; } .motivation h2 { font-size:34pt; }
   .quiet { font-size:13pt; } .copy { gap:7mm; }
   .sketch { padding:10mm 0; } .sketch-row { margin:12mm 0 4mm; gap:6mm; }
   .service { font-size:16pt; padding:8mm 5mm; }

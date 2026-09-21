@@ -2,8 +2,9 @@
   "title": "Why I built Stack & Survive",
   "language": "en",
   "duration": 120,
+  "cover": { "id": "cover", "duration": 2, "narration": "" },
   "slides": [
-    { "id": "slide-1", "duration": 16, "narration": "When I first started learning Azure, I mainly used Microsoft Learn and the documentation. They gave me useful concepts. But as a beginner, I found it harder to connect those concepts together." },
+    { "id": "slide-1", "duration": 14, "narration": "When I first started learning Azure, I mainly used Microsoft Learn and the documentation. They gave me useful concepts. But as a beginner, I found it harder to connect those concepts together." },
     { "id": "slide-2", "duration": 16, "narration": "I understood App Service, SQL, and caching on their own. But when traffic increased, what should I change? Would more App instances help, or was the database the problem? Those connections were less clear to me." },
     { "id": "slide-3", "duration": 12, "narration": "So I built this. Stack and Survive is a small game where beginners can experience a few Azure architecture decisions, rather than just read their definitions." },
     { "id": "slide-4", "duration": 15, "narration": "Traffic comes in, and you change the architecture. You can add capacity, introduce cache, or protect the edge. The game then shows what happens to availability, lost sales, and running cost." },
