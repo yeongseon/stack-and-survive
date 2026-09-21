@@ -1,35 +1,35 @@
-# Two-minute project introduction — a6f6956
+# Why I built Stack & Survive — 120-second narration
 
-Project introduction + labeled edited real gameplay + agent-design explanation + closing. Offline synthetic English narration (macOS Samantha); not a human presenter. No live AI demo or cloud deployment is claimed. Full operation=180s; this edit=120s. Actual local score=9473.
+The same eight-slide personal story drives the deck, PDF and video. Synthetic offline macOS Samantha draft narration, 155 words/minute; not the developer recording his own voice. Prefer presenter recordings for final delivery. Provenance is kept in the JSON manifest, not audience-facing frames. Rehearse in your own voice before submission.
 
-## 00:00:00–00:00:12 · 01 / PROJECT INTRODUCTION
+## 00:00:00–00:00:16 · Learning Azure for the first time felt overwhelming.
 
-Cloud diagrams explain the components. But beginners also need to see why those components work together. Stack and Survive makes those decisions playable.
+When I first started learning Azure, I mainly used Microsoft Learn and the documentation. They gave me useful concepts. But as a beginner, I found it harder to connect those concepts together.
 
-## 00:00:12–00:00:24 · 02 / THE CHALLENGE
+## 00:00:16–00:00:32 · I knew what the services were. I didn't know how they behaved together.
 
-You operate a data center through one hundred eighty seconds of Black Friday. Traffic spikes, bots arrive, and every infrastructure choice affects customers and cost.
+I understood App Service, SQL, and caching on their own. But when traffic increased, what should I change? Would more App instances help, or was the database the problem? Those connections were less clear to me.
 
-## 00:00:24–00:00:44 · 03 / REAL GAMEPLAY EXCERPT
+## 00:00:32–00:00:44 · So I built this.
 
-Start small, then build before the next wave. Adding an App machine takes eight seconds. Cache reduces eligible database reads, but order writes still reach SQL. Scale in or change tiers when your needs change. The current state, not the animation, determines capacity.
+So I built this. Stack and Survive is a small game where beginners can experience a few Azure architecture decisions, rather than just read their definitions.
 
-## 00:00:44–00:01:02 · 04 / EDIT: LATER BOT ATTACK
+## 00:00:44–00:00:59 · You make a change. The system reacts.
 
-During the bot attack, Protected Edge filters malicious requests, with a tradeoff in legitimate traffic. More App machines do not fix every database bottleneck. Watch the next wave, read the pressure, and choose which layer needs attention.
+Traffic comes in, and you change the architecture. You can add capacity, introduce cache, or protect the edge. The game then shows what happens to availability, lost sales, and running cost.
 
-## 00:01:02–00:01:16 · 05 / EDIT: FINAL WAVE
+## 00:00:59–00:01:16 · What would you change?
 
-The final wave reaches six hundred requests per second. This is edited footage of a real run, not accelerated simulation. Clear the full operation, then inspect what your decisions achieved.
+This is the part I care about. What would you change? More App instances? A stronger database? The interesting part is not clicking Scale Out. It is noticing which layer is actually under pressure, and why.
 
-## 00:01:16–00:01:30 · 06 / EDIT: ACTUAL COMPLETED RESULT
+## 00:01:16–00:01:30 · It survived.
 
-This full run scored 9473 points. Compare availability, cost and architecture. Try a different strategy, then follow Microsoft Learn links to explore the real services.
+This run survived. But was it a good architecture? Maybe I added more capacity than I needed. Keeping the service available matters, but so does the cost of the choices I made.
 
-## 00:01:30–00:01:50 · 07 / IMPLEMENTED AGENT DESIGN — NOT A LIVE MODEL DEMO
+## 00:01:30–00:01:45 · What would you change next time?
 
-The implemented Export Agent connects finished runs to infrastructure as code. It can select mapping and validation tools, then repair a candidate using compiler feedback. These are real tool boundaries, not a chatbot controlling the game. Live Azure model verification is still pending. Nothing is deployed.
+After the run, I want people to look back and try another choice. They can return to Microsoft Learn with a more concrete question. The idea is to play, observe, reflect, and try again.
 
-## 00:01:50–00:02:00 · 08 / TRY IT
+## 00:01:45–00:02:00 · Making the first step into Azure easier.
 
-Play first. Question the tradeoff. Then explore Microsoft Learn. Try Stack and Survive, and see what you would change in the next architecture.
+This is not a replacement for Microsoft Learn. I hope it gives customers a simpler, more enjoyable first step into Azure, and helps them feel more comfortable exploring the real services afterward.

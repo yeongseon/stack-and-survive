@@ -14,13 +14,13 @@ A real-time cloud infrastructure strategy game: survive a 180-second traffic sur
 
 [![Stack & Survive project introduction and gameplay](docs/media/project-introduction-preview.jpg)](https://raw.githubusercontent.com/yeongseon/stack-and-survive/main/docs/media/project-introduction-120s.mp4)
 
-**[Watch / download the introduction (MP4, 2:00, about 11.8 MiB)](https://raw.githubusercontent.com/yeongseon/stack-and-survive/main/docs/media/project-introduction-120s.mp4)** · [Transcript, English captions and automatic regeneration](docs/DEMO_VIDEO.md)
+**[Watch / download the personal introduction (MP4, 2:00)](https://raw.githubusercontent.com/yeongseon/stack-and-survive/main/docs/media/project-introduction-120s.mp4)** · [Transcript, English captions and regeneration](docs/DEMO_VIDEO.md)
 
-**Project introduction + real gameplay + implemented agent design + closing**, automatically edited with synthetic English narration, captions and transcript. Footage is ordinary real-time play of local production source `a6f6956`, scoring **9,473 points** after a real 180-second completion. Cuts are labeled; this is not a continuous two-minute operation. The agent segment is an architecture explanation, **not a live AI demonstration**. No public score was submitted. Historical silent videos remain linked in the recording notes.
+**Why I built it:** Microsoft Learn gave me the concepts; I wanted an easier way to experience how they work together. This eight-slide, two-minute presentation follows a personal learning experience, real game screenshots, decisions and reflection. It is not live gameplay or a product commercial. The generated audio is a disclosed synthetic draft; the same renderer accepts the presenter's own recordings. Internal production labels and the AI-focused segment have been removed. [Screenshot provenance](docs/images/README.md) remains separate.
 
 The official game URL is the GitHub Pages link above. No custom domain is required.
 
-**Presenting the project?** [Open the showcase](showcase/README.md) for a 7-slide English browser deck, English speaker notes and a [downloadable PDF](showcase/stack-and-survive-showcase.pdf).
+**Presenting the project?** [Open the showcase](showcase/README.md) for the matching 8-slide English deck, personal speaker notes and [PDF](showcase/stack-and-survive-showcase.pdf).
 
 ![Stack & Survive gameplay: a unified command HUD above App, Cache, Edge and SQL facilities during a bot attack.](docs/images/gameplay.webp)
 

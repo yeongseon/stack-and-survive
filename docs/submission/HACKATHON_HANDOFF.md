@@ -1,5 +1,9 @@
 # Hackathon handoff — 2026-09-19 UTC
 
+## Personal-story redesign — #328
+
+The current presentation is now eight English slides and a matching 120-second narrated slide video: the owner's Azure learning experience, the gap between definitions and behavior, the game, decisions, consequences, reflection and a modest first-step goal. It is not a product launch or live agent demo. Internal production/capture/editing labels are removed from audience frames; provenance stays in files. Presenter-recorded per-slide WAVs are supported and preferred; supplied audio is a disclosed synthetic draft. Older media/layout notes below are historical. [Current presentation](../../showcase/README.md).
+
 ## Latest material refresh — source a6f6956
 
 #326 refreshes 19 walkthrough/deck images, rebuilds the seven-page PDF, and adds an exact 120-second introduction with synthetic English narration, captions, real gameplay excerpts, agent-design explanation and closing. [Video/transcript/provenance](../DEMO_VIDEO.md#two-minute-project-introduction--current-source). Notes below preserve older versions. Export/Agent code is merged; activation is separately gated in #325. No live model, hosted-artifact capture or human listening approval is claimed.

@@ -1,6 +1,6 @@
 # Two-minute edited demo
 
-**Current submission video:** use the automated [120-second project introduction](../DEMO_VIDEO.md#two-minute-project-introduction--current-source) and its [timed narration](../media/PROJECT_INTRO_NARRATION.md). It includes 24s introduction, 66s real gameplay/result, 20s agent-design explanation and 10s closing, with disclosed synthetic English voice. The table below is an older alternate demo plan, not the generated video's current timeline. Never claim a live AI response when only the design explanation is shown.
+**Current submission video:** use the [120-second personal story](../DEMO_VIDEO.md#two-minute-project-introduction--current-source) and [timed narration](../media/PROJECT_INTRO_NARRATION.md). Eight simple slides follow motivation, learning gap, idea, experience, decisions, tradeoffs, reflection and goal. Agent discussion is optional Q&A, not the main story. Internal capture/edit labels are absent from audience frames; source evidence stays in the manifest. The older alternate live-demo plan below is not this video's timeline.
 
 This describes the historical overview format, not the only available demo. For current scaling/compact SQL use the [53.4-second continuous tradeoff clip and narration](../DEMO_VIDEO.md#current-rules-04-the-bottleneck-tradeoff). [Current status](../CURRENT_STATUS.md) owns release/API evidence. Draft #316 Export/Learn is not a live demo beat until merged, configured and actually verified.
 

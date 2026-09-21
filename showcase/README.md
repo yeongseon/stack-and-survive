@@ -1,74 +1,72 @@
-# Showcase — Why I built Stack & Survive
+# Why I built Stack & Survive
 
-Before presenting, read [Current status](../docs/CURRENT_STATUS.md). Export/Agent code was merged in #316/#323, but live AI activation remains unverified in #325. This deck now uses actual local production images from `a6f6956`, rules 0.4; they are not proof of hosted-artifact or model readiness.
+An eight-slide personal account of learning Azure: **motivation → learning gap → idea → experience → decisions → tradeoffs → reflection → goal**. The owner supplied the learning experience; the presentation does not invent customer stories, research results or education claims.
 
-For submission, use the new [two-minute project introduction](../DEMO_VIDEO.md#two-minute-project-introduction--current-source): introduction, labeled gameplay excerpts, agent-design boundary and closing, with synthetic English narration and captions. The historical 53-second tradeoff clip remains optional. Allow separate time for a talk plus video; do not promise both inside the same two-minute slot.
+**[English PDF](stack-and-survive-showcase.pdf)** · [Browser slides](slides.html) · [Speaker notes](SPEAKER_NOTES.md) · [120-second video and transcript](../docs/DEMO_VIDEO.md#two-minute-project-introduction--current-source)
 
-**[Download the English PDF](stack-and-survive-showcase.pdf)** · [Browser slides](slides.html) · [English speaker notes](SPEAKER_NOTES.md) · [Play the game](https://yeongseon.github.io/stack-and-survive/)
+The story is simple: Microsoft Learn gave me the concepts. I wanted an easier way to experience how those concepts work together. The game is an additional experience, not a replacement for documentation or proven training. Agent implementation details are optional Q&A, not a main-story sales pitch.
 
-Seven slides tell the story in plain English: **working in support → building a game → Black Friday → App/Cache/Edge → results → returning to documentation → closing**. The technical-architecture slide remains removed. Speaker notes include the main talk, a 60-second version, a short live-demo transition and Q&A.
+## Present
 
-This is a personal product motivation—not Microsoft's assessment of Microsoft Learn. The game is not official training, a replacement for documentation or a proven educational intervention. No identifying customer details, private cases or internal-system screenshots are used.
-
-> Same workload. Different architectures. Different outcomes.<br>
-> Build. Scale. Keep the business flowing.
-
-## Open the slides
-
-GitHub displays `slides.html` as source. Clone/download the repository and open it in a browser, or run this from the **repository root**:
+Open `showcase/slides.html` locally with its relative images intact, or serve the repository on loopback:
 
 ```bash
 python3 -m http.server 8080 --bind 127.0.0.1
 ```
 
-Open `http://127.0.0.1:8080/showcase/slides.html`. Keep the repository layout: images are referenced from `../docs/images/`. No external font, CDN or presentation framework is needed. Use loopback only and stop the optional server with Ctrl+C. Python is not a gameplay dependency.
+Open `http://127.0.0.1:8080/showcase/slides.html`; stop the temporary server when finished. GitHub displays HTML as source, while the PDF can be downloaded independently.
 
 | Control | Action |
 |---|---|
-| Left / Right, PageUp / PageDown | Previous / next slide |
-| Home / End | First / last slide |
-| Previous / Next buttons | Mouse, touch and keyboard navigation |
-| Print / PDF | Print all slides in landscape |
-| Download PDF | Save the included seven-page PDF |
+| Arrows / PageUp / PageDown | Previous or next slide |
+| Home / End | First or last slide |
+| Navigation buttons | Mouse, touch and keyboard operation |
+| Print / PDF | All eight A4 landscape pages |
 
-The current slide appears in the URL as `#slide-3`. Without JavaScript, all slides appear in order. There is no autoplay, music or automatic fullscreen.
+Without JavaScript, all slides appear in order. There is no autoplay, excessive motion, external font or presentation library. The layout uses paper-like space, actual screenshots and short annotation-style questions. Source/build/production labels are deliberately absent from audience frames.
 
-## PDF and regeneration
+## One story for deck, video and notes
 
-`stack-and-survive-showcase.pdf` contains **seven A4 landscape pages** with embedded images. It can be shared on its own. On GitHub, use the PDF viewer's download button to save the original file.
-
-After changing content or styles, regenerate from the repository root:
+`slides.html` and `slides.css` own the visual story. `story.json` owns its eight spoken sections and their **120-second total**. `slides.js` handles navigation; `check.mjs` validates counts, bounds, navigation, print and forbidden audience labels. The video renderer screenshots the same deck, with navigation hidden, so it cannot drift into a separate product pitch. It does not modify or overwrite the underlying game screenshots.
 
 ```bash
-pnpm install --frozen-lockfile
-pnpm exec playwright install chromium
-node showcase/export-pdf.mjs
 node showcase/check.mjs
+node showcase/export-pdf.mjs
+# Prefer your own voice: eight files named slide-1.wav through slide-8.wav
+node scripts/render-project-video.mjs --narration-dir=/absolute/path/to/recordings
+# Or make an explicitly synthetic offline draft on macOS:
+node scripts/render-project-video.mjs --voice
+node scripts/check-project-media.mjs
 ```
 
-The exporter uses local HTML, fonts and images; it makes no gameplay/API requests. Manual browser printing also exports all seven slides. Disable browser headers/footers and enable background graphics when needed. Keep the PDF and slide source in sync.
+Omit both audio flags for a silent version with selectable English subtitles and SRT. Own-voice files must fit each section with 0.3 seconds spare; the renderer rejects long recordings rather than cutting off or accelerating speech. Synthetic output uses installed Samantha at 155 words/minute; it is not the developer's voice. Its origin is disclosed in companion documentation and metadata, not as an internal on-screen banner. For an authentic final delivery, rehearse and record the speaker's own voice.
 
-## Timing and demo safety
+Render intermediates remain in a new ignored `test-results-submission/personal-story-*` folder for inspection; they are not uploaded and may be removed after reviewing the published files. The WAV-input path was exercised with silent test fixtures, not a human recording. Browser playback/decode tests cannot judge the human delivery or pronunciation.
 
-- The English script targets **roughly 2:40–3:00**, not the Korean script's former 155-second budget. Actual human read-aloud timing has not been measured. Rehearse and trim rather than speaking faster.
-- A whole game takes **180 seconds plus opening/result time**. Do not squeeze another full game into the talk. A 20–30-second live segment needs its own time allowance, including startup and switching back to slides.
-- Recorded results and edited video must be labeled. The [published demo video and English transcript](../docs/DEMO_VIDEO.md) are a separate 120-second edit, not the seven-slide talk.
-- If the API is unavailable, use local play and identify local scores honestly. Keep the [fallback guide](../docs/submission/DEMO_FALLBACK.md) available. Coordinate any production submission with the backend owner.
-- Slide screenshots now come from `a6f6956` / rules 0.4; retain [their provenance](../docs/images/README.md). They show current scaling, compact SQL and result UI; AI is unconfigured. A local automated DEMO score is not a participant/public verified run. Read the [current handoff](../docs/submission/HACKATHON_HANDOFF.md) before promising backend availability.
-- Human understanding, voluntary replay, listening/device and rights approval remain distinct from software tests. See [the tracker](https://github.com/yeongseon/stack-and-survive/issues/7).
+## Timing
 
-## Before presenting
+| Slide | Time | Purpose |
+|---|---|---|
+| 1 | 0:00–0:16 | Personal motivation; credit Microsoft Learn |
+| 2 | 0:16–0:32 | Definitions versus system behavior |
+| 3 | 0:32–0:44 | “So I built this.” |
+| 4 | 0:44–0:59 | A choice changes the system |
+| 5 | 0:59–1:16 | “What would you change?” |
+| 6 | 1:16–1:30 | Survival is not the whole question |
+| 7 | 1:30–1:45 | Reflect, try again, return to Learn |
+| 8 | 1:45–2:00 | A modest first-step goal |
 
-- [x] Automated 2026-09-19 UTC: all seven slides fit at 1920×1080, 1440×900, 1366×768 and 820×1180, without clipped captions or controls.
-- [x] Automated: arrow keys, PageUp/PageDown, Home/End, direct slide URLs, local speaker-note/PDF links, image loading and no-JavaScript reading order pass (`node showcase/check.mjs`). External URL reachability and the exported PDF's page count are separate checks, not assertions in this script.
-- [ ] The PDF has seven landscape pages with readable images and no clipped text.
-- [ ] Time your actual spoken English, including slide changes and any optional demo, against the confirmed event limit.
-- [ ] Recheck the public game/API on the day and prepare an honestly labeled fallback.
+Human read-aloud timing and listening remain to be checked. The video is a narrated **slide presentation**, not live or continuous gameplay. A full operation lasts 180 seconds; do not fit another whole run into this two-minute slot. The overload and result screenshots are different operations and are not represented as a before/after intervention.
 
-## Global submission handoff
+## Evidence and limits (outside the audience deck)
 
-Use [the English submission draft and checklist](../docs/submission/GLOBAL_SUBMISSION.md). The official global-event page, deadline/timezone, video limit and judging requirements have **not been provided or verified**. This deck is ready for review, but its length is not a claim of compliance with unknown event rules.
+Actual screenshots retain [source `a6f6956` provenance](../docs/images/README.md). The successful result is 9,473 points / 99.61% aggregate availability; background `$19.14/s` is last-tick lost sales, **not hourly infrastructure cost**. The game represents Application Gateway/WAF, not playable Front Door. The script avoids unsupported cost numbers and claims of optimal architecture.
 
-## Editing boundaries
+AI code is merged, but live Azure model/operator acceptance remains #325. The main talk makes no AI promise; Q&A describes its implementation and limitations honestly. No human learning/replay result or rights approval follows from software tests. [Current status](../docs/CURRENT_STATUS.md) and [rights status](../docs/LICENSING_STATUS.md) remain separate. Official event criteria and submission approval must still be confirmed.
 
-`slides.html` owns the story, `slides.css` layout, and `slides.js` navigation. The notes follow the same seven-slide order. Gameplay, simulation, backend and screenshot sources are unchanged. Sharing these materials does not create a new license or imply Microsoft endorsement; review [rights status](../docs/LICENSING_STATUS.md) and the applicable submission terms.
+## Checks before sharing
+
+- [x] Eight slides fit 1920×1080, 1440×900, 1366×768 and 820×1180; navigation, images, local links, print bounds and no-JavaScript order pass.
+- [x] Video uses the same source/imagery; exact 120 seconds, 3,000 frames, complete decode and browser playback/seeks checked by the media checker.
+- [ ] Listen to the final narration; prefer the presenter's own voice and verify pronunciation/pacing.
+- [ ] Check final PDF/video on the actual presentation device and confirm the event rules.

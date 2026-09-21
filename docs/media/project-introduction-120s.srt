@@ -1,111 +1,107 @@
 1
-00:00:00,150 --> 00:00:02,075
-Cloud diagrams explain the components.
+00:00:00,150 --> 00:00:05,012
+When I first started learning Azure, I mainly used Microsoft Learn and the documentation.
 
 2
-00:00:02,075 --> 00:00:06,311
-But beginners also need to see why those components work together.
+00:00:05,012 --> 00:00:06,748
+They gave me useful concepts.
 
 3
-00:00:06,311 --> 00:00:09,006
-Stack and Survive makes those decisions playable.
+00:00:06,748 --> 00:00:11,263
+But as a beginner, I found it harder to connect those concepts together.
 
 4
-00:00:12,150 --> 00:00:17,139
-You operate a data center through one hundred eighty seconds of Black Friday.
+00:00:16,150 --> 00:00:19,651
+I understood App Service, SQL, and caching on their own.
 
 5
-00:00:17,139 --> 00:00:21,744
-Traffic spikes, bots arrive, and every infrastructure choice affects customers and cost.
+00:00:19,651 --> 00:00:22,452
+But when traffic increased, what should I change?
 
 6
-00:00:24,150 --> 00:00:27,218
-Start small, then build before the next wave.
+00:00:22,452 --> 00:00:26,304
+Would more App instances help, or was the database the problem?
 
 7
-00:00:27,218 --> 00:00:29,902
-Adding an App machine takes eight seconds.
+00:00:26,304 --> 00:00:28,755
+Those connections were less clear to me.
 
 8
-00:00:29,902 --> 00:00:34,120
-Cache reduces eligible database reads, but order writes still reach SQL.
+00:00:32,150 --> 00:00:33,528
+So I built this.
 
 9
-00:00:34,120 --> 00:00:37,571
-Scale in or change tiers when your needs change.
+00:00:33,528 --> 00:00:41,104
+Stack and Survive is a small game where beginners can experience a few Azure architecture decisions, rather than just read their definitions.
 
 10
-00:00:37,571 --> 00:00:40,638
-The current state, not the animation, determines capacity.
+00:00:44,150 --> 00:00:47,194
+Traffic comes in, and you change the architecture.
 
 11
-00:00:44,150 --> 00:00:49,876
-During the bot attack, Protected Edge filters malicious requests, with a tradeoff in legitimate traffic.
+00:00:47,194 --> 00:00:50,999
+You can add capacity, introduce cache, or protect the edge.
 
 12
-00:00:49,876 --> 00:00:53,312
-More App machines do not fix every database bottleneck.
+00:00:50,999 --> 00:00:55,946
+The game then shows what happens to availability, lost sales, and running cost.
 
 13
-00:00:53,312 --> 00:00:58,275
-Watch the next wave, read the pressure, and choose which layer needs attention.
+00:00:59,150 --> 00:01:01,545
+This is the part I care about.
 
 14
-00:01:02,150 --> 00:01:05,490
-The final wave reaches six hundred requests per second.
+00:01:01,545 --> 00:01:02,913
+What would you change?
 
 15
-00:01:05,490 --> 00:01:09,573
-This is edited footage of a real run, not accelerated simulation.
+00:01:02,913 --> 00:01:03,940
+More App instances?
 
 16
-00:01:09,573 --> 00:01:13,284
-Clear the full operation, then inspect what your decisions achieved.
+00:01:03,940 --> 00:01:04,966
+A stronger database?
 
 17
-00:01:16,150 --> 00:01:19,020
-This full run scored 9473 points.
+00:01:04,966 --> 00:01:07,703
+The interesting part is not clicking Scale Out.
 
 18
-00:01:19,020 --> 00:01:21,411
-Compare availability, cost and architecture.
+00:01:07,703 --> 00:01:11,467
+It is noticing which layer is actually under pressure, and why.
 
 19
-00:01:21,411 --> 00:01:28,107
-Try a different strategy, then follow Microsoft Learn links to explore the real services.
+00:01:16,150 --> 00:01:17,097
+This run survived.
 
 20
-00:01:30,150 --> 00:01:34,428
-The implemented Export Agent connects finished runs to infrastructure as code.
+00:01:17,097 --> 00:01:18,990
+But was it a good architecture?
 
 21
-00:01:34,428 --> 00:01:39,873
-It can select mapping and validation tools, then repair a candidate using compiler feedback.
+00:01:18,990 --> 00:01:21,515
+Maybe I added more capacity than I needed.
 
 22
-00:01:39,873 --> 00:01:44,151
-These are real tool boundaries, not a chatbot controlling the game.
+00:01:21,515 --> 00:01:26,249
+Keeping the service available matters, but so does the cost of the choices I made.
 
 23
-00:01:44,151 --> 00:01:46,873
-Live Azure model verification is still pending.
+00:01:30,150 --> 00:01:34,561
+After the run, I want people to look back and try another choice.
 
 24
-00:01:46,873 --> 00:01:48,040
-Nothing is deployed.
+00:01:34,561 --> 00:01:38,294
+They can return to Microsoft Learn with a more concrete question.
 
 25
-00:01:50,150 --> 00:01:50,885
-Play first.
+00:01:38,294 --> 00:01:41,687
+The idea is to play, observe, reflect, and try again.
 
 26
-00:01:50,885 --> 00:01:51,987
-Question the tradeoff.
+00:01:45,150 --> 00:01:47,965
+This is not a replacement for Microsoft Learn.
 
 27
-00:01:51,987 --> 00:01:53,457
-Then explore Microsoft Learn.
-
-28
-00:01:53,457 --> 00:01:58,600
-Try Stack and Survive, and see what you would change in the next architecture.
+00:01:47,965 --> 00:01:56,410
+I hope it gives customers a simpler, more enjoyable first step into Azure, and helps them feel more comfortable exploring the real services afterward.

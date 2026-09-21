@@ -1,154 +1,140 @@
 {
-  "sourceCommit": "a6f69560d063ae1454c12edc0532bbfc93424679",
-  "capturedAt": "2026-09-21T08:40:19.355Z",
-  "captureDirtyTree": true,
-  "runtimeClean": true,
-  "captureBundles": [
+  "version": 2,
+  "story": "Personal Azure learning experience; not a commercial or agent demonstration",
+  "screenshotSourceCommit": "a6f69560d063ae1454c12edc0532bbfc93424679",
+  "screenshotCapturedAt": "2026-09-21T08:40:19.355Z",
+  "sourceFiles": [
     {
-      "path": "/assets/index-BZqQHE_V.js",
-      "sha256": "10fa3f8b62791e975cf46beeb9659a2a5da2732f848069d3cbe73557c4272aea"
+      "file": "showcase/slides.html",
+      "sha256": "11a25f50c539b0e748042c360d614bdda85f2b63242fc0825eecf10d8d2ec408"
     },
     {
-      "path": "/assets/index-CMkT-4n0.css",
-      "sha256": "b83c3f31fafbd28936b3a470c9f5cf91c3c20333157aefc10809382bbaa8fdff"
+      "file": "showcase/slides.css",
+      "sha256": "96e683dbc9d8ea11c4b4b78e559399b00bd8d8a31ec3c58311d935347870ce2d"
+    },
+    {
+      "file": "showcase/slides.js",
+      "sha256": "f6d3da2127b37cd7a37748a4f873a81c8379ba9a41c510b0b31679c6887b2ecd"
+    },
+    {
+      "file": "showcase/story.json",
+      "sha256": "d6c1b3ae1fa86bd8ff7ab43bff0f3147297c213d90509f20c615f9a1a1623860"
     }
   ],
-  "mode": "Local production build, ordinary real-time controls. No state injection or acceleration. Local board only. AI is unconfigured and never mocked into gameplay.",
-  "publicScorePosts": 0,
-  "score": 9473,
-  "runDuration": 180,
-  "runAvailability": 0.996147577584282,
-  "captureDirectory": "current-2026-09-21T08-40-19.305Z",
-  "actualRunSha256": "83625b7bcd7a62534f9a31ee74d7a87ad2659cb0bb55c0ec7fead576d00e8598",
-  "rawVideo": "page@c77e3d9ecc545a15e9e80e6ab99ed4d6.webm",
-  "rawVideoSha256": "05222c7c3ba999dffb969ba9973c035f062f60f3d3af0bd76e907c8e6474e947",
+  "usedImages": [
+    {
+      "file": "docs/images/gameplay.webp",
+      "sha256": "05f1859b5ef85b85d4a91c90d0120e2c52dfe2039cd1d03e21d441acbbbca96d"
+    },
+    {
+      "file": "docs/images/opening.webp",
+      "sha256": "bd49abc5731fbfeab1ddb33cca921f14edf04cbad1e19624c7535c8755accfc1"
+    },
+    {
+      "file": "docs/images/overload.webp",
+      "sha256": "8d22dabce3853119d783ebffc63aa4a1cea6251e4e41146dbc3b19fc40127cdd"
+    },
+    {
+      "file": "docs/images/result.webp",
+      "sha256": "acb49b439511fb76e89c731abe382797e09413a7ddfe47b53be16dd408894985"
+    },
+    {
+      "file": "docs/images/learn.webp",
+      "sha256": "96cea3fafeaac2c463844bab1ae7ed08b7d04fcfebd6b2f79e3212508c17441c"
+    }
+  ],
+  "mode": "Eight static annotated slides built from actual screenshots. Not live gameplay footage. No model invocation or public score submission.",
   "segments": [
     {
-      "duration": 12,
-      "type": "card",
-      "kicker": "01 / PROJECT INTRODUCTION",
-      "title": "Architecture is a decision.\nMake it playable.",
-      "points": [
-        "Stack & Survive",
-        "A browser strategy game for exploring cloud tradeoffs",
-        "Same workload. Different architectures. Different outcomes."
-      ],
-      "narration": "Cloud diagrams explain the components. But beginners also need to see why those components work together. Stack and Survive makes those decisions playable.",
+      "id": "slide-1",
+      "duration": 16,
+      "narration": "When I first started learning Azure, I mainly used Microsoft Learn and the documentation. They gave me useful concepts. But as a beginner, I found it harder to connect those concepts together.",
       "start": 0,
-      "sourceStart": null,
-      "voiceSeconds": 8.856463
+      "title": "Learning Azure\nfor the first time\nfelt overwhelming.",
+      "visibleText": "Learning Azure\nfor the first time\nfelt overwhelming.\n\nMicrosoft Learn and documentation\ngave me the concepts.\n\nConnecting them together\nwas harder.\n\nWhat if traffic doubles?\n\nApp Service\n→\nAzure SQL\n\nscale here? ↖\n\nWould cache help?\nWhat happens to cost?",
+      "voiceSeconds": 11.112608
     },
     {
+      "id": "slide-2",
+      "duration": 16,
+      "narration": "I understood App Service, SQL, and caching on their own. But when traffic increased, what should I change? Would more App instances help, or was the database the problem? Those connections were less clear to me.",
+      "start": 16,
+      "title": "I knew what the services were.\nI didn't know how they behaved together.",
+      "visibleText": "I knew what the services were.\nI didn't know how they behaved together.\n\ntraffic ↑\n\nUsers\n→\nApp Service\n→\nAzure SQL\nscale here?\nDB bottleneck?\n↳\nCache\nhelps reads?\n\nKnowing a definition wasn't the same as knowing what to do next.",
+      "voiceSeconds": 12.60458
+    },
+    {
+      "id": "slide-3",
       "duration": 12,
-      "type": "card",
-      "kicker": "02 / THE CHALLENGE",
-      "title": "Keep the business flowing.",
-      "points": [
-        "180 seconds of Black Friday demand",
-        "Eight phases: spikes, bots and recovery windows",
-        "Balance availability, lost sales and running cost"
-      ],
-      "narration": "You operate a data center through one hundred eighty seconds of Black Friday. Traffic spikes, bots arrive, and every infrastructure choice affects customers and cost.",
-      "start": 12,
-      "sourceStart": null,
-      "voiceSeconds": 9.593968
+      "narration": "So I built this. Stack and Survive is a small game where beginners can experience a few Azure architecture decisions, rather than just read their definitions.",
+      "start": 32,
+      "title": "So I built this.",
+      "visibleText": "So I built this.\n\nA simple game for experiencing Azure architecture decisions.",
+      "voiceSeconds": 8.95415
     },
     {
-      "duration": 20,
-      "type": "game",
-      "marker": "construction-start",
-      "kicker": "03 / REAL GAMEPLAY EXCERPT",
-      "title": "Build now. Capacity arrives later.",
-      "subtitle": "App scaling changes capacity after construction. Cache helps eligible reads, not writes.",
-      "narration": "Start small, then build before the next wave. Adding an App machine takes eight seconds. Cache reduces eligible database reads, but order writes still reach SQL. Scale in or change tiers when your needs change. The current state, not the animation, determines capacity.",
-      "start": 24,
-      "sourceStart": 11.421,
-      "voiceSeconds": 16.488209
-    },
-    {
-      "duration": 18,
-      "type": "game",
-      "marker": "bot-start",
-      "kicker": "04 / EDIT: LATER BOT ATTACK",
-      "title": "Protect the right layer.",
-      "subtitle": "Actual 440 req/s phase · representative packets · simulated money, not Azure pricing",
-      "narration": "During the bot attack, Protected Edge filters malicious requests, with a tradeoff in legitimate traffic. More App machines do not fix every database bottleneck. Watch the next wave, read the pressure, and choose which layer needs attention.",
+      "id": "slide-4",
+      "duration": 15,
+      "narration": "Traffic comes in, and you change the architecture. You can add capacity, introduce cache, or protect the edge. The game then shows what happens to availability, lost sales, and running cost.",
       "start": 44,
-      "sourceStart": 74.022,
-      "voiceSeconds": 14.124989
+      "title": "You make a change.\nThe system reacts.",
+      "visibleText": "You make a change.\nThe system reacts.\n\n← Traffic comes in\n\n← You change\nthe architecture\n\nAvailability & cost\nreact ↑\n\nBuild before the next wave.",
+      "voiceSeconds": 11.795964
     },
     {
-      "duration": 14,
-      "type": "game",
-      "marker": "final-start",
-      "kicker": "05 / EDIT: FINAL WAVE",
-      "title": "Survive changing demand.",
-      "subtitle": "The final 20 seconds reach 600 req/s and 45% bots. This video cuts time; the game does not.",
-      "narration": "The final wave reaches six hundred requests per second. This is edited footage of a real run, not accelerated simulation. Clear the full operation, then inspect what your decisions achieved.",
-      "start": 62,
-      "sourceStart": 169.396,
-      "voiceSeconds": 11.134422
+      "id": "slide-5",
+      "duration": 17,
+      "narration": "This is the part I care about. What would you change? More App instances? A stronger database? The interesting part is not clicking Scale Out. It is noticing which layer is actually under pressure, and why.",
+      "start": 59,
+      "title": "What would you change?",
+      "visibleText": "What would you change?\n\nMore App instances?\n\nScale the database?\n\nAdd cache?\n\nProtect the edge?\n\nThe interesting part isn't clicking Scale Out.\nIt's deciding which layer is actually under pressure.",
+      "voiceSeconds": 12.316553
     },
     {
+      "id": "slide-6",
       "duration": 14,
-      "type": "game",
-      "marker": "result",
-      "kicker": "06 / EDIT: ACTUAL COMPLETED RESULT",
-      "title": "9,473 points. One real completed run.",
-      "subtitle": "Local-only automated run · score unchanged · no public submission · no human study claim",
-      "narration": "This full run scored 9473 points. Compare availability, cost and architecture. Try a different strategy, then follow Microsoft Learn links to explore the real services.",
+      "narration": "This run survived. But was it a good architecture? Maybe I added more capacity than I needed. Keeping the service available matters, but so does the cost of the choices I made.",
       "start": 76,
-      "sourceStart": 188.926,
-      "voiceSeconds": 11.956644
+      "title": "It survived.",
+      "visibleText": "It survived.\n\nBut was it a good\narchitecture?\n\nDid I build too much?\nWhat did it cost?\n\nAvailability is only part of the story.",
+      "voiceSeconds": 10.099048
     },
     {
-      "duration": 20,
-      "type": "card",
-      "kicker": "07 / IMPLEMENTED AGENT DESIGN — NOT A LIVE MODEL DEMO",
-      "title": "From a decision\nto a checked blueprint.",
-      "points": [
-        "Finished run → fixed Azure mapping → Bicep candidate",
-        "Compiler + architecture checks → bounded repair",
-        "Exact verified file → human review, never deployment"
-      ],
-      "narration": "The implemented Export Agent connects finished runs to infrastructure as code. It can select mapping and validation tools, then repair a candidate using compiler feedback. These are real tool boundaries, not a chatbot controlling the game. Live Azure model verification is still pending. Nothing is deployed.",
+      "id": "slide-7",
+      "duration": 15,
+      "narration": "After the run, I want people to look back and try another choice. They can return to Microsoft Learn with a more concrete question. The idea is to play, observe, reflect, and try again.",
       "start": 90,
-      "sourceStart": null,
-      "voiceSeconds": 17.889569
+      "title": "What would you change next time?",
+      "visibleText": "What would you change next time?\n\nLook back at the run.\n\nTry a different choice.\n\nReturn to Microsoft Learn\nwith a more concrete question.\n\nplay → observe\nreflect → try again",
+      "voiceSeconds": 11.536961
     },
     {
-      "duration": 10,
-      "type": "card",
-      "kicker": "08 / TRY IT",
-      "title": "Play. Question. Learn.",
-      "points": [
-        "React + Phaser + deterministic TypeScript engine",
-        "Local gameplay works without an account",
-        "yeongseon.github.io/stack-and-survive/"
-      ],
-      "narration": "Play first. Question the tradeoff. Then explore Microsoft Learn. Try Stack and Survive, and see what you would change in the next architecture.",
-      "start": 110,
-      "sourceStart": null,
-      "voiceSeconds": 8.450113
+      "id": "slide-8",
+      "duration": 15,
+      "narration": "This is not a replacement for Microsoft Learn. I hope it gives customers a simpler, more enjoyable first step into Azure, and helps them feel more comfortable exploring the real services afterward.",
+      "start": 105,
+      "title": "Making the first step\ninto Azure easier.",
+      "visibleText": "Making the first step\ninto Azure easier.\n\nI hope this helps customers become more familiar\nwith Azure through a simple, interactive experience.\n\nNot a replacement for Microsoft Learn.\nJust another way to get started.\n\nStack & Survive\nyeongseon.github.io/stack-and-survive\n\nWhat would you change?",
+      "voiceSeconds": 11.260045
     }
   ],
   "file": "project-introduction-120s.mp4",
-  "sha256": "c02d1943d608088386885addc071b97659a4d8b3c64a1d67c9cdc0ee57a4415e",
-  "bytes": 12336032,
+  "sha256": "b612bb1795814f4e3a8a0895e7167744db6f289412ef70522a0eeb5279714b9b",
+  "bytes": 2784465,
   "duration": 120,
   "width": 1440,
-  "height": 1000,
+  "height": 900,
   "frames": 3000,
+  "audio": "Synthetic offline macOS Samantha draft narration, 155 words/minute; not the developer recording his own voice. Prefer presenter recordings for final delivery.",
+  "narrated": true,
+  "captions": "Selectable English subtitles and sidecar SRT. Sentence timing is approximate; human listening and alignment review required.",
+  "provenance": "Production/build/source labels intentionally appear only here and in documentation, never in audience slides or video. Hashes are integrity comparisons, not signatures.",
   "toolchain": {
     "node": "v22.22.0",
     "platform": "darwin",
+    "chromium": "153.0.8010.12",
     "ffmpeg": "ffmpeg version 8.0.1 Copyright (c) 2000-2025 the FFmpeg developers",
-    "ffprobe": "ffprobe version 8.0.1 Copyright (c) 2007-2025 the FFmpeg developers",
-    "os": "26.6.2",
-    "voice": "Installed macOS Samantha; OS-provided voice version not separately exposed by say",
-    "chromium": "153.0.8010.12"
+    "voice": "macOS Samantha, 155 words/minute"
   },
-  "audio": "Offline macOS Samantha synthetic English narration, 175 words/minute, no music, game sound muted. Not human voice or hearing acceptance.",
-  "captions": "English SRT and optional embedded track; word-weighted sentence timing, not speech-alignment certification. Visible chapter captions are burned in.",
-  "validation": "Full ffmpeg decode passed; exact120seconds/3000frames; each voice segment fits its allotted time. Human narration/listening and rights/event review remain required."
+  "validation": "Exact120seconds/3000frames/full decode; all voice segments fit without truncation or tempo changes. No proven learning or live AI claim."
 }
