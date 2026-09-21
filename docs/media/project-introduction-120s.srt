@@ -1,107 +1,107 @@
 1
-00:00:00,150 --> 00:00:05,012
+00:00:00,150 --> 00:00:05,705
 When I first started learning Azure, I mainly used Microsoft Learn and the documentation.
 
 2
-00:00:05,012 --> 00:00:06,748
+00:00:05,705 --> 00:00:07,688
 They gave me useful concepts.
 
 3
-00:00:06,748 --> 00:00:11,263
+00:00:07,688 --> 00:00:12,846
 But as a beginner, I found it harder to connect those concepts together.
 
 4
-00:00:16,150 --> 00:00:19,651
+00:00:16,150 --> 00:00:20,263
 I understood App Service, SQL, and caching on their own.
 
 5
-00:00:19,651 --> 00:00:22,452
+00:00:20,263 --> 00:00:23,554
 But when traffic increased, what should I change?
 
 6
-00:00:22,452 --> 00:00:26,304
+00:00:23,554 --> 00:00:28,079
 Would more App instances help, or was the database the problem?
 
 7
-00:00:26,304 --> 00:00:28,755
+00:00:28,079 --> 00:00:30,958
 Those connections were less clear to me.
 
 8
-00:00:32,150 --> 00:00:33,528
+00:00:32,150 --> 00:00:33,682
 So I built this.
 
 9
-00:00:33,528 --> 00:00:41,104
+00:00:33,682 --> 00:00:42,110
 Stack and Survive is a small game where beginners can experience a few Azure architecture decisions, rather than just read their definitions.
 
 10
-00:00:44,150 --> 00:00:47,194
+00:00:44,150 --> 00:00:47,556
 Traffic comes in, and you change the architecture.
 
 11
-00:00:47,194 --> 00:00:50,999
+00:00:47,556 --> 00:00:51,815
 You can add capacity, introduce cache, or protect the edge.
 
 12
-00:00:50,999 --> 00:00:55,946
+00:00:51,815 --> 00:00:57,350
 The game then shows what happens to availability, lost sales, and running cost.
 
 13
-00:00:59,150 --> 00:01:01,545
+00:00:59,150 --> 00:01:02,551
 This is the part I care about.
 
 14
-00:01:01,545 --> 00:01:02,913
+00:01:02,551 --> 00:01:04,494
 What would you change?
 
 15
-00:01:02,913 --> 00:01:03,940
+00:01:04,494 --> 00:01:05,951
 More App instances?
 
 16
-00:01:03,940 --> 00:01:04,966
+00:01:05,951 --> 00:01:07,409
 A stronger database?
 
 17
-00:01:04,966 --> 00:01:07,703
-The interesting part is not clicking Scale Out.
+00:01:07,409 --> 00:01:10,324
+It isn't about clicking Scale Out.
 
 18
-00:01:07,703 --> 00:01:11,467
-It is noticing which layer is actually under pressure, and why.
+00:01:10,324 --> 00:01:15,182
+It's about noticing which layer is under pressure, and why.
 
 19
-00:01:16,150 --> 00:01:17,097
+00:01:16,150 --> 00:01:17,388
 This run survived.
 
 20
-00:01:17,097 --> 00:01:18,990
+00:01:17,388 --> 00:01:19,863
 But was it a good architecture?
 
 21
-00:01:18,990 --> 00:01:21,515
+00:01:19,863 --> 00:01:23,163
 Maybe I added more capacity than I needed.
 
 22
-00:01:21,515 --> 00:01:26,249
+00:01:23,163 --> 00:01:29,350
 Keeping the service available matters, but so does the cost of the choices I made.
 
 23
-00:01:30,150 --> 00:01:34,561
+00:01:30,150 --> 00:01:35,059
 After the run, I want people to look back and try another choice.
 
 24
-00:01:34,561 --> 00:01:38,294
+00:01:35,059 --> 00:01:39,214
 They can return to Microsoft Learn with a more concrete question.
 
 25
-00:01:38,294 --> 00:01:41,687
+00:01:39,214 --> 00:01:42,990
 The idea is to play, observe, reflect, and try again.
 
 26
-00:01:45,150 --> 00:01:47,965
+00:01:45,150 --> 00:01:48,150
 This is not a replacement for Microsoft Learn.
 
 27
-00:01:47,965 --> 00:01:56,410
+00:01:48,150 --> 00:01:57,150
 I hope it gives customers a simpler, more enjoyable first step into Azure, and helps them feel more comfortable exploring the real services afterward.
