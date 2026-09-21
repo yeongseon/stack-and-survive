@@ -117,5 +117,5 @@ If asked about Export to Azure: “There is an implemented draft for post-run Bi
 - **Actual human read-aloud duration: not measured.** The English main script is approximately 370 words; at 140–150 words per minute plus brief pauses, plan roughly 2:40–3:00. These are assumptions, not evidence of a completed rehearsal.
 - The shortened script targets 60 seconds; time it yourself. Leave room for numbers, service names and slide changes.
 - The 100 → 560 → 600 progression summarizes eight phases with recovery windows. Demand does not rise continuously.
-- Screenshots retain the original `24ca388` provenance; `DEMO` denotes automation, not an unfamiliar participant or a verified global entry.
+- Screenshots were refreshed from local production source `a6f6956` / rules 0.4; `DEMO` denotes automation, not a participant or verified global entry. The new [two-minute introduction transcript](../docs/media/PROJECT_INTRO_NARRATION.md) is separate from this seven-slide talk and uses disclosed synthetic narration.
 - Deployment, rights and evidence details live in the [showcase guide](README.md) and [technical notes](../docs/SUBMISSION_TECHNICAL_NOTES.md), not in the main talk.

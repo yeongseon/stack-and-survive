@@ -1,8 +1,8 @@
 # Showcase — Why I built Stack & Survive
 
-Before presenting, read [Current status](../docs/CURRENT_STATUS.md): main `c68ec0c` is deployed; API 0.4 support is blocked and Export/Microsoft Learn result links remain draft #316. This deck's image provenance stays historical even when accompanying status documentation is updated.
+Before presenting, read [Current status](../docs/CURRENT_STATUS.md). Export/Agent code was merged in #316/#323, but live AI activation remains unverified in #325. This deck now uses actual local production images from `a6f6956`, rules 0.4; they are not proof of hosted-artifact or model readiness.
 
-For the latest scaling interface and compact SQL, use the [53-second current-feature clip](../docs/DEMO_VIDEO.md#current-rules-04-the-bottleneck-tradeoff) as a separate optional demo. Existing slide screenshots remain historical; the new clip is a local candidate capture, not human validation. Allow an additional minute or replace part of the talk—do not promise a three-minute talk plus a full demo in the same slot.
+For submission, use the new [two-minute project introduction](../DEMO_VIDEO.md#two-minute-project-introduction--current-source): introduction, labeled gameplay excerpts, agent-design boundary and closing, with synthetic English narration and captions. The historical 53-second tradeoff clip remains optional. Allow separate time for a talk plus video; do not promise both inside the same two-minute slot.
 
 **[Download the English PDF](stack-and-survive-showcase.pdf)** · [Browser slides](slides.html) · [English speaker notes](SPEAKER_NOTES.md) · [Play the game](https://yeongseon.github.io/stack-and-survive/)
 
@@ -54,7 +54,7 @@ The exporter uses local HTML, fonts and images; it makes no gameplay/API request
 - A whole game takes **180 seconds plus opening/result time**. Do not squeeze another full game into the talk. A 20–30-second live segment needs its own time allowance, including startup and switching back to slides.
 - Recorded results and edited video must be labeled. The [published demo video and English transcript](../docs/DEMO_VIDEO.md) are a separate 120-second edit, not the seven-slide talk.
 - If the API is unavailable, use local play and identify local scores honestly. Keep the [fallback guide](../docs/submission/DEMO_FALLBACK.md) available. Coordinate any production submission with the backend owner.
-- Slide screenshots come from `24ca388` / rules 0.3; retain [their provenance](../docs/images/README.md). Current rules 0.4 scaling and onboarding are not shown in those captures. A local automated DEMO score is not a human participant or a public verified run. Read the [current handoff](../docs/submission/HACKATHON_HANDOFF.md), including the backend compatibility blocker, before promising global leaderboard availability.
+- Slide screenshots now come from `a6f6956` / rules 0.4; retain [their provenance](../docs/images/README.md). They show current scaling, compact SQL and result UI; AI is unconfigured. A local automated DEMO score is not a participant/public verified run. Read the [current handoff](../docs/submission/HACKATHON_HANDOFF.md) before promising backend availability.
 - Human understanding, voluntary replay, listening/device and rights approval remain distinct from software tests. See [the tracker](https://github.com/yeongseon/stack-and-survive/issues/7).
 
 ## Before presenting
