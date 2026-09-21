@@ -1,13 +1,14 @@
-# README screenshot provenance
+# Current demo screenshot provenance
 
-These documentation images are derivatives of actual gameplay captures, not new runtime art or a broader asset license grant. The owner requested screenshots in the repository README. Existing project/Microsoft rights boundaries still apply: [licensing status](../LICENSING_STATUS.md) and [attribution](../../apps/web/public/assets/ATTRIBUTION.md).
+These are actual ordinary-player captures from merged source **`a6f69560d063ae1454c12edc0532bbfc93424679`**, rules 0.4, captured **2026-09-21T08:40:19.355Z**. The production build was local with `VITE_LEADERBOARD_API` empty; this is not a capture of the hosted Pages artifact. The runtime source was clean; the working tree contained media tooling/doc changes (`dirtyTree: true`). [Machine-readable manifest](capture-manifest.json) records build hashes, raw-frame hashes, derivative hashes and actual HUD observations.
 
-- Source commit: `24ca38805015cf87de710cb2ce9ffa5904ffc14f` (final HUD, currency and player-name release).
-- Capture: `2026-09-17T19-46-13.930Z`, clean local production build; `capture-manifest.json` status `complete`. Local-only leaderboard; external API submissions blocked. No state injection or accelerated ticks.
-- Local source folder: `test-results-submission/2026-09-17T19-46-13.930Z/` (ignored; not a public artifact URL).
-- Original dimensions: 1440×900, except the 844×390 landscape result. Converted to WebP within 1200×750 (landscape result remains 844×390) for documentation, without cropping or compositing. All 16 images total 737,334 bytes (approximately 0.74 MB).
-- `title.webp` ← `01-title.png`; `gameplay.webp` ← `08-bot-attack.png`; `result.webp` ← `12-local-leaderboard.png`.
-- Remaining walkthrough images: `opening` ← 02, `construction` ← 03, `cache` ← 04, `warning` ← 05, `spike` ← 06, `edge` ← 07, `recovery` ← 09, `final-wave` ← 10, `join` ← 11, `landscape-result` ← 13, `overload` ← 14, `pause` ← 15, `settings` ← 16 from the named capture milestones. See [the original capture plan](../submission/SCREENSHOT_PLAN.md).
-- `DEMO` denotes automated local score entry, not an unfamiliar participant. This pack is separate from the recorded video run, so their exact scores can differ.
+- 19 images: `title`, `opening`, `construction`, `cache`, `app-scaling`, `warning`, `spike`, `edge`, `gameplay`, `recovery`, `sql-scaling`, `final-wave`, `join`, `learn`, `result`, `landscape-result`, `overload`, `pause`, `settings`.
+- Originals are 1440×900 except `landscape-result` at 844×390. Chromium Canvas converts them to WebP within 1200×750, preserving aspect ratio without cropping, compositing or altering UI values.
+- The successful operation really completed 180 seconds with **9,473 points and 99.61% aggregate availability** (raw ratio `0.996147577584282`). The background HUD at the final tick reads 99.5% for that tick; it is not the full-run aggregate displayed on the report. The manifest keeps both separately. `DEMO` is an automation label, not a participant or public verified submission.
+- `overload`, `pause` and `settings` come from a **separate no-action operation**, not the successful architecture. No state injection, accelerated ticks or external score submission occurred.
+- `learn` shows actual curated Microsoft Learn links. AI was unconfigured, so no model output or Export success is shown or fabricated.
+- Raw recording and frames: ignored `test-results-submission/current-2026-09-21T08-40-19.305Z/`. The folder timestamp was allocated immediately before manifest `capturedAt` (`08:40:19.355Z`), so the 50ms difference is expected, not a different capture. The manifest records `captureDirectory` explicitly. Raw actual-run SHA256 is recorded; raw files are not public artifact URLs.
 
-To refresh: follow [the capture workflow](../DEVELOPMENT.md#screenshots-and-demo-evidence), inspect the original frames, replace only selected documentation images, and update the source revision/date here. Do not overwrite the runtime asset manifest or silently relabel old screenshots as a newer build.
+Reproduce with `node scripts/capture-current-media.mjs`, then `node scripts/render-project-video.mjs <complete-capture-directory> [--voice]`. Inspect the frames, video and provenance before committing. Runtime assets and their manifest are not modified by this workflow. The prior `24ca388` screenshots remain in Git history; the historical 120-second MP4 and 53.4-second tradeoff MP4 retain their original provenance.
+
+Screenshots are derived documentation media, not new runtime artwork or a broader license grant. Existing [rights limitations](../LICENSING_STATUS.md) and [Azure/project attribution](../../apps/web/public/assets/ATTRIBUTION.md) still apply.
