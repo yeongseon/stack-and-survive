@@ -1,5 +1,9 @@
 # Hackathon handoff — 2026-09-19 UTC
 
+## Latest material refresh — source a6f6956
+
+#326 refreshes 19 walkthrough/deck images, rebuilds the seven-page PDF, and adds an exact 120-second introduction with synthetic English narration, captions, real gameplay excerpts, agent-design explanation and closing. [Video/transcript/provenance](../DEMO_VIDEO.md#two-minute-project-introduction--current-source). Notes below preserve older versions. Export/Agent code is merged; activation is separately gated in #325. No live model, hosted-artifact capture or human listening approval is claimed.
+
 ## Current authority — 2026-09-21
 
 Use [Current status](../CURRENT_STATUS.md): deployed `c68ec0c`, exact-main Quality 35517501080 and actual Pages build/deploy 35522927900 passed. #318/#319 delivered service-guide wording, inspector bounds, current-feature clip and participant preparation. Dated updates below retain their own source/counts, not today's backlog. Export/Learn draft #316 is not deployed; API #306 and human/audio/rights/event gates remain open.
