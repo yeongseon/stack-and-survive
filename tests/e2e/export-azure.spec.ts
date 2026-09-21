@@ -1,8 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
-import { createRequire } from 'node:module';
-const require = createRequire(new URL('../../apps/web/package.json', import.meta.url));
-const { createServer } = await import(require.resolve('vite')) as typeof import('../../apps/web/node_modules/vite');
+import { createServer } from '../../apps/web/tests/release/vite-server.mjs';
 import { exportResponseFixture } from '../../apps/leaderboard-api/src/export-bicep.fixture';
 
 let configured: Awaited<ReturnType<typeof createServer>>, unconfigured: Awaited<ReturnType<typeof createServer>>;
