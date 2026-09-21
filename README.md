@@ -98,9 +98,15 @@ React controls / results  →  shared deterministic simulation  →  Phaser worl
 | Game world | Phaser 3; fixed isometric facilities and state-driven feedback |
 | Rules | Shared headless simulation and versioned challenge definitions |
 | Verification | Vitest, Playwright, asset integrity and replay regression tests |
-| Hosting | Static GitHub Pages frontend; optional Azure App Service leaderboard |
+| Hosting | Static GitHub Pages frontend; optional Azure App Service API (leaderboard + AI export proxy) |
 
 Gameplay **does not provision cloud resources**. Azure badges identify represented service roles; capacities, timing and economics are game assumptions. The optional API is real application infrastructure, not infrastructure created by the player. Local scores and nicknames are not authenticated identities; server replay verification is not a complete anti-cheat system.
+
+**Export to Azure** turns the final architecture of a finished run into Bicep and a per-resource rationale using Azure OpenAI via the optional API. The export is text only; it never deploys, and it never changes simulation, scoring or replay. It is available only for rules 0.4 with an API configured; generation remains unavailable until the API's server-only Azure OpenAI settings are supplied. Generated scaffolds need human review, real identity parameters, application integration and local compilation before any independently authorized deployment.
+
+**Validation status (#315):** implementation is tested with mocked AI responses and a hand-authored compiled fixture. Actual Azure OpenAI credentials were unavailable during implementation, so a real played-run → model generation → Bicep compilation smoke is still required. No live export service or Azure configuration change is claimed.
+
+The result also links to **Microsoft Learn** for each service present in your final architecture and for Bicep. These fixed official links work without an API or AI configuration; the model cannot choose their destinations.
 
 ## Develop and contribute
 

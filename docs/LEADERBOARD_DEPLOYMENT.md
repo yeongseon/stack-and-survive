@@ -1,6 +1,6 @@
 # Leaderboard API Deployment
 
-Reviewed against merged `c68ec0c`. [Current status](CURRENT_STATUS.md) is the release authority. Main has only leaderboard/health routes; Export/OpenAI settings and `/api/export-bicep` remain in draft #316. No Azure OpenAI account or model was created by that work. Current 0.4 API compatibility is blocked in #306 despite source support.
+Leaderboard deployment baseline is merged `c68ec0c`; docs-only main is `faf5444`. [Current status](CURRENT_STATUS.md) owns released status. This draft #316 branch implements the Export/OpenAI settings and route described below, not yet deployed. No Azure OpenAI account/model was created. Current 0.4 leaderboard compatibility remains blocked in #306 despite source support.
 
 ## Local development
 
@@ -32,6 +32,38 @@ No tsx required in production.
 | `LEADERBOARD_FILE_PATH` | `./data/leaderboard.json` | Path for file storage |
 | `TRUST_PROXY` | `false` | Set `true` behind reverse proxy to trust X-Forwarded-For |
 | `BUILD_SHA` | (empty) | Git commit SHA shown in `/api/health` response |
+| `AZURE_OPENAI_ENDPOINT` | (empty) | Server-only HTTPS Azure OpenAI resource origin; no path/query |
+| `AZURE_OPENAI_API_KEY` | (empty) | Server-only credential; never a `VITE_` variable |
+| `AZURE_OPENAI_DEPLOYMENT` | (empty) | Deployment name supporting Responses and Structured Outputs (e.g. a supported gpt-4.1/4o/5-family deployment) |
+| `AZURE_OPENAI_API_VERSION` | (empty) | Optional compatibility override; default GA `/openai/v1/responses` needs no query |
+
+### Optional Export to Azure proxy
+
+Implementation checkpoint (#315): shell AI credentials are absent; real model output from a played run has **not** been verified. Only mocked responses and an explicitly hand-authored Bicep fixture have been tested/compiled. This section is setup guidance, not evidence of a configured production export service.
+
+An authorized operator must configure the first three `AZURE_OPENAI_*` values in App Service → Configuration → Application settings; leave the fourth empty for v1 GA unless the chosen service explicitly supports that override. These settings are not configured by this change or by CI. The export endpoint returns **503 Export not configured** until configured; `/api/health` reports `ai: off` or `configured` (configuration presence, not an upstream connectivity test).
+
+The compatibility override is appended as `?api-version=…`; current v1 documentation does not guarantee dated preview versions on this path. Prefer default GA. Verify model/region Responses and Structured Outputs support. The adapter uses Node 22 built-in fetch, `store:false`, strict JSON output, 2500 output tokens and a 25-second timeout. Truncation/refusal/malformed output fails closed as 502, without forwarding upstream error bodies. Larger WAF templates may exceed the budget; no automatic retry/deployment occurs.
+
+`POST /api/export-bicep` is stateless and independent of leaderboard storage/replay. It accepts at most 20,000 UTF-8 bytes, with a separate 5-request/minute/IP limiter and denied disallowed browser origins. Runs are structurally validated, not replay-authenticated. No player name, free-form prompt, generated content or request body is logged. Provider retention/abuse monitoring is separate from `store:false`.
+
+Bicep resource declarations require `@API-version`; this syntax is narrowly permitted. URLs remain forbidden in Bicep; the conventional parameters JSON `$schema` URL is separately allowed. Required Entra administrator parameters have no invented identity/default; fill them yourself. Parameters JSON includes only location/namePrefix defaults. Generated infrastructure is a reviewable scaffold, not application code, SQL app permissions, private connectivity or guaranteed regional SKU availability.
+
+Manual smoke (no deployment):
+
+```bash
+# Terminal 1: set real AZURE_OPENAI_ENDPOINT/API_KEY/DEPLOYMENT securely in the shell.
+# Do not echo them, put literal keys in command history, or use VITE_ names.
+pnpm --filter @stack-and-survive/leaderboard-api dev
+# Terminal 2
+VITE_LEADERBOARD_API=http://localhost:3001 pnpm dev
+# Open the printed URL with /?tycoon, finish a run, Export to Azure and download files.
+az bicep build --file /path/to/downloaded/main.bicep
+```
+
+Record exact source, model deployment/version (not keys), generation outcome and compiler output in the PR. Compilation of a hand-authored/mock fixture is not actual AI-output evidence. Missing shell credentials mean a blocked smoke test, not a pass. No `az deployment` or Azure settings change is authorized by CI.
+
+Offline compiler regressions (not real-model evidence): `pnpm --filter @stack-and-survive/leaderboard-api exec tsx scripts/smoke-export.ts --fixture` and the same command with `--all-resources` compile hand-authored App/SQL and App/SQL/Managed Redis/WAF scaffolds. Generated files stay in ignored `test-results/`. `pnpm typecheck` checks both web/shared code and the API using a pinned, development-only Node 22 type package; no OpenAI SDK or web runtime dependency is added.
 
 ### CORS origins vs page URLs
 

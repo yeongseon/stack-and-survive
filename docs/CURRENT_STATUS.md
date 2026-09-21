@@ -2,6 +2,8 @@
 
 Snapshot: **2026-09-21**, audited against merged runtime **`c68ec0cb7a894f6ffd909d7ab7804a425a456dd5`**. This is a dated checkpoint, not a promise that a remote service will remain healthy. Numerical rules belong to [Simulation](SIMULATION_SPEC.md) and [Infrastructure scaling](INFRASTRUCTURE_SCALING.md); this page owns the current release/branch distinction.
 
+Review update: docs-only main `faf5444` also completed actual Pages build/deploy 35551003162; gameplay remains the `c68ec0c` baseline. This working branch contains unmerged Export #316 with later review fixes. Its previously green head `5ed4b9e` below is historical check evidence, not proof of validation for newer commits. Stacked Agent #323/#322 is also unmerged and requires actual model/operator acceptance. See `docs/PROJECT_REVIEW.md` for the whole-project review findings and new verification results.
+
 ## Implemented and deployed
 
 - Ordinary game: rules **0.4**, version-2 challenges; three objectives on the same deterministic 180-second Black Friday workload. Legacy 0.2/0.3 fixtures and storage identities remain separate.

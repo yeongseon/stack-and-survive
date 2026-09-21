@@ -6,11 +6,16 @@ The existing shared runtime now supports deterministic App shrink/tier changes, 
 
 Rendering reads pending changes and active resource state only. Optional tier textures use the V3 inventory and fall back to required base textures. `activeBuildingScale` applies SQL's active-tier 58/78/100% size consistently to sprites, anchors, lighting and hit bounds. Source supports 0.4 replay, but the configured production API still rejects current hashes (#306); source support is not deployment proof.
 
-Version: 1.2. Reviewed main `c68ec0c`: browser-local game state with an optional Node HTTP replay-verifying leaderboard API on Azure App Service. No server controls live simulation and no product analytics are added. Public source/demo hosting do not imply rights approval. [Current status](CURRENT_STATUS.md) separates actual Pages deployment, incompatible deployed API and unmerged work.
+Version: 1.3. Based on main `faf5444` (runtime `c68ec0c`) plus draft Export PR #316. Browser-local game state remains authoritative; the optional Node API replays leaderboard submissions, not game ticks. This branch adds a stateless post-run AI proxy but is not a deployed feature. [Current status](CURRENT_STATUS.md) records the release boundary, incompatible deployed API and unresolved verification.
 
-### Draft-only post-run AI boundary
+### AI boundary
 
-PR #316 implements Export to Azure and curated Microsoft Learn links on its own branch, not this merged runtime. Finished-run numbers go through a server-only Azure Responses proxy to validated Bicep/reasons for copy/download. It does not execute Bicep or affect gameplay, score, replay or storage. Static Learn URLs are curated, not generated. Real model output is unverified because AI resources/settings were absent; offline compiled fixtures and green branch CI do not prove a live service. Keep AI Coach separate. `/api/export-bicep` and `ai` health fields are not current main endpoints.
+`azure-learn.ts` owns the fixed HTTPS Microsoft Learn destinations. The result lists only represented final resources plus Bicep guidance, independently of API configuration; generated resource explanations reuse the same allowlist. Links open with `noopener noreferrer`, with no click telemetry or AI-generated URL fields.
+
+Export to Azure is an explicitly requested, post-run operation. Its input is bounded run numbers, final resource configuration and allowlisted engine strings/accepted action tokens; no nickname, prompt free text or per-tick stream is sent. The server validates all HTTP fields (even engine-derived values are untrusted over HTTP), uses Azure Responses Structured Outputs with `store:false`, then validates the returned JSON again. The browser also validates the response and renders it as escaped text. No AI output is executed or fed into runtime, score, replay, history or leaderboard calculations.
+
+The only browser setting is the existing public `VITE_LEADERBOARD_API` origin. Azure OpenAI origin/key/deployment remain on the API. Requests are capped at 20 KB and 5/IP/min, with 25-second upstream timeout and sanitized failures; the panel fails independently of the result. Reasons cite supplied numeric evidence, but lexical checking cannot prove factual grounding. Bicep is a reviewed candidate scaffold, not proof of deployability or equivalence between gameplay tiers and Azure performance. Compilation, region/SKU availability, identity, networking, app code and integration remain the operator's responsibility. No telemetry or model conversation is stored by this implementation; provider abuse-monitoring/retention policy is separate from `store:false`.
+Real model output is still unverified because AI resources/settings were absent. Offline compiled fixtures and green branch CI do not prove a live service. Keep AI Coach separate. `/api/export-bicep` and `ai` health fields are implemented on this branch, not in the deployed runtime until an authorized rollout.
 
 ## Architecture
 
@@ -94,6 +99,6 @@ Quality CI checks templates/static/unit/build, both browser modes and the projec
 
 ## Security and deferred architecture
 
-No secrets, customer telemetry or private platform information belongs in client code. #164 tracks rights; public visibility is not clearance. Pages serves the approved static frontend; the optional API handles replay verification and persistent ranking, not game state. Current backend compatibility is blocked (#306). No outbound product analytics or AI call exists in main. Cloud operations require separate authorization.
+No secrets, customer telemetry or private platform information belongs in client code. #164 tracks rights; public visibility is not clearance. Pages serves the approved frontend; the optional API handles replay verification and persistent ranking, not game state. Current backend compatibility is blocked (#306). This branch's optional stateless export stores no player telemetry and creates no Azure resources; cloud configuration still needs separate authorization.
 
 Additional protocol/observability packages and alternate hosting/storage require concrete need and approval. The existing leaderboard is not a future-only feature. Export/AI remains draft-only as described above; no cloud provisioning follows from a UI or documentation change.

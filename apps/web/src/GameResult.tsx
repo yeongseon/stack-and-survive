@@ -8,6 +8,9 @@ import { summarizeRun } from './run-history';
 import { architectureSummary } from './RunHistoryPanel';
 import type { RunReport } from './run-report';
 import { formatMoney, formatMoneyDelta, simulatedMoneyNote } from './money';
+import { ExportAzurePanel } from './ExportAzurePanel';
+import { exportConfigured } from './export-azure';
+import { AzureLearnLinks } from './AzureLearnLinks';
 
 function delta(value: number, unit: string) {
   return `${Math.abs(value) < .005 ? '0.00' : `${value > 0 ? '+' : ''}${value.toFixed(2)}`} ${unit}`;
@@ -46,8 +49,10 @@ export function GameResult({ result, architecture, report, restart, review, next
         : resource.kind === 'database' ? `SQL · ${databaseTiers[resourceTier(resource)-1].name} + ${resource.readReplicas ?? 0} read replicas`
         : `${resource.kind === 'cache' ? 'Cache' : 'Protected Edge'} · ${resource.remaining ? 'still provisioning' : 'Active'}`}</span>)}
     </section>}
+    {result.challenge?.rulesVersion === '0.4' && exportConfigured && run && <ExportAzurePanel result={result} run={run} architecture={architecture} />}
     {result.challenge && <p className="report-objective" data-testid="challenge-outcome">{result.challenge.id} · {result.challenge.objective.kind === 'survive' ? 'Complete the operation' : `Availability ≥ ${result.challenge.objective.target * 100}%`} — {result.objectiveMet ? 'met' : 'not met'}</p>}
     {leaderboard}
+    {result.challenge?.rulesVersion === '0.4' && <AzureLearnLinks architecture={architecture} />}
     <details className="outcome-details"><summary>Details · decisions, tradeoffs &amp; records</summary>
     <div className="report-metrics">
       <div><span>Business value</span><strong>{formatMoney(result.economy.netBusinessValue)}</strong></div>

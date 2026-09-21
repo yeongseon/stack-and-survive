@@ -11,7 +11,10 @@ Record from the actual release candidate and label edits. A complete operation l
 | 0:35–0:55 | App construction → Cache activation | “One click requests an expansion, but capacity arrives only after construction. Cache helps eligible reads—not SQL writes.” |
 | 0:55–1:20 | **Edited later-run excerpt:** bot attack and recovery | “Edge filtering reduces malicious load but can reject legitimate traffic. This is a tradeoff, not a universal best architecture.” |
 | 1:20–1:45 | Actual completed result and local ranking | “Compare availability, cost and score. These local scores are on this device. When an API is configured and reachable, the server can replay actions instead of trusting a submitted score.” |
+| Optional beat after result (replace part of this segment or allow extra time) | Press **Export to Azure** → show Bicep + per-resource reasons | “This optional Azure OpenAI export uses this run's numbers to draft infrastructure as code. Review it before deploying; nothing was deployed.” |
 | 1:45–2:00 | Pause/Settings → project link | “A React/Phaser game with a shared deterministic TypeScript engine. Playing never provisions real Azure resources.” |
+
+Use the Export beat only after the configured API and actual model have passed the recorded local compilation smoke. If unavailable, keep the result demo; do not replace it with a mocked response while claiming live AI generation. Model latency needs separate time in the presentation.
 
 Do not call local rank global or server-verified. If including an API demonstration, the backend owner must first supply exact endpoint/revision/health/replay evidence. Hide secrets, browser profiles and unrelated personal data. State that capacities/prices are game assumptions, not Azure benchmarks. Use the project's own favicon/art, not Microsoft marks as the product logo.
 

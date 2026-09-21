@@ -1,6 +1,6 @@
 # Leaderboard API Contract
 
-Current merged source contract at `c68ec0c`. Deployed MCAPS compatibility is separately blocked in #306; see [Current status](CURRENT_STATUS.md). `/api/export-bicep` and the `ai` health field exist only in draft PR #316, not this API contract.
+Leaderboard contract follows merged `c68ec0c` and is unchanged by this branch. Deployed MCAPS compatibility remains blocked in #306; see [Current status](CURRENT_STATUS.md). This draft #316 branch adds `/api/export-bicep` and `ai` health status as documented in [deployment guidance](LEADERBOARD_DEPLOYMENT.md); neither is claimed deployed. Agent #323 adds its separate endpoint only on the stacked branch.
 
 ## POST /api/leaderboard
 

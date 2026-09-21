@@ -10,6 +10,8 @@ Version: 1.3. Reviewed merged baseline: `c68ec0c`, rules 0.4. [Simulation](SIMUL
 
 A browser-local real-time infrastructure-management game for developers, engineers and cloud learners. The player operates a living business through world-local decisions, not a configuration form or certification quiz. The world shows pressure before metrics explain it. All capacities, costs and durations are game assumptions, not actual Azure performance/prices. No real resources are deployed.
 
+AI is limited to optional post-run explanation/export: **Export to Azure** produces Bicep text and run-grounded resource rationales through the configured API. It cannot change gameplay or determine scores. Generated infrastructure requires independent human review and is never deployed by the game. The AI Coach branch is not part of this feature.
+
 ## Current playable scope
 
 | Area | Implemented behavior |

@@ -2,8 +2,69 @@ import { describe, expect, it, beforeAll, afterAll } from 'vitest';
 import { createLeaderboardServer } from './server';
 import { blackFridayChallenge } from '@stack-and-survive/scenarios/challenge';
 import type { Action } from '@stack-and-survive/simulation/runtime';
+import { exportRequestFixture, exportResponseFixture } from './export-bicep.fixture';
 
 const challengeHash = blackFridayChallenge.contentHash;
+
+describe('Export HTTP boundary', () => {
+  async function serve(configured: boolean, response: unknown = exportResponseFixture) {
+    const app = createLeaderboardServer({ port: 0, corsOrigins: ['https://test.example'], exportConfigured: configured, exportClient: { createResponse: async () => response } });
+    await new Promise<void>(resolve => app.server.listen(0, resolve));
+    const address = app.server.address(); if (!address || typeof address === 'string') throw new Error('No port');
+    return { app, url: `http://127.0.0.1:${address.port}` };
+  }
+  it('reports off and returns 503 without configured AI', async () => {
+    const { app, url } = await serve(false);
+    try {
+      expect((await (await fetch(`${url}/api/health`)).json()).ai).toBe('off');
+      const res = await fetch(`${url}/api/export-bicep`, { method: 'POST', body: '{}' });
+      expect(res.status).toBe(503); expect(await res.json()).toEqual({ error: 'Export not configured' });
+    } finally { await app.stop(); }
+  });
+  it('handles 200/400/413 and preserves CORS without writing leaderboard entries', async () => {
+    const { app, url } = await serve(true);
+    try {
+      const res = await fetch(`${url}/api/export-bicep`, { method: 'POST', headers: { Origin: 'https://test.example' }, body: JSON.stringify(exportRequestFixture) });
+      expect(res.status).toBe(200); expect(res.headers.get('access-control-allow-origin')).toBe('https://test.example');
+      expect(await res.json()).toEqual(exportResponseFixture);
+      expect((await fetch(`${url}/api/export-bicep`, { method: 'POST', body: '{' })).status).toBe(400);
+      expect((await fetch(`${url}/api/export-bicep`, { method: 'POST', body: 'x'.repeat(20001) })).status).toBe(413);
+      expect(await app.storage.getTop(challengeHash, 10)).toEqual([]);
+    } finally { await app.stop(); }
+  });
+  it('rejects methods and foreign origins and allows preflight', async () => {
+    const { app, url } = await serve(true);
+    try {
+      for (const method of ['GET', 'PUT', 'DELETE']) { const res = await fetch(`${url}/api/export-bicep`, { method }); expect(res.status).toBe(405); expect(res.headers.get('allow')).toBe('POST, OPTIONS'); }
+      const denied = await fetch(`${url}/api/export-bicep`, { method: 'POST', headers: { Origin: 'https://evil.invalid' }, body: '{}' });
+      expect(denied.status).toBe(403); expect(denied.headers.get('access-control-allow-origin')).toBeNull();
+      const options = await fetch(`${url}/api/export-bicep`, { method: 'OPTIONS', headers: { Origin: 'https://test.example' } });
+      expect(options.status).toBe(204); expect(options.headers.get('access-control-allow-origin')).toBe('https://test.example');
+    } finally { await app.stop(); }
+  });
+  it('limits exports separately to five requests per minute', async () => {
+    const { app, url } = await serve(true);
+    try {
+      for (let n = 0; n < 5; n++) expect((await fetch(`${url}/api/export-bicep`, { method: 'POST', body: '{}' })).status).toBe(400);
+      expect((await fetch(`${url}/api/export-bicep`, { method: 'POST', body: '{}' })).status).toBe(429);
+      expect((await fetch(`${url}/api/leaderboard?challenge=${encodeURIComponent(challengeHash)}`)).status).toBe(200);
+    } finally { await app.stop(); }
+  });
+  it('returns a sanitized 502 for rejected model output', async () => {
+    const { app, url } = await serve(true, { ...exportResponseFixture, bicep: 'https://private.invalid' });
+    try { const res = await fetch(`${url}/api/export-bicep`, { method: 'POST', body: JSON.stringify(exportRequestFixture) }); expect(res.status).toBe(502); expect(await res.json()).toEqual({ error: 'AI output rejected' }); }
+    finally { await app.stop(); }
+  });
+  it('masks upstream network failure at the HTTP boundary without logging export details', async () => {
+    const app = createLeaderboardServer({ exportConfigured: true, exportClient: { createResponse: async () => { throw new Error('private upstream detail'); } } });
+    await new Promise<void>(resolve => app.server.listen(0, resolve));
+    const address = app.server.address(); if (!address || typeof address === 'string') throw new Error('No port');
+    try {
+      const response = await fetch(`http://127.0.0.1:${address.port}/api/export-bicep`, { method: 'POST', body: JSON.stringify(exportRequestFixture) });
+      expect(response.status).toBe(502); expect(await response.json()).toEqual({ error: 'AI service unavailable' });
+    } finally { await app.stop(); }
+  });
+});
 
 const qualifyingActions: Action[] = [
   { type: 'SCALE_OUT', time: 16, sequence: 0 },

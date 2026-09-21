@@ -3,6 +3,8 @@ import { InMemoryStorage, type LeaderboardStorage } from './storage';
 import { FileStorage } from './file-storage';
 import { handleGetTop, handleSubmit, ApiError } from './handler';
 import { RateLimiter } from './rate-limit';
+import { azureOpenAiConfigured, createResponse, type ExportClient } from './azure-openai';
+import { handleExportBicep } from './export-bicep';
 
 export interface ServerOptions {
   port?: number;
@@ -11,6 +13,8 @@ export interface ServerOptions {
   storageMode?: string;
   storagePath?: string;
   buildSha?: string;
+  exportClient?: ExportClient;
+  exportConfigured?: boolean;
 }
 
 export function createLeaderboardServer(options: ServerOptions = {}): {
@@ -29,10 +33,13 @@ export function createLeaderboardServer(options: ServerOptions = {}): {
   const storage: LeaderboardStorage = storageMode === 'file' ? new FileStorage(storagePath) : new InMemoryStorage();
   const submitLimiter = new RateLimiter(10, 60_000);
   const getLimiter = new RateLimiter(60, 60_000);
+  const exportLimiter = new RateLimiter(5, 60_000);
+  const aiConfigured = options.exportConfigured ?? azureOpenAiConfigured();
+  const exportClient = options.exportClient ?? { createResponse };
   let requestCount = 0;
   const startTime = Date.now();
 
-  const cleanupInterval = setInterval(() => { submitLimiter.cleanup(); getLimiter.cleanup(); }, 300_000);
+  const cleanupInterval = setInterval(() => { submitLimiter.cleanup(); getLimiter.cleanup(); exportLimiter.cleanup(); }, 300_000);
   cleanupInterval.unref();
 
   function clientIp(req: { headers: Record<string, string | string[] | undefined>; socket: { remoteAddress?: string } }): string {
@@ -65,6 +72,25 @@ export function createLeaderboardServer(options: ServerOptions = {}): {
     const ip = clientIp(req);
 
     try {
+      if (url.pathname === '/api/export-bicep') {
+        res.setHeader('Cache-Control', 'no-store');
+        if (req.method !== 'POST') {
+          res.writeHead(405, { 'Content-Type': 'application/json', Allow: 'POST, OPTIONS' });
+          res.end(JSON.stringify({ error: 'Method not allowed' })); return;
+        }
+        if (origin && !allowedOrigins.includes(origin)) throw new ApiError('Origin not allowed', 403);
+        if (!exportLimiter.check(ip)) throw new ApiError('Too many exports. Try again in a minute.', 429);
+        if (!aiConfigured) throw new ApiError('Export not configured', 503);
+        const chunks: Buffer[] = []; let size = 0;
+        for await (const chunk of req) {
+          const bytes = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
+          size += bytes.length;
+          if (size > 20_000) throw new ApiError('Request too large', 413);
+          chunks.push(bytes);
+        }
+        const result = await handleExportBicep(Buffer.concat(chunks).toString('utf8'), exportClient);
+        res.writeHead(200, { 'Content-Type': 'application/json' }); res.end(JSON.stringify(result)); return;
+      }
       if (req.method === 'GET' && url.pathname === '/api/leaderboard') {
         if (!getLimiter.check(ip)) { console.warn(`Rate limited GET from ${ip}`); res.writeHead(429, { 'Content-Type': 'application/json' }); res.end(JSON.stringify({ error: 'Too many requests. Try again shortly.' })); return; }
         const challengeHash = url.searchParams.get('challenge');
@@ -94,6 +120,7 @@ export function createLeaderboardServer(options: ServerOptions = {}): {
       if (req.method === 'GET' && url.pathname === '/api/health') {
         const health: Record<string, unknown> = {
           status: 'ok',
+          ai: aiConfigured ? 'configured' : 'off',
           storage: storageMode,
           requests: requestCount,
           uptimeSeconds: Math.floor((Date.now() - startTime) / 1000),
@@ -117,7 +144,7 @@ export function createLeaderboardServer(options: ServerOptions = {}): {
         res.writeHead(err.statusCode, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: err.message }));
       } else {
-        console.error('Unexpected error:', err);
+        if (url.pathname !== '/api/export-bicep') console.error('Unexpected error:', err);
         res.writeHead(500, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: 'Internal server error' }));
       }

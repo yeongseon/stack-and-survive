@@ -1,0 +1,16 @@
+.export-azure { min-width: 0; max-width: 100%; margin: 16px 32px; padding: 16px; border: 1px solid #557580; border-radius: 8px; background: #102835; color: #e8f3f2; box-sizing: border-box; overflow-wrap: anywhere; }
+.export-azure p, .export-azure li { font-size: 13px; line-height: 1.5; }
+.export-azure h3 { font-size: 18px; }
+.export-azure button { min-height: 44px; max-width: 100%; white-space: normal; }
+.export-azure button span { display: block; font-size: 12px; }
+.export-azure pre { box-sizing: border-box; min-width: 0; max-width: 100%; max-height: 280px; padding: 12px; overflow: auto; white-space: pre; overflow-wrap: normal; background: #071a27; font-size: 12px; line-height: 1.5; }
+.export-azure summary { cursor: pointer; padding: 12px 0; min-height: 24px; }
+.export-azure-actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+.export-azure-note { border-top: 1px solid #557580; padding-top: 12px; color: #c4d8df; }
+.azure-learn { min-width: 0; margin: 16px 32px; padding: 16px; border: 1px solid #557580; border-radius: 8px; background: #102835; color: #e8f3f2; overflow-wrap: anywhere; }
+.azure-learn p, .azure-learn li, .azure-learn a, .export-azure a { font-size: 13px; line-height: 1.5; }
+.azure-learn a, .export-azure a { display: inline-block; color: #b7e7f3; text-decoration: underline; padding: 8px 0; }
+.azure-learn a span { font-size: 11px; }
+.azure-learn a:focus-visible, .export-azure a:focus-visible { outline: 2px solid #f0ce96; outline-offset: 3px; }
+@media (max-width: 600px) { .export-azure { margin: 12px; padding: 12px; } }
+@media (max-width: 600px) { .azure-learn { margin: 12px; padding: 12px; } }

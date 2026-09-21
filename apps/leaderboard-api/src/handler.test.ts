@@ -1,5 +1,5 @@
 import { describe, expect, it, beforeEach } from 'vitest';
-import { handleSubmit, handleGetTop, ApiError } from './handler';
+import { handleSubmit, handleGetTop } from './handler';
 import { InMemoryStorage } from './storage';
 import { blackFridayChallenge } from '@stack-and-survive/scenarios/challenge';
 import { replayRun } from '@stack-and-survive/simulation/replay';
