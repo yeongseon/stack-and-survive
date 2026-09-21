@@ -39,4 +39,26 @@ describe('Azure Responses fetch adapter', () => {
     expect(off.azureOpenAiConfigured()).toBe(false); fetch.mockClear();
     await expect(off.createResponse(request)).rejects.toMatchObject({ statusCode: 503 }); expect(fetch).not.toHaveBeenCalled();
   });
+  it('uses strict serial tools and preserves only stateless continuation without reasoning text', async () => {
+    const client = await configured();
+    const output = [
+      { type: 'reasoning', summary: [{ text: 'never expose this' }], encrypted_content: 'opaque-provider-context' },
+      { type: 'function_call', name: 'lookup_mapping', call_id: 'call_1', arguments: '{}' },
+    ];
+    const fetch = vi.fn().mockResolvedValue(new Response(JSON.stringify({ status: 'completed', output })));
+    vi.stubGlobal('fetch', fetch);
+    const tools = [{ type: 'function', name: 'lookup_mapping', strict: true }];
+    const result = await client.createToolResponse({ instructions: 'Agent', input: [], tools, maxOutputTokens: 3500, timeoutMs: 12000 });
+    expect(result.calls).toHaveLength(1); expect(JSON.stringify(result)).not.toContain('never expose this');
+    expect(result.continuation[0]).toEqual({ type: 'reasoning', summary: [], encrypted_content: 'opaque-provider-context' });
+    expect(JSON.parse(fetch.mock.calls[0][1].body)).toMatchObject({ store: false, tools, tool_choice: 'required', parallel_tool_calls: false, include: ['reasoning.encrypted_content'] });
+  });
+  it.each([
+    [{ type: 'function_call', name: 'x', call_id: 'a', arguments: '{}' }, { type: 'function_call', name: 'x', call_id: 'b', arguments: '{}' }],
+    [{ type: 'message', content: [{ type: 'output_text', text: 'self-certified success' }] }],
+    [{ type: 'reasoning', summary: [] }],
+  ])('rejects parallel calls, self-certification or missing stateless context', async (...items) => {
+    const client = await configured(); vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(JSON.stringify({ status: 'completed', output: items }))));
+    await expect(client.createToolResponse({ instructions: 'Agent', input: [], tools: [], maxOutputTokens: 3500, timeoutMs: 12000 })).rejects.toMatchObject({ statusCode: 502 });
+  });
 });

@@ -10,6 +10,8 @@ Version: 1.3. Based on main `faf5444` (runtime `c68ec0c`) plus draft Export PR #
 
 ### AI boundary
 
+The #322 follow-up adds a bounded tool loop, not autonomous gameplay. Azure Responses selects mapping or validation; failed real compiler/property results can prompt a revised candidate, at most twice. Server-side exact-artifact completion and browser SHA-256 verification precede downloads. Only actual tool names/outcomes are shown. The workflow remains stateless and independent of simulation, history and replay; [Architecture Export Agent](ARCHITECTURE_EXPORT_AGENT.md) owns limits, compiler isolation requirements and pending live-model evidence.
+
 `azure-learn.ts` owns the fixed HTTPS Microsoft Learn destinations. The result lists only represented final resources plus Bicep guidance, independently of API configuration; generated resource explanations reuse the same allowlist. Links open with `noopener noreferrer`, with no click telemetry or AI-generated URL fields.
 
 Export to Azure is an explicitly requested, post-run operation. Its input is bounded run numbers, final resource configuration and allowlisted engine strings/accepted action tokens; no nickname, prompt free text or per-tick stream is sent. The server validates all HTTP fields (even engine-derived values are untrusted over HTTP), uses Azure Responses Structured Outputs with `store:false`, then validates the returned JSON again. The browser also validates the response and renders it as escaped text. No AI output is executed or fed into runtime, score, replay, history or leaderboard calculations.

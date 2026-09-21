@@ -3,8 +3,10 @@ import { InMemoryStorage, type LeaderboardStorage } from './storage';
 import { FileStorage } from './file-storage';
 import { handleGetTop, handleSubmit, ApiError } from './handler';
 import { RateLimiter } from './rate-limit';
-import { azureOpenAiConfigured, createResponse, type ExportClient } from './azure-openai';
+import { azureOpenAiConfigured, createResponse, createToolResponse, type ExportClient, type AgentClient } from './azure-openai';
 import { handleExportBicep } from './export-bicep';
+import { AgentError, handleAgentExport } from './export-agent';
+import { compilerConfigured, localCompiler, type BicepCompiler } from './bicep-compiler';
 
 export interface ServerOptions {
   port?: number;
@@ -15,6 +17,8 @@ export interface ServerOptions {
   buildSha?: string;
   exportClient?: ExportClient;
   exportConfigured?: boolean;
+  agentClient?: AgentClient;
+  agentCompiler?: BicepCompiler;
 }
 
 export function createLeaderboardServer(options: ServerOptions = {}): {
@@ -36,6 +40,9 @@ export function createLeaderboardServer(options: ServerOptions = {}): {
   const exportLimiter = new RateLimiter(5, 60_000);
   const aiConfigured = options.exportConfigured ?? azureOpenAiConfigured();
   const exportClient = options.exportClient ?? { createResponse };
+  const agentClient = options.agentClient ?? { createToolResponse };
+  const compiler = options.agentCompiler ?? localCompiler();
+  let activeAgents = 0;
   let requestCount = 0;
   const startTime = Date.now();
 
@@ -72,7 +79,8 @@ export function createLeaderboardServer(options: ServerOptions = {}): {
     const ip = clientIp(req);
 
     try {
-      if (url.pathname === '/api/export-bicep') {
+      if (url.pathname === '/api/export-bicep' || url.pathname === '/api/export-agent') {
+        const agent = url.pathname === '/api/export-agent';
         res.setHeader('Cache-Control', 'no-store');
         if (req.method !== 'POST') {
           res.writeHead(405, { 'Content-Type': 'application/json', Allow: 'POST, OPTIONS' });
@@ -81,6 +89,8 @@ export function createLeaderboardServer(options: ServerOptions = {}): {
         if (origin && !allowedOrigins.includes(origin)) throw new ApiError('Origin not allowed', 403);
         if (!exportLimiter.check(ip)) throw new ApiError('Too many exports. Try again in a minute.', 429);
         if (!aiConfigured) throw new ApiError('Export not configured', 503);
+        if (agent && !options.agentCompiler && !await compilerConfigured()) throw new ApiError('Compiler not configured', 503);
+        if (agent && activeAgents >= 2) throw new ApiError('Agent busy. Try again shortly.', 429);
         const chunks: Buffer[] = []; let size = 0;
         for await (const chunk of req) {
           const bytes = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
@@ -88,7 +98,13 @@ export function createLeaderboardServer(options: ServerOptions = {}): {
           if (size > 20_000) throw new ApiError('Request too large', 413);
           chunks.push(bytes);
         }
-        const result = await handleExportBicep(Buffer.concat(chunks).toString('utf8'), exportClient);
+        const body = Buffer.concat(chunks).toString('utf8');
+        let result;
+        if (agent) {
+          if (activeAgents >= 2) throw new ApiError('Agent busy. Try again shortly.', 429);
+          activeAgents++;
+          try { result = await handleAgentExport(body, agentClient, compiler); } finally { activeAgents--; }
+        } else result = await handleExportBicep(body, exportClient);
         res.writeHead(200, { 'Content-Type': 'application/json' }); res.end(JSON.stringify(result)); return;
       }
       if (req.method === 'GET' && url.pathname === '/api/leaderboard') {
@@ -121,6 +137,7 @@ export function createLeaderboardServer(options: ServerOptions = {}): {
         const health: Record<string, unknown> = {
           status: 'ok',
           ai: aiConfigured ? 'configured' : 'off',
+          agent: aiConfigured && (options.agentCompiler || await compilerConfigured()) ? 'configured' : 'off',
           storage: storageMode,
           requests: requestCount,
           uptimeSeconds: Math.floor((Date.now() - startTime) / 1000),
@@ -142,9 +159,9 @@ export function createLeaderboardServer(options: ServerOptions = {}): {
     } catch (err) {
       if (err instanceof ApiError) {
         res.writeHead(err.statusCode, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ error: err.message }));
+        res.end(JSON.stringify({ error: err.message, ...(err instanceof AgentError ? { steps: err.steps } : {}) }));
       } else {
-        if (url.pathname !== '/api/export-bicep') console.error('Unexpected error:', err);
+        if (url.pathname !== '/api/export-bicep' && url.pathname !== '/api/export-agent') console.error('Unexpected error:', err);
         res.writeHead(500, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: 'Internal server error' }));
       }

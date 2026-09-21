@@ -39,6 +39,8 @@ No tsx required in production.
 
 ### Optional Export to Azure proxy
 
+Agent follow-up #322 adds `/api/export-agent` and `BICEP_CLI_PATH` (approved absolute compiler executable; default empty/off). Health `agent: configured|off` reflects configuration only, not a successful upstream/compile probe. The UI calls this bounded agent endpoint; the original single-shot endpoint remains for compatibility. Both share 5/IP/min; agent execution additionally caps concurrent workflows at two/process. Model/compiler/total limits and deployment-isolation requirements are in [Architecture Export Agent](ARCHITECTURE_EXPORT_AGENT.md). No automatic compiler download or App Service setup is included or authorized.
+
 Implementation checkpoint (#315): shell AI credentials are absent; real model output from a played run has **not** been verified. Only mocked responses and an explicitly hand-authored Bicep fixture have been tested/compiled. This section is setup guidance, not evidence of a configured production export service.
 
 An authorized operator must configure the first three `AZURE_OPENAI_*` values in App Service → Configuration → Application settings; leave the fourth empty for v1 GA unless the chosen service explicitly supports that override. These settings are not configured by this change or by CI. The export endpoint returns **503 Export not configured** until configured; `/api/health` reports `ai: off` or `configured` (configuration presence, not an upstream connectivity test).
@@ -92,7 +94,9 @@ docker run -p 3001:3001 \
   leaderboard-api
 ```
 
-## Azure App Service deployment (configured production, compatibility blocked)
+## Existing Azure App Service deployment (compatibility blocked; not an agent deployment)
+
+The agent follow-up in #322 and its base PR #316 are unmerged development work. The older deployment example below is not proof that either AI endpoint or an approved compiler is running. Read main's current release/MCAPS status before any operational action; no live AI/agent verification has occurred in this branch.
 
 Current production deployment:
 

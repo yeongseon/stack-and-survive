@@ -7,6 +7,8 @@
 .export-azure summary { cursor: pointer; padding: 12px 0; min-height: 24px; }
 .export-azure-actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
 .export-azure-note { border-top: 1px solid #557580; padding-top: 12px; color: #c4d8df; }
+.export-agent-trace { margin: 12px 0; padding: 12px; border-left: 3px solid #83ced0; background: #0a1f2c; }
+.export-agent-trace code { overflow-wrap: anywhere; font-size: 11px; }
 .azure-learn { min-width: 0; margin: 16px 32px; padding: 16px; border: 1px solid #557580; border-radius: 8px; background: #102835; color: #e8f3f2; overflow-wrap: anywhere; }
 .azure-learn p, .azure-learn li, .azure-learn a, .export-azure a { font-size: 13px; line-height: 1.5; }
 .azure-learn a, .export-azure a { display: inline-block; color: #b7e7f3; text-decoration: underline; padding: 8px 0; }

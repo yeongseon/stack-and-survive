@@ -26,6 +26,8 @@ The global leaderboard accepts player action schedules, replays them through the
 
 ### AI export endpoint
 
+Agent follow-up adds `/api/export-agent` on the same quota with strict allowlisted function tools and two concurrent workflows/process. An exact-byte hash binds the returned artifact to completed compilation/property checks, not to a trusted signature. The compiler is a fixed executable in a temporary directory, with no inherited Azure secrets, no restore, denied file/module/extension syntax, timeout/output/.NET heap limits and cleanup. This is not an OS sandbox: operator egress/low-privilege isolation and compiler patching are required before public enablement. See [full limits and residual risks](ARCHITECTURE_EXPORT_AGENT.md); compilation is never claimed as deployment/security approval.
+
 `POST /api/export-bicep` is a post-run text-generation boundary. Export metrics are not replay-verified and never update scores/records.
 
 | Threat | Mitigation | Residual risk |
