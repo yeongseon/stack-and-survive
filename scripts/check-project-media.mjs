@@ -21,14 +21,15 @@ if (manifest.narrationSource) {
   assert.equal(source.rate, '+0%'); assert.equal(source.pitch, '+0Hz');
   assert.equal(source.storySha256, createHash('sha256').update(await readFile(`${root}showcase/story.json`)).digest('hex'));
   assert.equal(source.slides.length, 8);
-  for (const [index, slide] of manifest.segments.entries()) {
+  for (const [index, slide] of manifest.segments.filter(segment => segment.narration).entries()) {
     assert.equal(source.slides[index].id, slide.id);
     assert.equal(source.slides[index].textSha256, createHash('sha256').update(slide.narration).digest('hex'));
   }
   assert.equal(manifest.audioSample.file, 'narration-sample.mp3');
   assert.equal(createHash('sha256').update(await readFile(`${media}${manifest.audioSample.file}`)).digest('hex'), manifest.audioSample.sha256);
-  assert.equal(manifest.audioSample.text, manifest.segments[0].narration);
-  assert.ok(manifest.audioSample.duration > 0 && manifest.audioSample.duration <= manifest.segments[0].duration);
+  const firstSpoken = manifest.segments.find(segment => segment.narration);
+  assert.equal(manifest.audioSample.text, firstSpoken.narration);
+  assert.ok(manifest.audioSample.duration > 0 && manifest.audioSample.duration <= firstSpoken.duration);
 }
 const narrated = manifest.narrated;
 assert.ok(probe.streams.some(stream => stream.codec_type === 'subtitle'));
@@ -41,9 +42,13 @@ for (const segment of manifest.segments) {
   assert.equal(segment.start, elapsed); elapsed += segment.duration;
   if (narrated) assert.ok(segment.voiceSeconds <= segment.duration - .15);
 }
-assert.equal(elapsed, 120); assert.equal(manifest.segments.length, 8);
-assert.match(manifest.segments[0].narration, /When I first started learning Azure/);
-assert.match(manifest.segments[7].narration, /not a replacement for Microsoft Learn/);
+assert.equal(elapsed, 120); assert.equal(manifest.segments.length, 9);
+assert.equal(manifest.segments[0].id, 'cover'); assert.equal(manifest.segments[0].duration, 2);
+assert.equal(manifest.segments[0].title, 'Stack & Survive'); assert.equal(manifest.segments[0].narration, '');
+if (narrated) assert.equal(manifest.segments[0].voiceSeconds, 0);
+assert.equal(manifest.segments[1].start, 2); assert.equal(manifest.segments[1].duration, 14);
+assert.match(manifest.segments[1].narration, /When I first started learning Azure/);
+assert.match(manifest.segments[8].narration, /not a replacement for Microsoft Learn/);
 const forbidden = /LOCAL PRODUCTION CAPTURE|automated capture|EDIT:|NOT A LIVE MODEL DEMO|source [a-f0-9]{7}|revolutionary|next-generation|powered by AI/i;
 for (const segment of manifest.segments) {
   assert.equal(forbidden.test(segment.visibleText), false);
@@ -114,5 +119,5 @@ try {
   await images.screenshot({ path: `${output}/all-current-images.png`, fullPage: true });
   await images.close();
   assert.deepEqual(errors, []);
-  console.log(`PASS personal story: 120s/3000frames, ${narrated ? 'AAC narration + subtitles' : 'silent'}, full decode, clean audience wording, deck/image hashes, browser playback + 8 slide seeks`);
+  console.log(`PASS title + personal story: 120s/3000frames, ${narrated ? 'AAC narration + subtitles' : 'silent'}, full decode, clean wording, hashes, browser playback + 9 page seeks`);
 } finally { try { await browser.close(); } finally { await new Promise(resolve => server.close(resolve)); } }

@@ -11,14 +11,14 @@ function show(index, focus = false) {
   previous.disabled = current === 0;
   next.disabled = current === slides.length - 1;
   position.textContent = `${current + 1} / ${slides.length}`;
-  history.replaceState(null, '', `#slide-${current + 1}`);
+  history.replaceState(null, '', `#${slides[current].id}`);
   if (focus) slides[current].querySelector('h1,h2').focus({ preventScroll: true });
   window.scrollTo(0, 0);
 }
 
 function fromHash() {
-  const match = location.hash.match(/^#slide-(\d+)$/);
-  show(match ? Number(match[1]) - 1 : 0);
+  const index = slides.findIndex(slide => `#${slide.id}` === location.hash);
+  show(index < 0 ? 0 : index);
 }
 
 previous.addEventListener('click', () => show(current - 1, true));

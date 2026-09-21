@@ -6,19 +6,19 @@
   "sourceFiles": [
     {
       "file": "showcase/slides.html",
-      "sha256": "11a25f50c539b0e748042c360d614bdda85f2b63242fc0825eecf10d8d2ec408"
+      "sha256": "da45faff3ad9638550cc3b227a653721bb63e518e7cb62fe6f6566754954c556"
     },
     {
       "file": "showcase/slides.css",
-      "sha256": "8a443131cdaeddb1ba4945733d28b08fca3e37fba97ad9fab604bba0ae18e28a"
+      "sha256": "20744d79918839a4ed140256b5d3dc48840240f85388cbd3cd51deff91692576"
     },
     {
       "file": "showcase/slides.js",
-      "sha256": "f6d3da2127b37cd7a37748a4f873a81c8379ba9a41c510b0b31679c6887b2ecd"
+      "sha256": "b38271b9afb7a8460d0e989866c91e3a1728814ac96d15afd147dc9d64f4a3d5"
     },
     {
       "file": "showcase/story.json",
-      "sha256": "df3014191274687337373f3efbb910760205493121641ca5d981ca35894a52c9"
+      "sha256": "28abac4c9840dabdb39bab9bdee7621d421988f3840cf4969f08ee4e2da2aa79"
     }
   ],
   "usedImages": [
@@ -43,13 +43,22 @@
       "sha256": "96cea3fafeaac2c463844bab1ae7ed08b7d04fcfebd6b2f79e3212508c17441c"
     }
   ],
-  "mode": "Eight static annotated slides built from actual screenshots. Not live gameplay footage. No model invocation or public score submission.",
+  "mode": "A two-second silent project-title cover, followed by eight static annotated story slides. Not live gameplay footage. No model invocation or public score submission.",
   "segments": [
     {
-      "id": "slide-1",
-      "duration": 16,
-      "narration": "When I first started learning Azure, I mainly used Microsoft Learn and the documentation. They gave me useful concepts. But as a beginner, I found it harder to connect those concepts together.",
+      "id": "cover",
+      "duration": 2,
+      "narration": "",
       "start": 0,
+      "title": "Stack & Survive",
+      "visibleText": "Stack & Survive\n\nA small game about learning Azure.",
+      "voiceSeconds": 0
+    },
+    {
+      "id": "slide-1",
+      "duration": 14,
+      "narration": "When I first started learning Azure, I mainly used Microsoft Learn and the documentation. They gave me useful concepts. But as a beginner, I found it harder to connect those concepts together.",
+      "start": 2,
       "title": "Learning Azure\nfor the first time\nfelt overwhelming.",
       "visibleText": "Learning Azure\nfor the first time\nfelt overwhelming.\n\nMicrosoft Learn and documentation\ngave me the concepts.\n\nConnecting them together\nwas harder.\n\nWhat if traffic doubles?\n\nApp Service\n→\nAzure SQL\n\nscale here? ↖\n\nWould cache help?\nWhat happens to cost?",
       "voiceSeconds": 12.696
@@ -119,8 +128,8 @@
     }
   ],
   "file": "project-introduction-120s.mp4",
-  "sha256": "277a7f587bd49ea42eabba8baf51637439d4d2786277debce9aa428ced608237",
-  "bytes": 2809201,
+  "sha256": "dd23c0e2bcf588b7023e3d730a58167e77dd7bf8ef2706b418c212e853dbc1f8",
+  "bytes": 2823002,
   "duration": 120,
   "width": 1440,
   "height": 900,
@@ -134,7 +143,7 @@
     "rate": "+0%",
     "pitch": "+0Hz",
     "tool": "edge-tts 7.2.7",
-    "storySha256": "df3014191274687337373f3efbb910760205493121641ca5d981ca35894a52c9",
+    "storySha256": "28abac4c9840dabdb39bab9bdee7621d421988f3840cf4969f08ee4e2da2aa79",
     "createdAt": "2026-09-21T13:19:23.580Z",
     "disclosure": "Stock neural synthetic voice; not the developer, not voice cloning. Only the public narration text is sent to the provider. Human listening, usage terms and event review remain necessary.",
     "slides": [
@@ -186,7 +195,10 @@
         "textSha256": "b933af623e719f500e741c670ccc58a063848842f93e8f7d8e76780257bde056",
         "wavSha256": "3bf1cb54a68e45395dada4421dd8c411e715936c6a3e7b7e7906c7f0ec70b99e"
       }
-    ]
+    ],
+    "previousStorySha256": "df3014191274687337373f3efbb910760205493121641ca5d981ca35894a52c9",
+    "retimedAt": "2026-09-21T15:25:12.947Z",
+    "reuse": "Exact approved WAV bytes and narration words preserved; only slide allocation/cover changed. No provider request or audio tempo change."
   },
   "narrated": true,
   "captions": "Selectable English subtitles and sidecar SRT. Sentence timing is approximate; human listening and alignment review required.",
