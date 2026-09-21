@@ -1,5 +1,7 @@
 # Two-minute edited demo
 
+This describes the historical overview format, not the only available demo. For current scaling/compact SQL use the [53.4-second continuous tradeoff clip and narration](../DEMO_VIDEO.md#current-rules-04-the-bottleneck-tradeoff). [Current status](../CURRENT_STATUS.md) owns release/API evidence. Draft #316 Export/Learn is not a live demo beat until merged, configured and actually verified.
+
 Record from the actual release candidate and label edits. A complete operation lasts180seconds plus introduction/countdown; it cannot truthfully fit into a continuous two-minute recording. `capture:submission` is a real-time scripted capture, not a participant or speed mode.
 
 | Time | Picture | Suggested narration |

@@ -1,6 +1,6 @@
 # Infrastructure visual-state contract
 
-Issue #131 defines the presentation contract before art refinement (#125), traffic/VFX (#126), pads (#127), local cards (#128), and integrated visual acceptance (#129). It does not add gameplay actions or change simulation truth. The current #125 art draft is preserved separately until this prerequisite passes review.
+This contract originated in delivered #131 and now covers merged V3/rules 0.4 at `c68ec0c`. Historical art prerequisites are complete. Rendering remains read-only: [Infrastructure Scaling](INFRASTRUCTURE_SCALING.md) owns supported actions and active-tier values.
 
 ## Sources and dimensions
 
@@ -12,7 +12,7 @@ Use runtime resources for installation and physical capacity, accepted timers fo
 
 | Resource/state | Silhouette | Motion and glow | Packet/local cue | Action affordance |
 |---|---|---|---|---|
-| App active bay | One solid server per actual instance | Processing light when traffic exists | Work belongs only to active capacity | No scale-in control |
+| App active bay | One solid server per actual instance | Processing light when traffic exists | Work belongs only to active capacity | App scaling offers scale-in/out and tier changes when eligible |
 | App next empty bay | Flat empty socket, no server texture | Quiet outlined socket | No processing | Next expansion + |
 | App later bays | Empty subdued sockets | No activity | No processing | Unavailable until preceding expansion |
 | App queued | Same empty socket | Pending-command cue, no build completion | No added throughput | Prevent duplicate request |
@@ -26,9 +26,9 @@ Use runtime resources for installation and physical capacity, accepted timers fo
 | Edge active | Solid pass-through gateway | Filtering cue only for actual traffic | Actual filtered bots stop; legitimate false positives stay separately identifiable | Boost when permitted |
 | Edge boost queued/scheduled | Same gateway | Command/countdown cue, not strengthened filtering | Retain actual previous filtering | No duplicate boost |
 | Edge boost active | Same gateway, brighter scan | Distinct non-combat mode cue | Stronger rejection only within actual snapshot window and nonzero filtered traffic | Once-only boost becomes spent after expiry |
-| SQL normal | Fixed solid data core | Cool cyan | Actual reads/writes served | Inspect; no SQL scaling |
+| SQL normal | Compact Tier 1 core; 58/78/100% size at active tiers 1/2/3 | Cool cyan | Actual reads/writes served; separate active replica art | SQL scaling offers tiers and read replicas |
 | SQL read pressure | Same core with read-side warning | Orange or red according to existing utilization | Read-specific ingress mass/loss cue | Explain Cache effect without claiming write relief |
-| SQL write pressure | Same core with distinct write-side warning | Orange/red plus non-color marker | Direct App→SQL write loss cue | No invented Cache fix or SQL upgrade |
+| SQL write pressure | Same core with distinct write-side warning | Orange/red plus non-color marker | Direct App→SQL write loss cue | SQL tier can increase writes; Cache/read replicas cannot |
 | Internet normal | Demand source | Bounded offered-demand density | Offered classes remain distinguishable | Intake policy action |
 | Intake queued/pending | Same source | Policy transition cue only | No early rate rejection | Toggle disabled while pending/cooldown |
 | Intake limited | Source plus limiter cue | Static mode marker, not fabricated throughput | Actual rejected bots/customers separated; density still distinguishes offered from admitted | Restore intake when allowed |
@@ -47,7 +47,7 @@ Pause/terminal retains actual lifecycle and last measured pressure. It must not 
 
 Every reference screenshot must name the actual architecture, controls and tick. In particular, App1 + no Cache/Edge + 220 RPS (176 Browse/44 Order) overloads App, not SQL: the App limits downstream throughput. Do not paint SQL critical for that fixture. Use a verified higher-App fixture for real SQL pressure.
 
-Solid App server count must equal active instance count; empty sockets must not be faint complete servers. Absent service means no building, and installed service means no Add pad. Do not imply real FIFO depth, delayed success of dropped requests, spendable revenue, runtime scale-in or SQL scaling.
+Solid App count equals active instances; empty sockets are not faint complete servers. Absent service means no building, installed service no Add pad. Scale-in removes only after the accepted delay; tiers/replicas change appearance and capacity only at activation. Do not imply real FIFO depth, later success of dropped requests or spending all revenue. SQL sprites, lighting, DOM anchors, hit bounds and replica positions share the active-tier scale; camera framing remains stable.
 
 This contract and initial App-bay integration were delivered in #131. Subsequent rendering work added pooled endpoint cues, intake density, diegetic controls and larger physical App bays. #145 completes procedural resource anatomy around the existing original textures: separate read/write SQL banks, active-only Cache banks, and Edge request dots / activation clock / active boost bars. `facilityStateKey` invalidates structural art when these independent states change, even if maximum utilization is unchanged. Diagnostics record the actual draw result; reduced-motion changes invalidate diagnostic snapshots separately.
 
@@ -55,7 +55,7 @@ The before/during/after browser sequence exercises App1–4, Cache/Edge deployme
 
 ## Production V3 supersession
 
-The preceding V2 paragraph describes historical QA coverage. Production V3 shipped in #210 under an explicit owner-approved expanded demo inventory: 61 original PNGs with paired sources, separate from unchanged Microsoft assets. Runtime scale-in #132 was subsequently retired as not planned, not implemented.
+The preceding V2 paragraph describes historical QA coverage and the former #132 proposal. Production V3 shipped in #210 with 61 original PNGs and sources, separate from unchanged Microsoft assets. #132 was retired; later separate #305 implemented rules 0.4 scale-in, tiers and replicas. Do not use old V2 restrictions as current action limits.
 
 V3 construction uses the actual next bay and remaining/due ticks for progress strips; a queued request alone does not create a server or advance progress. Activation feedback occurs at the completed bay and does not replay on repeated snapshots. V3 pressure uses localized warning layers and heat/chevrons rather than stacking the old generic ring effects. SQL read-only pressure never illuminates its write warning; combined critical requires both sides over capacity. Cache hit and Edge filter layers require the actual corresponding processed outcome and stop when paused. Reduced-motion preserves static meaning. No authoritative values, current delays or action contracts changed.
 

@@ -4,9 +4,9 @@
 
 The existing shared runtime now supports deterministic App shrink/tier changes, SQL tier changes and SQL read replicas; [details](INFRASTRUCTURE_SCALING.md). Optional additive resource tier/replica fields survive parse/replay/history. One strict action parser is shared by runtime validation, saved action parsing, pending-submission validation and backend submission. Current challenge identity is version2/rules0.4; old rules retain distinct exports and storage keys.
 
-Rendering reads pending changes and active resource state only. Optional tier textures are discovered through the existing V3 inventory and fall back to required base textures. Computer3 owns image sources/exports; Computer1 does not modify `art/**` or public assets. The backend replay build must be updated before releasing the new frontend to avoid unsupported-challenge responses from a0.3 API.
+Rendering reads pending changes and active resource state only. Optional tier textures use the V3 inventory and fall back to required base textures. `activeBuildingScale` applies SQL's active-tier 58/78/100% size consistently to sprites, anchors, lighting and hit bounds. Source supports 0.4 replay, but the configured production API still rejects current hashes (#306); source support is not deployment proof.
 
-Version: 1.1. Browser-local TypeScript/React/Phaser, with an owner-authorized static GitHub Pages demo. No game-state backend. The optional API hosts leaderboard verification and a stateless Azure OpenAI proxy for Export to Azure; no player telemetry is stored by the export proxy. Public source and demo hosting do not imply general release rights approval.
+Version: 1.3. Based on main `faf5444` (runtime `c68ec0c`) plus draft Export PR #316. Browser-local game state remains authoritative; the optional Node API replays leaderboard submissions, not game ticks. This branch adds a stateless post-run AI proxy but is not a deployed feature. [Current status](CURRENT_STATUS.md) records the release boundary, incompatible deployed API and unresolved verification.
 
 ### AI boundary
 
@@ -17,6 +17,7 @@ The #322 follow-up adds a bounded tool loop, not autonomous gameplay. Azure Resp
 Export to Azure is an explicitly requested, post-run operation. Its input is bounded run numbers, final resource configuration and allowlisted engine strings/accepted action tokens; no nickname, prompt free text or per-tick stream is sent. The server validates all HTTP fields (even engine-derived values are untrusted over HTTP), uses Azure Responses Structured Outputs with `store:false`, then validates the returned JSON again. The browser also validates the response and renders it as escaped text. No AI output is executed or fed into runtime, score, replay, history or leaderboard calculations.
 
 The only browser setting is the existing public `VITE_LEADERBOARD_API` origin. Azure OpenAI origin/key/deployment remain on the API. Requests are capped at 20 KB and 5/IP/min, with 25-second upstream timeout and sanitized failures; the panel fails independently of the result. Reasons cite supplied numeric evidence, but lexical checking cannot prove factual grounding. Bicep is a reviewed candidate scaffold, not proof of deployability or equivalence between gameplay tiers and Azure performance. Compilation, region/SKU availability, identity, networking, app code and integration remain the operator's responsibility. No telemetry or model conversation is stored by this implementation; provider abuse-monitoring/retention policy is separate from `store:false`.
+Real model output is still unverified because AI resources/settings were absent. Offline compiled fixtures and green branch CI do not prove a live service. Keep AI Coach separate. `/api/export-bicep` and `ai` health fields are implemented on this branch, not in the deployed runtime until an authorized rollout.
 
 ## Architecture
 
@@ -60,7 +61,7 @@ Normal player disables architecture persistence/manual edits. The QA shell is a 
 
 `scenarios/challenge` (#153) owns immutable validated conditions, deterministic canonical identity and survive/availability objective evaluation. `createController` accepts an optional fourth challenge input (default Black Friday); its View and terminal result retain that challenge. Controller simulation calls, player HUD/pressure/guide, events and result labels use the injected workload. Terminal results additionally retain the actual initial architecture and ordered action outcomes, so replay does not start from the upgraded final architecture. Comparisons reject unlike complete challenge conditions and mixed legacy/new identity.
 
-`ChallengeApplication` offers the approved three-objective ladder with separate validated local completion progress. `useRunHistory` records terminal results once and handles storage failures without interrupting gameplay. `run-history.ts` retains 20 recent attempts plus independent eligible bests, validates full provenance by engine replay at load/write boundaries, and compares only exact challenge conditions. Resetting records does not reset progression or other settings. See [Run history](RUN_HISTORY.md); profiles and richer replay results remain #157/#158.
+`ChallengeApplication` offers the three-objective ladder with separate validated local progress. `useRunHistory` records terminal results once and handles storage failure without interrupting play. `run-history.ts` retains 20 attempts plus eligible bests, validates provenance by replay and compares exact conditions, using balance-0.4 keys. Resetting records does not reset progression/settings. Descriptive profiles and richer result/comparison UI (#157/#158) are implemented; see [Run history](RUN_HISTORY.md) and [Operation report](OPERATION_REPORT.md).
 
 ## Renderer and coordinates
 
@@ -100,6 +101,6 @@ Quality CI checks templates/static/unit/build, both browser modes and the projec
 
 ## Security and deferred architecture
 
-No secrets, customer telemetry or private platform information belongs in client code. The public repo has licensing/security review tracked in #164; public visibility is not policy clearance. No game-state backend: GitHub Pages serves the approved static demo and the optional API hosts leaderboard verification and a stateless Azure OpenAI export proxy. Export does not store player telemetry or create Azure resources; configuring that service still requires separate authorization.
+No secrets, customer telemetry or private platform information belongs in client code. #164 tracks rights; public visibility is not clearance. Pages serves the approved frontend; the optional API handles replay verification and persistent ranking, not game state. Current backend compatibility is blocked (#306). This branch's optional stateless export stores no player telemetry and creates no Azure resources; cloud configuration still needs separate authorization.
 
-Protocol/observability packages, Azure Static Web Apps/Functions/Container Apps/Redis/Cosmos and online features are future options requiring concrete need and approval. Do not provision services to make a cloud-themed game appear more cloud-native.
+Additional protocol/observability packages and alternate hosting/storage require concrete need and approval. The existing leaderboard is not a future-only feature. Export/AI remains draft-only as described above; no cloud provisioning follows from a UI or documentation change.

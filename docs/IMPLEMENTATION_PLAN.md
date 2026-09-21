@@ -1,6 +1,6 @@
 # Implementation plan
 
-Version: 1.2. Current execution plan, replacing [the archived MVP sequence](archive/IMPLEMENTATION_PLAN_MVP.md). Reviewed merged baseline #253 (`9421e74`). [Roadmap](PRODUCT_ROADMAP.md) owns scope categories; GitHub [#7](https://github.com/yeongseon/stack-and-survive/issues/7), read with its latest updates, owns live status. The [release checkpoint](submission/RELEASE_CHECKPOINT.md) separates completed preparation from outstanding acceptance.
+Version: 1.3. Reviewed main `c68ec0c`. Historical sequences below explain delivered work, not pending implementation. [Roadmap](PRODUCT_ROADMAP.md) owns scope; [Current status](CURRENT_STATUS.md) and [#7](https://github.com/yeongseon/stack-and-survive/issues/7) own release/branch/gate status.
 
 ## 0. Establish the current baseline
 
@@ -40,7 +40,7 @@ Software #144–#150 is merged. #149 remains open for manual listening/physical 
  → #159 actual voluntary second-run validation
 ```
 
-#153–#158 are merged: approved ladder, measured strategies, history, profiles and report exist. #152 remains open for #159 actual voluntary replay evidence. A failed short run cannot win lowest-cost records against successful full runs. Scale-in #132 is closed not planned, not an implicit prerequisite or approved implementation.
+#153–#158 are merged; #152 remains open for actual #159 evidence. Failed short runs cannot win cheapest full-completion records. Historical #132 was retired; separately approved #305 later implemented rules 0.4 scale-in/tiers/read replicas.
 
 ## 3. Delivered history: Game-first Visual Reframe #186
 
@@ -74,7 +74,7 @@ Simulation/balance changes are outside a presentation-only task; #212 separately
 
 ## 5. Retired scope, not queued development
 
-#160 objectives/modifiers, #161 workload families, #162 daily challenges, #163 discoveries and #132 scale-in are closed not planned for this Hackathon. Their design notes preserve possible future ideas, not queued implementation. Passing #159 does not automatically reopen them; new work requires explicit owner rescoping.
+#160–#163 remain closed not planned. #132 preserves a retired proposal, superseded by the separate delivered #305 scaling contract. Passing #159 does not reopen retired issues or authorize new work.
 
 ## 6. Platform only when justified
 
@@ -82,11 +82,12 @@ Application boundary improvements do not authorize new workspace protocol/observ
 
 ## 7. Current final-delivery sequence
 
-1. Preserve #253 client metadata/local-status/layout/capture work and the [submission pack](submission/README.md); #248 documentation links are complete.
-2. Recheck exact-main Quality and the actual Pages deploy job, then public client behavior. Record dated observations rather than treating a workflow conclusion or API configuration as sufficient proof.
-3. Preserve the resolved #260 approved-origin boundary and verify remaining backend production replay-submission/persistence evidence under separate authorization, following the final release readiness report. The local game remains the fallback.
-4. Conduct actual #25/#195/#159 participant and #149 listening/device sessions; resolve #164 rights decisions. Do not substitute automation or close these gates prematurely.
-5. Fix only observed critical blockers, rehearse and record the labeled two-minute edited demo, and complete final submission review. Captures and a script are preparation, not proof that recording or submission occurred.
+1. Preserve delivered UI/scaling/guide/inspector and [submission pack](submission/README.md); #313/#314/#317 are complete through #319/#318.
+2. Recheck exact-head CI and actual deployment, then public behavior. Latest recorded runtime is `c68ec0c`; successful skipped deploy jobs do not count.
+3. Coordinate #306 compatible API rollout and actual restart durability under separate authorization. Do not write public demo scores or reset data. Local game remains fallback.
+4. Keep Export/Learn draft #316 separate until actual model/configuration, real generated-template compilation and human review satisfy #315; no Azure provisioning is authorized by this plan.
+5. Conduct actual #25/#195/#159 participant and #149 listening/device sessions; resolve #164 rights. Use prepared blank records, not synthetic answers.
+6. Choose the current 53.4-second clip or explicitly historical 120-second edit, rehearse within the actual event limit and complete approved submission. Both media files are public; that does not mean the form is submitted.
 
 No new mechanics, art adoption or camera redesign is implied. #245's separate external-art experiment is not runtime adoption. Live social-card caches and native browser zoom remain manual checks unless actual evidence is recorded.
 

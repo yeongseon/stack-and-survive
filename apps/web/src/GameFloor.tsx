@@ -81,7 +81,8 @@ export function GameFloor({ controller, view, navigation, onReady, blocked = fal
     const right = p.x + (art.x + art.width) * projection.effectiveZoom + 14;
     const left = p.x + art.x * projection.effectiveZoom - 294;
     const preferred = right + 280 <= width - 12 ? right : left >= 12 ? left : p.x + 32;
-    return { left: Math.max(12, Math.min(width - 292, preferred)), top: Math.max(height < 500 ? 70 : 100, Math.min(height - 320, p.y - 180)) };
+    const top = Math.max(height < 500 ? 70 : 100, Math.min(height - 320, p.y - 180));
+    return { left: Math.max(12, Math.min(width - 292, preferred)), top, maxHeight: Math.max(120, height - top - 12) };
   };
   const messagePosition=(kind:keyof typeof tycoonPositions)=>{const p=projection.resourceScreen(kind);return {left:Math.max(125,Math.min((host.current?.clientWidth??1440)-125,p.x)),top:Math.max(155,p.y-45)};};
   return <div className="tycoon-floor world" inert={!!view.result || blocked} ref={host} data-testid="world" data-guide-target={guideTarget ?? undefined} aria-label="Living cloud business">

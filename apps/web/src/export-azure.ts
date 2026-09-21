@@ -27,7 +27,7 @@ export function buildExportRequest(result: NonNullable<View['result']>, run: Run
       infrastructureCost: result.economy.infrastructureCost, emergencyCost: result.economy.emergencyCost, netBusinessValue: result.economy.netBusinessValue, primaryCause: result.primary, peaks: { ...run.peaks } },
     finalArchitecture: { app: { tier: appTier, tierName: a.name, instances: app.instances, capacityPerInstance: a.capacity },
       sql: { tier: sqlTier, tierName: s.name, readReplicas: sql.readReplicas ?? 0, reads: s.reads, writes: s.writes }, cache: state('cache'), protectedEdge: state('edge') },
-    timeline: run.actionLog.filter(entry => entry.accepted).slice(0, 40).map(({ action }) => ({ t: action.time,
+    timeline: run.actionLog.filter(entry => entry.accepted).sort((left, right) => left.action.time - right.action.time || left.action.sequence - right.action.sequence).slice(0, 40).map(({ action }) => ({ t: action.time,
       action: action.type === 'DEPLOY_RESOURCE' ? action.kind === 'cache' ? 'DEPLOY_CACHE' : 'DEPLOY_EDGE' : action.type === 'RATE_LIMIT' ? action.enabled ? 'RATE_LIMIT_ON' : 'RATE_LIMIT_OFF' : action.type })),
   };
 }
@@ -36,7 +36,8 @@ function exact(value: unknown, keys: string[]): value is Record<string, unknown>
 function text(value: unknown, max: number): value is string { return typeof value === 'string' && value.trim().length > 0 && value.length <= max; }
 export function validExportResponse(value: unknown): value is ExportResponse {
   if (!exact(value, ['title', 'bicep', 'parametersJson', 'resources', 'caveats']) || !text(value.title, 80) || !text(value.bicep, 12000)
-    || new TextEncoder().encode(value.bicep).byteLength > 12000 || !text(value.parametersJson, 12000)) return false;
+    || new TextEncoder().encode(value.bicep).byteLength > 12000 || !text(value.parametersJson, 12000)
+    || new TextEncoder().encode(value.parametersJson).byteLength > 12000) return false;
   try { if (!object(JSON.parse(value.parametersJson))) return false; } catch { return false; }
   const names = new Set<string>();
   if (!Array.isArray(value.resources) || value.resources.length < 2 || value.resources.length > 4 || !value.resources.every(item => {

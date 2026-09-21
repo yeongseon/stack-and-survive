@@ -2,6 +2,8 @@
 
 ## Start here
 
+- **Current status:** [implemented, deployed and draft-only features](CURRENT_STATUS.md), with exact revision and unresolved gates. [Document audit](DOCUMENTATION_AUDIT.md) records refresh coverage.
+
 - **Play:** [illustrated player guide](PLAYER_GUIDE.md), with actual screenshots from opening to result.
 - **Build:** [development guide](DEVELOPMENT.md), covering setup, modes, test prerequisites and capture reproduction.
 - **Contribute:** [contribution guide](../CONTRIBUTING.md), covering issue/PR workflow, verification and unresolved license boundaries.
@@ -9,7 +11,7 @@
 
 ## Current contracts
 
-Use the [dated hackathon handoff](submission/HACKATHON_HANDOFF.md) for the latest presentation checkpoint, current rules 0.4 and backend compatibility blocker. The [release checkpoint](submission/RELEASE_CHECKPOINT.md) and [Computer 1 readiness report](submission/FINAL_RELEASE_READINESS.md) are historical revision-specific evidence, not current deployment status. Human/audio/rights gates remain open. Public source visibility is not an OSS license grant or third-party rights approval.
+Use [Current status](CURRENT_STATUS.md) for the current main/deployed/draft boundary. The [hackathon handoff](submission/HACKATHON_HANDOFF.md), [release checkpoint](submission/RELEASE_CHECKPOINT.md) and [Computer 1 readiness report](submission/FINAL_RELEASE_READINESS.md) retain dated evidence, not timeless deployment claims. Human/audio/rights gates remain open. Public source visibility is not an OSS license grant or third-party rights approval.
 
 | Order | Current authority | Responsibility |
 |---|---|---|
@@ -30,7 +32,8 @@ Update current gameplay/technical/state documentation and root README only after
 
 ## Supporting contracts
 
-- [Demo video](DEMO_VIDEO.md): two-minute real-play recording, descriptive transcript and source identity.
+- [Demo video](DEMO_VIDEO.md): 53.4-second rules 0.4 tradeoff clip plus historical two-minute overview, transcripts and source identities.
+- [Infrastructure scaling](INFRASTRUCTURE_SCALING.md): current 0.4 tier/instance/replica values, activation, visuals and identity.
 
 - [Implementation plan](IMPLEMENTATION_PLAN.md): execution order and issue dependencies.
 - [Submission pack](submission/README.md): demo/fallback/capture guidance and the unperformed human worksheet.
@@ -47,7 +50,7 @@ Update current gameplay/technical/state documentation and root README only after
 - [Operation report](OPERATION_REPORT.md): player UI, exact comparisons and fresh-run actions.
 - [Player camera math](PLAYER_CAMERA.md): subordinate #187 Fit-preserving implementation note; the cross-layer contract above owns target navigation and interaction behavior.
 - [Strategy balance](ARCHITECTURE_STRATEGY_BALANCE.md): observed results versus hypotheses.
-- [Scale-in evaluation](SCALE_IN_EVALUATION.md): historical design proposal; #132 is closed not planned, not queued implementation.
+- [Scale-in evaluation](SCALE_IN_EVALUATION.md): historical #132 proposal; the separately approved rules 0.4 implementation is in Infrastructure Scaling.
 - [Asset attribution](../apps/web/public/assets/ATTRIBUTION.md): actual provenance.
 - [ADR-002](adr/ADR-002-GAME-ENGINE.md): accepted engine and historical experiment.
 

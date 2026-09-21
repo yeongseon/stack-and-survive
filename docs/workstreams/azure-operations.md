@@ -1,5 +1,7 @@
 # Azure Operations Workstream
 
+> Historical workstream record. Operations modules are merged; baseline/test counts below describe that work, not current release counts. Later scaling consumes actual tier/replica values. Synthetic CPU/p95 fields must not be presented as measurements. See [Current status](../CURRENT_STATUS.md) and [metric limits](../simulation-metrics.md).
+
 ## Baseline
 
 - Main SHA: `587985b`

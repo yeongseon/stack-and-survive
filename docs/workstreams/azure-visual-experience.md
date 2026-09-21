@@ -1,5 +1,7 @@
 # Azure visual experience — Computer 1
 
+> Historical record for work later merged through #297. Original branch-only/baseline statements below are not current deployment status. The catalog is now **Azure service guide** after #318; [Current status](../CURRENT_STATUS.md) owns the release. Images and 610-test count remain tied to their recorded source.
+
 ## Baseline (before implementation)
 
 - Branch: `feature/azure-visual-experience`; base `587985bacab3ba0382e1b4013a6fe76ab8ffb519`, fetched from origin/main on 2026-09-18.

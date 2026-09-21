@@ -1,5 +1,7 @@
 # Stack & Survive — Technical Submission Notes
 
+Current source baseline: `c68ec0c`; [Current status](CURRENT_STATUS.md) distinguishes deployed Pages, blocked current API compatibility and draft-only Export/Learn #316. Do not claim live AI generation, human learning evidence or real cloud provisioning from these notes.
+
 ## What it is
 
 A real-time cloud infrastructure management game where players scale Azure architecture as demand grows. Same workload, different decisions, different outcomes.
@@ -10,7 +12,7 @@ A real-time cloud infrastructure management game where players scale Azure archi
 ┌─────────────────────────────────────────────┐
 │  Browser (GitHub Pages)                     │
 │                                             │
-│  React UI → Phaser Renderer → Game Loop     │
+│  React UI + Phaser ← local controller      │
 │       ↕                                     │
 │  Deterministic Simulation Engine            │
 │  (packages/simulation)                      │
@@ -20,7 +22,7 @@ A real-time cloud infrastructure management game where players scale Azure archi
 │       │ action provenance (not score)        │
 │       ↓                                     │
 │  ┌──────────────────────────────────────┐   │
-│  │  Global Leaderboard API              │   │
+│  │  Optional external API (Azure)       │   │
 │  │  (apps/leaderboard-api)              │   │
 │  │                                      │   │
 │  │  1. Validate challenge identity      │   │
@@ -32,6 +34,8 @@ A real-time cloud infrastructure management game where players scale Azure archi
 │  └──────────────────────────────────────┘   │
 └─────────────────────────────────────────────┘
 ```
+
+The nested API box is a logical dependency, not code running inside the browser: it is a separate Azure App Service. Simulation remains client-local; optional HTTP replay does not drive game ticks.
 
 ## Key technical differentiators
 
@@ -53,7 +57,7 @@ The browser sends only:
 - Action schedule (what infrastructure decisions were made, at what time)
 
 The server:
-- Loads the canonical starting architecture (preventing cheating)
+- Loads the canonical starting architecture (rejecting fabricated starting capacity, not preventing all cheating/automation)
 - Replays every game tick through the shared simulation engine
 - Calculates score, availability, cost, and business value authoritatively
 - Only accepts runs that meet the challenge objective
@@ -83,7 +87,7 @@ The simulation engine, challenge definitions, and starting architecture are shar
 
 ### 5. Concept-art visual engine
 
-The game world is rendered as a baked concept-art hall background (Canvas 2D, 2400×1350) with interactive hero facility sprites on top. This creates the impression of one authored scene rather than assembled UI components. The rendering is purely visual and never modifies simulation state.
+Phaser renders a fixed 2400×1350 isometric hall with original V3 facility/environment textures, cached structures and bounded representative packets. React projects labels/actions through the same camera. The archived external-art experiment is not production art. Rendering never modifies simulation; SQL's active-tier size and replica geometry reflect state rather than granting capacity.
 
 ## Game loop
 
@@ -123,6 +127,9 @@ Scale: 0 – 10,000
 - Per-request simulation — representative bounded traffic only
 
 ## Limitations
+
+- Current 0.4 leaderboard support in production is blocked in #306; merged replay support is not a deployed claim.
+- Export to Azure and official Learn links exist only in draft #316. Mocked tests and hand-authored fixture compilation do not satisfy real-model smoke; no Azure resources/settings were created.
 
 - Nicknames are self-reported and not unique
 - File-based persistence (suitable for hackathon, upgradeable to Azure Table Storage)

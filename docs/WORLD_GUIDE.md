@@ -4,7 +4,7 @@ Implementation: #150. This is a small contextual help surface, not an automated 
 
 ## Flow
 
-The first run shows a compact overlay Observe → Decide → Compare, with a smaller landscape-phone layout. Advance only through explicit Next/Finish; no build is required. Skip and Learn replay/pre-run opt-out remain available. Balance0.3 tips describe single-action expansion, real activation delay and10% reinvestment. Finishing tips is not passing a comprehension test.
+The first run shows Observe → Decide → Compare, with compact landscape layout. Advance only through explicit Next/Finish; no build is required. Skip and Learn replay/pre-run opt-out remain. Current 0.4 tips retain single-action expansion, real activation delay and 10% reinvestment. This adaptive guide is separate from the optional four-step Azure tutorial and the **Azure service guide** catalog. Finishing any tips is not passing a comprehension test.
 
 Observe highlights traffic intake. Decide uses current actual pressure, pending/queued actions and budget: it can suggest reviewing App capacity, Cache for SQL reads, Edge for bot pressure, SQL write constraints or waiting. It never promises an expansion solves every metric and never recommends Cache for writes. If a maximum or already-installed resource remains overloaded, the guide explains the remaining constraint rather than saying no pressure exists. Compare prompts the player to inspect actual consequences after activation.
 
